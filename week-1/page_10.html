@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>시각화 도구 활용</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 892px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide-container {
+            width: 1280px;
+            min-height: 892px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #e6e6e6;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            overflow: auto;
+        }
+        .code-keyword {
+            color: #569cd6;
+        }
+        .code-string {
+            color: #ce9178;
+        }
+        .code-function {
+            color: #dcdcaa;
+        }
+        .code-comment {
+            color: #6a9955;
+        }
+        .lib-card {
+            transition: all 0.3s ease;
+        }
+        .lib-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col">
+<!-- Header with title -->
+<div class="mb-4">
+<h1 class="title text-4xl font-bold text-gray-800 mb-2">시각화 도구 활용</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Brief introduction -->
+<div class="mb-4">
+<p class="text-gray-700">파이썬에는 데이터 시각화를 위한 강력하고 다양한 라이브러리가 존재합니다. 이들 라이브러리들은 복잡한 데이터를 직관적이고 인터랙티브한 그래프로 변환할 수 있게 해줍니다.</p>
+</div>
+<!-- Main content in two columns -->
+<div class="flex flex-1 gap-6">
+<!-- Left column: Visualization libraries -->
+<div class="w-1/2 flex flex-col space-y-4">
+<h2 class="text-2xl font-semibold text-gray-800 mb-2">주요 시각화 라이브러리</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Matplotlib -->
+<div class="lib-card bg-white bg-opacity-80 rounded-lg p-4 shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-line text-2xl text-green-600 mr-3"></i>
+<h3 class="font-semibold text-gray-800">Matplotlib</h3>
+</div>
+<p class="text-sm text-gray-600 mb-2">파이썬 시각화의 가장 기본이 되는 라이브러리로, 거의 모든 종류의 그래프를 만들 수 있는 강력한 기능을 제공합니다.</p>
+<p class="text-xs text-gray-500">특징: 복잡할 수 있지만 유연성과 강력함</p>
+</div>
+<!-- Seaborn -->
+<div class="lib-card bg-white bg-opacity-80 rounded-lg p-4 shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-area text-2xl text-orange-500 mr-3"></i>
+<h3 class="font-semibold text-gray-800">Seaborn</h3>
+</div>
+<p class="text-sm text-gray-600 mb-2">Matplotlib을 기반으로 더 아름답고 통계적으로 의미 있는 그래프를 쉽게 그릴 수 있도록 만든 라이브러리입니다.</p>
+<p class="text-xs text-gray-500">특징: 통계적 관계 시각화에 강점</p>
+</div>
+<!-- Plotly -->
+<div class="lib-card bg-white bg-opacity-80 rounded-lg p-4 shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-project-diagram text-2xl text-purple-600 mr-3"></i>
+<h3 class="font-semibold text-gray-800">Plotly</h3>
+</div>
+<p class="text-sm text-gray-600 mb-2">동적이고 상호작용이 가능한 웹 기반 그래프를 만드는 데 특화되어 있습니다. 대시보드 제작에 많이 사용됩니다.</p>
+<p class="text-xs text-gray-500">특징: 인터랙티브, 웹 기반</p>
+</div>
+<!-- Altair -->
+<div class="lib-card bg-white bg-opacity-80 rounded-lg p-4 shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-paint-brush text-2xl text-blue-600 mr-3"></i>
+<h3 class="font-semibold text-gray-800">Altair</h3>
+</div>
+<p class="text-sm text-gray-600 mb-2">'선언적' 시각화 라이브러리로, 복잡한 코드 없이 데이터와 시각적 요소의 매핑 관계를 정의하여 그래프를 생성합니다.</p>
+<p class="text-xs text-gray-500">특징: 선언적 프로그래밍 방식</p>
+</div>
+</div>
+<!-- pygwalker -->
+<div class="lib-card bg-white bg-opacity-80 rounded-lg p-4 shadow-md mt-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-magic text-2xl text-teal-600 mr-3"></i>
+<h3 class="font-semibold text-gray-800">pygwalker</h3>
+</div>
+<p class="text-sm text-gray-600 mb-2">최근 주목받는 라이브러리로, Tableau와 유사한 드래그-앤-드롭 인터페이스를 Jupyter Notebook 환경에서 제공하여 코딩 없이 빠른 탐색적 데이터 분석(EDA)을 가능하게 합니다.</p>
+<p class="text-xs text-gray-500">특징: GUI 기반, EDA에 최적화</p>
+</div>
+</div>
+<!-- Right column: Code examples -->
+<div class="w-1/2 bg-white bg-opacity-70 rounded-lg p-5 shadow-md">
+<h2 class="text-2xl font-semibold text-gray-800 mb-3">Seaborn 코드 예시</h2>
+<div class="mb-4">
+<p class="text-sm text-gray-600 mb-2"><i class="fas fa-bar-chart text-green-600 mr-2"></i> <strong>막대 그래프 (Bar Plot)</strong></p>
+<div class="code-block text-sm h-24">
+<span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns<br/>
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt<br/>
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd<br/><br/>
+<!---//--><span class="code-comment"># 예시 데이터프레임</span><br/>
+                        data = {<span class="code-string">'category'</span>: [<span class="code-string">'A'</span>, <span class="code-string">'B'</span>, <span class="code-string">'A'</span>, <span class="code-string">'C'</span>, <span class="code-string">'B'</span>, <span class="code-string">'A'</span>],<br/>
+                                <span class="code-string">'value1'</span>: [10, 15, 8, 12, 18, 5]}<br/>
+                        df = pd.DataFrame(data)<br/><br/>
+<!---//--><span class="code-comment"># 막대 그래프</span><br/>
+                        plt.figure(figsize=(8, 5))<br/>
+                        sns.barplot(x=<span class="code-string">'category'</span>, y=<span class="code-string">'value1'</span>, data=df)<br/>
+                        plt.title(<span class="code-string">'Category별 Value1의 평균'</span>)<br/>
+                        plt.show()
+                    </div>
+</div>
+<div>
+<p class="text-sm text-gray-600 mb-2"><i class="fas fa-braille text-orange-500 mr-2"></i> <strong>산점도 (Scatter Plot)</strong></p>
+<div class="code-block text-sm h-24">
+<span class="code-keyword">import</span> seaborn <span class="code-keyword">as</span> sns<br/>
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt<br/>
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd<br/><br/>
+<!---//--><span class="code-comment"># 예시 데이터프레임</span><br/>
+                        data = {<span class="code-string">'category'</span>: [<span class="code-string">'A'</span>, <span class="code-string">'B'</span>, <span class="code-string">'A'</span>, <span class="code-string">'C'</span>, <span class="code-string">'B'</span>, <span class="code-string">'A'</span>],<br/>
+                                <span class="code-string">'value1'</span>: [10, 15, 8, 12, 18, 5],<br/>
+                                <span class="code-string">'value2'</span>: [22, 28, 19, 25, 30, 15]}<br/>
+                        df = pd.DataFrame(data)<br/><br/>
+<!---//--><span class="code-comment"># 산점도</span><br/>
+                        plt.figure(figsize=(8, 5))<br/>
+                        sns.scatterplot(x=<span class="code-string">'value1'</span>, y=<span class="code-string">'value2'</span>, hue=<span class="code-string">'category'</span>, data=df)<br/>
+                        plt.title(<span class="code-string">'Value1과 Value2의 관계'</span>)<br/>
+                        plt.show()
+                    </div>
+</div>
+</div>
+</div>
+<!-- D3.js simple visualization -->
+<div class="mt-4">
+<div class="w-full h-16 flex items-center justify-center" id="d3-visualization">
+<!-- D3.js visualization will be inserted here -->
+</div>
+</div>
+
+<div class="mt-4 flex justify-between items-center">
+<div class="text-sm text-gray-600">
+<i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                좋은 시각화는 데이터의 이야기를 효과적으로 전달합니다.
+            </div>
+<!-- <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
+                10 / 10
+            </div> -->
+</div>
+</div>
+<script>
+        // Simple D3.js visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data based on the document
+            const data = [
+                {name: "Matplotlib", value: 11020},
+                {name: "Seaborn", value: 11600},
+                {name: "Plotly", value: 18700},
+                {name: "Scikit-learn", value: 57000},
+                {name: "TensorFlow", value: 180000}
+            ];
+
+            // SVG dimensions
+            const width = 1200;
+            const height = 60;
+            const margin = {left: 100, right: 100};
+
+            // Create SVG
+            const svg = d3.select("#d3-visualization")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            // X scale
+            const x = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.value)])
+                .range([margin.left, width - margin.right]);
+
+            // Y scale for bars
+            const y = d3.scaleBand()
+                .domain(data.map(d => d.name))
+                .range([0, height])
+                .padding(0.3);
+
+            // Color scale
+            const color = d3.scaleOrdinal()
+                .domain(data.map(d => d.name))
+                .range(["#4CAF50", "#FFA726", "#673AB7", "#34A853", "#FBBC05"]);
+
+            // Draw bars
+            svg.selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", margin.left)
+                .attr("y", d => y(d.name))
+                .attr("width", d => x(d.value) - margin.left)
+                .attr("height", y.bandwidth())
+                .attr("fill", d => color(d.name))
+                .attr("rx", 4)
+                .attr("ry", 4)
+                .attr("opacity", 0.8);
+
+            // Add labels
+            svg.selectAll("text")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("x", margin.left - 5)
+                .attr("y", d => y(d.name) + y.bandwidth() / 2)
+                .attr("text-anchor", "end")
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", "10px")
+                .attr("fill", "#333")
+                .text(d => d.name);
+
+            // Add values
+            svg.selectAll(".value")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "value")
+                .attr("x", d => x(d.value) + 5)
+                .attr("y", d => y(d.name) + y.bandwidth() / 2)
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", "10px")
+                .attr("fill", "#555")
+                .text(d => d.value.toLocaleString() + " Stars");
+        });
+    </script>
+
+<!-- <div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_9.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">10 / 10</div>
+<div></div>
+</div> -->
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_9.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">10 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_1.html">처음</a>
+</div>
+
+</body></html>

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>온라인 퀴즈</title>
+  <style>
+    :root { --bg:#fafafa; --card:#fff; --ink:#111; --muted:#6b7280; --line:#e5e7eb; --ok:#065f46; --okbg:#ecfdf5; --bad:#991b1b; --badbg:#fef2f2; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Apple SD Gothic Neo, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif; background:var(--bg); color:var(--ink); }
+    header { position:sticky; top:0; z-index:10; background:rgba(255,255,255,.9); backdrop-filter:saturate(180%) blur(10px); border-bottom:1px solid var(--line); }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 16px; }
+    h1 { font-size: 22px; margin: 8px 0; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    button, .btn { appearance:none; border:1px solid var(--line); background:#fff; padding:8px 12px; border-radius:12px; cursor:pointer; }
+    button.primary { background:#111; color:#fff; }
+    button:hover, .btn:hover { background:#f5f5f5; }
+    main { padding:16px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow: 0 1px 3px rgba(0,0,0,.04); padding:16px; }
+    .muted { color: var(--muted); font-size: 14px; }
+    .q { margin: 0 0 8px; font-weight: 600; }
+    textarea, select, input[type="text"] { width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+    ol { list-style: none; padding:0; margin:0; }
+    li + li { margin-top: 12px; }
+    .badge { font-size:12px; padding:4px 8px; border-radius:8px; border:1px solid transparent; }
+    .badge.ok { color:var(--ok); background:var(--okbg); border-color:#a7f3d0; }
+    .badge.bad { color:var(--bad); background:var(--badbg); border-color:#fecaca; }
+    details { margin-top:8px; }
+    summary { cursor:pointer; }
+    code { background:#f3f4f6; padding:2px 6px; border-radius:6px; }
+    footer { color:var(--muted); font-size:12px; margin: 32px 0 16px; }
+    .grid { display:grid; grid-template-columns: 1fr; gap:12px; }
+    @media (min-width: 640px){ .grid { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap row" style="justify-content:space-between;">
+      <h1>📝 온라인 퀴즈</h1>
+      <div class="row">
+        <button id="btnTemplate" class="btn">JSON 템플릿</button>
+        <label class="btn" style="cursor:pointer;">
+          퀴즈 업로드
+          <input id="fileInput" type="file" accept="application/json" style="display:none" />
+        </label>
+        <button id="btnDefault" class="btn">기본 세트</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="stats" class="card" aria-live="polite">
+      <div class="grid">
+        <div>
+          <div class="muted">문항 수</div>
+          <div id="count" style="font-weight:600;">-</div>
+        </div>
+        <div>
+          <div class="muted">채점 완료</div>
+          <div id="graded" style="font-weight:600;">-</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px;">
+        <button id="btnGradeAll" class="primary">전체 채점</button>
+        <button id="btnReset">리셋</button>
+      </div>
+      <div id="scoreline" class="muted" style="margin-top:8px; display:none;"></div>
+    </section>
+
+    <ol id="quizList" style="margin-top:12px;"></ol>
+
+    <footer>
+      • JSON 스키마: 각 항목은 <code>id</code>, <code>type</code>(ox|short|text), <code>question</code>, 정답 필드(<code>answer</code> | <code>acceptable</code> | <code>keywords_correct</code> | <code>acceptable_all</code>), <code>explanation</code>를 포함합니다.<br>
+      • 정확 채점이 중요하면 OX/단답 위주로 구성하거나 선택지를 명시하세요. 서술형은 키워드 기반 평가입니다.
+    </footer>
+  </main>
+
+  <script>
+  // ---------- 기본 데이터 ----------
+  const DEFAULT_QUIZ = [
+    { id:1, type:"ox", question:"__init__ 메서드는 객체 생성 시 반드시 한 번 호출된다. (O/X)", answer:"O", explanation:"일반적인 인스턴스 생성 경로에서는 한 번 호출됩니다. 다만 __new__로 우회하거나 피클/메타프로그래밍 등 특수한 경우엔 예외가 있을 수 있습니다." },
+    { id:2, type:"ox", question:"import pandas as pd 에서 pd는 패키지 실제 이름이다. (O/X)", answer:"X", explanation:"pd는 별칭(alias)입니다. 실제 패키지 이름은 pandas이며 as 키워드로 별칭을 정해 사용합니다." },
+    { id:3, type:"short", question:"평균보다 중앙값이 큰 경우, 분포 방향은?", acceptable:["왼쪽","좌","좌측","음의 왜도","left-skew","left skew","negative skew","왼쪽 꼬리","좌측 꼬리"], explanation:"중앙값 > 평균이면 왼쪽 꼬리(음의 왜도, left-skewed) 분포입니다." },
+    { id:4, type:"text", question:"from math import * 사용 시 장점과 단점은?", keywords_correct:[["간편","타이핑","편의","짧게"],["네임스페이스","오염","충돌","가독성","덮어쓰기","명시적 아님"]], explanation:"장점: 짧고 편리합니다. / 단점: 네임스페이스 오염, 가독성 저하, 이름 충돌·예상치 못한 덮어쓰기가 발생할 수 있습니다." },
+    { id:5, type:"short", question:"os 모듈에서 현재 작업 디렉토리를 반환하는 함수는?", acceptable:["os.getcwd","getcwd","os.getcwd()"], canonical:"os.getcwd()", explanation:"현재 작업 디렉토리(Current Working Directory)를 문자열로 반환합니다." },
+    { id:6, type:"short", question:"requests 라이브러리는 어떤 용도로 사용되는가?", acceptable:["http","요청","rest","api","웹 요청","http 요청"], canonical:"HTTP 요청/응답 처리 (REST API 호출 등)", explanation:"HTTP 요청을 보내고 응답을 다루는 고수준 라이브러리입니다." },
+    { id:7, type:"short", question:"객체지향 프로그래밍(OOP)의 4대 특징을 모두 말하시오.", acceptable_all:["추상화","캡슐화","상속","다형성"], explanation:"추상화·캡슐화·상속·다형성이 핵심 네 가지 축입니다." },
+    { id:8, type:"text", question:"클래스 메서드와 인스턴스 메서드의 차이는?", keywords_correct:[["classmethod","@classmethod","cls","클래스 수준","클래스 자체"],["인스턴스","self","객체 수준","개별 객체"]], explanation:"@classmethod는 첫 매개변수로 cls를 받아 클래스 수준 동작을 하고, 인스턴스 메서드는 self를 받아 개별 객체 상태를 다룹니다." },
+    { id:9, type:"ox", question:"self 키워드는 예약어이다. (O/X)", answer:"X", explanation:"예약어가 아닌 관례적인 이름입니다. 다른 이름을 써도 되지만 권장되지 않습니다." },
+    { id:10, type:"short", question:"데이터 전처리 과정에서 결측치를 채우는 pandas 메서드는?", acceptable:["fillna","pd.fillna","DataFrame.fillna"], canonical:"fillna", explanation:"Series/DataFrame의 결측값을 지정 값/방법으로 대체합니다." },
+    { id:11, type:"short", question:"numpy 배열의 차원을 확인하는 속성은?", acceptable:["ndim"], canonical:"ndim", explanation:"배열의 차원 수를 나타내는 정수 속성입니다." },
+    { id:12, type:"short", question:"scikit-learn에서 train_test_split 함수의 역할은?", acceptable:["분할","훈련","테스트","split","train","test"], canonical:"데이터셋을 학습/평가용으로 분할", explanation:"특징/레이블을 무작위로 섞어 학습·검증 세트로 나눕니다." },
+    { id:13, type:"short", question:"표준편차(std)가 크면 데이터 분산은 어떻게 되는가?", acceptable:["크다","커진다","증가","흩어진","변동성"], canonical:"분산/변동성이 크다(데이터가 더 흩어짐)", explanation:"표준편차는 분산의 제곱근으로, 값이 클수록 데이터가 평균으로부터 더 퍼져 있습니다." },
+    { id:14, type:"short", question:"matplotlib에서 그래프 제목을 설정하는 함수는?", acceptable:["plt.title","title","plt.title()"], canonical:"plt.title()", explanation:"Matplotlib pyplot의 제목 설정 함수입니다." },
+    { id:15, type:"short", question:"박스플롯에서 중앙의 선이 의미하는 값은?", acceptable:["중앙값","median"], canonical:"중앙값(median)", explanation:"상자(box) 내부의 중앙 선은 중앙값을 나타냅니다." }
+  ];
+
+  // ---------- 상태 ----------
+  let quiz = JSON.parse(localStorage.getItem('quiz-data') || 'null') || DEFAULT_QUIZ;
+  let answers = JSON.parse(localStorage.getItem('quiz-answers') || '{}');
+  let results = {}; // {id: {correct, feedback}}
+  let gradedAll = false;
+
+  // ---------- 유틸 ----------
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+  const norm = (s) => (s ?? '').toString().trim().toLowerCase();
+
+  function setStat() {
+    $('#count').textContent = quiz.length;
+    const done = Object.values(results).filter(Boolean).length;
+    $('#graded').textContent = `${done} / ${quiz.length}`;
+    if (gradedAll) {
+      const correct = Object.values(results).filter(r => r && r.correct).length;
+      const pct = quiz.length ? Math.round((correct / quiz.length) * 100) : 0;
+      const line = `점수: ${correct} / ${quiz.length} (${pct}%)`;
+      const el = $('#scoreline');
+      el.textContent = line;
+      el.style.display = 'block';
+    } else {
+      $('#scoreline').style.display = 'none';
+    }
+  }
+
+  function persist() {
+    localStorage.setItem('quiz-data', JSON.stringify(quiz));
+    localStorage.setItem('quiz-answers', JSON.stringify(answers));
+  }
+
+  // ---------- 채점 로직 ----------
+  function checkOX(item, user) {
+    const u = norm(user);
+       const a = norm(item.answer);
+    const correct = u === a || (u === 'o' && a.startsWith('o')) || (u === 'x' && a.startsWith('x'));
+    return { correct, feedback: correct ? '정답' : `오답 (정답: ${item.answer})` };
+  }
+
+  function checkShort(item, user) {
+    const u = norm(user);
+    const acc = (item.acceptable || []).map(norm);
+    const correct = acc.some(a => u.includes(a) || a.includes(u));
+    const ans = item.canonical || (item.acceptable ? item.acceptable[0] : '');
+    return { correct, feedback: correct ? '정답' : `오답 (키워드 예: ${ans})` };
+  }
+
+  function checkText(item, user) {
+    const groups = item.keywords_correct || [];
+    const u = norm(user);
+    const correct = groups.every(group => group.some(kw => u.includes(norm(kw))));
+    let need = groups.map(group => (group.find(kw => u.includes(norm(kw))) ? null : `• ${group.join(', ')}`)).filter(Boolean).join('\n');
+    const feedback = correct ? '핵심 포인트 충족' : `부족한 키워드:\n${need}`;
+    return { correct, feedback };
+  }
+
+  function checkAllRequired(item, user) { // Q7 전용
+    const u = norm(user);
+    const required = (item.acceptable_all || []).map(norm);
+    const missing = required.filter(k => !u.includes(k));
+    const correct = missing.length === 0;
+    const feedback = correct ? '정답' : `누락: ${missing.join(', ')}`;
+    return { correct, feedback };
+  }
+
+  function checkOne(item, user) {
+    if (item.type === 'ox') return checkOX(item, user);
+    if (item.type === 'short') return (item.acceptable_all ? checkAllRequired(item, user) : checkShort(item, user));
+    return checkText(item, user);
+  }
+
+  // ---------- 렌더 ----------
+  function render() {
+    const list = $('#quizList');
+    list.innerHTML = '';
+    quiz.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'card';
+
+      const q = document.createElement('p');
+      q.className = 'q';
+      q.textContent = `${item.id}. ${item.question}`;
+      li.appendChild(q);
+
+      let inputEl;
+      if (item.type === 'ox') {
+        inputEl = document.createElement('select');
+        inputEl.innerHTML = '<option value="">선택</option><option value="O">O</option><option value="X">X</option>';
+      } else {
+        inputEl = document.createElement('textarea');
+        inputEl.placeholder = item.type === 'short' ? '정답(단답) 입력' : '핵심 키워드를 포함해 서술하세요';
+        inputEl.rows = 4;
+      }
+      inputEl.value = answers[item.id] ?? '';
+      inputEl.addEventListener('input', (e) => {
+        answers[item.id] = e.target.value;
+        results[item.id] = undefined; // 입력 시 이전 채점 리셋
+        gradedAll = false;
+        persist();
+        setStat();
+        renderRowFooter(li, item);
+      });
+      li.appendChild(inputEl);
+
+      const actionRow = document.createElement('div');
+      actionRow.className = 'row';
+      actionRow.style.marginTop = '8px';
+
+      const btn = document.createElement('button');
+      btn.textContent = '채점';
+      btn.addEventListener('click', () => {
+        const r = checkOne(item, answers[item.id]);
+        results[item.id] = r;
+        renderRowFooter(li, item);
+        setStat();
+      });
+      actionRow.appendChild(btn);
+
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.style.display = 'none';
+      badge.id = `badge-${item.id}`;
+      actionRow.appendChild(badge);
+
+      li.appendChild(actionRow);
+
+      const fbWrap = document.createElement('div');
+      fbWrap.id = `fb-${item.id}`;
+      fbWrap.style.marginTop = '8px';
+      li.appendChild(fbWrap);
+
+      list.appendChild(li);
+
+      renderRowFooter(li, item);
+    });
+
+    setStat();
+  }
+
+  function renderRowFooter(li, item) {
+    const r = results[item.id];
+    const badge = li.querySelector(`#badge-${item.id}`);
+    const fb = li.querySelector(`#fb-${item.id}`);
+
+    if (r) {
+      badge.style.display = 'inline-block';
+      badge.textContent = r.correct ? '정답' : '오답';
+      badge.className = `badge ${r.correct ? 'ok' : 'bad'}`;
+
+      fb.innerHTML = '';
+      const p = document.createElement('p');
+      p.className = 'muted';
+      p.style.whiteSpace = 'pre-wrap';
+      p.innerHTML = `<strong>피드백:</strong> ${r.feedback}`;
+      fb.appendChild(p);
+
+      if (item.explanation) {
+        const det = document.createElement('details');
+        const sum = document.createElement('summary');
+        sum.textContent = '해설 보기';
+        det.appendChild(sum);
+        const box = document.createElement('div');
+        box.className = 'card';
+        box.style.marginTop = '6px';
+        box.textContent = item.explanation;
+        det.appendChild(box);
+        fb.appendChild(det);
+      }
+    } else {
+      badge.style.display = 'none';
+      fb.innerHTML = '';
+    }
+  }
+
+  // ---------- 이벤트 바인딩 ----------
+  $('#btnGradeAll').addEventListener('click', () => {
+    results = {};
+    quiz.forEach(q => { results[q.id] = checkOne(q, answers[q.id]); });
+    gradedAll = true;
+    render();
+  });
+
+  $('#btnReset').addEventListener('click', () => {
+    answers = {};
+    results = {};
+    gradedAll = false;
+    persist();
+    render();
+  });
+
+  $('#btnDefault').addEventListener('click', () => {
+    quiz = JSON.parse(JSON.stringify(DEFAULT_QUIZ));
+    answers = {};
+    results = {};
+    gradedAll = false;
+    persist();
+    render();
+  });
+
+  $('#fileInput').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (!Array.isArray(data)) throw new Error('JSON은 배열이어야 합니다.');
+      data.forEach((d, i) => {
+        if (d == null || typeof d !== 'object') throw new Error(`${i+1}번째 항목이 객체가 아닙니다.`);
+        if (d.id == null || !d.question) throw new Error(`${i+1}번째 항목: id/question 누락`);
+        if (!['ox','short','text'].includes(d.type)) throw new Error(`${i+1}번째 항목: 지원하지 않는 type`);
+      });
+      quiz = data;
+      answers = {};
+      results = {};
+      gradedAll = false;
+      persist();
+      render();
+    } catch (err) {
+      alert('업로드 실패: ' + err.message);
+    } finally {
+      e.target.value = '';
+    }
+  });
+
+  $('#btnTemplate').addEventListener('click', () => {
+    const template = [
+      { id:1, type:'ox', question:'예) 파이썬은 인터프리터 언어다. (O/X)', answer:'O', explanation:'간단 설명' },
+      { id:2, type:'short', question:'예) os 모듈로 현재 디렉토리 구하는 함수?', acceptable:['os.getcwd','getcwd','os.getcwd()'], canonical:'os.getcwd()', explanation:'정답/설명' },
+      { id:3, type:'text', question:'예) from X import * 의 장단점?', keywords_correct:[["장점","간편"],["단점","네임스페이스","오염","충돌"]], explanation:'키워드 기준 채점' }
+    ];
+    const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'quiz_template.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // 초기 렌더
+  render();
+  </script>
+</body>
+</html>

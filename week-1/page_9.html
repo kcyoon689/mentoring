@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>데이터 시각화 기법</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 872px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide-container {
+            width: 1280px;
+            min-height: 872px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .chart-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .chart-container {
+            height: 100px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 mb-2">데이터 시각화 기법</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Brief introduction -->
+<div class="mb-6">
+<p class="text-gray-700">데이터 시각화는 숫자만으로는 파악하기 어려운 데이터의 패턴, 추세, 이상치 등을 쉽게 발견할 수 있도록 도와줍니다. 적절한 차트 선택은 데이터의 특성과 목적에 따라 달라집니다.</p>
+</div>
+<!-- Chart types grid -->
+<div class="grid grid-cols-3 gap-6 flex-1">
+<!-- Bar Chart -->
+<div class="chart-card p-5">
+<div class="flex items-center mb-3">
+<i class="fas fa-chart-bar text-2xl text-green-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-gray-800">막대 그래프</h3>
+</div>
+<div class="chart-container mb-3" id="bar-chart"></div>
+<div class="text-sm">
+<p class="font-medium text-gray-800 mb-1">용도:</p>
+<p class="text-gray-600">범주형 데이터의 빈도나 값을 비교할 때 사용합니다.</p>
+<p class="text-xs mt-2 text-gray-500">예: 각 카테고리별 제품 판매량 비교</p>
+</div>
+</div>
+<!-- Histogram -->
+<div class="chart-card p-5">
+<div class="flex items-center mb-3">
+<i class="fas fa-chart-column text-2xl text-orange-500 mr-3"></i>
+<h3 class="text-xl font-semibold text-gray-800">히스토그램</h3>
+</div>
+<div class="chart-container mb-3" id="histogram-chart"></div>
+<div class="text-sm">
+<p class="font-medium text-gray-800 mb-1">용도:</p>
+<p class="text-gray-600">연속형 데이터의 분포를 구간별로 보여줄 때 사용합니다.</p>
+<p class="text-xs mt-2 text-gray-500">예: 나이 또는 농구 코트에서의 점수 분포</p>
+</div>
+</div>
+<!-- Scatter Plot -->
+<div class="chart-card p-5">
+<div class="flex items-center mb-3">
+<i class="fas fa-braille text-2xl text-purple-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-gray-800">산점도</h3>
+</div>
+<div class="chart-container mb-3" id="scatter-chart"></div>
+<div class="text-sm">
+<p class="font-medium text-gray-800 mb-1">용도:</p>
+<p class="text-gray-600">두 연속형 변수 간의 관계(상관관계)를 파악할 때 유용합니다.</p>
+<p class="text-xs mt-2 text-gray-500">예: 키와 몸무게의 관계 분석</p>
+</div>
+</div>
+<!-- Line Chart -->
+<div class="chart-card p-5">
+<div class="flex items-center mb-3">
+<i class="fas fa-chart-line text-2xl text-blue-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-gray-800">선 그래프</h3>
+</div>
+<div class="chart-container mb-3" id="line-chart"></div>
+<div class="text-sm">
+<p class="font-medium text-gray-800 mb-1">용도:</p>
+<p class="text-gray-600">시간의 흐름에 따른 데이터의 변화 추세를 나타낼 때 주로 사용됩니다.</p>
+<p class="text-xs mt-2 text-gray-500">예: 주식 시장 지수의 시간적 추세</p>
+</div>
+</div>
+<!-- Box Plot -->
+<div class="chart-card p-5">
+<div class="flex items-center mb-3">
+<i class="fas fa-box text-2xl text-red-500 mr-3"></i>
+<h3 class="text-xl font-semibold text-gray-800">box plot</h3>
+</div>
+<div class="chart-container mb-3" id="box-chart"></div>
+<div class="text-sm">
+<p class="font-medium text-gray-800 mb-1">용도:</p>
+<p class="text-gray-600">데이터의 사분위수, 중앙값, 이상치 등을 시각적으로 표현하여 분포를 요약합니다.</p>
+<p class="text-xs mt-2 text-gray-500">예: 여러 그룹의 데이터 분포 비교</p>
+</div>
+</div>
+<!-- Heatmap -->
+<div class="chart-card p-5">
+<div class="flex items-center mb-3">
+<i class="fas fa-th text-2xl text-yellow-500 mr-3"></i>
+<h3 class="text-xl font-semibold text-gray-800">히트맵</h3>
+</div>
+<div class="chart-container mb-3" id="heatmap-chart"></div>
+<div class="text-sm">
+<p class="font-medium text-gray-800 mb-1">용도:</p>
+<p class="text-gray-600">매트릭스 형태의 데이터에서 값의 크기를 색상으로 표현하여 패턴을 파악할 때 사용합니다.</p>
+<p class="text-xs mt-2 text-gray-500">예: 지역별 기온 또는 판매량의 공간적 분포</p>
+</div>
+</div>
+</div>
+
+<div class="mt-6 flex justify-between items-center">
+<div class="text-sm text-gray-500 italic">
+                선택한 차트 유형에 따라 데이터의 특성과 목적에 맞게 사용하면 효과적인 시각화가 가능합니다.
+            </div>
+</div>
+</div>
+<script>
+        // Simple D3.js visualizations
+
+        // Bar chart
+        const barData = [30, 45, 60, 25, 15];
+        const barSvg = d3.select("#bar-chart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 200 100");
+
+        barSvg.selectAll("rect")
+            .data(barData)
+            .enter()
+            .append("rect")
+            .attr("x", (d, i) => i * 40 + 10)
+            .attr("y", d => 100 - d)
+            .attr("width", 30)
+            .attr("height", d => d)
+            .attr("fill", "#4CAF50");
+
+        // Histogram (similar to bar but with continuous data)
+        const histData = [15, 25, 40, 30, 20, 10];
+        const histSvg = d3.select("#histogram-chart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 200 100");
+
+        histSvg.selectAll("rect")
+            .data(histData)
+            .enter()
+            .append("rect")
+            .attr("x", (d, i) => i * 30 + 5)
+            .attr("y", d => 100 - d)
+            .attr("width", 25)
+            .attr("height", d => d)
+            .attr("fill", "#FFA726");
+
+        // Scatter plot
+        const scatterData = [
+            {x: 20, y: 30, size: 5},
+            {x: 40, y: 60, size: 7},
+            {x: 60, y: 40, size: 4},
+            {x: 80, y: 70, size: 8},
+            {x: 100, y: 30, size: 6},
+            {x: 120, y: 50, size: 5},
+            {x: 140, y: 80, size: 7},
+            {x: 160, y: 20, size: 4}
+        ];
+
+        const scatterSvg = d3.select("#scatter-chart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 200 100");
+
+        scatterSvg.selectAll("circle")
+            .data(scatterData)
+            .enter()
+            .append("circle")
+            .attr("cx", d => d.x)
+            .attr("cy", d => 100 - d.y)
+            .attr("r", d => d.size)
+            .attr("fill", "#673AB7");
+
+        // Line chart
+        const lineData = [
+            {x: 0, y: 50},
+            {x: 40, y: 30},
+            {x: 80, y: 70},
+            {x: 120, y: 40},
+            {x: 160, y: 60},
+            {x: 200, y: 50}
+        ];
+
+        const lineSvg = d3.select("#line-chart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 200 100");
+
+        const lineGenerator = d3.line()
+            .x(d => d.x)
+            .y(d => 100 - d.y);
+
+        lineSvg.append("path")
+            .datum(lineData)
+            .attr("d", lineGenerator)
+            .attr("fill", "none")
+            .attr("stroke", "#2196F3")
+            .attr("stroke-width", 3);
+
+        // Box plot
+        const boxSvg = d3.select("#box-chart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 200 100");
+
+        // Box
+        boxSvg.append("rect")
+            .attr("x", 70)
+            .attr("y", 30)
+            .attr("width", 60)
+            .attr("height", 40)
+            .attr("stroke", "#E53935")
+            .attr("fill", "#E53935")
+            .attr("opacity", 0.7);
+
+        // Median line
+        boxSvg.append("line")
+            .attr("x1", 70)
+            .attr("y1", 50)
+            .attr("x2", 130)
+            .attr("y2", 50)
+            .attr("stroke", "#E53935")
+            .attr("stroke-width", 2);
+
+        // Whiskers
+        boxSvg.append("line")
+            .attr("x1", 100)
+            .attr("y1", 30)
+            .attr("x2", 100)
+            .attr("y2", 20)
+            .attr("stroke", "#E53935")
+            .attr("stroke-width", 1);
+
+        boxSvg.append("line")
+            .attr("x1", 100)
+            .attr("y1", 70)
+            .attr("x2", 100)
+            .attr("y2", 80)
+            .attr("stroke", "#E53935")
+            .attr("stroke-width", 1);
+
+        // Caps
+        boxSvg.append("line")
+            .attr("x1", 90)
+            .attr("y1", 20)
+            .attr("x2", 110)
+            .attr("y2", 20)
+            .attr("stroke", "#E53935")
+            .attr("stroke-width", 1);
+
+        boxSvg.append("line")
+            .attr("x1", 90)
+            .attr("y1", 80)
+            .attr("x2", 110)
+            .attr("y2", 80)
+            .attr("stroke", "#E53935")
+            .attr("stroke-width", 1);
+
+        // Outlier
+        boxSvg.append("circle")
+            .attr("cx", 100)
+            .attr("cy", 15)
+            .attr("r", 3)
+            .attr("fill", "#E53935");
+
+        // Heatmap
+        const heatmapSvg = d3.select("#heatmap-chart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 200 100");
+
+        const heatmapData = [
+            [0.1, 0.3, 0.5, 0.7],
+            [0.2, 0.8, 0.4, 0.6],
+            [0.9, 0.5, 0.3, 0.1],
+            [0.7, 0.2, 0.6, 0.3]
+        ];
+
+        const colorScale = d3.scaleSequential()
+            .domain([0, 1])
+            .interpolator(d3.interpolateYlOrRd);
+
+        heatmapSvg.selectAll("g")
+            .data(heatmapData)
+            .enter()
+            .append("g")
+            .attr("transform", (d, i) => `translate(0, ${i * 25})`)
+            .selectAll("rect")
+            .data(d => d)
+            .enter()
+            .append("rect")
+            .attr("x", (d, i) => i * 50)
+            .attr("y", 0)
+            .attr("width", 50)
+            .attr("height", 25)
+            .attr("fill", d => colorScale(d));
+    </script>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
+</div>
+</body></html>

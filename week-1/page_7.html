@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>데이터 사이언스 개요</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 843px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide-container {
+            width: 1280px;
+            min-height: 843px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .workflow-step {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .workflow-step:hover {
+            transform: translateY(-5px);
+        }
+        .workflow-arrow {
+            position: absolute;
+            top: 50%;
+            right: -20px;
+            transform: translateY(-50%);
+            color: #4CAF50;
+            font-size: 24px;
+            z-index: 10;
+        }
+        .library-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 2px;
+            background-color: rgba(76, 175, 80, 0.15);
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 mb-2">데이터 사이언스 개요</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Brief introduction -->
+<div class="mb-6">
+<p class="text-gray-700">데이터 사이언스는 정형 및 비정형 데이터를 분석하여 지식과 인사이트를 추출하는 융합 학문입니다. 2025년 현재, 기업과 연구 기관들은 데이터 기반 의사결정을 통해 경쟁력을 확보하고 있으며, 파이썬은 이러한 데이터 사이언스 워크플로우의 모든 단계를 지원하는 핵심 언어로 자리 잡았습니다.</p>
+</div>
+<!-- Data Science Workflow Visualization -->
+<div class="flex-1 flex flex-col">
+<h2 class="text-2xl font-semibold text-gray-800 mb-4">데이터 사이언스 워크플로우</h2>
+<div class="flex justify-between items-start mb-6 relative">
+<!-- Step 1: Data Collection -->
+<div class="workflow-step bg-white rounded-lg shadow-md p-5 w-1/5 relative">
+<div class="text-center mb-3">
+<i class="fas fa-database text-3xl text-purple-600"></i>
+</div>
+<h3 class="text-center font-semibold text-gray-800 mb-2">데이터 수집</h3>
+<p class="text-sm text-gray-600 text-center">웹 스크레이핑, API, 데이터베이스 쿼리 등 다양한 경로로 데이터를 확보</p>
+<div class="workflow-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+<!-- Step 2: Data Preprocessing -->
+<div class="workflow-step bg-white rounded-lg shadow-md p-5 w-1/5 relative">
+<div class="text-center mb-3">
+<i class="fas fa-filter text-3xl text-purple-600"></i>
+</div>
+<h3 class="text-center font-semibold text-gray-800 mb-2">데이터 전처리</h3>
+<p class="text-sm text-gray-600 text-center">데이터 정제(Cleaning), 변환(Transformation), 이상치 처리 등</p>
+<div class="workflow-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+<!-- Step 3: Data Analysis -->
+<div class="workflow-step bg-white rounded-lg shadow-md p-5 w-1/5 relative">
+<div class="text-center mb-3">
+<i class="fas fa-search text-3xl text-purple-600"></i>
+</div>
+<h3 class="text-center font-semibold text-gray-800 mb-2">데이터 분석</h3>
+<p class="text-sm text-gray-600 text-center">탐색적 데이터 분석(EDA)을 통해 데이터의 특성과 패턴을 파악</p>
+<div class="workflow-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+<!-- Step 4: Modeling -->
+<div class="workflow-step bg-white rounded-lg shadow-md p-5 w-1/5 relative">
+<div class="text-center mb-3">
+<i class="fas fa-brain text-3xl text-purple-600"></i>
+</div>
+<h3 class="text-center font-semibold text-gray-800 mb-2">모델링</h3>
+<p class="text-sm text-gray-600 text-center">적절한 알고리즘 선택, 모델 훈련, 검증 및 최적화</p>
+<div class="workflow-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+<!-- Step 5: Result Interpretation -->
+<div class="workflow-step bg-white rounded-lg shadow-md p-5 w-1/5">
+<div class="text-center mb-3">
+<i class="fas fa-lightbulb text-3xl text-purple-600"></i>
+</div>
+<h3 class="text-center font-semibold text-gray-800 mb-2">결과 해석</h3>
+<p class="text-sm text-gray-600 text-center">모델 평가, 결과 visualization, 비즈니스 문제 해결 방안 제시</p>
+</div>
+</div>
+<!-- Python's Role -->
+<div class="bg-white bg-opacity-80 rounded-lg p-6 shadow-md">
+<div class="flex items-center mb-4">
+<i class="fab fa-python text-2xl text-green-500 mr-3"></i>
+<h2 class="text-2xl font-semibold text-gray-800">파이썬의 데이터 사이언스 역할</h2>
+</div>
+<p class="text-gray-700 mb-4">파이썬은 데이터 사이언스의 모든 단계를 지원하는 핵심 언어로, 쉬운 문법, 방대한 라이브러리 생태계, 그리고 거대한 커뮤니티 덕분에 데이터 사이언스 분야에서의 지배적인 위치를 차지하고 있습니다.</p>
+<div class="grid grid-cols-3 gap-4">
+<div>
+<h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+<i class="fas fa-code text-orange-500 mr-2"></i>쉬은 문법
+                        </h4>
+<p class="text-sm text-gray-600">파이썬의 간결하고 읽기 쉬운 문법은 복잡한 알고리즘을 쉽게 구현할 수 있게 합니다.</p>
+</div>
+<div>
+<h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+<i class="fas fa-puzzle-piece text-orange-500 mr-2"></i>강력한 라이브러리
+                        </h4>
+<p class="text-sm text-gray-600">NumPy, Pandas, Matplotlib, Scikit-learn 등 방대한 데이터 사이언스 라이브러리 생태계.</p>
+</div>
+<div>
+<h4 class="font-semibold text-gray-800 mb-2 flex items-center">
+<i class="fas fa-users text-orange-500 mr-2"></i>활발한 커뮤니티
+                        </h4>
+<p class="text-sm text-gray-600">거대한 개발자 커뮤니티로 인한 문제 해결의 용이성과 지속적인 언어 개발.</p>
+</div>
+</div>
+<div class="mt-4">
+<h4 class="font-semibold text-gray-800 mb-2">데이터 사이언스에 필수적인 파이썬 라이브러리</h4>
+<div>
+<span class="library-pill"><i class="fas fa-database mr-1 text-purple-600"></i> 데이터 수집: Beautiful Soup, Scrapy</span>
+<span class="library-pill"><i class="fas fa-filter mr-1 text-purple-600"></i> 데이터 정제: Pandas, missingno</span>
+<span class="library-pill"><i class="fas fa-search mr-1 text-purple-600"></i> 데이터 분석: Pandas, NumPy</span>
+<span class="library-pill"><i class="fas fa-brain mr-1 text-purple-600"></i> 모델링: Scikit-learn, TensorFlow</span>
+<span class="library-pill"><i class="fas fa-chart-line mr-1 text-purple-600"></i> 결과 시각화: Plotly, Seaborn</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_6.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">7 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_8.html">다음</a>
+</div>
+
+</body></html>

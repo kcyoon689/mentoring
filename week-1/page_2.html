@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>파이썬 모듈과 라이브러리</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .library-table th {
+            background-color: rgba(76, 175, 80, 0.2);
+        }
+        .library-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .library-table tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 mb-2">파이썬 모듈과 라이브러리</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Brief introduction -->
+<div class="mb-6">
+<p class="text-gray-700">파이썬의 가장 큰 강점 중 하나는 풍부한 생태계에 있습니다. 이 생태계의 핵심은 바로 모듈과 라이브러리로, 파이썬의 기본 기능을 확장하여 특정 작업을 효율적으로 수행할 수 있게 돕습니다.</p>
+</div>
+<!-- Main content in two columns -->
+<div class="flex flex-1 gap-6">
+<!-- Left column: Built-in modules -->
+<div class="w-5/12 bg-white bg-opacity-70 rounded-lg p-6 shadow-md">
+<div class="flex items-center mb-4">
+<i class="fas fa-cube text-2xl text-purple-600 mr-3"></i>
+<h2 class="text-2xl font-semibold text-gray-800">주요 내장 모듈</h2>
+</div>
+<ul class="space-y-4">
+<li class="flex">
+<div class="mr-3 text-green-600"><i class="fas fa-folder-open"></i></div>
+<div>
+<h3 class="font-semibold text-gray-800">os 모듈</h3>
+<p class="text-sm text-gray-600">운영체제와 상호작용하는 기능을 제공합니다. 파일 시스템 경로를 다루거나, 디렉터리를 생성하고, 현재 작업 디렉터리를 확인하는 등의 작업을 수행할 수 있습니다.</p>
+</div>
+</li>
+<li class="flex">
+<div class="mr-3 text-green-600"><i class="fas fa-cogs"></i></div>
+<div>
+<h3 class="font-semibold text-gray-800">sys 모듈</h3>
+<p class="text-sm text-gray-600">파이썬 인터프리터와 관련된 기능들을 제어합니다. 스크립트에 전달된 인자(sys.argv)를 확인하거나, 파이썬의 검색 경로(sys.path)를 관리하고, 스크립트를 강제 종료하는 데 사용됩니다.</p>
+</div>
+</li>
+<li class="flex">
+<div class="mr-3 text-green-600"><i class="fas fa-calendar-alt"></i></div>
+<div>
+<h3 class="font-semibold text-gray-800">datetime 모듈</h3>
+<p class="text-sm text-gray-600">날짜와 시간을 처리하는 데 필요한 클래스들을 제공합니다. 현재 날짜와 시간을 얻거나, 특정 형식으로 날짜를 문자열로 변환하고, 시간 간의 차이를 계산하는 등 시간 관련 작업을 쉽게 처리할 수 있습니다.</p>
+</div>
+</li>
+</ul>
+</div>
+<!-- Right column: External libraries -->
+<div class="w-7/12">
+<div class="flex items-center mb-4">
+<i class="fas fa-external-link-alt text-2xl text-orange-500 mr-3"></i>
+<h2 class="text-2xl font-semibold text-gray-800">데이터 과학 라이브러리</h2>
+</div>
+<div class="overflow-hidden rounded-lg shadow-md">
+<table class="library-table w-full text-sm">
+<thead>
+<tr>
+<th class="p-3 text-left">라이브러리</th>
+<th class="p-3 text-left">주요 기능</th>
+<th class="p-3 text-right">GitHub Stars</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="p-3 font-medium">NumPy</td>
+<td class="p-3">다차원 배열 및 행렬 연산, 고성능 과학 계산</td>
+<td class="p-3 text-right">25K+</td>
+</tr>
+<tr>
+<td class="p-3 font-medium">Pandas</td>
+<td class="p-3">DataFrame을 이용한 데이터 조작, 분석 및 정제</td>
+<td class="p-3 text-right">41K+</td>
+</tr>
+<tr>
+<td class="p-3 font-medium">Matplotlib</td>
+<td class="p-3">정적, 애니메이션, 인터랙티브 등 다양한 형태의 시각화</td>
+<td class="p-3 text-right">18.7K+</td>
+</tr>
+<tr>
+<td class="p-3 font-medium">Seaborn</td>
+<td class="p-3">Matplotlib 기반의 미학적이고 정보가 풍부한 통계 시각화</td>
+<td class="p-3 text-right">11.6K+</td>
+</tr>
+<tr>
+<td class="p-3 font-medium">Scikit-learn</td>
+<td class="p-3">회귀, 분류, 클러스터링 등 다양한 머신러닝 알고리즘 제공</td>
+<td class="p-3 text-right">57K+</td>
+</tr>
+<tr>
+<td class="p-3 font-medium">TensorFlow</td>
+<td class="p-3">구글에서 개발한 딥러닝 및 고성능 수치 계산 플랫폼</td>
+<td class="p-3 text-right">180K+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-4 text-xs text-gray-500 italic">
+                    * GitHub Stars는 2025년 기준 대략적인 수치이며, 라이브러리의 인기도를 나타내는 지표 중 하나입니다.
+                </div>
+</div>
+</div>
+
+<!-- <div class="mt-6 flex justify-between items-center">
+<div></div>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
+                2 / 10
+            </div>
+</div>
+</div>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_1.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">2 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_3.html">다음</a>
+</div> -->
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_1.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">1 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_3.html">다음</a>
+</div>
+</body></html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>객체 지향 프로그래밍(OOP) 기초</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            padding: 12px;
+            color: #333;
+            position: relative;
+        }
+        .code-comment {
+            color: #6A9955;
+        }
+        .code-keyword {
+            color: #569CD6;
+        }
+        .code-string {
+            color: #CE9178;
+        }
+        .code-function {
+            color: #DCDCAA;
+        }
+        .code-variable {
+            color: #9CDCFE;
+        }
+        .concept-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 mb-2">객체 지향 프로그래밍(OOP) 기초</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Brief introduction -->
+<div class="mb-6">
+<p class="text-gray-700">객체 지향 프로그래밍은 관련된 데이터와 그 데이터를 처리하는 함수(메서드)를 '객체(object)'라는 하나의 단위로 묶어 프로그램을 설계하는 방식입니다. 이 접근법은 현실 세계의 개념을 코드로 모델링하는 것을 단순화하며, 코드의 재사용성을 높이고 확장 및 유지보수가 용이한 시스템을 구축하는 데 도움을 줍니다.</p>
+</div>
+<!-- Main content in two columns -->
+<div class="flex flex-1 gap-6">
+<!-- Left column: Concepts -->
+<div class="w-1/2 flex flex-col space-y-4">
+<!-- Class and Object -->
+<div class="concept-card p-5 flex-1">
+<div class="flex items-center mb-3">
+<i class="fas fa-cube text-2xl text-purple-600 mr-3"></i>
+<h2 class="text-xl font-semibold text-gray-800">클래스와 객체</h2>
+</div>
+<ul class="space-y-2 text-sm">
+<li class="flex items-start">
+<div class="mr-2 text-green-600 mt-1"><i class="fas fa-check-circle"></i></div>
+<div>
+<span class="font-medium">클래스(Class)</span>: 객체를 만들기 위한 '설계도' 또는 '틀'에 해당합니다.
+                            </div>
+</li>
+<li class="flex items-start">
+<div class="mr-2 text-green-600 mt-1"><i class="fas fa-check-circle"></i></div>
+<div>
+<span class="font-medium">객체(Object)</span>: 클래스의 인스턴스로, 실제로 생성된 실체입니다.
+                            </div>
+</li>
+</ul>
+</div>
+<!-- Attributes and Methods -->
+<div class="concept-card p-5 flex-1">
+<div class="flex items-center mb-3">
+<i class="fas fa-cogs text-2xl text-orange-500 mr-3"></i>
+<h2 class="text-xl font-semibold text-gray-800">속성과 메서드</h2>
+</div>
+<ul class="space-y-2 text-sm">
+<li class="flex items-start">
+<div class="mr-2 text-green-600 mt-1"><i class="fas fa-check-circle"></i></div>
+<div>
+<span class="font-medium">클래스 속성(Class Attribute)</span>: 클래스 자체에 속한 변수로, 해당 클래스로부터 생성된 모든 객체가 공유합니다.
+                            </div>
+</li>
+<li class="flex items-start">
+<div class="mr-2 text-green-600 mt-1"><i class="fas fa-check-circle"></i></div>
+<div>
+<span class="font-medium">인스턴스 속성(Instance Attribute)</span>: 각 객체마다 고유한 값을 가집니다.
+                            </div>
+</li>
+<li class="flex items-start">
+<div class="mr-2 text-green-600 mt-1"><i class="fas fa-check-circle"></i></div>
+<div>
+<span class="font-medium">메서드(Method)</span>: 클래스 내부에 정의된 함수로, 객체의 동작을 정의합니다.
+                            </div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Right column: Code Example -->
+<div class="w-1/2">
+<div class="concept-card p-5 h-full flex flex-col">
+<div class="flex items-center mb-3">
+<i class="fas fa-code text-2xl text-green-600 mr-3"></i>
+<h2 class="text-xl font-semibold text-gray-800">코드 예시: Dog 클래스</h2>
+</div>
+<div class="code-block flex-1 overflow-auto text-sm">
+<pre><code><span class="code-keyword">class</span> <span class="code-type">Dog</span>:
+    <span class="code-comment"># 클래스 속성 (모든 Dog 객체가 공유)</span>
+    <span class="code-keyword">species</span> = <span class="code-string">"Canis familiaris"</span>
+
+    <span class="code-comment"># 초기화 메서드 (인스턴스 속성 설정)</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, name, age):
+        <span class="code-keyword">self</span>.name = name  <span class="code-comment"># 인스턴스 속성</span>
+        <span class="code-keyword">self</span>.age = age    <span class="code-comment"># 인스턴스 속성</span>
+
+    <span class="code-comment"># 인스턴스 메서드</span>
+    <span class="code-keyword">def</span> <span class="code-function">speak</span>(<span class="code-keyword">self</span>, sound):
+        <span class="code-keyword">return</span> <span class="code-string">f"</span><span class="code-variable">{self.name}</span><span class="code-string"> says </span><span class="code-variable">{sound}</span><span class="code-string">"</span></code></pre></div></div></div></div></div>
+
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_3.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">4 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_5.html">다음</a>
+</div>
+
+</body></html>
