@@ -4,141 +4,161 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>모듈과 패키지 관리</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script><style>
-        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
-            background-color: #F5F5F5;}
-        .slide-container {
-            width: 1280px;
-            min-height: 720px;
-            position: relative;
-
-        }
-        .title {
-            font-family: 'Nanum Gothic', sans-serif;
-        }
-        .code-block {
-            font-family: 'Courier New', monospace;
-            background-color: #1e1e1e;
-            color: #e6e6e6;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            position: relative;
-        }
-        .code-block::before {
-            content: "";
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            width: 0.75rem;
-            height: 0.75rem;
-            background-color: #FF5F56;
-            border-radius: 50%;
-        }
-        .code-block::after {
-            content: "";
-            position: absolute;
-            top: 0.5rem;
-            left: 1.5rem;
-            width: 0.75rem;
-            height: 0.75rem;
-            background-color: #4CAF50;
-            border-radius: 50%;
-        }
-        .feature-card {
-            background-color: white;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-        }
-        .feature-card:hover {
-            transform: translateY(-2px);
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif; background-color: #F5F5F5;}
+  .slide-container { width: 1280px; min-height: 720px; position: relative; }
+  .title { font-family: 'Nanum Gothic', sans-serif; }
+  .feature-card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0,0,0,.1); transition: transform .2s; }
+  .feature-card:hover { transform: translateY(-2px); }
+  .code-block { font-family: 'Courier New', monospace; background-color: #1e1e1e; color: #e6e6e6; border-radius: 0.5rem; padding: 0.75rem; position: relative; }
+  .code-block::before { content: ""; position: absolute; top: 0.5rem; left: 0.5rem; width: 0.75rem; height: 0.75rem; background-color: #FF5F56; border-radius: 50%; }
+  .code-block::after { content: ""; position: absolute; top: 0.5rem; left: 1.5rem; width: 0.75rem; height: 0.75rem; background-color: #4CAF50; border-radius: 50%; }
+</style>
 </head>
 <body>
 <div class="slide-container bg-gray-100 p-10 flex flex-col">
-<!-- Header with title -->
-<div class="mb-6">
-<h1 class="title text-4xl font-bold text-gray-800 mb-2">모듈과 패키지 관리</h1>
-<div class="w-24 h-1 bg-green-500"></div>
-</div>
-<!-- Brief introduction -->
-<div class="mb-6">
-<p class="text-gray-700">외부 라이브러리를 사용하기 위해서는 패키지 관리 도구가 필요합니다. 파이썬의 표준 패키지 관리자는 <span class="font-semibold text-green-600">pip</span>로, 간단한 명령어를 통해 라이브러리를 설치, 업데이트, 삭제할 수 있습니다.</p>
-</div>
-<!-- Main content in two sections -->
-<div class="flex flex-1 gap-8">
-<!-- Left section: Pip package installation -->
-<div class="w-1/2 flex flex-col">
-<div class="feature-card p-6 flex-1">
-<div class="flex items-center mb-4">
-<i class="fas fa-download text-2xl text-purple-600 mr-3"></i>
-<h2 class="text-2xl font-semibold text-gray-800">패키지 설치</h2>
-</div>
-<ul class="space-y-4 mb-6">
-<li class="flex items-start">
-<div class="mr-3 text-green-600 mt-1"><i class="fas fa-check-circle"></i></div>
-<div>
-<h3 class="font-semibold text-gray-800">패키지 설치 명령어</h3>
-<p class="text-sm text-gray-600">원하는 라이브러리를 설치할 때 사용하는 기본 명령어입니다.</p>
-</div>
-</li>
-<li class="flex items-start">
-<div class="mr-3 text-green-600 mt-1"><i class="fas fa-sync-alt"></i></div>
-<div>
-<h3 class="font-semibold text-gray-800">업데이트 명령어</h3>
-<p class="text-sm text-gray-600">이미 설치된 패키지를 최신 버전으로 업데이트할 때 사용합니다.</p>
-</div>
-</li>
-<li class="flex items-start">
-<div class="mr-3 text-green-600 mt-1"><i class="fas fa-trash-alt"></i></div>
-<div>
-<h3 class="font-semibold text-gray-800">삭제 명령어</h3>
-<p class="text-sm text-gray-600">필요하지 않은 패키지를 삭제할 때 사용합니다.</p>
-</div>
-</li>
-</ul>
-<div class="code-block text-sm">
-<div class="mb-2">패키지 설치:</div>
-<div class="text-green-400 mb-2">$ pip install &lt;package_name&gt;</div>
-<div class="mb-2">패키지 업데이트:</div>
-<div class="text-green-400 mb-2">$ pip install --upgrade &lt;package_name&gt;</div>
-<div class="mb-2">패키지 삭제:</div>
-<div class="text-green-400">$ pip uninstall &lt;package_name&gt;</div>
-</div>
-</div>
-</div>
-<!-- Right section: Virtual environment -->
-<div class="w-1/2 flex flex-col">
-<div class="feature-card p-6 flex-1">
-<div class="flex items-center mb-4">
-<i class="fas fa-venv text-2xl text-orange-500 mr-3"></i>
-<h2 class="text-2xl font-semibold text-gray-800">가상 환경</h2>
-</div>
-<ul class="space-y-4 mb-6">
-<li class="flex items-start">
-<div class="mr-3 text-orange-500 mt-1"><i class="fas fa-cubes"></i></div>
-<div>
-<h3 class="font-semibold text-gray-800">가상 환경의 목적</h3>
-<p class="text-sm text-gray-600">프로젝트마다 독립된 실행 환경을 만들어 패키지 간의 의존성 충돌을 방지하는 것입니다.</p>
-</div>
-</li>
-<li class="flex items-start">
-<div class="mr-3 text-orange-500 mt-1"><i class="fas fa-tools"></i></div>
-<div>
-<h3 class="font-semibold text-gray-800">가상 환경 도구</h3>
-<p class="text-sm text-gray-600">파이썬 3.3 이상에서는 <code>venv</code></p></div></li></ul></div></div></div></div>
 
-<!-- <div class="mt-6 flex justify-between items-center">
-<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 10</div>
-<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
-</div> -->
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="title text-4xl font-bold text-gray-800 mb-2">모듈과 패키지 관리</h1>
+    <div class="w-24 h-1 bg-green-500"></div>
+  </div>
 
-<div class="mt-6 flex justify-between items-center">
-<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 10</div>
-<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
+  <!-- Intro -->
+  <div class="mb-6">
+    <p class="text-gray-700">
+      파이썬의 표준 패키지 관리자는 <span class="font-semibold text-green-600">pip</span>이며,
+      가상환경 관리에는 <span class="font-semibold text-orange-600">Conda</span>나
+      <span class="font-semibold text-purple-600">uv</span>를 사용할 수 있습니다.
+    </p>
+  </div>
+
+  <!-- Main grid: 3 columns -->
+  <div class="grid grid-cols-3 gap-8 flex-1">
+
+    <!-- pip -->
+    <div class="feature-card p-6 flex flex-col">
+      <div class="flex items-center mb-4">
+        <i class="fas fa-download text-2xl text-purple-600 mr-3"></i>
+        <h2 class="text-2xl font-semibold text-gray-800">패키지 설치 (pip)</h2>
+      </div>
+      <ul class="space-y-4 mb-6">
+        <li class="flex items-start">
+          <div class="mr-3 text-green-600 mt-1"><i class="fas fa-check-circle"></i></div>
+          <div>
+            <h3 class="font-semibold text-gray-800">설치</h3>
+            <p class="text-sm text-gray-600">PyPI에서 원하는 라이브러리를 설치합니다.</p>
+          </div>
+        </li>
+        <li class="flex items-start">
+          <div class="mr-3 text-green-600 mt-1"><i class="fas fa-sync-alt"></i></div>
+          <div>
+            <h3 class="font-semibold text-gray-800">업데이트</h3>
+            <p class="text-sm text-gray-600">설치된 패키지를 최신 버전으로 갱신합니다.</p>
+          </div>
+        </li>
+        <li class="flex items-start">
+          <div class="mr-3 text-green-600 mt-1"><i class="fas fa-trash-alt"></i></div>
+          <div>
+            <h3 class="font-semibold text-gray-800">삭제</h3>
+            <p class="text-sm text-gray-600">불필요한 패키지를 제거합니다.</p>
+          </div>
+        </li>
+      </ul>
+      <div class="code-block text-sm">
+        <div class="mb-2">설치:</div>
+        <div class="text-green-400 mb-2">$ pip install &lt;package_name&gt;</div>
+        <div class="mb-2">업데이트:</div>
+        <div class="text-green-400 mb-2">$ pip install --upgrade &lt;package_name&gt;</div>
+        <div class="mb-2">삭제:</div>
+        <div class="text-green-400">$ pip uninstall &lt;package_name&gt;</div>
+      </div>
+    </div>
+
+    <!-- uv -->
+    <div class="feature-card p-6 flex flex-col">
+      <div class="flex items-center mb-4">
+        <i class="fas fa-bolt text-2xl text-purple-600 mr-3"></i>
+        <h2 class="text-2xl font-semibold text-gray-800">가상 환경 & 패키지 (uv)</h2>
+      </div>
+      <ul class="space-y-4 mb-6">
+        <li class="flex items-start">
+          <div class="mr-3 text-purple-600 mt-1"><i class="fas fa-gauge-high"></i></div>
+          <div>
+            <h3 class="font-semibold text-gray-800">특징</h3>
+            <p class="text-sm text-gray-600">초고속 패키지/환경 관리. pip/venv 호환 가능.</p>
+          </div>
+        </li>
+        <li class="flex items-start">
+          <div class="mr-3 text-purple-600 mt-1"><i class="fas fa-diagram-project"></i></div>
+          <div>
+            <h3 class="font-semibold text-gray-800">사용법</h3>
+            <p class="text-sm text-gray-600">
+              pip 호환: <code>uv pip ...</code><br>
+              프로젝트 지향: <code>uv add/remove</code>
+            </p>
+          </div>
+        </li>
+      </ul>
+      <div class="code-block text-sm">
+        <div class="mb-2">venv 생성:</div>
+        <div class="text-green-400 mb-2">$ uv venv .venv</div>
+        <div class="mb-2">활성화:</div>
+        <div class="text-green-400 mb-2">$ source .venv/bin/activate</div>
+        <div class="mb-2">패키지 설치/삭제:</div>
+        <div class="text-green-400 mb-2">$ uv pip install &lt;package&gt;</div>
+        <div class="text-green-400 mb-2">$ uv pip uninstall &lt;package&gt;</div>
+        <div class="mb-2">프로젝트 지향:</div>
+        <div class="text-green-400 mb-2">$ uv add numpy</div>
+        <div class="text-green-400">$ uv remove numpy</div>
+      </div>
+    </div>
+
+    <!-- Conda -->
+    <div class="feature-card p-6 flex flex-col">
+      <div class="flex items-center mb-4">
+        <i class="fas fa-layer-group text-2xl text-orange-500 mr-3"></i>
+        <h2 class="text-2xl font-semibold text-gray-800">가상 환경 (Conda)</h2>
+      </div>
+      <ul class="space-y-4 mb-6">
+        <li class="flex items-start">
+          <div class="mr-3 text-orange-500 mt-1"><i class="fas fa-cubes"></i></div>
+          <div>
+            <h3 class="font-semibold text-gray-800">목적</h3>
+            <p class="text-sm text-gray-600">프로젝트별 독립 환경과 라이브러리 충돌 방지.</p>
+          </div>
+        </li>
+        <li class="flex items-start">
+          <div class="mr-3 text-orange-500 mt-1"><i class="fas fa-tools"></i></div>
+          <div>
+            <h3 class="font-semibold text-gray-800">특징</h3>
+            <p class="text-sm text-gray-600">Python 외 과학계산·시스템 라이브러리까지 관리.</p>
+          </div>
+        </li>
+      </ul>
+      <div class="code-block text-sm">
+        <div class="mb-2">환경 생성:</div>
+        <div class="text-green-400 mb-2">$ conda create -n &lt;env_name&gt; python=3.10</div>
+        <div class="mb-2">활성화/비활성화:</div>
+        <div class="text-green-400 mb-2">$ conda activate &lt;env_name&gt;</div>
+        <div class="text-green-400 mb-2">$ conda deactivate</div>
+        <div class="mb-2">패키지 설치:</div>
+        <div class="text-green-400 mb-2">$ conda install numpy</div>
+        <div class="mb-2">환경 목록/삭제:</div>
+        <div class="text-green-400 mb-2">$ conda env list</div>
+        <div class="text-green-400">$ conda remove -n &lt;env_name&gt; --all</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer nav -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 11</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
+  </div>
 </div>
-
-</body></html>
+</body>
+</html>

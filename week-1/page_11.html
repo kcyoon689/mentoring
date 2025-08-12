@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shallow Copy vs Deep Copy</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 892px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide-container {
+            width: 1280px;
+            min-height: 892px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            background-color: #1e1e1e;
+            color: #e6e6e6;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            overflow: auto;
+        }
+        .code-keyword {
+            color: #569cd6;
+        }
+        .code-string {
+            color: #ce9178;
+        }
+        .code-function {
+            color: #dcdcaa;
+        }
+        .code-comment {
+            color: #6a9955;
+        }
+        .lib-card {
+            transition: all 0.3s ease;
+        }
+        .lib-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col">
+<!-- Header with title -->
+<div class="mb-4">
+<h1 class="title text-4xl font-bold text-gray-800 mb-2">Shallow Copy vs Deep Copy</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+
+  <!-- Intro -->
+  <div class="mb-8 text-gray-700 space-y-1">
+    <p><b>Shallow Copy</b> : 최상위 컨테이너만 새로 만들고, 내부 객체는 참조를 공유합니다.</p>
+    <p><b>Deep Copy</b> : 모든 하위 객체까지 재귀적으로 복사하여 완전히 독립됩니다.</p>
+  </div>
+
+  <!-- ROW 1: Code (2 columns) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- 코드 예시 1 -->
+    <div class="bg-white/70 rounded-lg p-5 shadow-md">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+        <i class="fas fa-code text-green-600 mr-2"></i> 리스트 중첩 구조
+      </h2>
+      <div class="code-block">
+<pre><span class="code-keyword">import</span> copy
+
+original = [[1, 2], [3, 4]]
+
+shallow = copy.copy(original)       <span class="code-comment"># 얕은 복사: 내부 리스트 공유</span>
+deep    = copy.deepcopy(original)   <span class="code-comment"># 깊은 복사: 내부까지 새로 복사</span>
+
+original[0][0] = 999
+
+print(<span class="code-string">f"{original=}"</span>)  <span class="code-comment"># [[999, 2], [3, 4]]</span>
+print(<span class="code-string">f"{shallow=}"</span>)   <span class="code-comment"># [[999, 2], [3, 4]]  ← 같이 바뀜</span>
+print(<span class="code-string">f"{deep=}"</span>)      <span class="code-comment"># [[1, 2], [3, 4]]    ← 그대로</span></pre>
+      </div>
+    </div>
+
+    <!-- 코드 예시 2 -->
+    <div class="bg-white/70 rounded-lg p-5 shadow-md">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3 flex items-center">
+        <i class="fas fa-sitemap text-orange-500 mr-2"></i> 딕셔너리-리스트 혼합
+      </h2>
+      <div class="code-block">
+<pre><span class="code-keyword">import</span> copy
+
+cfg = {<span class="code-string">"model"</span>: {<span class="code-string">"layers"</span>: [64, 128], <span class="code-string">"act"</span>: <span class="code-string">"relu"</span>},
+       <span class="code-string">"train"</span>: {<span class="code-string">"batch"</span>: 32, <span class="code-string">"lr"</span>: 1e-3}}
+
+cfg_shallow = copy.copy(cfg)
+cfg_deep    = copy.deepcopy(cfg)
+
+cfg[<span class="code-string">"model"</span>][<span class="code-string">"layers"</span>][0] = 256   <span class="code-comment"># 내부 변경</span>
+cfg[<span class="code-string">"train"</span>][<span class="code-string">"lr"</span>] = 5e-4          <span class="code-comment"># 내부 변경</span>
+
+<span class="code-comment"># 얕은 복사: 내부 딕셔너리 참조 공유 → 값 변함</span>
+print(cfg_shallow[<span class="code-string">"model"</span>][<span class="code-string">"layers"</span>][0])  <span class="code-comment"># 256</span>
+print(cfg_shallow[<span class="code-string">"train"</span>][<span class="code-string">"lr"</span>])          <span class="code-comment"># 0.0005</span>
+
+<span class="code-comment"># 깊은 복사: 완전 독립 → 원래 값 유지</span>
+print(cfg_deep[<span class="code-string">"model"</span>][<span class="code-string">"layers"</span>][0])     <span class="code-comment"># 64</span>
+print(cfg_deep[<span class="code-string">"train"</span>][<span class="code-string">"lr"</span>])             <span class="code-comment"># 0.001</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Cards (2 columns) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- 위험 시나리오 -->
+    <div class="note-card p-5">
+      <h3 class="font-semibold text-gray-800 mb-2 flex items-center">
+        <i class="fas fa-triangle-exclamation text-red-500 mr-2"></i>위험 시나리오
+      </h3>
+      <ul class="list-disc ml-5 text-sm text-gray-700 space-y-1">
+        <li>중첩 리스트/딕셔너리에서 한쪽 변경이 다른 쪽까지 전파</li>
+        <li>실험 config/파라미터 스냅샷 오염(재현성 저하)</li>
+        <li>Pandas/NumPy의 뷰(view)와 복사(copy) 혼동으로 원본 훼손</li>
+      </ul>
+    </div>
+
+    <!-- 안전 전략 -->
+    <div class="note-card p-5">
+      <h3 class="font-semibold text-gray-800 mb-2 flex items-center">
+        <i class="fas fa-shield-halved text-green-600 mr-2"></i>안전 전략
+      </h3>
+      <ul class="list-disc ml-5 text-sm text-gray-700 space-y-1">
+        <li>중첩 구조 복사 시 <code>copy.deepcopy()</code> 우선 고려</li>
+        <li>Pandas는 <code>df.copy(deep=True)</code> 명시</li>
+        <li>복사 직후 <code>id()</code> 또는 얕은 변경 테스트로 참조 분리 확인</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-8 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_10.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">11 / 11</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_1.html">처음</a>
+  </div>
+</div>
+</body>
+</html>
