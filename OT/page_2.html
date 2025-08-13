@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AI 취업 시장 현황</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+
+        }
+        .section-title {
+            color: #333333;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .highlight {
+            color: #4CAF50;
+            font-weight: 700;
+        }
+        .warning {
+            color: #FF9800;
+            font-weight: 700;
+        }
+        .bar {
+            fill: #4CAF50;
+        }
+        .bar-text {
+            font-size: 12px;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+<!-- Header -->
+<header class="mb-6">
+<h1 class="text-4xl font-bold text-gray-800">AI 취업 시장 현황</h1>
+<div class="w-24 h-1 bg-green-500 mt-2"></div>
+</header>
+<!-- Main Content -->
+<div class="grid grid-cols-2 gap-6 h-5/6">
+<!-- Left Column -->
+<div class="space-y-6">
+<!-- AI Job Market Growth -->
+<div class="bg-white rounded-lg p-4 shadow-md">
+<h2 class="section-title flex items-center text-xl">
+<i class="fas fa-chart-line text-green-500 mr-2"></i>
+                        AI 취업 시장 증가
+                    </h2>
+<ul class="mt-2 space-y-2">
+<li class="flex items-start">
+<i class="fas fa-arrow-trend-up text-green-500 mt-1 mr-2"></i>
+<span>2010년 0.5%에서 2024년 <span class="highlight">1.7%</span>로 AI 기술 요구 증가</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-user-graduate text-green-500 mt-1 mr-2"></i>
+<span>학력이 높을수록 AI 기술 요구 비중이 높아짐</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-globe text-green-500 mt-1 mr-2"></i>
+<span>국내 AI 졸업생의 약 <span class="highlight">40%</span>가 해외로 취업</span>
+</li>
+</ul>
+</div>
+<!-- Employment Duration -->
+<div class="bg-white rounded-lg p-4 shadow-md">
+<h2 class="section-title flex items-center text-xl">
+<i class="fas fa-hourglass-half text-orange-500 mr-2"></i>
+                        취업 소요 기간 증가
+                    </h2>
+<ul class="mt-2 space-y-2">
+<li class="flex items-start">
+<i class="fas fa-calendar-xmark text-orange-500 mt-1 mr-2"></i>
+<span>취업까지 수개월 소요, 수백건의 입사 지원 일반적</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-user-tie text-orange-500 mt-1 mr-2"></i>
+<span>컴퓨터공학 졸업생: <span class="warning">7개월 이상</span> 구직 활동</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-building text-orange-500 mt-1 mr-2"></i>
+<span>100곳 이상의 회사에 지원하는 경우 많음</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-filter text-orange-500 mt-1 mr-2"></i>
+<span>ATS로 인한 지원서 증가로 인사 담당자의 검토 부담 증가</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Right Column -->
+<div class="flex flex-col space-y-6">
+<!-- Education Level Chart -->
+<div class="bg-white rounded-lg p-4 shadow-md flex-grow">
+<h2 class="section-title flex items-center text-xl mb-2">
+<i class="fas fa-graduation-cap text-blue-500 mr-2"></i>
+                        학력별 AI 기술 요구 비중
+                    </h2>
+<div class="h-64 w-full" id="chart"></div>
+</div>
+<!-- Hiring Trends -->
+<div class="bg-white rounded-lg p-4 shadow-md">
+<h2 class="section-title flex items-center text-xl">
+<i class="fas fa-briefcase text-red-500 mr-2"></i>
+                        채용 트렌드
+                    </h2>
+<div class="grid grid-cols-2 gap-4 mt-2">
+<div>
+<h3 class="font-semibold text-gray-700 mb-1">수요가 높은 산업</h3>
+<ul class="space-y-1">
+<li class="flex items-center">
+<i class="fas fa-hospital text-blue-500 mr-2"></i>
+<span>헬스케어</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-landmark text-blue-500 mr-2"></i>
+<span>금융</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-shopping-cart text-blue-500 mr-2"></i>
+<span>이커머스</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-car text-blue-500 mr-2"></i>
+<span>자동차</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-industry text-blue-500 mr-2"></i>
+<span>제조업</span>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="font-semibold text-gray-700 mb-1">수요가 높은 직무</h3>
+<ul class="space-y-1">
+<li class="flex items-center">
+<i class="fas fa-brain text-green-500 mr-2"></i>
+<span>머신러닝 엔지니어 <span class="highlight">↑59%</span></span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-database text-green-500 mr-2"></i>
+<span>데이터 사이언티스트</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-sitemap text-green-500 mr-2"></i>
+<span>AI 아키텍트</span>
+</li>
+<li class="flex items-center">
+<i class="fas fa-comments text-green-500 mr-2"></i>
+<span>자연어 처리 전문가</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+</div>
+<script>
+        // D3.js Chart for Education Level vs AI Job Postings
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data from the document
+            const data = [
+                {education: "박사(PhD)", percentage: 5.3},
+                {education: "석사(Master's)", percentage: 5.0},
+                {education: "학사(Bachelor's)", percentage: 4.7}
+            ];
+
+            // Chart dimensions
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const width = document.getElementById('chart').offsetWidth - margin.left - margin.right;
+            const height = document.getElementById('chart').offsetHeight - margin.top - margin.bottom;
+
+            // Create SVG
+            const svg = d3.select("#chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // X scale
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.education))
+                .range([0, width])
+                .padding(0.3);
+
+            // Y scale
+            const y = d3.scaleLinear()
+                .domain([0, 6])
+                .range([height, 0]);
+
+            // Add X axis
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .style("font-family", "'Noto Sans KR', sans-serif")
+                .style("font-size", "12px");
+
+            // Add Y axis
+            svg.append("g")
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "%"))
+                .style("font-family", "'Noto Sans KR', sans-serif")
+                .style("font-size", "12px");
+
+            // Add Y axis label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-family", "'Noto Sans KR', sans-serif")
+                .style("font-size", "12px")
+                .text("AI 기술 요구 (%)");
+
+            // Add bars
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.education))
+                .attr("width", x.bandwidth())
+                .attr("y", d => y(d.percentage))
+                .attr("height", d => height - y(d.percentage))
+                .attr("fill", (d, i) => {
+                    const colors = ["#FF9800", "#4CAF50", "#333333"];
+                    return colors[i];
+                });
+
+            // Add value labels on top of bars
+            svg.selectAll(".bar-text")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "bar-text")
+                .attr("x", d => x(d.education) + x.bandwidth()/2)
+                .attr("y", d => y(d.percentage) - 5)
+                .attr("text-anchor", "middle")
+                .text(d => d.percentage + "%");
+        });
+    </script>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_1.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">2 / 8</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_3.html">다음</a>
+</div>
+</body></html>

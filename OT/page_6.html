@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>내부 AI 인력 vs 외주 활용</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<style>
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #F5F5F5;
+    color: #333333;
+  }
+  .slide-container {
+    width: 1280px;
+    min-height: 720px;
+    position: relative;
+  }
+  .section-title {
+    color: #333333;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .highlight { color: #4CAF50; font-weight: 700; }
+  .warning  { color: #FF9800; font-weight: 700; }
+  .card { transition: transform 0.3s ease; }
+  .card:hover { transform: translateY(-5px); }
+  .vs-badge {
+    background: linear-gradient(135deg, #4CAF50, #FF9800);
+    color: white; border-radius: 50%;
+    width: 60px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
+  }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+  <!-- Header -->
+  <header class="mb-6">
+    <h1 class="text-4xl font-bold text-gray-800">내부 AI 인력 vs 외주 활용</h1>
+    <div class="w-24 h-1 bg-green-500 mt-2"></div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="grid grid-cols-12 gap-6">
+    <!-- Left Column - Comparison -->
+    <div class="col-span-7">
+      <div class="bg-white rounded-lg p-4 shadow-md mb-4">
+        <h2 class="section-title flex items-center text-xl mb-4">
+          <i class="fas fa-balance-scale text-blue-500 mr-2"></i>
+          내부 인력 vs 외주 활용의 장단점 비교
+        </h2>
+
+        <div class="flex justify-center items-center mb-6">
+          <div class="text-center p-3 bg-green-100 rounded-lg w-1/3">
+            <i class="fas fa-user-tie text-3xl text-green-600 mb-2"></i>
+            <h3 class="font-bold text-lg">내부 AI 인력</h3>
+          </div>
+          <div class="vs-badge mx-4">VS</div>
+          <div class="text-center p-3 bg-orange-100 rounded-lg w-1/3">
+            <i class="fas fa-handshake text-3xl text-orange-600 mb-2"></i>
+            <h3 class="font-bold text-lg">AI 외주</h3>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Internal AI Talent -->
+          <div>
+            <h3 class="font-semibold text-green-600 mb-2 flex items-center">
+              <i class="fas fa-plus-circle mr-2"></i>장점
+            </h3>
+            <ul class="space-y-2">
+              <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>생산 공정에 대한 깊은 이해(도메인 지식) 보유</span></li>
+              <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>데이터 보안 및 기밀 유지에 유리</span></li>
+              <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>장기적인 기술 내재화 및 전략적 연계 용이</span></li>
+            </ul>
+
+            <h3 class="font-semibold text-red-600 mt-4 mb-2 flex items-center">
+              <i class="fas fa-minus-circle mr-2"></i>단점
+            </h3>
+            <ul class="space-y-2">
+              <li class="flex items-start"><i class="fas fa-exclamation-circle text-red-500 mt-1 mr-2"></i><span>높은 채용 및 유지 비용</span></li>
+              <li class="flex items-start"><i class="fas fa-exclamation-circle text-red-500 mt-1 mr-2"></i><span>AI 전문 인력 확보의 어려움</span></li>
+              <li class="flex items-start"><i class="fas fa-exclamation-circle text-red-500 mt-1 mr-2"></i><span>신기술 도입 및 변화 대응 속도가 느릴 수 있음</span></li>
+            </ul>
+          </div>
+
+          <!-- Outsourcing -->
+          <div>
+            <h3 class="font-semibold text-green-600 mb-2 flex items-center">
+              <i class="fas fa-plus-circle mr-2"></i>장점
+            </h3>
+            <ul class="space-y-2">
+              <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>초기 투자 비용 절감</span></li>
+              <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>검증된 전문 인력 및 기술 즉시 활용</span></li>
+              <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i><span>프로젝트 규모에 따른 유연한 확장 및 축소 가능</span></li>
+            </ul>
+
+            <h3 class="font-semibold text-red-600 mt-4 mb-2 flex items-center">
+              <i class="fas fa-minus-circle mr-2"></i>단점
+            </h3>
+            <ul class="space-y-2">
+              <li class="flex items-start"><i class="fas fa-exclamation-circle text-red-500 mt-1 mr-2"></i><span>핵심 데이터의 외부 유출 가능성</span></li>
+              <li class="flex items-start"><i class="fas fa-exclamation-circle text-red-500 mt-1 mr-2"></i><span>내부 공정에 대한 이해 부족으로 인한 시행착오</span></li>
+              <li class="flex items-start"><i class="fas fa-exclamation-circle text-red-500 mt-1 mr-2"></i><span>커뮤니케이션 및 관리의 어려움</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Outsourcing Statistics -->
+        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm flex items-center">
+            <i class="fas fa-chart-pie text-blue-500 mr-2"></i>
+            <span>딜로이트(Deloitte) 보고서에 따르면, <span class="highlight">제조업체의 40%</span>가 경쟁력 유지를 위해 RPA와 같은 고급 아웃소싱 기술의 사용을 늘릴 계획이라고 밝혔습니다.</span>
+          </p>
+          <p class="text-sm flex items-center mt-1">
+            <i class="fas fa-chart-pie text-blue-500 mr-2"></i>
+            <span>또한, <span class="highlight">59%</span>의 기업은 외주를 운영 리스크를 줄이고 전반적인 효율성을 높이는 핵심 전략으로 간주합니다.</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Decision Guide -->
+      <div class="bg-white rounded-lg p-4 shadow-md">
+        <h2 class="section-title flex items-center text-xl mb-3">
+          <i class="fas fa-route text-teal-500 mr-2"></i>
+          선택 가이드 (의사결정 체크리스트)
+        </h2>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <p class="font-semibold mb-2"><span class="dot" style="background:#4CAF50;"></span>내부 인력이 유리한 경우</p>
+            <ul class="list-disc ml-5 space-y-1">
+              <li>핵심 제조 공정/노하우가 데이터에 강하게 반영됨</li>
+              <li>장기적인 AI 역량 내재화가 전략적 우선순위</li>
+              <li>엄격한 규제/보안 요구사항(예: 국방, 반도체)</li>
+            </ul>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <p class="font-semibold mb-2"><span class="dot" style="background:#FF9800;"></span>외주가 유리한 경우</p>
+            <ul class="list-disc ml-5 space-y-1">
+              <li>단기 PoC/파일럿으로 ROI 검증이 필요</li>
+              <li>희소 전문 영역(예: 최적화, 컴퓨터비전) 즉시 투입</li>
+              <li>내부 리소스/예산/타임라인 제약이 큼</li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-3 p-3 rounded-md bg-amber-50 text-amber-800 text-sm">
+          <i class="fas fa-lightbulb mr-1"></i>
+          실무 팁: 혼합 모델(내부 PM/데이터 거버넌스 + 외부 전문 SI/컨설팅)로 시작하고, 점진적 기술 이전(knowledge transfer) 계획을 계약에 포함하세요.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Required Skills -->
+    <div class="col-span-5">
+      <div class="bg-white rounded-lg p-4 shadow-md h-full">
+        <h2 class="section-title flex items-center text-xl mb-4">
+          <i class="fas fa-cogs text-purple-500 mr-2"></i>
+          최근 AI 엔지니어에게 요구되는 특화 역량
+        </h2>
+
+        <div class="space-y-3">
+          <div class="card p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-l-4 border-green-500">
+            <div class="flex items-start">
+              <div class="bg-green-100 p-2 rounded-full mr-3"><i class="fas fa-industry text-green-600"></i></div>
+              <div>
+                <h3 class="font-semibold">생산 공정 및 도메인 지식</h3>
+                <p class="text-sm text-gray-600">제조 라인의 작동 방식, 공정 데이터의 특성(주기성, 계절성, 교대/설비별 편차) 이해</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-l-4 border-blue-500">
+            <div class="flex items-start">
+              <div class="bg-blue-100 p-2 rounded-full mr-3"><i class="fas fa-network-wired text-blue-600"></i></div>
+              <div>
+                <h3 class="font-semibold">IoT 데이터 분석</h3>
+                <p class="text-sm text-gray-600">설비 센서의 시계열/이벤트 로그 처리, 스트리밍 파이프라인(예: MQTT, Kafka) 및 결측·노이즈 정제</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border-l-4 border-orange-500">
+            <div class="flex items-start">
+              <div class="bg-orange-100 p-2 rounded-full mr-3"><i class="fas fa-tools text-orange-600"></i></div>
+              <div>
+                <h3 class="font-semibold">예측 유지보수 모델링</h3>
+                <p class="text-sm text-gray-600">진동/전류/온도 신호의 특징 추출(스펙트럼, 웨이블릿), 이상 탐지, 잔여수명(RUL) 추정</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-3 bg-gradient-to-r from-rose-50 to-amber-50 rounded-lg border-l-4 border-rose-400">
+            <div class="flex items-start">
+              <div class="bg-rose-100 p-2 rounded-full mr-3"><i class="fas fa-camera text-rose-600"></i></div>
+              <div>
+                <h3 class="font-semibold">비전 기반 품질 검사</h3>
+                <p class="text-sm text-gray-600">결함 탐지/분류, 세그멘테이션(SAM, U-Net 등) 및 조명·속도 변화 내성 확보</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-3 bg-gradient-to-r from-emerald-50 to-cyan-50 rounded-lg border-l-4 border-emerald-500">
+            <div class="flex items-start">
+              <div class="bg-emerald-100 p-2 rounded-full mr-3"><i class="fas fa-project-diagram text-emerald-600"></i></div>
+              <div>
+                <h3 class="font-semibold">스케줄링·최적화 & OR</h3>
+                <p class="text-sm text-gray-600">제약 최적화(MIP/CP-SAT), 휴리스틱/메타휴리스틱, 강화학습 기반 생산·물류 최적화</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card p-3 bg-gradient-to-r from-slate-50 to-gray-100 rounded-lg border-l-4 border-slate-500">
+            <div class="flex items-start">
+              <div class="bg-slate-100 p-2 rounded-full mr-3"><i class="fas fa-server text-slate-700"></i></div>
+              <div>
+                <h3 class="font-semibold">MLOps & 현장 적용(OT 연계)</h3>
+                <p class="text-sm text-gray-600">모델 버저닝, A/B·샌드박스 배포, 엣지/온프렘 추론, OT 보안·변경관리, 드리프트 모니터링</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Governance / Risk -->
+        <div class="mt-5 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+          <h3 class="font-semibold text-yellow-700 mb-2"><i class="fas fa-shield-alt mr-2"></i>리스크 및 거버넌스</h3>
+          <ul class="list-disc ml-5 text-sm text-gray-700 space-y-1">
+            <li>데이터 거버넌스: 소유권·접근통제·익명화, 공급망 파트너와의 DPA/SLA 명문화</li>
+            <li>품질 책임: 모델 성능 기준(정확도·재현율·F1)과 재학습 트리거, 감사 로그</li>
+            <li>윤리/규정 준수: 설명가능성(XAI), 안전성 검증(페일세이프·휴먼인더루프)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Footer -->
+<div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_5.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">6 / 8</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_7.html">다음</a>
+</div>
+</div>
+</body>
+</html>

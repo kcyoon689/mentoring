@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 전공자 취업 특성</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;
+        }
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+
+        }
+        .section-title {
+            color: #333333;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .highlight {
+            color: #4CAF50;
+            font-weight: 700;
+        }
+        .warning {
+            color: #FF9800;
+            font-weight: 700;
+        }
+        .bar {
+            fill: #4CAF50;
+        }
+        .bar-text {
+            font-size: 12px;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .card {
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+<!-- Header -->
+<header class="mb-6">
+<h1 class="text-4xl font-bold text-gray-800">AI 전공자 취업 특성</h1>
+<div class="w-24 h-1 bg-green-500 mt-2"></div>
+</header>
+<!-- Main Content -->
+<div class="grid grid-cols-3 gap-6 h-5/6">
+<!-- Education Level and Employment Rate -->
+<div class="bg-white rounded-lg p-5 shadow-md card">
+<h2 class="section-title flex items-center text-xl mb-4">
+<i class="fas fa-graduation-cap text-green-500 mr-2"></i>
+                    학력별 취업률 격차
+                </h2>
+<div class="h-56 w-full" id="education-chart"></div>
+<div class="mt-4 text-sm">
+<p class="text-gray-600 mb-2"><i class="fas fa-info-circle text-blue-500 mr-1"></i> 2024년 미국 애틀랜타 연방준비은행 보고서</p>
+<p class="text-gray-600"><i class="fas fa-globe text-blue-500 mr-1"></i> 국내 AI 졸업생의 약 <span class="highlight">40%</span>가 해외로 취업</p>
+</div>
+</div>
+<!-- Fresh Graduate Challenges -->
+<div class="bg-white rounded-lg p-5 shadow-md card">
+<h2 class="section-title flex items-center text-xl mb-4">
+<i class="fas fa-triangle-exclamation text-orange-500 mr-2"></i>
+                    신입 취업 시장의 어려움
+                </h2>
+<div class="mb-4">
+<div class="flex items-center mb-2">
+<div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+<i class="fas fa-user-graduate text-orange-500"></i>
+</div>
+<div>
+<p class="font-semibold">신입 졸업생의 역설</p>
+<p class="text-sm text-gray-600">취업 가능성이 높은데도 불구하고 실제 취업에 어려움</p>
+</div>
+</div>
+</div>
+</li>
+<li class="flex items-start">
+<i class="fas fa-robot text-orange-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">자동화의 영향</p>
+<p class="text-sm text-gray-600">AI가 데이터 입력, 기초 분석 등 전통적인 신입 사원의 업무를 자동화</p>
+</div>
+</li>
+<li class="flex items-start">
+<i class="fas fa-arrow-trend-down text-orange-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">신입 채용 감소</p>
+<p class="text-sm text-gray-600">2024-2025년 분석: 엔지니어링(-72.2%) 및 데이터(-62.1%) 분야의 신입 채용률 감소</p>
+</div>
+</li>
+</ul>
+</div>
+<!-- Employment Advantages -->
+<div class="bg-white rounded-lg p-5 shadow-md card">
+<h2 class="section-title flex items-center text-xl mb-4">
+<i class="fas fa-trophy text-red-500 mr-2"></i>
+                    석사 이상 학위의 취업 우위
+                </h2>
+<div class="mb-6">
+<div class="flex items-center justify-between mb-2">
+<span class="font-semibold">학사</span>
+<span class="font-semibold">석사</span>
+<span class="font-semibold">박사</span>
+</div>
+<div class="flex items-center justify-between h-8 rounded-lg overflow-hidden">
+<div class="h-full bg-gray-300 rounded-l-lg" style="width: 47%"></div>
+<div class="h-full bg-green-500" style="width: 50%"></div>
+<div class="h-full bg-orange-500 rounded-r-lg" style="width: 3%"></div>
+</div>
+<div class="flex items-center justify-between mt-1 text-xs text-gray-600">
+<span>4.7%</span>
+<span>5.0%</span>
+<span>5.3%</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-briefcase text-green-500 mr-2"></i>
+<p class="font-semibold">포트폴리오의 중요성</p>
+</div>
+<p class="text-sm text-gray-600 mt-1">실무적인 포트폴리오를 갖춘 인재에 대한 수요 증가</p>
+</div>
+<!-- <div class="p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-money-bill-trend-up text-green-500 mr-2"></i>
+</div>
+</div> -->
+<div class="p-3 bg-gray-50 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-handshake-angle text-green-500 mr-2"></i>
+<p class="font-semibold">협상력 증가</p>
+</div>
+<p class="text-sm text-gray-600 mt-1">전문성 증가에 따른 취업조건 협상력 개선</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+ <script>
+        // D3.js Chart for Education Level vs AI Job Postings
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data from the document
+            const data = [
+                {education: "박사(PhD)", percentage: 5.3},
+                {education: "석사(Master's)", percentage: 5.0},
+                {education: "학사(Bachelor's)", percentage: 4.7}
+            ];
+
+            // Chart dimensions
+            const margin = {top: 20, right: 30, bottom: 40, left: 40};
+            const width = document.getElementById('education-chart').offsetWidth - margin.left - margin.right;
+            const height = document.getElementById('education-chart').offsetHeight - margin.top - margin.bottom;
+
+            // Create SVG
+            const svg = d3.select("#education-chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // X scale
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.education))
+                .range([0, width])
+                .padding(0.3);
+
+            // Y scale
+            const y = d3.scaleLinear()
+                .domain([0, 6])
+                .range([height, 0]);
+
+            // Add X axis
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .style("font-family", "'Noto Sans KR', sans-serif")
+                .style("font-size", "12px");
+
+            // Add Y axis
+            svg.append("g")
+                .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "%"))
+                .style("font-family", "'Noto Sans KR', sans-serif")
+                .style("font-size", "12px");
+
+            // Add Y axis label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - margin.left)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .style("font-family", "'Noto Sans KR', sans-serif")
+                .style("font-size", "12px")
+                .text("AI 기술 요구 (%)");
+
+            // Add bars
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.education))
+                .attr("width", x.bandwidth())
+                .attr("y", d => y(d.percentage))
+                .attr("height", d => height - y(d.percentage))
+                .attr("fill", (d, i) => {
+                    const colors = ["#FF9800", "#4CAF50", "#333333"];
+                    return colors[i];
+                });
+
+            // Add value labels on top of bars
+            svg.selectAll(".bar-text")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "bar-text")
+                .attr("x", d => x(d.education) + x.bandwidth()/2)
+                .attr("y", d => y(d.percentage) - 5)
+                .attr("text-anchor", "middle")
+                .text(d => d.percentage + "%");
+        });
+    </script>
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 8</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
+</div>
+</body></html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ai 7팀 멘토링 OT</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+
+            position: relative;
+        }
+        .circuit-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+        }
+        .circuit-node {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .title-text {
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-100 flex flex-col justify-center items-center p-16 relative overflow-hidden">
+<!-- Circuit board background pattern -->
+<div class="circuit-pattern"></div>
+<!-- Random circuit nodes -->
+<div class="circuit-node" style="top: 120px; left: 250px;"></div>
+<div class="circuit-node" style="top: 320px; left: 150px;"></div>
+<div class="circuit-node" style="top: 520px; left: 350px;"></div>
+<div class="circuit-node" style="top: 220px; left: 950px;"></div>
+<div class="circuit-node" style="top: 420px; left: 1050px;"></div>
+<div class="circuit-node" style="top: 620px; left: 850px;"></div>
+<!-- Main content container -->
+<div class="z-10 text-center mb-12">
+<h1 class="title-text text-6xl font-bold text-gray-800 mb-4">ai 7팀 멘토링 OT</h1>
+<h2 class="text-3xl text-gray-700 mb-2">AI 분야 취업 현황 및 접근 전략</h2>
+<div class="w-32 h-1 bg-green-500 mx-auto my-6"></div>
+</div>
+<!-- Icon grid representing key concepts -->
+<div class="grid grid-cols-4 gap-12 z-10 mb-16">
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-3">
+<i class="fas fa-chart-line text-green-600 text-4xl"></i>
+</div>
+<p class="text-gray-700 font-medium">취업률 분석</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center mb-3">
+<i class="fas fa-briefcase text-orange-600 text-4xl"></i>
+</div>
+<p class="text-gray-700 font-medium">AI 직무 세분화</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-3">
+<i class="fas fa-industry text-red-500 text-4xl"></i>
+</div>
+<p class="text-gray-700 font-medium">제조업 AI 활용</p>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-3">
+<i class="fas fa-bullseye text-gray-700 text-4xl"></i>
+</div>
+<p class="text-gray-700 font-medium">맞춤형 전략</p>
+</div>
+</div>
+<!-- Bottom information -->
+<div class="absolute bottom-8 left-0 right-0 flex justify-between px-16 z-10">
+<div class="text-gray-600">
+<i class="far fa-calendar-alt mr-2"></i>2025-08-12
+            </div>
+</div>
+</div>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="../index.html">홈</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">1 / 8</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_2.html">다음</a>
+</div>
+</body></html>

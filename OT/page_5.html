@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 활용 현황</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #F5F5F5;
+    color: #333333;
+  }
+  .slide-container {
+    width: 1280px;
+    min-height: 720px;
+    position: relative;
+  }
+  .section-title {
+    color: #333333;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .highlight { color: #4CAF50; font-weight: 700; }
+  .warning { color: #FF9800; font-weight: 700; }
+  .bar { fill: #4CAF50; }
+  .bar-text {
+    font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .feature-card { transition: all 0.3s ease; }
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  }
+</style>
+</head>
+<body>
+  <div class="slide-container bg-gray-100 p-8">
+    <!-- Header -->
+    <header class="mb-6">
+      <h1 class="text-4xl font-bold text-gray-800">제조업의 AI 활용 현황</h1>
+      <div class="w-24 h-1 bg-green-500 mt-2"></div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="grid grid-cols-5 gap-6 h-5/6">
+      <!-- Left Column - AI Adoption -->
+      <div class="col-span-2">
+        <div class="bg-white rounded-lg p-4 shadow-md h-full">
+          <h2 class="section-title flex items-center text-xl mb-3">
+            <i class="fas fa-industry text-blue-500 mr-2"></i>제조업 AI 도입 현황
+          </h2>
+
+          <div class="space-y-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-robot text-blue-500"></i>
+              </div>
+              <div>
+                <p class="font-medium">스마트 팩토리 전환</p>
+                <p class="text-sm text-gray-600">인더스트리 4.0의 핵심 동력인 AI 기술을 도입하여 전통 공장을 스마트하고 데이터 중심적인 환경으로 전환</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                <i class="fas fa-chart-line text-green-500"></i>
+              </div>
+              <div>
+                <p class="font-medium">지능적 생산 공정</p>
+                <p class="text-sm text-gray-600">AI는 학습과 적응을 통해 스스로 의사결정을 내리며 생산 공정 전반에 새로운 차원의 지능과 연결성을 부여</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                <i class="fas fa-cogs text-orange-500"></i>
+              </div>
+              <div>
+                <p class="font-medium">효율성 증가</p>
+                <p class="text-sm text-gray-600">실시간 모니터링, 품질 관리, 공급망 최적화 등에 AI를 활용함으로써 가동 중단 시간을 최소화하고 생산성을 극대화</p>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                <i class="fas fa-bullseye text-red-500"></i>
+              </div>
+              <div>
+                <p class="font-medium">민첩한 시장 대응</p>
+                <p class="text-sm text-gray-600">변화하는 시장 요구에 민첩하게 대응하고, 고객 맞춤형 제품 개발 및 생산 스케줄 최적화</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Column - Outsourcing Stats -->
+      <div class="col-span-3">
+        <div class="grid grid-rows-2 gap-6 h-full">
+          <!-- Top: Outsourcing Trends -->
+          <div class="bg-white rounded-lg p-4 shadow-md">
+            <h2 class="section-title flex items-center text-xl mb-3">
+              <i class="fas fa-handshake text-purple-500 mr-2"></i>AI 외주 활용 사례
+            </h2>
+
+            <div class="flex">
+              <div class="w-1/2">
+                <div class="h-48" id="chart"></div>
+              </div>
+              <div class="w-1/2 pl-4">
+                <ul class="space-y-2">
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>딜로이트 보고서에 따르면, <span class="highlight">40%</span>의 제조업체가 RPA 같은 고급 아웃소싱 기술의 사용을 늘릴 계획</span>
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span><span class="highlight">59%</span>의 기업은 외주를 운영 리스크를 줄이고 전반적인 효율성을 높이는 핵심 전략으로 간주</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: Reasons for Outsourcing -->
+          <div class="bg-white rounded-lg p-4 shadow-md">
+            <h2 class="section-title flex items-center text-xl mb-3">
+              <i class="fas fa-lightbulb text-amber-500 mr-2"></i>외주를 선호하는 주요 이유
+            </h2>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="feature-card bg-blue-50 p-3 rounded-lg">
+                <div class="flex items-center mb-2">
+                  <i class="fas fa-coins text-blue-500 text-xl mr-2"></i>
+                  <h3 class="font-semibold">비용 절감</h3>
+                </div>
+                <p class="text-sm">AI 시스템 개발에 필요한 장비, 인력, 시설 투자에 대한 부담 줄임</p>
+              </div>
+
+              <div class="feature-card bg-green-50 p-3 rounded-lg">
+                <div class="flex items-center mb-2">
+                  <i class="fas fa-wind text-green-500 text-xl mr-2"></i>
+                  <h3 class="font-semibold">유연성 확보</h3>
+                </div>
+                <p class="text-sm">복잡한 운영 관리의 부담 없이 시장 변화에 신속하게 적응</p>
+              </div>
+
+              <div class="feature-card bg-orange-50 p-3 rounded-lg">
+                <div class="flex items-center mb-2">
+                  <i class="fas fa-user-tie text-orange-500 text-xl mr-2"></i>
+                  <h3 class="font-semibold">전문 기술 활용</h3>
+                </div>
+                <p class="text-sm">데이터 분석, 생산 최적화, 공급망 관리 등 특정 분야에 고도로 전문화된 외부 기업의 기술 즉시 활용</p>
+              </div>
+
+              <div class="feature-card bg-red-50 p-3 rounded-lg">
+                <div class="flex items-center mb-2">
+                  <i class="fas fa-bullseye text-red-500 text-xl mr-2"></i>
+                  <h3 class="font-semibold">핵심 역량 집중</h3>
+                </div>
+                <p class="text-sm">AI 개발 및 운영과 같은 비핵심 업무를 외부에 맡기고, 제품 개발 및 생산 등 핵심 비즈니스에 역량 집중</p>
+              </div>
+            </div>
+
+            <div class="mt-4 bg-gray-50 p-3 rounded-lg">
+              <h3 class="font-semibold mb-2">주요 외주 활용 사례</h3>
+              <div class="flex flex-wrap gap-2">
+                <span class="bg-gray-200 px-3 py-1 rounded-full text-xs">판매 주문 자동화</span>
+                <span class="bg-gray-200 px-3 py-1 rounded-full text-xs">품질 검사 자동화</span>
+                <span class="bg-gray-200 px-3 py-1 rounded-full text-xs">예측 유지보수</span>
+                <span class="bg-gray-200 px-3 py-1 rounded-full text-xs">공급망 시뮬레이션</span>
+                <span class="bg-gray-200 px-3 py-1 rounded-full text-xs">수요 예측 모델</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- /col-span-3 -->
+    </div> <!-- /grid -->
+        <!-- Footer -->
+    <div class="mt-6 flex justify-between items-center">
+        <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_4.html">이전</a>
+        <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">5 / 8</div>
+        <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_6.html">다음</a>
+    </div>
+  </div> <!-- /slide-container -->
+
+  <script>
+    // D3.js Chart for Manufacturing Outsourcing Stats
+    document.addEventListener('DOMContentLoaded', function () {
+      // Data
+      const data = [
+        { label: "RPA 증가 계획", percentage: 40 },
+        { label: "외주 운영 선호", percentage: 59 }
+      ];
+
+      // Chart dimensions
+      const margin = { top: 20, right: 30, bottom: 40, left: 40 };
+      const container = document.getElementById('chart');
+      const width = container.offsetWidth - margin.left - margin.right;
+      const height = container.offsetHeight - margin.top - margin.bottom;
+
+      // Create SVG
+      const svg = d3.select("#chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // X scale
+      const x = d3.scaleBand()
+        .domain(data.map(d => d.label))
+        .range([0, width])
+        .padding(0.3);
+
+      // Y scale
+      const y = d3.scaleLinear()
+        .domain([0, 100])
+        .range([height, 0]);
+
+      // Axes
+      svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .style("font-family", "'Noto Sans KR', sans-serif")
+        .style("font-size", "10px")
+        .style("text-anchor", "middle");
+
+      svg.append("g")
+        .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "%"))
+        .style("font-family", "'Noto Sans KR', sans-serif")
+        .style("font-size", "10px");
+
+      // Y axis label
+      svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .style("font-family", "'Noto Sans KR', sans-serif")
+        .style("font-size", "10px")
+        .text("기업 비율 (%)");
+
+      // Bars
+      svg.selectAll(".bar")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.label))
+        .attr("width", x.bandwidth())
+        .attr("y", d => y(d.percentage))
+        .attr("height", d => height - y(d.percentage))
+        .attr("fill", (d, i) => {
+          const colors = ["#4CAF50", "#FF9800"];
+          return colors[i % colors.length];
+        });
+
+      // Value labels
+      svg.selectAll(".bar-text")
+        .data(data)
+        .enter()
+        .append("text")
+        .attr("class", "bar-text")
+        .attr("x", d => x(d.label) + x.bandwidth() / 2)
+        .attr("y", d => y(d.percentage) - 5)
+        .attr("text-anchor", "middle")
+        .text(d => d.percentage + "%")
+        .style("fill", "#333")
+        .style("font-size", "12px");
+    });
+  </script>
+
+
+</div>
+</body>
+</html>
