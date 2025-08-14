@@ -12,7 +12,7 @@
         .slide-container {
             width: 1280px;
             min-height: 1060px;
-            
+
             position: relative;
         }
         .axis line, .axis path {
@@ -67,7 +67,7 @@
 <i class="fas fa-lightbulb mr-2"></i>기본 원리
                     </h2>
 <p class="text-lg mb-3">
-                        주성분 분석(PCA)은 가장 널리 사용되는 선형 차원 축소 기법입니다. PCA의 핵심 아이디어는 
+                        주성분 분석(PCA)은 가장 널리 사용되는 선형 차원 축소 기법입니다. PCA의 핵심 아이디어는
                         데이터의 분산을 가장 잘 설명하는 새로운 축, 즉 주성분(Principal Component)을 찾는 것입니다.
                     </p>
 <ul class="list-disc pl-6 text-lg space-y-1">
@@ -139,12 +139,17 @@ X_pca = pca.fit_transform(X)
 print(X_pca.shape)  # (150, 2)
 </pre>
 <p class="text-sm mt-2 text-gray-600">
-                        이 코드는 붓꽃 데이터셋을 2차원으로 PCA로 축소하는 예시입니다. 
+                        이 코드는 붓꽃 데이터셋을 2차원으로 PCA로 축소하는 예시입니다.
                         원래 4차원 데이터가 2차원으로 효과적으로 변환됩니다.
                     </p>
 </div>
 </div>
 </div>
+</div>
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_7.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">8 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_9.html">다음</a>
 </div>
 <script>
         // PCA Visualization using D3.js
@@ -152,7 +157,7 @@ print(X_pca.shape)  # (150, 2)
             const width = 550;
             const height = 350;
             const margin = {top: 20, right: 20, bottom: 40, left: 50};
-            
+
             // Create SVG
             const svg = d3.select("#pca-visualization")
                 .append("svg")
@@ -160,34 +165,34 @@ print(X_pca.shape)  # (150, 2)
                 .attr("height", height)
                 .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
-            
+
             // Set up scales
             const xScale = d3.scaleLinear()
                 .domain([-3, 3])
                 .range([0, width - margin.left - margin.right]);
-            
+
             const yScale = d3.scaleLinear()
                 .domain([-3, 3])
                 .range([height - margin.top - margin.bottom, 0]);
-            
+
             // Draw axes
             const xAxis = d3.axisBottom(xScale)
                 .ticks(5)
                 .tickFormat(d => d);
-            
+
             const yAxis = d3.axisLeft(yScale)
                 .ticks(5)
                 .tickFormat(d => d);
-            
+
             svg.append("g")
                 .attr("class", "axis")
                 .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
                 .call(xAxis);
-            
+
             svg.append("g")
                 .attr("class", "axis")
                 .call(yAxis);
-            
+
             // Add axis labels
             svg.append("text")
                 .attr("text-anchor", "middle")
@@ -196,7 +201,7 @@ print(X_pca.shape)  # (150, 2)
                 .text("주성분 1")
                 .attr("fill", "#333333")
                 .attr("font-size", "12px");
-            
+
             svg.append("text")
                 .attr("text-anchor", "middle")
                 .attr("transform", "rotate(-90)")
@@ -205,7 +210,7 @@ print(X_pca.shape)  # (150, 2)
                 .text("주성분 2")
                 .attr("fill", "#333333")
                 .attr("font-size", "12px");
-            
+
             // Generate some sample data points
             const originalData = [];
             for (let i = 0; i < 50; i++) {
@@ -224,7 +229,7 @@ print(X_pca.shape)  # (150, 2)
                     });
                 }
             }
-            
+
             // Draw original data points
             svg.selectAll(".data-point")
                 .data(originalData.filter(d => d.group === 0))
@@ -234,7 +239,7 @@ print(X_pca.shape)  # (150, 2)
                 .attr("cx", d => xScale(d.x))
                 .attr("cy", d => yScale(d.y))
                 .attr("r", 4);
-            
+
             svg.selectAll(".data-point-2")
                 .data(originalData.filter(d => d.group === 1))
                 .enter()
@@ -243,7 +248,7 @@ print(X_pca.shape)  # (150, 2)
                 .attr("cx", d => xScale(d.x))
                 .attr("cy", d => yScale(d.y))
                 .attr("r", 4);
-            
+
             // Draw eigenvectors
             svg.append("line")
                 .attr("class", "eigenvector")
@@ -251,14 +256,14 @@ print(X_pca.shape)  # (150, 2)
                 .attr("y1", yScale(0))
                 .attr("x2", xScale(2))
                 .attr("y2", yScale(0));
-            
+
             svg.append("line")
                 .attr("class", "eigenvector-2")
                 .attr("x1", xScale(0))
                 .attr("y1", yScale(0))
                 .attr("x2", xScale(0))
                 .attr("y2", yScale(2));
-            
+
             // Draw principal components
             svg.append("line")
                 .attr("class", "principal-component")
@@ -266,18 +271,18 @@ print(X_pca.shape)  # (150, 2)
                 .attr("y1", yScale(-3))
                 .attr("x2", xScale(3))
                 .attr("y2", yScale(-3));
-            
+
             svg.append("line")
                 .attr("class", "principal-component-2")
                 .attr("x1", xScale(-3))
                 .attr("y1", yScale(-3))
                 .attr("x2", xScale(-3))
                 .attr("y2", yScale(3));
-            
+
             // Add legend
             const legend = svg.append("g")
                 .attr("transform", `translate(${width - margin.left - margin.right - 150}, 10)`);
-            
+
             // Legend items
             const legendItems = [
                 { label: "클래스 1", color: "#4CAF50" },
@@ -285,7 +290,7 @@ print(X_pca.shape)  # (150, 2)
                 { label: "주성분 1", color: "#2196F3" },
                 { label: "주성분 2", color: "#9C27B0" }
             ];
-            
+
             // Create legend
             legend.selectAll("rect")
                 .data(legendItems)
@@ -296,7 +301,7 @@ print(X_pca.shape)  # (150, 2)
                 .attr("width", 12)
                 .attr("height", 12)
                 .attr("fill", d => d.color);
-            
+
             legend.selectAll("text")
                 .data(legendItems)
                 .enter()

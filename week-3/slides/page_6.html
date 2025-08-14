@@ -12,7 +12,7 @@
         .slide-container {
             width: 1280px;
             min-height: 820px;
-            
+
             position: relative;
         }
         .ada-boost-step {
@@ -47,7 +47,7 @@
 <i class="fas fa-lightbulb mr-2"></i>순차적 학습 방식
                     </h2>
 <p class="text-lg">
-                        에이다부스트는 여러 개의 약한 학습기를 순차적으로 학습시켜 이전 모델의 오류를 보완해나가는 직렬 방식의 부스팅 알고리즘입니다. 
+                        에이다부스트는 여러 개의 약한 학습기를 순차적으로 학습시켜 이전 모델의 오류를 보완해나가는 직렬 방식의 부스팅 알고리즘입니다.
                         모델을 한 번에 하나씩 순차적으로 구축하며, 잘못 분류된 데이터에 가중치를 부여하여 다음 모델이 해당 데이터를 더 집중적으로 학습하도록 만듭니다.
                     </p>
 </div>
@@ -59,7 +59,7 @@
 <ol class="list-decimal pl-6 text-lg space-y-2">
 <li><strong>초기 가중치 할당</strong>: 모든 학습 데이터 샘플에 동일한 가중치(<span class="text-green-600">w = 1/N</span>)를 부여</li>
 <li><strong>약한 학습기 학습</strong>: 현재 데이터 가중치를 반영하여 약한 학습기(예: 결정 스텀프)를 학습시킴</li>
-<li><strong>학습기 성능 계산</strong>: 
+<li><strong>학습기 성능 계산</strong>:
                             <ul class="list-disc pl-6 mt-1">
 <li>총 오류(Total Error, TE): 잘못 분류된 샘플들의 가중치 합계</li>
 <li>학습기 가중치(α): <span class="bg-green-100 px-1 py-0.5 rounded text-green-800">α = 0.5 ln((1-TE)/TE)</span></li>
@@ -134,62 +134,67 @@
 </div>
 </div>
 </div>
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_5.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">6 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_7.html">다음</a>
+</div>
 <script>
         // AdaBoost Visualization using D3.js
         document.addEventListener('DOMContentLoaded', function() {
             const width = 550;
             const height = 300;
-            
+
             // Create SVG
             const svg = d3.select("#ada-boost-visualization")
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height);
-            
+
             // Data for visualization
             const steps = [
-                { 
-                    id: 1, 
-                    title: "초기 가중치", 
-                    description: "모든 데이터에 동일한 가중치 부여", 
-                    correctColor: "#4CAF50", 
-                    misColor: "#FF9800" 
+                {
+                    id: 1,
+                    title: "초기 가중치",
+                    description: "모든 데이터에 동일한 가중치 부여",
+                    correctColor: "#4CAF50",
+                    misColor: "#FF9800"
                 },
-                { 
-                    id: 2, 
-                    title: "첫 번째 모델", 
-                    description: "가중치에 따라 데이터 학습", 
-                    correctColor: "#4CAF50", 
-                    misColor: "#FF9800" 
+                {
+                    id: 2,
+                    title: "첫 번째 모델",
+                    description: "가중치에 따라 데이터 학습",
+                    correctColor: "#4CAF50",
+                    misColor: "#FF9800"
                 },
-                { 
-                    id: 3, 
-                    title: "가중치 업데이트", 
-                    description: "오류 데이터 가중치 증가", 
-                    correctColor: "#4CAF5080", 
-                    misColor: "#FF9800FF" 
+                {
+                    id: 3,
+                    title: "가중치 업데이트",
+                    description: "오류 데이터 가중치 증가",
+                    correctColor: "#4CAF5080",
+                    misColor: "#FF9800FF"
                 },
-                { 
-                    id: 4, 
-                    title: "두 번째 모델", 
-                    description: "업데이트된 가중치 반영", 
-                    correctColor: "#4CAF50", 
-                    misColor: "#FF9800" 
+                {
+                    id: 4,
+                    title: "두 번째 모델",
+                    description: "업데이트된 가중치 반영",
+                    correctColor: "#4CAF50",
+                    misColor: "#FF9800"
                 }
             ];
-            
+
             // Create step groups
             const stepWidth = 130;
             const stepHeight = 200;
             const stepSpacing = (width - steps.length * stepWidth) / (steps.length + 1);
-            
+
             const stepGroups = svg.selectAll(".step-group")
                 .data(steps)
                 .enter()
                 .append("g")
                 .attr("class", "ada-boost-step")
                 .attr("transform", (d, i) => `translate(${stepSpacing + i * (stepWidth + stepSpacing)}, 50)`);
-            
+
             // Add step rectangles
             stepGroups.append("rect")
                 .attr("width", stepWidth)
@@ -199,7 +204,7 @@
                 .attr("fill", "white")
                 .attr("stroke", "#4CAF50")
                 .attr("stroke-width", 2);
-            
+
             // Add step titles
             stepGroups.append("text")
                 .attr("x", stepWidth / 2)
@@ -209,19 +214,19 @@
                 .attr("font-size", "14px")
                 .attr("fill", "#333333")
                 .text(d => d.title);
-            
+
             // Create data points for each step
             const numPoints = 10;
             const pointRadius = 6;
             const pointSpacing = stepHeight / (numPoints + 1);
-            
+
             for (let i = 0; i < steps.length; i++) {
                 const stepGroup = stepGroups.filter(d => d.id === i + 1);
-                
+
                 // Create data points
                 for (let j = 0; j < numPoints; j++) {
                     const isMisclassified = j % 3 === 0 && i >= 1; // Some points are misclassified
-                    
+
                     stepGroup.append("circle")
                         .attr("cx", stepWidth / 2)
                         .attr("cy", 40 + j * pointSpacing)
@@ -230,7 +235,7 @@
                         .attr("stroke", "#333333")
                         .attr("stroke-width", 1);
                 }
-                
+
                 // Add description
                 stepGroup.append("text")
                     .attr("x", stepWidth / 2)
@@ -240,34 +245,34 @@
                     .attr("fill", "#555555")
                     .text(d => d.description);
             }
-            
+
             // Add arrows between steps
             for (let i = 0; i < steps.length - 1; i++) {
                 svg.append("path")
-                    .attr("d", `M${stepSpacing + (i + 1) * stepWidth + i * stepSpacing},100 
+                    .attr("d", `M${stepSpacing + (i + 1) * stepWidth + i * stepSpacing},100
                               L${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing},100`)
                     .attr("stroke", "#333333")
                     .attr("stroke-width", 2)
                     .attr("marker-end", "url(#arrow)");
-                
+
                 // Add arrowhead
                 svg.append("polygon")
-                    .attr("points", `${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing - 5},95 
-                                   ${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing + 5},100 
+                    .attr("points", `${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing - 5},95
+                                   ${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing + 5},100
                                    ${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing - 5},105`)
                     .attr("fill", "#333333");
             }
-            
+
             // Add legend
             const legend = svg.append("g")
                 .attr("transform", `translate(${width - 150}, 20)`);
-            
+
             // Legend items
             const legendItems = [
                 { label: "정확히 분류된 데이터", color: "#4CAF50" },
                 { label: "잘못 분류된 데이터", color: "#FF9800" }
             ];
-            
+
             // Create legend
             legend.selectAll("rect")
                 .data(legendItems)
@@ -278,7 +283,7 @@
                 .attr("width", 15)
                 .attr("height", 15)
                 .attr("fill", d => d.color);
-            
+
             legend.selectAll("text")
                 .data(legendItems)
                 .enter()
@@ -288,7 +293,7 @@
                 .text(d => d.label)
                 .attr("font-size", "12px")
                 .attr("fill", "#333333");
-                
+
             // Add title
             svg.append("text")
                 .attr("x", width / 2)

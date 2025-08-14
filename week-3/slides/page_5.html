@@ -12,7 +12,7 @@
         .slide-container {
             width: 1280px;
             min-height: 894px;
-            
+
             position: relative;
         }
         .tree {
@@ -52,7 +52,7 @@
 <i class="fas fa-tree mr-2"></i> 개념
                     </h2>
 <p class="text-lg">
-                        랜덤 포레스트(Random Forest)는 여러 개의 결정 트리로 구성된 &#39;숲(Forest)&#39;을 만드는 앙상블 학습 기법입니다. 
+                        랜덤 포레스트(Random Forest)는 여러 개의 결정 트리로 구성된 &#39;숲(Forest)&#39;을 만드는 앙상블 학습 기법입니다.
                         분류와 회귀 문제 모두에 적용되며, 단일 결정 트리의 과적합 문제를 해결하고 예측 정확도를 높이기 위해 설계되었습니다.
                     </p>
 </div>
@@ -69,7 +69,7 @@
 <i class="fas fa-random mr-2"></i> 배깅 (Bagging)
                         </h3>
 <p class="text-base">
-                            원본 훈련 데이터셋에서 중복을 허용하여 무작위로 샘플을 추출해 여러 개의 작은 훈련 데이터셋(부트스트랩 샘플)을 만듭니다. 
+                            원본 훈련 데이터셋에서 중복을 허용하여 무작위로 샘플을 추출해 여러 개의 작은 훈련 데이터셋(부트스트랩 샘플)을 만듭니다.
                             각 결정 트리는 이렇게 생성된 서로 다른 부트스트랩 샘플을 사용하여 개별적으로 학습됩니다.
                         </p>
 </div>
@@ -78,7 +78,7 @@
 <i class="fas fa-filter mr-2"></i> 랜덤 특성 선택
                         </h3>
 <p class="text-base">
-                            각 결정 트리의 노드에서 분기점을 찾을 때, 전체 특성을 모두 고려하는 대신 무작위로 선택된 일부 특성 중에서 
+                            각 결정 트리의 노드에서 분기점을 찾을 때, 전체 특성을 모두 고려하는 대신 무작위로 선택된 일부 특성 중에서
                             최적의 분기 기준을 찾습니다. 이는 트리들이 서로 비슷한 형태로 만들어지는 것을 방지하고 상관관계를 줄여줍니다.
                         </p>
 </div>
@@ -145,57 +145,62 @@
 </div>
 </div>
 </div>
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_4.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">5 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_6.html">다음</a>
+</div>
 <script>
         // Random Forest Visualization using D3.js
         document.addEventListener('DOMContentLoaded', function() {
             const width = 550;
             const height = 250;
-            
+
             // Create SVG
             const svg = d3.select("#forest-visualization")
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height);
-            
+
             // Create multiple small trees to represent a forest
             const treeCount = 5;
             const treeWidth = 90;
             const treeHeight = 180;
             const horizontalGap = (width - treeWidth * treeCount) / (treeCount + 1);
-            
+
             // Tree data structure
             function createTreeData(depth, isRandom) {
                 if (depth === 0) {
                     return { name: "Root", children: [] };
                 }
-                
-                const branches = isRandom ? 
-                    [0, 1, 2].slice(0, 1 + Math.floor(Math.random() * 2)) : 
+
+                const branches = isRandom ?
+                    [0, 1, 2].slice(0, 1 + Math.floor(Math.random() * 2)) :
                     [0, 1];
-                
+
                 return {
                     name: "Node",
-                    children: branches.map(branch => 
+                    children: branches.map(branch =>
                         createTreeData(depth - 1, isRandom)
                     )
                 };
             }
-            
+
             // Create multiple trees
             for (let i = 0; i < treeCount; i++) {
                 const treeData = createTreeData(3, true);
-                
+
                 // Create tree visualization
                 const treeSvg = svg.append("g")
                     .attr("transform", `translate(${horizontalGap * (i + 1) + treeWidth * i}, 10)`);
-                
+
                 // Create hierarchical data
                 const root = d3.hierarchy(treeData);
-                
+
                 // Create tree layout
                 const treeLayout = d3.tree().size([treeWidth, treeHeight]);
                 treeLayout(root);
-                
+
                 // Add links
                 treeSvg.selectAll(".link")
                     .data(root.links())
@@ -206,32 +211,32 @@
                         const sourceY = d.source.y;
                         const targetX = d.target.x;
                         const targetY = d.target.y;
-                        
+
                         return `M${sourceX},${sourceY}
                                 L${targetX},${targetY}`;
                     });
-                
+
                 // Add nodes
                 const nodes = treeSvg.selectAll(".node")
                     .data(root.descendants())
                     .join("g");
-                
+
                 nodes.append("circle")
                     .attr("class", i % 2 === 0 ? "tree" : "tree-random")
                     .attr("r", d => d.depth === 0 ? 8 : (d.depth === 1 ? 6 : 5))
                     .attr("cx", d => d.x)
                     .attr("cy", d => d.y);
             }
-            
+
             // Add legend
             const legend = svg.append("g")
                 .attr("transform", "translate(20, 200)");
-            
+
             // Legend items
             const legendItems = [
                 { label: "랜덤 포레스트의 여러 개의 결정 트리", color: "#4CAF50" }
             ];
-            
+
             // Create legend
             legend.selectAll("rect")
                 .data(legendItems)
@@ -242,7 +247,7 @@
                 .attr("width", 15)
                 .attr("height", 15)
                 .attr("fill", d => d.color);
-            
+
             legend.selectAll("text")
                 .data(legendItems)
                 .enter()

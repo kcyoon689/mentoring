@@ -12,7 +12,7 @@
         .slide-container {
             width: 1280px;
             min-height: 1322px;
-            
+
             position: relative;
         }
         .comparison-table th {
@@ -120,22 +120,27 @@
 </div>
 </div>
 </div>
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
+</div>
 <script>
         // Visualization of dimensionality reduction techniques
         document.addEventListener('DOMContentLoaded', function() {
             const width = 600;
             const height = 180;
-            
+
             // Create SVG container
             const svg = d3.select("#visualization-container")
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height);
-            
+
             // Create t-SNE visualization (left side)
             const tsneGroup = svg.append("g")
                 .attr("transform", "translate(50, 20)");
-                
+
             // Title for t-SNE
             tsneGroup.append("text")
                 .attr("x", 150)
@@ -144,15 +149,15 @@
                 .attr("font-size", "14px")
                 .attr("font-weight", "bold")
                 .text("t-SNE: 지역적 구조 보존");
-                
+
             // Create t-SNE visualization
             const tsneData = createClusterData(5, 30, 2, 20);
             drawDimensionalityReduction(tsneGroup, tsneData, "#FF9800", 300, 140);
-            
+
             // Create UMAP visualization (right side)
             const umapGroup = svg.append("g")
                 .attr("transform", "translate(300, 20)");
-                
+
             // Title for UMAP
             umapGroup.append("text")
                 .attr("x", 150)
@@ -161,15 +166,15 @@
                 .attr("font-size", "14px")
                 .attr("font-weight", "bold")
                 .text("UMAP: 지역적/전역적 구조 보존");
-                
+
             // Create UMAP visualization
             const umapData = createClusterData(5, 30, 2, 20, true);
             drawDimensionalityReduction(umapGroup, umapData, "#4CAF50", 300, 140);
-            
+
             // Add legend
             const legend = svg.append("g")
                 .attr("transform", "translate(50, 170)");
-                
+
             // Legend for t-SNE
             legend.append("rect")
                 .attr("x", 0)
@@ -177,13 +182,13 @@
                 .attr("width", 12)
                 .attr("height", 12)
                 .attr("fill", "#FF9800");
-                
+
             legend.append("text")
                 .attr("x", 20)
                 .attr("y", 10)
                 .attr("font-size", "12px")
                 .text("t-SNE: 지역적 구조에 초점을 둔 비선형 차원 축소");
-                
+
             // Legend for UMAP
             legend.append("rect")
                 .attr("x", 300)
@@ -191,28 +196,28 @@
                 .attr("width", 12)
                 .attr("height", 12)
                 .attr("fill", "#4CAF50");
-                
+
             legend.append("text")
                 .attr("x", 320)
                 .attr("y", 10)
                 .attr("font-size", "12px")
                 .text("UMAP: 지역적 및 전역적 구조를 모두 보존하는 최신 기법");
         });
-        
+
         // Function to create cluster data for visualization
         function createClusterData(numClusters, pointsPerCluster, xRadius, yRadius, isGlobal = false) {
             const data = [];
             const colors = ["#FF9800", "#4CAF50", "#2196F3", "#9C27B0", "#E91E63"];
-            
+
             for (let i = 0; i < numClusters; i++) {
                 const centerX = 150 + (i % 3) * 50;
                 const centerY = 70 + Math.floor(i / 3) * 30;
-                
+
                 for (let j = 0; j < pointsPerCluster; j++) {
                     const x = centerX + (Math.random() - 0.5) * xRadius * 2;
                     const y = centerY + (Math.random() - 0.5) * yRadius * 2;
                     const r = 2 + Math.random() * 2;
-                    
+
                     data.push({
                         x: x,
                         y: y,
@@ -222,14 +227,14 @@
                     });
                 }
             }
-            
+
             // Add some connecting points for global structure (UMAP style)
             if (isGlobal) {
                 for (let i = 0; i < 10; i++) {
                     const x = 50 + Math.random() * 250;
                     const y = 30 + Math.random() * 100;
                     const r = 1;
-                    
+
                     data.push({
                         x: x,
                         y: y,
@@ -239,10 +244,10 @@
                     });
                 }
             }
-            
+
             return data;
         }
-        
+
         // Function to draw dimensionality reduction visualization
         function drawDimensionalityReduction(group, data, color, width, height) {
             // Draw points
@@ -257,31 +262,31 @@
                 .attr("opacity", d => d.global ? 0.5 : 0.8)
                 .attr("stroke", d => d.global ? "#fff" : "none")
                 .attr("stroke-width", d => d.global ? 1 : 0);
-                
+
             // Draw local structure lines (nearest neighbors)
             const links = [];
             for (let i = 0; i < data.length; i++) {
                 const source = data[i];
                 const candidates = [];
-                
+
                 for (let j = 0; j < data.length; j++) {
                     if (i !== j) {
                         const target = data[j];
                         const dx = source.x - target.x;
                         const dy = source.y - target.y;
                         const distance = Math.sqrt(dx * dx + dy * dy);
-                        
+
                         candidates.push({
                             target: j,
                             distance: distance
                         });
                     }
                 }
-                
+
                 // Sort by distance and take the closest points
                 candidates.sort((a, b) => a.distance - b.distance);
                 const numNeighbors = 3;
-                
+
                 for (let k = 0; k < numNeighbors; k++) {
                                 const target = data[candidates[k].target];
                                 links.push({
@@ -290,7 +295,7 @@
                                 });
                             }
             }
-            
+
             // Draw lines
             group.selectAll("line")
                 .data(links)

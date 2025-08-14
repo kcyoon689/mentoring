@@ -12,7 +12,7 @@
         .slide-container {
             width: 1280px;
             min-height: 988px;
-            
+
             position: relative;
         }
         .limitation-card {
@@ -152,18 +152,23 @@
 </div>
 </div>
 </div>
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_3.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">4 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_5.html">다음</a>
+</div>
 <script>
         // D3.js Visualization for Ensemble Methods
         document.addEventListener('DOMContentLoaded', function() {
             const width = 550;
             const height = 300;
-            
+
             // Create SVG container
             const svg = d3.select("#ensemble-visualization")
                 .append("svg")
                 .attr("width", width)
                 .attr("height", height);
-                
+
             // Define data points for visualization
             const singleTreeData = [
                 {x: 80, y: 50, r: 15, color: "#FF9800", label: "단일 트리 1"},
@@ -171,11 +176,11 @@
                 {x: 80, y: 190, r: 15, color: "#FF9800", label: "단일 트리 3"},
                 {x: 80, y: 260, r: 15, color: "#FF9800", label: "단일 트리 4"}
             ];
-            
+
             const ensembleData = [
                 {x: 350, y: 150, r: 30, color: "#4CAF50", label: "앙상블 모델"}
             ];
-            
+
             // Draw single trees
             svg.selectAll(".single-tree")
                 .data(singleTreeData)
@@ -187,7 +192,7 @@
                 .attr("fill", d => d.color)
                 .attr("stroke", "#333")
                 .attr("stroke-width", 1);
-                
+
             // Add tree labels
             svg.selectAll(".tree-label")
                 .data(singleTreeData)
@@ -200,7 +205,7 @@
                 .attr("font-size", "10px")
                 .attr("font-weight", "bold")
                 .text((d, i) => i + 1);
-                
+
             // Add tree descriptions
             svg.selectAll(".tree-desc")
                 .data(singleTreeData)
@@ -212,7 +217,7 @@
                 .attr("fill", "#333")
                 .attr("font-size", "12px")
                 .text(d => d.label);
-                
+
             // Draw ensemble model
             svg.selectAll(".ensemble")
                 .data(ensembleData)
@@ -224,7 +229,7 @@
                 .attr("fill", d => d.color)
                 .attr("stroke", "#333")
                 .attr("stroke-width", 1);
-                
+
             // Add ensemble label
             svg.selectAll(".ensemble-label")
                 .data(ensembleData)
@@ -237,7 +242,7 @@
                 .attr("font-size", "14px")
                 .attr("font-weight", "bold")
                 .text("앙상블");
-                
+
             // Draw connecting arrows
             singleTreeData.forEach(tree => {
                 svg.append("path")
@@ -247,7 +252,7 @@
                     .attr("fill", "none")
                     .attr("marker-end", "url(#arrow)");
             });
-            
+
             // Create arrow marker
             svg.append("defs").append("marker")
                 .attr("id", "arrow")
@@ -260,7 +265,7 @@
                 .append("path")
                 .attr("d", "M0,-5L10,0L0,5")
                 .attr("fill", "#333");
-                
+
             // Add title
             svg.append("text")
                 .attr("x", width / 2)
@@ -269,7 +274,7 @@
                 .attr("font-size", "16px")
                 .attr("font-weight", "bold")
                 .text("앙상블 기법: 여러 모델의 결합");
-                
+
             // Add description
             svg.append("text")
                 .attr("x", ensembleData[0].x)
@@ -278,14 +283,14 @@
                 .attr("font-size", "14px")
                 .attr("fill", "#333")
                 .text("다수결 투표 / 평균");
-                
+
             // Add benefits around ensemble
             const benefits = [
                 {text: "안정성↑", x: ensembleData[0].x + 70, y: ensembleData[0].y - 30},
                 {text: "분산↓", x: ensembleData[0].x + 50, y: ensembleData[0].y + 30},
                 {text: "정확도↑", x: ensembleData[0].x - 50, y: ensembleData[0].y - 50}
             ];
-            
+
             svg.selectAll(".benefit")
                 .data(benefits)
                 .enter()
