@@ -86,7 +86,13 @@
 <!-- Right Column: Visual Representation -->
 <div class="w-1/2 flex flex-col">
 <!-- Decision Tree Visualization -->
+ <div class="w-full flex flex-col items-center justify-center">
+  <img
+    src="page2.jpg"
+  />
+</div>
 <div class="flex-grow" id="tree-visualization"></div>
+
 <!-- Example -->
 <div class="bg-white p-4 rounded-lg shadow-md">
 <h3 class="text-xl font-semibold mb-2 text-green-700">
@@ -100,135 +106,10 @@
 </div>
 </div>
 </div>
-</div>
 <div class="mt-6 flex justify-between items-center">
 <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_1.html">이전</a>
 <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">2 / 10</div>
 <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_3.html">다음</a>
 </div>
-<script>
-        // Decision Tree Visualization using D3.js
-        document.addEventListener('DOMContentLoaded', function() {
-            const width = 550;
-            const height = 400;
-
-            // Tree data
-            const treeData = {
-                name: "결정 트리",
-                children: [
-                    {
-                        name: "루트 노드",
-                        children: [
-                            {
-                                name: "내부 노드",
-                                children: [
-                                    {
-                                        name: "리프 노드",
-                                        children: []
-                                    },
-                                    {
-                                        name: "리프 노드",
-                                        children: []
-                                    }
-                                ]
-                            },
-                            {
-                                name: "내부 노드",
-                                children: [
-                                    {
-                                        name: "리프 노드",
-                                        children: []
-                                    },
-                                    {
-                                        name: "리프 노드",
-                                        children: []
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            };
-
-            // Create a radial tree layout
-            const svg = d3.select("#tree-visualization")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g")
-                .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
-
-            // Create hierarchical data
-            const root = d3.hierarchy(treeData);
-            const treeLayout = d3.tree().size([2 * Math.PI, 150]);
-            treeLayout(root);
-
-            // Add links
-            svg.selectAll(".link")
-                .data(root.links())
-                .join("path")
-                .attr("class", "link")
-                .attr("d", d => {
-                    const sourceX = d.source.x;
-                    const sourceY = d.source.y;
-                    const targetX = d.target.x;
-                    const targetY = d.target.y;
-
-                    return `M${sourceY * Math.cos(sourceX)},${sourceY * Math.sin(sourceX)}
-                            L${targetY * Math.cos(targetX)},${targetY * Math.sin(targetX)}`;
-                });
-
-            // Add nodes
-            const nodes = svg.selectAll(".node")
-                .data(root.descendants())
-                .join("g");
-
-            nodes.append("circle")
-                .attr("class", "node")
-                .attr("r", d => d.depth === 0 ? 30 : (d.depth === 1 ? 25 : 20))
-                .attr("cx", d => d.y * Math.cos(d.x))
-                .attr("cy", d => d.y * Math.sin(d.x))
-                .attr("fill", d => d.depth === 0 ? "#4CAF50" : (d.depth === 1 ? "#8BC34A" : "#CDDC39"));
-
-            // Add node text
-            nodes.append("text")
-                .attr("class", "node-text")
-                .attr("x", d => d.y * Math.cos(d.x))
-                .attr("y", d => d.y * Math.sin(d.x))
-                .text(d => d.data.name.split(" ")[0]);
-
-            // Add legend
-            const legend = svg.append("g")
-                .attr("transform", "translate(-250, 180)");
-
-            // Legend items
-            const legendItems = [
-                { label: "루트 노드", color: "#4CAF50" },
-                { label: "내부 노드", color: "#8BC34A" },
-                { label: "리프 노드", color: "#CDDC39" }
-            ];
-
-            // Create legend
-            legend.selectAll("rect")
-                .data(legendItems)
-                .enter()
-                .append("rect")
-                .attr("x", 0)
-                .attr("y", (d, i) => i * 25)
-                .attr("width", 15)
-                .attr("height", 15)
-                .attr("fill", d => d.color);
-
-            legend.selectAll("text")
-                .data(legendItems)
-                .enter()
-                .append("text")
-                .attr("x", 25)
-                .attr("y", (d, i) => i * 25 + 12)
-                .text(d => d.label)
-                .attr("font-size", "12px")
-                .attr("fill", "#333333");
-        });
-    </script>
 
 </body></html>
