@@ -1,0 +1,661 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>머신러닝 완전 정복: 기초 이론부터 모델 최적화까지</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px 40px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    }
+.chart-container {
+    position: relative;
+    margin: 3em auto;
+    max-width: 700px;
+    min-height: 200px;
+    max-height: 400px;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    aspect-ratio: 7/5;}
+h5 {
+    font-size: 16px;
+    }
+body {
+    font-family: "Georgia", "serif", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    line-height: 1.8;
+    font-size: 16px;
+    color: #333;
+    background-color: #fdfdfd;
+    margin: 0 24px 0 24px;
+    padding: 0;
+    max-width: None;
+    }
+main {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+h1, h2, h3, h4 {
+    font-family: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    color: #1a1a1a;
+    line-height: 1.3;
+    margin-top: 24px;
+    margin-bottom: 20px;
+    font-size: 28px;
+    }
+h1 {
+    font-size: 28px;
+    text-align: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5em;
+    margin-top: 24px;
+    margin-bottom: 20px;
+    }
+h2 {
+    font-size: 22px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.3em;
+    }
+h3 {
+    font-size: 20px;
+    }
+h4 {
+    font-size: 18px;
+    }
+p {
+    margin-bottom: 1.2em;
+    }
+a {
+    color: #07c;
+    text-decoration: none;
+    }
+a:hover {
+    text-decoration: underline;
+    }
+code {
+    font-family: "Menlo", "Monaco", "Courier New", monospace;
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    }
+pre {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 5px;
+    overflow-x: auto;
+    font-size: 0.9em;
+    }
+pre code {
+    padding: 0;
+    background-color: transparent;
+    }
+blockquote {
+    border-left: 4px solid #ccc;
+    padding-left: 20px;
+    margin: 2em 0;
+    color: #555;
+    font-style: italic;
+    }
+figure {
+    margin: 2em 0;
+    text-align: center;
+    }
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    overflow: hidden;
+    max-height: 280px;
+    margin: 1em auto;
+    }
+figcaption {
+    margin-top: 0.8em;
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+    }
+ul, ol {
+    padding-left: 25px;
+    }
+li {
+    margin-bottom: 0.5em;
+    }
+.toc {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 2em;
+    }
+.toc h2 {
+    margin-top: 0;
+    border-bottom: none;
+    font-size: 1.5em;
+    }
+.toc ul {
+    list-style-type: none;
+    padding-left: 0;
+    }
+.toc ul ul {
+    padding-left: 20px;
+    }
+.toc li a {
+    color: #333;
+    }
+.key-points {
+    background-color: #eef7ff;
+    border: 1px solid #cce4ff;
+    padding: 20px;
+    margin: 2em 0;
+    border-radius: 8px;
+    }
+.key-points h4 {
+    margin-top: 0;
+    color: #00529B;
+    }
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain;
+}
+
+@media only screen and (max-device-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+                font-family: PingFang SC;
+                font-size: 15px;
+                line-height: 1.5;
+            }
+
+            .container {
+                padding: 0;
+                margin: 16px 20px 30px;
+                box-shadow: none;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4 {
+                font-family: PingFang SC;
+            }
+
+            h1 {
+                font-size: 1.87em;
+                line-height: 1.6;
+                margin-bottom: 0.5em;
+                text-align: center;
+            }
+
+            h2 {
+                font-size: 1.6em;
+                font-weight: 600;
+                margin-top: 1.3em;
+                margin-bottom: 0.8em;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 0.5em;
+            }
+
+            h3 {
+                font-size: 1.2em;
+                font-weight: 600;
+                margin-top: 1em;
+                margin-bottom: 0.6em;
+            }
+
+            h4 {
+                font-size: 1.1em;
+                font-weight: 500;
+                margin-top: 1em;
+                margin-bottom: 0.5em;
+                font-style: normal;
+            }
+
+            h5 {
+                font-size: 1em;
+                font-weight: 500;
+                margin-bottom: 1.2em;
+            }
+
+            ul,
+            ol {
+                font-size: 1em; /* Equivalent to 17.6px if base is 16px */
+                font-weight: 400;
+                margin-bottom: 1.2em;
+                line-height: 1.8;
+            }
+
+            p {
+                font-size: 1em;
+                line-height: 1.8; /* Equivalent to 17.6px if base is 16px */
+                font-weight: 400;
+                margin-top: 0.8em;
+                margin-bottom: 0.8em;
+            }
+
+            blockquote {
+                padding: 1em 1.2em;
+
+            p {
+                margin: 0;
+            }
+        }
+
+        figcaption {
+            margin-top: 0.5em;
+            font-size: 0.8em; /* Equivalent to 17.6px if base is 16px */
+            font-weight: 400;
+            text-align: center;
+            font-style: normal;
+            color: #7F8896;
+        }
+
+        img {
+            display: block;
+            overflow: hidden;
+            max-width: 100%;
+            max-height: 335px;
+            margin: 1em auto;
+            border-radius: 8px;
+        }
+        }</style>
+</head>
+<body><div class="container">
+<h1 id="section-1">머신러닝 완전 정복: 기초 이론부터 모델 최적화까지</h1>
+<nav aria-label="Table of Contents" class="toc">
+<h2 id="section-1">목차</h2>
+<ul>
+<li><a href="#section-part1">Part 1. 머신러닝의 언어, 핵심 수학 개념</a>
+<ul>
+<li><a href="#section-part1-1">행렬: 데이터 구조의 기본 (전치, 단위, 역행렬)</a></li>
+<li><a href="#section-part1-2">미분: 최적화를 향한 첫걸음</a></li>
+</ul>
+</li>
+<li><a href="#section-part2">Part 2. 예측 모델의 초석, 핵심 회귀 알고리즘</a>
+<ul>
+<li><a href="#section-part2-1">선형 회귀 (Linear Regression): 모든 회귀의 시작</a></li>
+<li><a href="#section-part2-2">다중, 다항, 로지스틱 회귀: 선형 회귀의 확장</a></li>
+</ul>
+</li>
+<li><a href="#section-part3">Part 3. 모델 성능을 끌어올리는 고급 전략</a>
+<ul>
+<li><a href="#section-part3-1">데이터 전처리: 모델의 잠재력을 깨우는 첫 단추</a></li>
+<li><a href="#section-part3-2">과적합과의 전쟁: 일반화 성능 확보하기</a></li>
+<li><a href="#section-part3-3">최적의 모델을 찾는 여정: 하이퍼파라미터 튜닝</a></li>
+</ul>
+</li>
+<li><a href="#section-conclusion">결론: 핵심 정리 및 다음 단계</a></li>
+</ul>
+</nav>
+<section>
+<p>인공지능(AI)과 머신러닝 기술이 우리 삶의 모든 영역에 스며들고 있습니다. 자율주행 자동차부터 개인화된 추천 시스템, 질병 진단 보조에 이르기까지 그 영향력은 날로 커지고 있습니다. 이러한 화려한 기술의 이면에는 데이터를 이해하고, 패턴을 학습하며, 미래를 예측하는 견고한 수학적, 통계적 원리가 자리 잡고 있습니다. 최신 딥러닝 모델이나 복잡한 알고리즘을 사용하는 것도 중요하지만, 그 근간을 이루는 &#39;기본기&#39;를 이해하는 것은 기술의 본질을 꿰뚫고 문제 해결 능력을 한 차원 높이는 데 필수적입니다.</p>
+<p>많은 이들이 머신러닝을 시작하며 복잡한 수학 공식과 방대한 개념의 숲에서 길을 잃곤 합니다. 개별적인 개념들은 이해하지만, 그것들이 어떻게 유기적으로 연결되어 하나의 예측 모델을 완성하는지에 대한 전체적인 그림을 그리는 데 어려움을 겪습니다. 이 글은 바로 그 지점에서 출발합니다. 흩어져 있던 머신러닝의 핵심 개념들을 하나의 일관된 맥락으로 엮어내고자 합니다.</p>
+<p>본 글에서는 다음과 같은 여정을 통해 머신러닝의 핵심을 체계적으로 탐험할 것입니다.</p>
+<ul>
+<li><strong>Part 1: 머신러닝의 언어, 핵심 수학 개념</strong> - 데이터가 어떻게 표현되고(선형대수), 모델이 어떻게 최적의 답을 찾아가는지(미분)에 대한 근본 원리를 다룹니다.</li>
+<li><strong>Part 2: 예측 모델의 초석, 핵심 회귀 알고리즘</strong> - 수학적 도구들이 어떻게 실제 예측 모델로 구현되는지, 가장 기본적이면서도 강력한 회귀 알고리즘들을 통해 살펴봅니다.</li>
+<li><strong>Part 3: 모델 성능을 끌어올리는 고급 전략</strong> - 좋은 모델을 만드는 것을 넘어, &#39;더 좋은&#39; 모델을 만들기 위해 데이터를 다듬고, 과적합을 방지하며, 최적의 성능을 이끌어내는 실전 전략들을 탐구합니다.</li>
+</ul>
+<p>이 글을 끝까지 읽는다면, 독자 여러분은 단순히 개별 지식을 나열하는 것을 넘어, 각 개념이 왜 필요하고 어떻게 상호작용하는지에 대한 깊은 통찰력을 얻게 될 것입니다. 이는 곧 어떤 문제에 직면했을 때 적절한 도구를 선택하고, 모델의 작동 방식을 해석하며, 발생 가능한 문제를 예측하고 해결하는 능력으로 이어질 것입니다. 이제, 머신러닝의 견고한 토대를 다지는 여정을 함께 시작하겠습니다.</p>
+</section>
+<h2 id="section-part1">Part 1. 머신러닝의 언어, 핵심 수학 개념</h2>
+<p>머신러닝 모델을 구축하고 이해하는 과정은 마치 새로운 언어를 배우는 것과 같습니다. 이 언어의 문법과 어휘는 수학, 특히 선형대수와 미적분학으로 이루어져 있습니다. 이 파트에서는 머신러닝 세계에서 데이터가 어떻게 구조화되고 표현되는지, 그리고 모델이 어떻게 학습 데이터로부터 최적의 패턴을 찾아내는지를 가능하게 하는 근본적인 수학적 도구들을 탐구합니다. 이 개념들은 추상적인 이론에 그치지 않고, Part 2와 3에서 다룰 모든 알고리즘과 기법의 작동 원리를 이해하는 데 결정적인 열쇠가 될 것입니다.</p>
+<h3 id="section-part1-1">행렬: 데이터 구조의 기본 (전치, 단위, 역행렬)</h3>
+<p>컴퓨터는 이미지, 텍스트, 수치 데이터 등 다양한 형태의 정보를 직접 이해하지 못합니다. 머신러닝이 작동하기 위해서는 이 모든 데이터를 숫자의 배열, 즉 &#39;행렬(Matrix)&#39; 형태로 변환해야 합니다. 행렬은 행(row)과 열(column)으로 구성된 2차원 숫자 배열로, 머신러닝에서 데이터를 체계적으로 표현하고 연산하는 가장 기본적인 단위입니다. 예를 들어, 주택 가격 예측 데이터셋에서 각 행은 개별 주택을, 각 열은 평수, 방의 개수, 건축 연도와 같은 특성(feature)을 나타내는 거대한 행렬로 표현될 수 있습니다. <a href="https://ko.khanacademy.org/math/precalculus/x9e81a4f98389efdf:matrices/x9e81a4f98389efdf:properties-of-matrix-multiplication/a/intro-to-identity-matrices" target="_blank">행렬은 이처럼 데이터를 담는 그릇이자</a>, 선형 변환을 통해 데이터를 다른 차원으로 옮기는 도구로서 기능합니다.</p>
+<h4>전치 행렬 (Transpose Matrix, Aᵀ)</h4>
+<p>
+<strong>전치 행렬</strong>은 기존 행렬의 행과 열을 서로 맞바꾸어 얻는 새로운 행렬을 의미합니다. <a href="https://datalabbit.tistory.com/37" target="_blank">만약 원래 행렬 A가 m개의 행과 n개의 열을 가진 m x n 행렬이라면</a>, 그 전치 행렬 Aᵀ는 n개의 행과 m개의 열을 가진 n x m 행렬이 됩니다.
+        </p>
+<p>
+            예를 들어, 행렬 A가 다음과 같을 때,
+        </p>
+<pre><code>
+A = | 1  2  3 |
+    | 4  5  6 |  (2x3 행렬)
+        </code></pre>
+<p>
+            A의 전치 행렬 Aᵀ는 다음과 같습니다.
+        </p>
+<pre><code>
+Aᵀ = | 1  4 |
+     | 2  5 |
+     | 3  6 |  (3x2 행렬)
+        </code></pre>
+<p>
+            이 단순한 변환은 머신러닝에서 매우 중요한 역할을 수행합니다. 첫째, 벡터의 내적(dot product)을 행렬 곱셈으로 표현할 때 사용됩니다. 두 벡터 u와 v의 내적은 uᵀv로 계산할 수 있습니다. 둘째, 데이터의 형태를 연산에 맞게 변환하는 데 필수적입니다. 예를 들어, 행 벡터(row vector)를 열 벡터(column vector)로 바꾸거나 그 반대의 경우에 사용됩니다. <a href="https://blog.naver.com/cindyvelyn/222126373034" target="_blank">특히, Part 2에서 다룰 선형 회귀의 &#39;정규방정식(Normal Equation)&#39;</a>에서 전치 행렬은 비용 함수를 최소화하는 파라미터를 찾는 데 핵심적인 연산자로 등장하며, 행렬 곱셈의 차원을 맞추고 해를 구하는 데 결정적인 역할을 합니다. 전치 행렬의 중요한 성질 중 하나는 두 행렬 곱의 전치는 각 행렬의 전치의 곱과 같지만 순서가 바뀐다는 점입니다: <code>(AB)ᵀ = BᵀAᵀ</code>. <a href="https://wikidocs.net/214407" target="_blank">이 성질은 복잡한 행렬 미분을 계산할 때 매우 유용하게 사용됩니다.</a>
+</p>
+<h4>단위 행렬 (Identity Matrix, I)</h4>
+<p>
+<strong>단위 행렬</strong>은 행과 열의 개수가 같은 정사각 행렬(square matrix) 중에서, 왼쪽 위에서 오른쪽 아래로 이어지는 주대각선(main diagonal)의 원소는 모두 1이고 나머지 원소는 모두 0인 특별한 행렬입니다. <a href="https://ko.wikipedia.org/wiki/%EB%8B%A8%EC%9C%84_%ED%96%89%EB%A0%AC" target="_blank">기호로는 보통 I 또는 E로 표기합니다.</a>
+</p>
+<pre><code>
+I (3x3) = | 1  0  0 |
+          | 0  1  0 |
+          | 0  0  1 |
+        </code></pre>
+<p>
+            단위 행렬의 가장 중요한 역할은 숫자 연산에서의 &#39;1&#39;과 같다는 점입니다. <a href="https://blog.naver.com/mykepzzang/220993805024" target="_blank">어떤 수에 1을 곱해도 그 수 자신이 나오듯이, 어떤 행렬에 (곱셈이 가능한 차원의) 단위 행렬을 곱해도 원래 행렬이 그대로 나옵니다.</a> 즉, <code>AI = IA = A</code>가 성립합니다. 이 성질 때문에 단위 행렬은 &#39;항등 행렬&#39;이라고도 불립니다. 이 개념은 다음에 설명할 역행렬을 정의하는 데 있어 필수적인 전제 조건이 됩니다. 행렬의 세계에서 &#39;역(inverse)&#39;의 개념은 &#39;곱해서 항등원(identity)이 되는 것&#39;으로 정의되기 때문입니다.
+        </p>
+<h4>역행렬 (Inverse Matrix, A⁻¹)</h4>
+<p>
+<strong>역행렬</strong>은 어떤 정사각 행렬 A에 대해, 곱했을 때 단위 행렬 I가 나오게 하는 행렬을 의미하며, A⁻¹로 표기합니다. 즉, <code>AA⁻¹ = A⁻¹A = I</code> 관계를 만족하는 행렬입니다. <a href="https://blog.naver.com/cindyvelyn/222126373034" target="_blank">숫자 세계에서 5의 역수가 1/5이고 둘을 곱하면 1이 되는 것과 유사한 개념입니다.</a>
+</p>
+<p>
+            역행렬은 머신러닝, 특히 선형 모델에서 매우 강력한 도구입니다. 연립 선형방정식 <code>Ax = b</code>의 해를 구할 때, 양변에 A의 역행렬 A⁻¹을 곱하면 <code>A⁻¹Ax = A⁻¹b</code>가 되고, <code>Ix = A⁻¹b</code> 이므로 해 <code>x = A⁻¹b</code>를 직접 구할 수 있습니다. 이 원리는 Part 2에서 배울 선형 회귀의 &#39;정규방정식&#39;에서 모델의 최적 파라미터(가중치)를 단 한 번의 계산으로 찾아내는 데 그대로 적용됩니다.
+        </p>
+<p>
+            하지만 중요한 점은 모든 정사각 행렬이 역행렬을 갖는 것은 아니라는 사실입니다. 역행렬이 존재하기 위한 필요충분조건은 행렬의 <strong>행렬식(determinant)</strong> 값이 0이 아니어야 한다는 것입니다. <a href="https://darkpgmr.tistory.com/104" target="_blank">행렬식이 0인 행렬을 &#39;특이 행렬(singular matrix)&#39;이라고 하며, 이 경우 역행렬은 존재하지 않습니다.</a> 머신러닝에서는 특성 간에 완벽한 선형 관계(다중공선성)가 존재할 때 이런 문제가 발생할 수 있으며, 이는 정규방정식을 이용한 해법을 사용할 수 없게 만듭니다. 3x3 이상의 고차원 행렬의 역행렬을 손으로 구하는 것은 매우 복잡하며, <a href="https://portrait-of-youngblood.tistory.com/24" target="_blank">가우스-조던 소거법과 같은 알고리즘을 통해 계산적으로 구하는 것이 일반적입니다.</a>
+</p>
+<h3 id="section-part1-2">미분: 최적화를 향한 첫걸음</h3>
+<p>
+            머신러닝 모델을 &#39;학습&#39;시킨다는 것은 무엇을 의미할까요? 그것은 본질적으로 모델이 주어진 데이터에 대해 가장 정확한 예측을 하도록 만드는 &#39;최적의 파라미터(가중치와 편향)&#39;를 찾는 과정입니다. 이 &#39;최적화(optimization)&#39; 과정의 심장부에 바로 <strong>미분(Differentiation)</strong>이 있습니다. 미분은 복잡한 수식으로 보일 수 있지만, 그 본질은 매우 직관적입니다: <a href="https://blog.naver.com/luvwithcat/221997007761" target="_blank">함수의 특정 지점에서의 &#39;순간적인 변화율&#39; 또는 그래프의 &#39;기울기(slope)&#39;를 구하는 것입니다.</a>
+</p>
+<p>
+            머신러닝에서 미분이 결정적인 역할을 하는 이유는 &#39;비용 함수(Cost Function)&#39; 또는 &#39;손실 함수(Loss Function)&#39; 때문입니다. 비용 함수는 모델의 예측 값이 실제 정답과 얼마나 다른지, 즉 &#39;오차&#39;의 크기를 측정하는 함수입니다. <a href="https://bommbom.tistory.com/entry/%EB%A8%B8%EC%8B%A0%EB%9F%AC%EB%8B%9D-%EC%84%A0%ED%98%95-%ED%9A%8C%EA%B7%80Linear-Regression-%EC%99%80-%EB%B9%84%EC%9A%A9%ED%95%A8%EC%88%98" target="_blank">모델의 성능이 좋을수록 비용 함수의 값은 작아지고, 성능이 나쁠수록 커집니다.</a> 따라서 모델 학습의 목표는 이 비용 함수를 최소화하는 파라미터 값을 찾는 것입니다.
+        </p>
+<figure>
+<figcaption>선형 회귀의 비용 함수(J)를 파라미터 m과 c에 대해 각각 편미분하여 기울기를 구하는 과정</figcaption>
+</figure>
+<p>
+            이때 미분이 등장합니다. 산 정상에서 가장 빨리 내려오는 길을 찾으려면 어떻게 해야 할까요? 아마도 발밑의 경사가 가장 가파른 방향으로 한 걸음씩 내디딜 것입니다. 이와 마찬가지로, 머신러닝에서는 <strong>경사 하강법(Gradient Descent)</strong>이라는 최적화 알고리즘을 사용합니다. <a href="https://hyunsooworld.tistory.com/entry/%EB%94%A5%EB%9F%AC%EB%8B%9D%EC%9D%84-%EC%9C%84%ED%95%9C-%EA%B2%BD%EC%82%AC%ED%95%98%EA%B0%95%EB%B2%95Gradient-Descent" target="_blank">경사 하강법은 미분을 통해 현재 파라미터 위치에서 비용 함수의 기울기(경사, gradient)를 계산합니다.</a> 그리고 그 기울기의 반대 방향(값이 감소하는 방향)으로 파라미터를 조금씩 이동시키는 과정을 반복합니다. 이 과정을 계속하다 보면 결국 기울기가 0에 가까운 지점, 즉 비용 함수가 최소가 되는 골짜기의 바닥에 도달하게 됩니다.
+        </p>
+<p>
+            결론적으로, 미분은 모델의 오차를 나타내는 비용 함수의 &#39;지형도&#39;를 읽어내는 도구입니다. <a href="https://m.blog.naver.com/bazlex/223728481200?recommendCode=2&amp;recommendTrackingCode=2" target="_blank">미분을 통해 현재 위치에서 어느 방향으로 가야 오차를 가장 효과적으로 줄일 수 있는지 알 수 있으며</a>, 이 정보를 바탕으로 경사 하강법은 모델을 최적의 상태로 점진적으로 이끌어갑니다. 이처럼 미분은 복잡한 모델을 학습시키고 최적화하는 데 없어서는 안 될 핵심적인 기반 기술입니다.
+        </p>
+<div class="key-points">
+<h4>Part 1. 핵심 요약</h4>
+<ul>
+<li><strong>행렬</strong>은 데이터를 구조화하고 연산하기 위한 기본 도구이며, <strong>전치/단위/역행렬</strong>은 정규방정식과 같은 해법에서 핵심적인 역할을 합니다.</li>
+<li><strong>미분</strong>은 모델의 오차(비용 함수)를 최소화하기 위한 &#39;방향&#39;을 제시하는 도구로, <strong>경사 하강법</strong> 알고리즘의 근간을 이룹니다.</li>
+<li>이러한 수학적 개념들은 머신러닝 모델이 데이터를 &#39;학습&#39;하는 과정을 수학적으로 정의하고 실행 가능하게 만드는 언어와 같습니다.</li>
+</ul>
+</div>
+<h2 id="section-part2">Part 2. 예측 모델의 초석, 핵심 회귀 알고리즘</h2>
+<p>Part 1에서 다룬 수학적 도구들이 어떻게 실제 세계의 문제를 해결하는 예측 모델로 탄생하는지 살펴보겠습니다. 이 파트에서는 지도 학습(Supervised Learning)의 가장 기본적이면서도 강력한 알고리즘인 회귀(Regression) 모델들을 집중적으로 탐구합니다. 회귀 분석은 하나 이상의 독립 변수(원인)를 사용하여 종속 변수(결과)의 값을 예측하는 통계적 기법입니다. <a href="https://uwwwwwu.tistory.com/14" target="_blank">두 변수 사이의 관계를 통계적 분석을 통해 방정식으로 나타내는 것이 핵심입니다.</a> 우리는 가장 단순한 선형 회귀에서 시작하여, 이를 다중, 다항, 그리고 분류 문제에 적용하는 로지스틱 회귀로 확장해 나가면서 각 모델의 원리와 활용법을 깊이 있게 이해할 것입니다.</p>
+<h3 id="section-part2-1">선형 회귀 (Linear Regression): 모든 회귀의 시작</h3>
+<p>
+<strong>선형 회귀</strong>는 통계학과 머신러닝의 역사에서 가장 오래되고 널리 사용되는 예측 모델 중 하나입니다. 그 이름에서 알 수 있듯이, 독립 변수(feature, x)와 종속 변수(target, y) 사이에 &#39;선형적인&#39; 관계가 있다고 가정하고, 이 관계를 가장 잘 나타내는 하나의 직선(1차원) 또는 초평면(다차원)을 찾는 것을 목표로 합니다. <a href="https://gooopy.tistory.com/127" target="_blank">수많은 머신러닝 알고리즘의 기반이 되기 때문에 그 원리를 이해하는 것은 매우 중요합니다.</a> 예를 들어, &#39;공부 시간&#39;이라는 독립 변수가 &#39;시험 성적&#39;이라는 종속 변수에 어떤 영향을 미치는지 예측하는 모델을 만든다면, 선형 회귀는 모든 데이터 포인트들로부터 평균적으로 가장 가까운 거리에 있는 하나의 직선 방정식을 찾아냅니다.
+        </p>
+<figure>
+<figcaption>주택 크기(독립 변수)에 따른 가격(종속 변수)의 관계를 나타내는 선형 회귀 모델의 예시</figcaption>
+</figure>
+<h4>비용 함수 (Cost Function): 평균 제곱 오차 (MSE)</h4>
+<p>
+            그렇다면 &#39;데이터를 가장 잘 나타내는&#39; 직선은 어떻게 찾을 수 있을까요? 모델은 수많은 가능한 직선 중에서 최적의 선을 어떻게 선택할까요? 그 해답은 <strong>비용 함수(Cost Function)</strong>에 있습니다. 선형 회귀에서는 주로 <strong>평균 제곱 오차(Mean Squared Error, MSE)</strong>를 비용 함수로 사용합니다. <a href="https://codingslime.tistory.com/13" target="_blank">MSE는 각 데이터 포인트의 실제 값(y)과 모델이 예측한 값(ŷ) 사이의 차이, 즉 오차(error)를 계산하고, 이 오차를 제곱한 뒤 모두 더해 평균을 낸 값입니다.</a>
+</p>
+<p>
+            오차를 그냥 더하지 않고 제곱하는 이유는 두 가지입니다. 첫째, 오차는 양수일 수도, 음수일 수도 있는데, 제곱을 함으로써 모든 오차를 양수로 만들어 서로 상쇄되는 것을 방지합니다. 둘째, 제곱을 함으로써 오차가 큰 값에 더 큰 패널티를 부여하여, 모델이 큰 오차를 줄이는 데 더 집중하도록 만듭니다. 결국 선형 회귀 모델의 학습 목표는 이 MSE 값을 최소로 만드는 직선의 기울기(w, 가중치)와 y절편(b, 편향)을 찾는 것입니다.
+        </p>
+<figure>
+<figcaption>평균 제곱 오차(MSE)의 계산 공식. 실제 값(Yi)과 예측 값(Yi&#39;)의 차이를 제곱하여 평균 낸다</figcaption>
+</figure>
+<h4>최적의 해를 찾는 두 가지 방법</h4>
+<p>
+            MSE를 최소화하는 최적의 파라미터를 찾는 방법은 크게 두 가지로 나뉩니다. 이는 Part 1에서 배운 수학적 개념들이 어떻게 직접적으로 활용되는지 보여주는 훌륭한 예시입니다.
+        </p>
+<ol>
+<li>
+<strong>정규방정식 (Normal Equation)</strong>
+<p>정규방정식은 비용 함수(MSE)를 파라미터 θ(세타, 가중치 벡터)에 대해 미분하여 기울기가 0이 되는 지점을 찾는 해석적 방법입니다. <a href="https://www.geeksforgeeks.org/machine-learning/ml-normal-equation-in-linear-regression/" target="_blank">복잡한 미분 과정을 거치면, 최적의 파라미터 θ를 구하는 다음과 같은 간결한 행렬 공식을 얻을 수 있습니다.</a></p>
+<figure>
+<img alt="정규방정식 공식" src="https://picture-search.tiangong.cn/image/rt/aa9f28c6249ca55176069d9289712ab1.jpg" style="max-height: 280px; max-width: 100%;"/>
+<figcaption>비용 함수를 최소화하는 파라미터 θ를 한 번에 계산하는 정규방정식</figcaption>
+</figure>
+<p>이 공식에서 X는 각 행이 데이터 샘플이고 각 열이 특성인 특성 행렬이며, y는 실제 값 벡터입니다. 여기서 Part 1에서 배운 <strong>전치 행렬(Xᵀ)</strong>과 <strong>역행렬((XᵀX)⁻¹)</strong>이 어떻게 사용되는지 명확히 볼 수 있습니다.
+                </p>
+<ul>
+<li><strong>장점:</strong> 경사 하강법처럼 여러 번 반복 계산할 필요 없이 단 한 번의 행렬 계산으로 최적의 해를 찾을 수 있습니다. 따라서 학습률(learning rate)과 같은 하이퍼파라미터를 조정할 필요가 없습니다. <a href="https://nanunzoey.tistory.com/entry/%EC%84%A0%ED%98%95-%ED%9A%8C%EA%B7%80Linear-Regression%EC%99%80-%EA%B2%BD%EC%82%AC%ED%95%98%EA%B0%95%EB%B2%95Gradient-Descent" target="_blank">특성의 개수(n)가 많지 않을 때 매우 빠르고 효율적입니다.</a></li>
+<li><strong>단점:</strong> 가장 큰 단점은 계산 복잡도입니다. (n+1) x (n+1) 크기의 행렬 (XᵀX)의 역행렬을 계산해야 하는데, 이 계산 비용은 특성의 개수 n에 따라 대략 O(n²·⁴)에서 O(n³) 사이로 급격히 증가합니다. <a href="https://dongsam-memo.tistory.com/27" target="_blank">따라서 특성이 수천 개를 넘어가면 매우 느려집니다.</a> 또한, XᵀX의 역행렬이 존재하지 않는 경우(예: 특성 간 다중공선성이 존재할 때)에는 사용할 수 없습니다. <a href="https://brunch.co.kr/@linecard/467" target="_blank">이러한 비가역성 문제는 정규방정식의 한계로 작용합니다.</a></li>
+</ul>
+</li>
+<li>
+<strong>경사 하강법 (Gradient Descent)</strong>
+<p>경사 하강법은 Part 1에서 설명했듯이, 비용 함수의 골짜기를 따라 점진적으로 내려가는 반복적인 최적화 방법입니다. <a href="https://ybigta-data-science.readthedocs.io/en/latest/6_Data_Science_from_Scratch/02_Gradient%20Descent%20&amp;%20Linear%20Regression/" target="_blank">대표적인 파라미터 최적화 방법으로, 매 반복마다 각 파라미터의 기울기(gradient)를 구해 비용 함수를 최소화하는 방향으로 업데이트합니다.</a></p>
+<ul>
+<li><strong>장점:</strong> 특성의 개수가 수십만, 수백만 개로 매우 많아도 효율적으로 동작합니다. 정규방정식처럼 거대한 행렬의 역행렬을 계산할 필요가 없기 때문입니다. 따라서 대용량 데이터셋에 매우 적합합니다.</li>
+<li><strong>단점:</strong> 최적의 해에 도달하기 위해 여러 번의 반복이 필요하며, &#39;학습률(learning rate)&#39;이라는 하이퍼파라미터를 신중하게 설정해야 합니다. 학습률이 너무 작으면 수렴하는 데 시간이 오래 걸리고, 너무 크면 최적점을 지나쳐 발산해버릴 수 있습니다. 또한, 데이터의 스케일에 민감하여 Part 3에서 다룰 &#39;특성 스케일링&#39; 전처리 과정이 거의 필수적입니다. <a href="https://www.analyticsvidhya.com/blog/2020/04/feature-scaling-machine-learning-normalization-standardization/" target="_blank">경사 하강법 기반 알고리즘은 데이터 스케일링이 필요합니다.</a></li>
+</ul>
+</li>
+</ol>
+<h3 id="section-part2-2">다중, 다항, 로지스틱 회귀: 선형 회귀의 확장</h3>
+<p>단순 선형 회귀는 강력한 기본 모델이지만, 현실 세계의 복잡한 문제들을 해결하기 위해서는 그 한계를 넘어서는 확장된 모델들이 필요합니다. 다중 선형 회귀, 다항 회귀, 로지스틱 회귀는 모두 선형 회귀의 핵심 아이디어를 바탕으로, 더 다양한 데이터 유형과 관계를 모델링할 수 있도록 발전한 형태입니다.</p>
+<h4>다중 선형 회귀 (Multiple Linear Regression)</h4>
+<p>
+<strong>다중 선형 회귀</strong>는 독립 변수가 하나가 아닌 &#39;여러 개&#39;일 때 사용하는 모델입니다. 이는 단순 선형 회귀의 가장 자연스러운 확장입니다. 예를 들어, 집값을 예측할 때 단순히 &#39;평수&#39;만 고려하는 것이 아니라, &#39;방의 개수&#39;, &#39;욕실의 개수&#39;, &#39;도심까지의 거리&#39; 등 여러 요인을 함께 고려하면 훨씬 더 정확한 예측이 가능할 것입니다. <a href="https://aws.amazon.com/ko/what-is/linear-regression/" target="_blank">다중 선형 회귀는 이처럼 여러 변수와 그 변수들이 결과에 미치는 영향을 종합적으로 모델링합니다.</a>
+</p>
+<p>
+            수식적으로, 단순 선형 회귀의 <code>y = w₁x₁ + b</code> 형태가 다중 선형 회귀에서는 <code>y = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</code> 형태로 확장됩니다. 여기서 x₁, x₂, ..., xₙ은 각각 다른 특성을, w₁, w₂, ..., wₙ은 각 특성에 해당하는 가중치를 의미합니다. 모델의 목표는 여전히 비용 함수(MSE)를 최소화하는 각 가중치(w)와 편향(b)을 찾는 것이며, 정규방정식이나 경사 하강법을 통해 해를 구할 수 있습니다.
+        </p>
+<h4>다항 회귀 (Polynomial Regression)</h4>
+<p>
+            만약 데이터의 분포가 직선이 아닌 곡선 형태를 띤다면 어떻게 해야 할까요? <strong>다항 회귀</strong>는 독립 변수와 종속 변수 간의 관계가 &#39;비선형&#39;일 때 사용하는 기법입니다. <a href="https://movefast.tistory.com/302" target="_blank">항이 여러 개인 가설 함수로 결과를 예측하는 회귀 분석 방법입니다.</a>
+</p>
+<p>
+            다항 회귀의 핵심 아이디어는 기존의 독립 변수 x를 제곱(x²), 세제곱(x³)하거나 서로 다른 변수들을 곱하는 등 고차항을 만들어 새로운 특성으로 추가하는 것입니다. 예를 들어, <code>y = w₁x₁ + b</code> 라는 선형 모델에 <code>x₁²</code> 이라는 항을 추가하여 <code>y = w₁x₁ + w₂x₁² + b</code> 라는 모델을 만드는 것입니다. 이렇게 변환된 특성들(x₁, x₁²)을 가지고 선형 회귀 모델을 학습시킵니다. <a href="https://brunch.co.kr/@parkkyunga/86" target="_blank">데이터의 관계는 비선형이지만, 모델은 여전히 각 특성(x₁, x₁²)에 대한 가중치의 &#39;선형 결합&#39;으로 표현되기 때문에, 다항 회귀는 선형 회귀의 프레임워크 내에서 비선형 관계를 학습할 수 있는 매우 영리한 방법입니다.</a> 하지만 차수를 너무 높이면 모델이 학습 데이터에 과도하게 맞춰지는 과적합(Overfitting)이 발생할 위험이 커지므로 주의해야 합니다.
+        </p>
+<h4>로지스틱 회귀 (Logistic Regression)</h4>
+<p>
+<strong>로지스틱 회귀</strong>는 이름에 &#39;회귀&#39;가 들어가지만, 실제로는 &#39;분류(Classification)&#39; 문제를 해결하기 위해 사용되는 알고리즘입니다. <a href="https://ko.wikipedia.org/wiki/%EB%A1%9C%EC%A7%80%EC%8A%A4%ED%8B%B1_%ED%9A%8C%EA%B7%80" target="_blank">독립 변수의 선형 결합을 이용하여 사건의 발생 가능성을 예측하는 데 사용되는 통계 기법입니다.</a> 예측 결과가 연속적인 수치(e.g., 집값, 주가)가 아니라, &#39;예/아니오&#39;, &#39;스팸/정상&#39;, &#39;합격/불합격&#39;과 같이 두 개(또는 그 이상)의 범주 중 하나로 결정되는 문제에 적용됩니다.
+        </p>
+<p>
+            로지스틱 회귀의 핵심 아이디어는 선형 회귀의 예측 결과를 그대로 사용하는 것이 아니라, <strong>시그모이드(Sigmoid) 함수</strong>(또는 로지스틱 함수)라는 특별한 함수에 통과시키는 것입니다. 시그모이드 함수는 어떤 입력 값이든 0과 1 사이의 값으로 변환해주는 S자 형태의 곡선입니다. 이 출력 값은 &#39;확률&#39;로 해석될 수 있습니다. 예를 들어, 어떤 이메일이 스팸일 확률을 0.8로 예측했다면, 미리 정해놓은 임계값(threshold, 보통 0.5)보다 크므로 이 메일을 &#39;스팸&#39;으로 분류하는 방식입니다. <a href="https://aws.amazon.com/ko/what-is/logistic-regression/" target="_blank">이처럼 로지스틱 회귀는 두 데이터 요인 간의 관계를 찾아 특정 요인의 값을 예측하며, 예측 결과는 유한한 수의 결과를 가집니다.</a> 선형 회귀와 달리 비용 함수로는 주로 &#39;로그 손실(Log Loss)&#39; 또는 &#39;교차 엔트로피(Cross-Entropy)&#39;가 사용됩니다.
+        </p>
+<div class="key-points">
+<h4>Part 2. 핵심 요약</h4>
+<ul>
+<li><strong>선형 회귀</strong>는 변수 간의 선형 관계를 모델링하는 가장 기본적인 예측 알고리즘입니다.</li>
+<li>최적의 파라미터를 찾는 방법에는 행렬 연산으로 한 번에 푸는 <strong>정규방정식</strong>과, 미분을 이용해 점진적으로 찾는 <strong>경사 하강법</strong>이 있으며, 각각의 장단점이 뚜렷합니다.</li>
+<li><strong>다중 선형 회귀</strong>는 여러 특성을, <strong>다항 회귀</strong>는 비선형 관계를, <strong>로지스틱 회귀</strong>는 분류 문제를 다루기 위해 선형 회귀를 확장한 모델들입니다.</li>
+</ul>
+</div>
+<h2 id="section-part3">Part 3. 모델 성능을 끌어올리는 고급 전략</h2>
+<p>최고의 머신러닝 알고리즘을 선택했다 하더라도, 그것만으로는 최적의 성능을 보장할 수 없습니다. 모델의 잠재력을 최대한 이끌어내기 위해서는 데이터를 모델이 &#39;소화&#39;하기 좋은 형태로 가공하고, 모델이 학습 데이터에만 과도하게 최적화되는 &#39;과적합&#39;을 방지하며, 모델의 동작을 제어하는 &#39;하이퍼파라미터&#39;를 정교하게 조정하는 과정이 필수적입니다. 이 파트에서는 모델의 예측 정확도와 일반화 성능을 한 단계 끌어올리는 실전적인 고급 전략들을 심도 있게 다룹니다.</p>
+<h3 id="section-part3-1">데이터 전처리: 모델의 잠재력을 깨우는 첫 단추</h3>
+<p>
+            데이터 전처리(Data Preprocessing)는 &#34;Garbage in, garbage out(쓰레기를 넣으면, 쓰레기가 나온다)&#34;이라는 격언이 가장 잘 들어맞는 영역입니다. 모델에 입력되는 데이터의 품질과 형태가 모델의 성능을 결정짓는다고 해도 과언이 아닙니다. 그중에서도 특성 스케일링과 범주형 데이터 인코딩은 가장 기본적이면서도 중요한 전처리 기법입니다.
+        </p>
+<h4>Feature Scaling의 필요성</h4>
+<p>
+            만약 데이터셋에 &#39;나이&#39;(1~100 범위)와 &#39;연봉&#39;(1,000만~10억 범위)이라는 두 가지 특성이 있다고 가정해 봅시다. 이 두 특성의 값의 범위, 즉 스케일(scale)은 엄청난 차이가 있습니다. <a href="https://www.geeksforgeeks.org/machine-learning/ml-feature-scaling-part-2/" target="_blank">이러한 스케일 차이를 그대로 두고 모델을 학습시키면, 모델은 값의 범위가 훨씬 큰 &#39;연봉&#39; 특성을 더 중요한 것으로 오인할 수 있습니다.</a> 경사 하강법과 같은 최적화 알고리즘에서는 스케일이 큰 특성의 가중치가 학습 과정에서 훨씬 더 크게 변동하여, 최적점으로 수렴하는 경로가 비효율적인 지그재그 형태가 되어 학습 속도가 느려집니다. 또한, K-최근접 이웃(KNN)처럼 데이터 포인트 간의 거리를 기반으로 하는 알고리즘에서는 스케일이 큰 특성이 거리 계산을 지배하게 되어 모델의 성능이 심각하게 왜곡될 수 있습니다.
+        </p>
+<p>
+<strong>특성 스케일링(Feature Scaling)</strong>은 이러한 문제를 해결하기 위해 모든 특성의 데이터 범위를 비슷한 수준으로 맞춰주는 작업입니다. <a href="https://en.wikipedia.org/wiki/Feature_scaling" target="_blank">이는 데이터 전처리 단계에서 일반적으로 수행되며, 모델 성능 향상, 수렴 속도 개선, 특정 특성으로 인한 편향 방지에 필수적입니다.</a>
+</p>
+<h4>정규화(Normalization) vs. 표준화(Standardization)</h4>
+<p>특성 스케일링의 대표적인 방법으로는 정규화와 표준화가 있습니다. 두 방법은 목적은 같지만, 접근 방식과 적용 상황에 차이가 있습니다.</p>
+<ul>
+<li>
+<strong>정규화 (Normalization, 또는 Min-Max Scaling)</strong>: 이 방법은 각 특성의 모든 값을 0과 1 사이의 범위로 변환합니다. 공식은 <code>X_new = (X - X_min) / (X_max - X_min)</code> 입니다.
+                <ul>
+<li><strong>장점</strong>: 모든 데이터가 명확한 범위([0, 1]) 안에 위치하게 되므로, 값의 분포를 직관적으로 이해하기 쉽습니다. 이미지 처리에서 픽셀 값을 0~255에서 0~1로 변환하는 경우가 대표적인 예입니다.</li>
+<li><strong>단점</strong>: 최솟값(X_min)과 최댓값(X_max)을 사용하기 때문에, 데이터에 극단적인 이상치(outlier)가 존재할 경우 변환된 값의 분포가 매우 좁은 범위에 몰릴 수 있습니다. <a href="https://www.geeksforgeeks.org/machine-learning/normalization-vs-standardization/" target="_blank">즉, 이상치에 매우 민감합니다.</a></li>
+<li><strong>언제 사용하는가?</strong>: 데이터의 분포를 알 수 없거나 가우시안 분포가 아닐 때, 그리고 알고리즘이 값의 범위에 민감할 때(e.g., 신경망) 유용합니다. <a href="https://www.simplilearn.com/normalization-vs-standardization-article" target="_blank">데이터의 분포가 불분명할 때 정규화는 적합한 선택입니다.</a></li>
+</ul>
+</li>
+<li>
+<strong>표준화 (Standardization, 또는 Z-score Scaling)</strong>: 이 방법은 각 특성의 평균을 0, 표준편차를 1이 되도록 변환합니다. 공식은 <code>X_new = (X - mean) / std_dev</code> 입니다.
+                <ul>
+<li><strong>장점</strong>: 평균과 표준편차를 사용하므로, 이상치가 있더라도 그 영향이 정규화에 비해 상대적으로 적습니다. <a href="https://medium.com/@meritshot/standardization-v-s-normalization-6f93225fbd84" target="_blank">표준화는 항상 특정 범위로 제한되지 않으므로 이상치의 영향을 받지 않습니다.</a></li>
+<li><strong>단점</strong>: 변환된 값은 정규화처럼 명확한 최솟값과 최댓값을 갖지 않습니다.</li>
+<li><strong>언제 사용하는가?</strong>: 데이터가 가우시안 분포(정규분포)를 따르거나, 선형 회귀, 로지스틱 회귀, 서포트 벡터 머신(SVM)과 같이 데이터의 분포를 가정하는 알고리즘에서 일반적으로 더 나은 성능을 보입니다. <a href="https://scikit-learn.org/stable/auto_examples/preprocessing/plot_scaling_importance.html" target="_blank">많은 알고리즘이 특성이 정규화되기를 요구합니다.</a></li>
+</ul>
+</li>
+</ul>
+<h4>원-핫 인코딩 (One-Hot Encoding)</h4>
+<p>
+            머신러닝 모델은 숫자 데이터만 처리할 수 있습니다. 그렇다면 &#39;성별&#39;(남성, 여성), &#39;도시&#39;(서울, 부산, 대구), &#39;혈액형&#39;(A, B, O, AB)과 같이 순서가 없는 범주형(categorical) 데이터는 어떻게 처리해야 할까요? 이를 단순히 1, 2, 3과 같은 숫자로 바꾸면, 모델은 이 숫자들 사이에 서열이나 크기 관계가 있다고 오해할 수 있습니다(e.g., 부산(2)이 서울(1)보다 크다).
+        </p>
+<p>
+<strong>원-핫 인코딩</strong>은 이러한 문제를 해결하기 위한 기법입니다. <a href="https://wikidocs.net/22647" target="_blank">이는 단어 집합의 크기를 벡터의 차원으로 하고, 표현하고 싶은 단어의 인덱스에 1의 값을 부여하고, 다른 인덱스에는 0을 부여하는 벡터 표현 방식입니다.</a> 예를 들어, &#39;도시&#39; 특성에 &#39;서울&#39;, &#39;부산&#39;, &#39;대구&#39;라는 세 가지 범주가 있다면, 원-핫 인코딩은 &#39;도시_서울&#39;, &#39;도시_부산&#39;, &#39;도시_대구&#39;라는 세 개의 새로운 이진(binary) 특성을 만듭니다. 그리고 어떤 데이터가 &#39;서울&#39;에 해당하면 &#39;도시_서울&#39; 특성만 1이고 나머지는 0이 되는 벡터 [1, 0, 0]으로 표현합니다.
+        </p>
+<ul>
+<li><strong>장점</strong>: 범주 간에 존재하지 않는 순서 관계를 모델이 학습하는 것을 방지하여, 각 범주를 독립적인 정보로 다룰 수 있게 합니다. <a href="https://www.geeksforgeeks.org/machine-learning/ml-one-hot-encoding/" target="_blank">많은 범주형 변수에는 본질적인 순서가 없기 때문에 원-핫 인코딩을 사용합니다.</a></li>
+<li><strong>단점</strong>: 범주의 개수가 많아지면(e.g., 수백 개의 국가명), 그만큼 새로운 특성의 개수도 늘어나 데이터의 차원이 급격히 커집니다. 이를 &#39;차원의 저주(curse of dimensionality)&#39;라고 하며, 계산 비용 증가와 모델 성능 저하의 원인이 될 수 있습니다. <a href="https://blog.naver.com/taeyang95/222926139987?viewType=pc" target="_blank">벡터를 저장하기 위해 필요한 공간이 계속 늘어난다는 단점이 있습니다.</a></li>
+</ul>
+<h3 id="section-part3-2">과적합과의 전쟁: 일반화 성능 확보하기</h3>
+<p>모델을 성공적으로 학습시켰다고 해서 끝이 아닙니다. 모델이 학습에 사용된 데이터(training data)에 대해서는 거의 완벽한 예측을 하지만, 한 번도 본 적 없는 새로운 데이터(test data)에 대해서는 형편없는 성능을 보이는 경우가 많습니다. 이를 <strong>과적합(Overfitting)</strong>이라고 합니다. 과적합된 모델은 데이터의 근본적인 패턴을 학습한 것이 아니라, 학습 데이터에만 존재하는 우연한 노이즈까지 암기해버린 상태입니다. 우리의 목표는 학습 데이터뿐만 아니라 새로운 데이터에도 잘 작동하는, 즉 <strong>일반화(generalization)</strong> 성능이 뛰어난 모델을 만드는 것입니다.</p>
+<h4>편향-분산 트레이드오프 (Bias-Variance Tradeoff)</h4>
+<p>
+            모델의 예측 오차는 크게 편향(Bias)과 분산(Variance)이라는 두 가지 요소로 분해될 수 있습니다. 이 둘의 관계를 이해하는 것은 과적합을 이해하는 데 핵심적입니다.
+        </p>
+<ul>
+<li>
+<strong>편향 (Bias)</strong>: <a href="https://ko.wikipedia.org/wiki/%ED%8E%B8%ED%96%A5-%EB%B6%84%EC%82%B0_%ED%8A%B8%EB%A0%88%EC%9D%B4%EB%93%9C%EC%98%A4%ED%94%84" target="_blank">학습 알고리즘에서 잘못된 가정을 했을 때 발생하는 오차입니다.</a> <strong>높은 편향</strong>은 모델이 너무 단순해서(e.g., 비선형 데이터에 선형 모델을 적용) 데이터의 복잡한 패턴을 제대로 포착하지 못하는 상태, 즉 <strong>과소적합(Underfitting)</strong>을 의미합니다. 이 경우 학습 데이터에 대한 오차와 테스트 데이터에 대한 오차 모두 높게 나타납니다.
+            </li>
+<li>
+<strong>분산 (Variance)</strong>: <a href="https://ko.wikipedia.org/wiki/%ED%8E%B8%ED%96%A5-%EB%B6%84%EC%82%B0_%ED%8A%B8%EB%A0%88%EC%9D%B4%EB%93%9C%EC%98%A4%ED%94%84" target="_blank">학습 데이터에 내재된 작은 변동 때문에 발생하는 오차입니다.</a> <strong>높은 분산</strong>은 모델이 너무 복잡해서 학습 데이터의 노이즈까지 학습해버린 상태, 즉 <strong>과적합(Overfitting)</strong>을 의미합니다. 이 경우 학습 데이터에 대한 오차는 매우 낮지만, 새로운 테스트 데이터에 대한 오차는 매우 높게 나타납니다.
+            </li>
+</ul>
+<p>
+<strong>편향-분산 트레이드오프</strong>란, 이 둘 사이에 존재하는 상충 관계를 말합니다. <a href="https://datacookbook.kr/48" target="_blank">일반적으로 모델의 복잡도를 높이면(e.g., 다항 회귀의 차수를 높이면) 편향은 감소하지만 분산은 증가합니다. 반대로 모델의 복잡도를 낮추면 분산은 감소하지만 편향은 증가합니다.</a> 따라서 머신러닝 모델링의 핵심 과제는 총 오차(편향² + 분산 + 줄일 수 없는 오차)가 최소가 되는, 즉 편향과 분산 사이의 최적의 균형점을 찾는 것입니다.
+        </p>
+<div class="chart-container" id="canvas-parent-1" style="height:500px;">
+<canvas id="biasVarianceChart"></canvas>
+</div>
+<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const ctx = document.getElementById('biasVarianceChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['매우 단순', '단순', '적정', '복잡', '매우 복잡'],
+                        datasets: [{
+                            label: '편향 (Bias)',
+                            data: [90, 60, 20, 10, 5],
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            fill: false,
+                            tension: 0.4
+                        }, {
+                            label: '분산 (Variance)',
+                            data: [5, 10, 20, 60, 90],
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: false,
+                            tension: 0.4
+                        }, {
+                            label: '총 오차 (Total Error)',
+                            data: [95, 70, 40, 70, 95],
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 3,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: '편향-분산 트레이드오프 (Bias-Variance Tradeoff)',
+                                font: { size: 18 }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: '모델 복잡도 (Model Complexity)'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                title: {
+                                    display: true,
+                                    text: '예측 오차 (Prediction Error)'
+                                },
+                                min: 0
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+<h4>정규화 (Regularization) - L1, L2</h4>
+<p>
+            과적합, 즉 높은 분산을 제어하는 가장 효과적인 방법 중 하나가 바로 <strong>정규화(Regularization)</strong>입니다. 정규화는 모델이 너무 복잡해지지 않도록, 즉 가중치(w) 값이 너무 커지지 않도록 비용 함수에 &#39;패널티(penalty)&#39; 항을 추가하는 기법입니다. <a href="https://towardsdatascience.com/understanding-l1-and-l2-regularization-93918a5ac8d0/" target="_blank">정규화는 복잡한 모델에 패널티를 부여하여 과적합을 방지하는 데 가장 많이 사용되는 기술입니다.</a> 가중치가 크다는 것은 모델이 특정 특성에 너무 많이 의존하고 있다는 신호이며, 이는 노이즈에 민감하게 반응하는 과적합으로 이어질 수 있습니다.
+        </p>
+<figure>
+<figcaption>다항 회귀에서 모델의 차수가 증가할수록 회귀 계수의 크기가 기하급수적으로 커지는 현상. 이는 과적합의 신호이며 정규화의 필요성을 보여준다</figcaption>
+</figure>
+<p>정규화에는 크게 L1과 L2, 두 가지 방식이 있습니다.</p>
+<ul>
+<li>
+<strong>L1 정규화 (Lasso 회귀)</strong>: 비용 함수에 가중치들의 <strong>&#39;절댓값의 합&#39;</strong>을 패널티로 추가합니다 (<code>α * Σ|wᵢ|</code>). L1 정규화를 사용하는 선형 회귀 모델을 &#39;라쏘(Lasso) 회귀&#39;라고 합니다.
+                <ul>
+<li><strong>특징</strong>: L1 패널티는 중요하지 않다고 판단되는 특성의 가중치를 정확히 0으로 만드는 경향이 있습니다. 이는 마치 모델이 스스로 불필요한 특성을 &#39;선택&#39;하고 제거하는 것과 같은 효과를 낳습니다.</li>
+<li><strong>장점</strong>: <strong>특성 선택(Feature Selection)</strong>이 자동으로 이루어져 모델을 더 단순하고 해석하기 쉽게 만듭니다. 수많은 특성 중 어떤 것이 중요한지 파악하고자 할 때 매우 유용합니다. <a href="https://www.analyticsvidhya.com/blog/2016/01/ridge-lasso-regression-python-complete-tutorial/" target="_blank">라쏘 회귀는 일부 계수를 0으로 만들어 가장 관련성 높은 특성을 효과적으로 선택하고 모델의 해석 가능성을 향상시킬 수 있습니다.</a></li>
+</ul>
+</li>
+<li>
+<strong>L2 정규화 (Ridge 회귀)</strong>: 비용 함수에 가중치들의 <strong>&#39;제곱의 합&#39;</strong>을 패널티로 추가합니다 (<code>α * Σwᵢ²</code>). L2 정규화를 사용하는 선형 회귀 모델을 &#39;릿지(Ridge) 회귀&#39;라고 합니다.
+                <ul>
+<li><strong>특징</strong>: L2 패널티는 가중치의 크기를 전반적으로 줄여 0에 가깝게 만들지만, L1처럼 완전히 0으로 만들지는 않습니다.</li>
+<li><strong>장점</strong>: 모든 특성을 모델에 유지하면서 가중치를 부드럽게 감소시켜 과적합을 방지합니다. 특히 특성들 간에 높은 상관관계(다중공선성)가 존재할 때 L1보다 더 안정적인 성능을 보입니다. <a href="https://builtin.com/data-science/l2-regularization" target="_blank">L2 정규화는 모델 해석 가능성이 중요하지 않을 때 데이터셋의 다중공선성을 효과적으로 처리할 수 있습니다.</a></li>
+</ul>
+</li>
+</ul>
+<p>L1과 L2 중 어떤 것을 선택할지는 문제의 목적에 따라 다릅니다. 모델을 단순화하고 중요한 특성만 남기고 싶다면 L1(Lasso)을, 모든 특성을 활용하면서 안정적으로 과적합을 제어하고 싶다면 L2(Ridge)를 사용하는 것이 일반적입니다. 패널티의 강도를 조절하는 α(알파) 값은 다음에 설명할 하이퍼파라미터 튜닝을 통해 결정됩니다.</p>
+<h3 id="section-part3-3">최적의 모델을 찾는 여정: 하이퍼파라미터 튜닝</h3>
+<p>
+            머신러닝 모델에는 두 종류의 파라미터가 있습니다. 하나는 모델이 학습 과정에서 데이터로부터 스스로 학습하는 <strong>파라미터(parameter)</strong>(e.g., 회귀 모델의 가중치 w와 편향 b)입니다. 다른 하나는 모델이 학습을 시작하기 전에 사용자가 직접 설정해주어야 하는 <strong>하이퍼파라미터(hyperparameter)</strong>입니다. <a href="https://www.w3schools.com/python/python_ml_grid_search.asp" target="_blank">하이퍼파라미터는 모델이 학습하는 방식을 제어하는 값들로,</a> 예를 들어 경사 하강법의 학습률(learning rate), 정규화의 강도를 결정하는 α(알파), K-최근접 이웃 알고리즘의 이웃 수(k) 등이 여기에 해당합니다.
+        </p>
+<p>
+            최적의 하이퍼파라미터를 찾는 것은 모델의 성능에 지대한 영향을 미칩니다. 하지만 미리 최적의 값을 알 방법은 없으므로, 여러 후보 값들을 시도해보고 그중에서 가장 좋은 성능을 내는 조합을 찾아내는 탐색 과정이 필요합니다. 이 과정을 <strong>하이퍼파라미터 튜닝(Hyperparameter Tuning)</strong>이라고 합니다.
+        </p>
+<h4>Grid Search</h4>
+<p>
+            하이퍼파라미터 튜닝의 가장 대표적이고 직관적인 방법은 <strong>그리드 서치(Grid Search)</strong>입니다. 그리드 서치는 사용자가 테스트해보고 싶은 하이퍼파라미터 값들의 목록을 미리 지정하면, 그 값들의 모든 가능한 조합을 만들어 하나씩 모두 테스트하는 방식입니다. <a href="https://en.wikipedia.org/wiki/Hyperparameter_optimization" target="_blank">이름처럼, 각 하이퍼파라미터 축으로 구성된 격자(grid) 위의 모든 점을 체계적으로 탐색합니다.</a>
+</p>
+<figure>
+<figcaption>두 개의 하이퍼파라미터 공간에서 가능한 모든 조합을 탐색하는 그리드 서치의 개념도</figcaption>
+</figure>
+<p>
+            예를 들어, 릿지 회귀에서 정규화 강도 α를 <code>[0.01, 0.1, 1, 10, 100]</code> 중에서, 또 다른 하이퍼파라미터인 solver를 <code>[&#39;auto&#39;, &#39;svd&#39;]</code> 중에서 찾고 싶다고 가정해 봅시다. 그리드 서치는 (0.01, &#39;auto&#39;), (0.01, &#39;svd&#39;), (0.1, &#39;auto&#39;), ..., (100, &#39;svd&#39;)까지 총 5 x 2 = 10개의 모든 조합에 대해 모델을 학습하고 성능을 평가합니다. 이때 성능 평가는 보통 <strong>교차 검증(Cross-Validation)</strong>을 통해 이루어집니다. 학습 데이터를 여러 개의 폴드(fold)로 나누어, 일부는 학습에, 일부는 검증에 사용하는 방식을 반복하여 특정 조합의 일반화 성능을 더 안정적으로 평가합니다.
+        </p>
+<p>
+            파이썬의 대표적인 머신러닝 라이브러리인 <code>scikit-learn</code>은 이 과정을 자동화해주는 <code>GridSearchCV</code>라는 강력한 도구를 제공합니다. <a href="https://www.mygreatlearning.com/blog/gridsearchcv/" target="_blank">GridSearchCV는 주어진 모델에 대한 최적의 값을 결정하기 위해 하이퍼파라미터 튜닝을 수행하는 프로세스입니다.</a> 사용자는 탐색할 하이퍼파라미터와 후보 값들만 딕셔너리 형태로 전달하면, <code>GridSearchCV</code>가 모든 조합에 대한 교차 검증을 수행하고 가장 높은 성능을 보인 최적의 하이퍼파라미터 조합을 찾아줍니다.
+        </p>
+<ul>
+<li><strong>장점</strong>: 지정된 탐색 공간 내에서는 최적의 조합을 놓치지 않고 반드시 찾을 수 있다는 점이 가장 큰 장점입니다.</li>
+<li><strong>단점</strong>: 탐색해야 할 하이퍼파라미터의 종류가 많아지거나 각 하이퍼파라미터의 후보 값들이 많아지면, 시도해야 할 조합의 수가 기하급수적으로 늘어나 계산 비용이 매우 커지고 시간이 오래 걸립니다. <a href="https://www.yourdatateacher.com/2021/05/19/hyperparameter-tuning-grid-search-and-random-search/" target="_blank">이것이 하이퍼파라미터 튜닝이 매우 복잡하고 시간 소모적인 작업인 이유입니다.</a> 이러한 단점을 보완하기 위해 모든 조합을 다 시도하는 대신, 지정된 범위 내에서 무작위로 조합을 추출하여 테스트하는 &#39;랜덤 서치(Random Search)&#39;와 같은 기법도 사용됩니다.</li>
+</ul>
+<div class="key-points">
+<h4>Part 3. 핵심 요약</h4>
+<ul>
+<li><strong>데이터 전처리</strong>는 모델 성능의 기반을 다지는 필수 과정이며, <strong>특성 스케일링(정규화/표준화)</strong>과 <strong>원-핫 인코딩</strong>이 대표적입니다.</li>
+<li><strong>과적합</strong>은 모델의 일반화 성능을 저해하는 가장 큰 적으로, <strong>편향-분산 트레이드오프</strong>의 균형을 맞추는 것이 중요합니다.</li>
+<li><strong>정규화(L1/L2)</strong>는 가중치에 패널티를 부여하여 모델의 복잡도를 제어하고 과적합을 효과적으로 방지하는 기법입니다.</li>
+<li><strong>그리드 서치</strong>는 최적의 <strong>하이퍼파라미터</strong> 조합을 체계적으로 탐색하여 모델의 성능을 극대화하는 방법입니다.</li>
+</ul>
+</div>
+<h2 id="section-conclusion">결론: 핵심 정리 및 다음 단계</h2>
+<p>지금까지 우리는 머신러닝의 세계를 지탱하는 근본적인 기둥들을 하나씩 살펴보았습니다. 이 여정은 추상적인 수학 개념에서 시작하여, 구체적인 예측 알고리즘을 거쳐, 모델의 성능을 극한까지 끌어올리는 실전 전략으로 이어졌습니다. 이 모든 과정을 통해 우리는 흩어져 있던 지식의 조각들이 어떻게 하나의 거대한 그림을 완성하는지 확인할 수 있었습니다.</p>
+<p><strong>핵심을 다시 한번 정리해 보겠습니다:</strong></p>
+<ul>
+<li>머신러닝은 데이터를 숫자의 배열인 <strong>행렬</strong>로 표현하고, <strong>미분</strong>이라는 도구를 사용해 모델의 오차를 최소화하는 방향으로 학습하는 과정입니다. 즉, <strong>수학은 머신러닝의 언어</strong>입니다.</li>
+<li><strong>선형 회귀</strong>와 그 확장 모델들은 이 수학적 언어를 바탕으로 데이터의 패턴을 학습하는 구체적인 <strong>알고리즘</strong>입니다. 정규방정식에서 행렬의 역행렬이, 경사 하강법에서 미분이 직접적으로 사용되는 것처럼, 이론과 실제는 긴밀하게 연결되어 있습니다.</li>
+<li>훌륭한 알고리즘만으로는 충분하지 않습니다. 데이터의 스케일을 맞추고(<strong>데이터 전처리</strong>), 모델이 학습 데이터에만 매몰되지 않도록 제어하며(<strong>과적합 제어</strong>), 최적의 작동 조건을 찾아주는(<strong>하이퍼파라미터 튜닝</strong>) 과정을 통해 비로소 모델은 잠재력을 온전히 발휘할 수 있습니다.</li>
+</ul>
+<p>가장 중요한 통찰은 이 개념들이 결코 독립적으로 존재하지 않는다는 점입니다. <strong>편향-분산 트레이드오프</strong>라는 근본적인 문제를 해결하기 위해 <strong>정규화(Regularization)</strong> 기법이 등장했고, 정규화의 강도를 조절하기 위해 <strong>하이퍼파라미터 튜닝</strong>이 필요합니다. 데이터의 특성에 따라 적절한 <strong>전처리</strong> 방식이 모델의 학습 효율과 성능을 좌우합니다. 이 모든 요소가 톱니바퀴처럼 맞물려 돌아갈 때, 비로소 강력하고 신뢰할 수 있는 머신러닝 모델이 탄생하는 것입니다.</p>
+<p>이 글을 통해 여러분은 머신러닝의 &#39;기본기&#39;를 탄탄히 다졌습니다. 이는 앞으로 더 복잡하고 정교한 모델의 세계로 나아가는 데 든든한 발판이 될 것입니다. 오늘 배운 선형 모델과 최적화 원리를 이해했다면, 랜덤 포레스트(Random Forest)나 그래디언트 부스팅(Gradient Boosting)과 같은 앙상블 모델, 그리고 현대 AI의 총아인 딥러닝(Deep Learning)과 신경망의 작동 원리를 이해하는 것이 훨씬 수월해질 것입니다. 기술은 끊임없이 발전하지만, 그 근간을 이루는 핵심 원리는 쉽게 변하지 않습니다. 이 견고한 토대 위에서 지속적인 학습과 탐구를 통해 데이터가 가진 무한한 가능성을 현실로 만들어 가시기를 바랍니다.</p>
+</div>
+</body></html>

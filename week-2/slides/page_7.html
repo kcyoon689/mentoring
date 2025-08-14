@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>로지스틱 회귀와 분류 문제</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 748px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;}
+        .slide {
+            width: 1280px;
+            min-height: 748px;
+
+            position: relative;
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .concept-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+        .highlight {
+            color: #FFA500;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-50 p-8 flex flex-col">
+<!-- Title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">로지스틱 회귀와 분류 문제</h1>
+<div class="w-24 h-1 bg-yellow-500"></div>
+</div>
+<!-- Main Content - Two Column Layout -->
+<div class="flex flex-1">
+<!-- Left Column: Explanation -->
+<div class="w-1/2 pr-4 flex flex-col">
+<!-- Logistic Regression Concept -->
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-line text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">로지스틱 회귀의 본질</h3>
+</div>
+<p class="mb-2">이름에 &#39;회귀&#39;가 포함되어 있지만, 실제로는 <span class="highlight">분류(Classification)</span> 문제를 해결하는 데 사용되는 알고리즘입니다.</p>
+<p>특히, 주어진 데이터가 두 개의 범주 중 하나에 속할 확률을 예측하는 <span class="highlight">이진 분류(Binary Classification)</span>에 널리 사용됩니다.</p>
+</div>
+<!-- Sigmoid Function -->
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-sigmoid text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">시그모이드 함수 (Sigmoid Function)</h3>
+</div>
+<p class="mb-2">로지스틱 회귀는 선형 회귀의 결과값을 0과 1 사이의 확률 값으로 변환하기 위해 <span class="highlight">시그모이드 함수</span> 또는 로지스틱 함수를 사용합니다.</p>
+<div class="formula text-center my-2">
+                        σ(z) = 1 / (1 + e<sup>-z</sup>)
+                    </div>
+<p class="text-sm">이 함수는 입력값 z를 0과 1 사이의 값으로 변환하여 특정 클래스에 속할 확률로 해석할 수 있게 합니다.</p>
+</div>
+<!-- Example -->
+<div class="concept-box p-4 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-envelope text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">응용 예시: 스팸 이메일 필터링</h3>
+</div>
+<p class="mb-2">로지스틱 회귀 모델의 출력값이 0.8이라면 이는 해당 이메일이 스팸일 확률이 80%임을 의미합니다.</p>
+<p>일반적으로 확률값이 0.5 이상이면 클래스 1(스팸)로, 0.5 미만이면 클래스 0(정상 메일)으로 분류하는 임계값을 설정하여 최종 예측을 수행합니다.</p>
+</div>
+</div>
+<!-- Right Column: Visualization -->
+<div class="w-1/2 pl-4 flex flex-col">
+<!-- Sigmoid Function Visualization -->
+<div class="bg-white rounded-lg shadow-sm p-4 mb-4">
+<h3 class="text-xl font-semibold text-green-800 mb-2">시그모이드 함수의 그래프</h3>
+<div class="w-full h-48" id="sigmoid-plot"></div>
+</div>
+<!-- Process Flow -->
+<div class="bg-white rounded-lg shadow-sm p-4">
+<h3 class="text-xl font-semibold text-green-800 mb-2">로지스틱 회귀의 동작 방식</h3>
+<div class="flex items-center justify-between mb-4">
+<div class="text-center w-1/4">
+<div class="bg-green-100 rounded p-2 mx-auto w-12 h-12 flex items-center justify-center mb-2">
+<i class="fas fa-calculator text-green-700 text-xl"></i>
+</div>
+<p class="text-sm">선형 조합</p>
+<p class="formula text-xs">z = b₀ + b₁X₁ + ...</p>
+</div>
+<i class="fas fa-arrow-right text-gray-400"></i>
+<div class="text-center w-1/4">
+<div class="bg-green-100 rounded p-2 mx-auto w-12 h-12 flex items-center justify-center mb-2">
+<i class="fas fa-sigmoid text-green-700 text-xl"></i>
+</div>
+<p class="text-sm">시그모이드 함수</p>
+<p class="formula text-xs">σ(z) = 1/(1+e<sup>-z</sup>)</p>
+</div>
+<i class="fas fa-arrow-right text-gray-400"></i>
+<div class="text-center w-1/4">
+<div class="bg-green-100 rounded p-2 mx-auto w-12 h-12 flex items-center justify-center mb-2">
+<i class="fas fa-percentage text-green-700 text-xl"></i>
+</div>
+<p class="text-sm">확률 예측</p>
+<p class="formula text-xs">P(Y=1|X)</p>
+</div>
+<i class="fas fa-arrow-right text-gray-400"></i>
+<div class="text-center w-1/4">
+<div class="bg-green-100 rounded p-2 mx-auto w-12 h-12 flex items-center justify-center mb-2">
+<i class="fas fa-threshold text-green-700 text-xl"></i>
+</div>
+<p class="text-sm">클래스 결정</p>
+<p class="formula text-xs">threshold ≥ 0.5 → 클래스 1</p>
+</div>
+</div>
+<div class="bg-gray-100 p-2 rounded text-center">
+<p class="text-sm">로지스틱 회귀는 데이터가 특정 범주에 속할 가능성을 예측함으로써 효과적인 분류 모델을 구축합니다.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-4 text-sm text-gray-500 text-right">
+<p>머신러닝 이론과 기본 기법 | 7/10</p>
+</div>
+</div>
+<script>
+        // D3.js visualization for sigmoid function
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up dimensions
+            const width = document.getElementById('sigmoid-plot').clientWidth;
+            const height = document.getElementById('sigmoid-plot').clientHeight;
+            const margin = {top: 20, right: 20, bottom: 30, left: 40};
+            const innerWidth = width - margin.left - margin.right;
+            const innerHeight = height - margin.top - margin.bottom;
+
+            // Create SVG
+            const svg = d3.select("#sigmoid-plot")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            const g = svg.append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
+            // Create scales
+            const xScale = d3.scaleLinear()
+                .domain([-6, 6])
+                .range([0, innerWidth]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, 1])
+                .range([innerHeight, 0]);
+
+            // Generate data for sigmoid function
+            const sigmoid = z => 1 / (1 + Math.exp(-z));
+
+            const data = [];
+            for (let z = -6; z <= 6; z += 0.1) {
+                data.push({
+                    x: z,
+                    y: sigmoid(z)
+                });
+            }
+
+            // Create line generator
+            const line = d3.line()
+                .x(d => xScale(d.x))
+                .y(d => yScale(d.y))
+                .curve(d3.curveBasis);
+
+            // Draw sigmoid curve
+            g.append("path")
+                .datum(data)
+                .attr("fill", "none")
+                .attr("stroke", "#006400")
+                .attr("stroke-width", 2)
+                .attr("d", line);
+
+            // Add axes
+            const xAxis = d3.axisBottom(xScale);
+            const yAxis = d3.axisLeft(yScale);
+
+            g.append("g")
+                .attr("transform", `translate(0,${innerHeight})`)
+                .call(xAxis);
+
+            g.append("g")
+                .call(yAxis);
+
+            // Add axis labels
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", innerWidth / 2)
+                .attr("y", innerHeight + margin.bottom - 5)
+                .attr("font-size", "12px")
+                .text("z (선형 조합)");
+
+            g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -margin.left + 15)
+                .attr("x", -innerHeight / 2)
+                .attr("font-size", "12px")
+                .text("σ(z) (확률)");
+
+            // Add threshold line
+            g.append("line")
+                .attr("x1", xScale(-3.5))
+                .attr("y1", 0)
+                .attr("x2", xScale(-3.5))
+                .attr("y2", innerHeight)
+                .attr("stroke", "#FFA500")
+                .attr("stroke-dasharray", "3,3");
+
+            g.append("line")
+                .attr("x1", 0)
+                .attr("y1", yScale(0.5))
+                .attr("x2", innerWidth)
+                .attr("y2", yScale(0.5))
+                .attr("stroke", "#FFA500")
+                .attr("stroke-dasharray", "3,3");
+
+            g.append("text")
+                .attr("x", xScale(-3.5) + 5)
+                .attr("y", yScale(0.5) - 10)
+                .attr("font-size", "10px")
+                .attr("fill", "#FFA500")
+                .text("threshold");
+        });
+    </script>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_6.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">7 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_8.html">다음</a>
+</div>
+
+</body></html>

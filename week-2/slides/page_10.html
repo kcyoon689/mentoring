@@ -1,0 +1,174 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>정규화와 하이퍼파라미터 최적화</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 869px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;}
+        .slide {
+            width: 1280px;
+            min-height: 869px;
+
+            position: relative;
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .concept-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .grid-search-visual {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 8px;
+            margin-top: 10px;
+        }
+        .grid-search-item {
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+        .grid-search-item.best {
+            background-color: #FFA500;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-50 p-8 flex flex-col">
+<!-- Title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">정규화와 하이퍼파라미터 최적화</h1>
+<div class="w-24 h-1 bg-yellow-500"></div>
+</div>
+<!-- Introduction -->
+<div class="mb-4">
+<p class="text-lg">정규화는 모델의 복잡도를 제어하여 과적합을 방지하는 대표적인 기법입니다. 손실 함수에 모델 가중치의 크기에 대한 페널티 항을 추가하여, 가중치 값이 너무 커지는 것을 억제합니다.</p>
+</div>
+<!-- Main Content - Two Column Layout -->
+<div class="flex flex-1 gap-6">
+<!-- Left Column: Regularization -->
+<div class="w-1/2 flex flex-col">
+<h2 class="text-2xl font-semibold text-green-800 mb-3">정규화 기법</h2>
+<!-- L1 Regularization -->
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-compress-alt text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">L1 정규화 (Lasso 회귀)</h3>
+</div>
+<p class="mb-2">페널티 항으로 가중치의 절댓값 합(L1 Norm)을 사용</p>
+<div class="flex items-center mb-2">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p>특성 선택을 자동으로 수행</p>
+</div>
+<div class="flex items-center mb-2">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p> 중요하지 않은 특성을 완전히 제외</p>
+</div>
+<div class="flex items-center">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p>가중치를 0으로 만듦</p>
+</div>
+</div>
+<!-- L2 Regularization -->
+<div class="concept-box p-4 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-compress-arrows-alt text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">L2 정규화 (Ridge 회귀)</h3>
+</div>
+<p class="mb-2">페널티 항으로 가중치의 제곱 합(L2 Norm)을 사용</p>
+<div class="flex items-center mb-2">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p>가중치를 0에 가깝게 만듦</p>
+</div>
+<div class="flex items-center mb-2">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p>특성 간 상관관계가 높을 때도 안정적인 성능</p>
+</div>
+<div class="flex items-center">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p>모든 특성을 유지하면서 영향력을 줄임</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Hyperparameter Optimization -->
+<div class="w-1/2 flex flex-col">
+<h2 class="text-2xl font-semibold text-green-800 mb-3">하이퍼파라미터 최적화</h2>
+<!-- Hyperparameter -->
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-cog text-yellow-500 mr-2 fa-spin"></i>
+<h3 class="text-xl font-semibold">하이퍼파라미터(Hyperparameter)</h3>
+</div>
+<p class="mb-2">모델이 데이터로부터 학습하는 파라미터(가중치 등)와 달리, 사용자가 모델 학습 전에 직접 설정해야 하는 값</p>
+<div class="flex items-center">
+<p class="mr-2">예:</p>
+<div class="formula">정규화의 강도를 결정하는 람다(λ)</div>
+</div>
+</div>
+<!-- Grid Search -->
+<div class="concept-box p-4 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-th text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">그리드 서치(Grid Search)</h3>
+</div>
+<p class="mb-2">최적의 하이퍼파라미터 조합을 찾기 위한 체계적인 탐색 기법</p>
+<div class="grid-search-visual">
+<div class="grid-search-item">λ=0.1<br/>α=0.1</div>
+<div class="grid-search-item">λ=0.1<br/>α=0.5</div>
+<div class="grid-search-item">λ=0.1<br/>α=0.9</div>
+<div class="grid-search-item">λ=1.0<br/>α=0.1</div>
+<div class="grid-search-item best">λ=1.0<br/>α=0.5</div>
+<div class="grid-search-item">λ=1.0<br/>α=0.9</div>
+<div class="grid-search-item">λ=10.0<br/>α=0.1</div>
+<div class="grid-search-item">λ=10.0<br/>α=0.5</div>
+<div class="grid-search-item">λ=10.0<br/>α=0.9</div>
+</div>
+<div class="flex items-center mt-3">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p class="text-sm">지정된 범위 내에서 최적의 조합을 반드시 찾아줌</p>
+</div>
+<div class="flex items-center mt-1">
+<i class="fas fa-times-circle text-red-500 mr-2"></i>
+<p class="text-sm">탐색해야 할 조합의 수가 많아지면 계산 비용 증가</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Alternatives -->
+<div class="mt-4">
+<h3 class="text-lg font-semibold text-green-800 mb-2">그리드 서치의 대안</h3>
+<div class="flex justify-between">
+<div class="flex items-center">
+<i class="fas fa-random text-yellow-500 mr-2"></i>
+<p><span class="font-semibold">랜덤 서치:</span> 지정된 횟수만큼 임의의 조합 탐색</p>
+</div>
+<div class="flex items-center">
+<i class="fas fa-chart-line text-yellow-500 mr-2"></i>
+<p><span class="font-semibold">베이즈 최적화:</span> 이전 결과를 바탕으로 다음 탐색 지점 결정</p>
+</div>
+</div>
+</div>
+</div>
+  <!-- Footer -->
+  <div class="mt-8 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_9.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">10 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_1.html">처음</a>
+  </div>
+</div>
+</body>
+</html>

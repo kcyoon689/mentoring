@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>데이터 정규화와 표준화</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 754px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;}
+        .slide {
+            width: 1280px;
+            min-height: 754px;
+
+            position: relative;
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .concept-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+        .comparison-table th {
+            background-color: rgba(0, 100, 0, 0.2);
+        }
+        .comparison-table tr:nth-child(even) {
+            background-color: rgba(240, 240, 240, 0.5);
+        }
+        .comparison-table tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-50 p-8 flex flex-col">
+<!-- Title -->
+<div class="mb-4">
+<h1 class="title text-4xl font-bold mb-2">데이터 정규화와 표준화</h1>
+<div class="w-24 h-1 bg-yellow-500"></div>
+</div>
+<!-- Introduction -->
+<div class="mb-3">
+<p class="text-lg">데이터의 특성마다 값의 범위나 분포가 다를 경우, 특정 특성이 모델 학습에 과도한 영향을 미치는 것을 방지하기 위해 스케일을 조정하는 과정이 필요합니다.</p>
+</div>
+<!-- Main Content -->
+<div class="flex flex-1 space-x-4">
+<!-- Left Column: Normalization vs Standardization -->
+<div class="w-1/2 flex flex-col">
+<h2 class="text-2xl font-semibold text-green-800 mb-2">정규화 vs 표준화</h2>
+<!-- Comparison Table -->
+<table class="comparison-table w-full border-collapse mb-4">
+<thead>
+<tr>
+<th class="border border-gray-300 p-2 text-left">구분</th>
+<th class="border border-gray-300 p-2 text-left">정규화 (Normalization)</th>
+<th class="border border-gray-300 p-2 text-left">표준화 (Standardization)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="border border-gray-300 p-2 font-semibold">변환 범위</td>
+<td class="border border-gray-300 p-2">0과 1 사이</td>
+<td class="border border-gray-300 p-2">정해진 범위 없음 (평균 0, 표준편차 1)</td>
+</tr>
+<tr>
+<td class="border border-gray-300 p-2 font-semibold">주요 특징</td>
+<td class="border border-gray-300 p-2">모든 데이터가 동일한 스케일로 조정됨</td>
+<td class="border border-gray-300 p-2">데이터의 분포를 중심으로 변환</td>
+</tr>
+<tr>
+<td class="border border-gray-300 p-2 font-semibold">이상치 민감도</td>
+<td class="border border-gray-300 p-2">높음 (최솟값, 최댓값에 영향을 받음)</td>
+<td class="border border-gray-300 p-2">낮음</td>
+</tr>
+<tr>
+<td class="border border-gray-300 p-2 font-semibold">주요 사용 알고리즘</td>
+<td class="border border-gray-300 p-2">K-최근접 이웃(KNN), 신경망 등</td>
+<td class="border border-gray-300 p-2">선형 회귀, 로지스틱 회귀, SVM 등</td>
+</tr>
+</tbody>
+</table>
+<!-- Visual Representation -->
+<div class="flex-1 concept-box p-3 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-random text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">변환 비교</h3>
+</div>
+<div class="flex justify-between items-center">
+<div class="text-center">
+<div class="h-16 w-48 mb-1" id="normalization-viz"></div>
+<p class="text-sm">정규화: Min-Max Scaling</p>
+<p class="text-xs text-gray-600">값을 0~1 사이로 압축</p>
+</div>
+<div class="text-center">
+<div class="h-16 w-48 mb-1" id="standardization-viz"></div>
+<p class="text-sm">표준화: Z-score 변환</p>
+<p class="text-xs text-gray-600">평균을 0, 표준편차를 1로</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Feature Scaling and One-hot Encoding -->
+<div class="w-1/2 flex flex-col">
+<!-- Feature Scaling -->
+<div class="mb-4">
+<h2 class="text-2xl font-semibold text-green-800 mb-2">특성 스케일링의 중요성</h2>
+<div class="concept-box p-3 rounded shadow-sm mb-3">
+<div class="flex items-center mb-2">
+<i class="fas fa-ruler-combined text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">왜 스케일링이 필요한가?</h3>
+</div>
+<p class="mb-2">특성 간의 스케일 차이로 인해 발생하는 문제를 해결</p>
+<ul class="list-disc pl-5 text-sm">
+<li class="mb-1">거리 기반 알고리즘(KNN)에서 값의 범위가 큰 특성에 의해 학습 과정이 왜곡됨</li>
+<li class="mb-1">경사 하강법 기반 알고리즘에서 값의 범위가 큰 특성에 의해 학습 속도가 느려짐</li>
+<li>각 특성의 영향력을 공정하게 유지하기 위해 필수적</li>
+</ul>
+</div>
+</div>
+<!-- One-hot Encoding -->
+<div>
+<h2 class="text-2xl font-semibold text-green-800 mb-2">원-핫 인코딩 (One-Hot Encoding)</h2>
+<div class="concept-box p-3 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-tags text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">범주형 데이터 처리</h3>
+</div>
+<p class="mb-2">범주형 데이터를 머신러닝 모델이 이해할 수 있는 숫자 형태로 변환</p>
+<div class="flex items-center justify-center mb-3">
+<div class="text-center mx-2">
+<div class="bg-green-700 text-white p-2 rounded">색상</div>
+<div class="text-sm mt-1">문자열</div>
+</div>
+<i class="fas fa-arrow-right mx-2 text-gray-500"></i>
+<div class="text-center mx-2">
+<div class="bg-green-700 text-white p-2 rounded">is_빨강</div>
+<div class="text-sm mt-1">0 또는 1</div>
+</div>
+<div class="text-center mx-2">
+<div class="bg-green-700 text-white p-2 rounded">is_초록</div>
+<div class="text-sm mt-1">0 또는 1</div>
+</div>
+<div class="text-center mx-2">
+<div class="bg-green-700 text-white p-2 rounded">is_파랑</div>
+<div class="text-sm mt-1">0 또는 1</div>
+</div>
+</div>
+<p class="text-sm">이 방식은 모델이 범주 간에 존재하지 않는 순서 관계를 학습하는 것을 방지합니다.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-3 text-sm text-gray-500 text-right">
+<p>머신러닝 이론과 기본 기법 | 8/10</p>
+</div>
+</div>
+<script>
+        // D3.js visualization for normalization
+        const normalizationViz = d3.select("#normalization-viz")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 180 60");
+
+        // Create data with different scales
+        const data = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+        // Draw original data bars
+        normalizationViz.selectAll(".bar")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", (d, i) => i * 18)
+            .attr("y", d => 60 - d/2)
+            .attr("width", 12)
+            .attr("height", d => d/2)
+            .attr("fill", "#006400");
+
+        // Draw normalized data bars (all values between 0 and 1)
+        const normalizedData = data.map(d => (d - 10) / 90);
+        normalizationViz.selectAll(".bar-normalized")
+            .data(normalizedData)
+            .enter()
+            .append("rect")
+            .attr("class", "bar-normalized")
+            .attr("x", (d, i) => i * 18 + 6)
+            .attr("y", d => 60 - d * 58)
+            .attr("width", 12)
+            .attr("height", d => d * 58)
+            .attr("fill", "#FFA500")
+            .attr("opacity", 0.7);
+
+        // D3.js visualization for standardization
+        const standardizationViz = d3.select("#standardization-viz")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 180 60");
+
+        // Draw original data bars
+        standardizationViz.selectAll(".bar")
+            .data(data)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", (d, i) => i * 18)
+            .attr("y", d => 60 - d/2)
+            .attr("width", 12)
+            .attr("height", d => d/2)
+            .attr("fill", "#006400");
+
+        // Draw standardized data bars (mean=0, std=1)
+        // For visualization purposes, we'll show Z-score transformation
+        const mean = 55;
+        const std = 30;
+        const standardizedData = data.map(d => (d - mean) / std);
+        standardizationViz.selectAll(".bar-standardized")
+            .data(standardizedData)
+            .enter()
+            .append("rect")
+            .attr("class", "bar-standardized")
+            .attr("x", (d, i) => i * 18 + 6)
+            .attr("y", d => 60 - (d + 3) * 10) // Shift and scale for visualization
+            .attr("width", 12)
+            .attr("height", d => (d + 3) * 10)
+            .attr("fill", "#FFA500")
+            .attr("opacity", 0.7);
+    </script>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_7.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">8 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_9.html">다음</a>
+</div>
+</body></html>

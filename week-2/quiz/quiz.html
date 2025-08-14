@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>머신러닝 이론 퀴즈 (15문항)</title>
+<style>
+  :root { --bg:#0b1020; --card:#121a33; --ink:#e8ecf3; --muted:#9fb0d0; --accent:#6aa7ff; --ok:#19c37d; --bad:#ff6464; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+         background: linear-gradient(180deg, var(--bg), #0d1530 40%, #0e1838); color: var(--ink); }
+  header { padding: 28px 20px 12px; text-align:center; }
+  header h1 { margin:0; font-size: 22px; letter-spacing: .2px; }
+  header p { margin:6px 0 0; color: var(--muted); font-size: 14px; }
+  main { max-width: 980px; margin: 22px auto 80px; padding: 0 16px; }
+  .card { background: linear-gradient(180deg, var(--card), #0f1630); border:1px solid #1b2a55; border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+  .q { display:grid; grid-template-columns: 40px 1fr; gap: 12px; align-items:flex-start; }
+  .q-no { width: 40px; height: 40px; border-radius: 12px; background:#0c1430; border:1px solid #1a2a55; display:flex; align-items:center; justify-content:center; color:var(--muted); font-weight:700; }
+  .q-body h3 { margin: 2px 0 8px; font-size: 16px; }
+  .opts { display:grid; gap:8px; margin-top:8px; }
+  label.opt { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid #1a2a55; border-radius:12px; cursor:pointer; background:#0e1736; }
+  label.opt:hover { border-color:#2a4ea7; }
+  input[type="radio"]{ margin-top:3px; }
+  .explain { margin-top:10px; font-size:13px; color:var(--muted); display:none; }
+  .explain.show { display:block; }
+  .result { position: sticky; bottom: 0; left:0; right:0; background: rgba(10,14,28,.9); backdrop-filter: blur(6px); border-top: 1px solid #1a2a55; }
+  .result-inner { max-width:980px; margin:0 auto; padding:12px 16px; display:flex; gap:12px; align-items:center; justify-content:space-between; }
+  .btn { padding:10px 14px; border-radius:10px; border:1px solid #2c458a; background:#12204a; color:#eaf0ff; cursor:pointer; font-weight:600; }
+  .btn:hover { background:#162861; }
+  .pill { padding:8px 12px; border-radius:999px; border:1px solid #263e7d; background:#0f1b3e; color:#bcd0ff; font-weight:600; }
+  .score { font-size: 14px; }
+  .correct { border-color:#1f6c4f !important; background: linear-gradient(180deg, #0f2a24, #102a21) !important; }
+  .wrong { border-color:#7b2e2e !important; background: linear-gradient(180deg, #2a1313, #2a1114) !important; }
+  .legend { font-size:12px; color:var(--muted); }
+  footer { text-align:center; color: var(--muted); font-size: 12px; padding: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>머신러닝 이론 퀴즈 (15문항)</h1>
+  <p>전치/단위/역행렬/수치미분 · 선형/다중/다항/로지스틱 회귀 · 스케일링 · 원‑핫 · Bias–Variance · 정규화(L1/L2) · Grid Search</p>
+</header>
+<main id="quiz"></main>
+
+<div class="result">
+  <div class="result-inner">
+    <div class="legend">선택 후 <b>채점</b>을 누르면 정답과 해설이 표시됩니다.</div>
+    <div>
+      <span id="score" class="pill score">점수: - / 15</span>
+      <button id="checkBtn" class="btn">채점</button>
+      <button id="resetBtn" class="btn" style="margin-left:6px;">초기화</button>
+      <button id="toggleAll" class="btn" style="margin-left:6px;">해설 모두 보기/숨기기</button>
+    </div>
+  </div>
+</div>
+
+<footer>© ML Quiz • Self‑contained HTML</footer>
+
+<script>
+const QUESTIONS = [
+  {
+    id: 1,
+    type: "mc",
+    text: "전치 행렬 A^T은 A의 어떤 연산인가?",
+    options: [
+      "행과 열을 서로 바꾼다.",
+      "대각 성분만 1로 만든다.",
+      "A의 역행렬을 구한다.",
+      "A의 각 원소에 1을 더한다."
+    ],
+    answer: 0,
+    explain: "전치(Transpose)는 A의 (i, j) 원소를 (j, i) 위치로 옮깁니다."
+  },
+  {
+    id: 2,
+    type: "mc",
+    text: "정방행렬 A가 역행렬 A^{-1}을 가지기 위한 필요충분조건은?",
+    options: [
+      "det(A) = 0",
+      "det(A) ≠ 0",
+      "A가 대칭행렬",
+      "A가 정규행렬"
+    ],
+    answer: 1,
+    explain: "역행렬 존재 조건은 det(A) ≠ 0 입니다."
+  },
+  {
+    id: 3,
+    type: "mc",
+    text: "단위행렬 I에 대하여 임의의 적합한 차원의 행렬 A에 대해 성립하는 것은?",
+    options: [
+      "AI = 0, IA = 0",
+      "AI = A, IA = A",
+      "AI = A^T, IA = A^T",
+      "AI = I, IA = I"
+    ],
+    answer: 1,
+    explain: "단위행렬은 곱셈 항등원입니다. 왼쪽/오른쪽 곱 모두 A를 그대로 반환합니다."
+  },
+  {
+    id: 4,
+    type: "mc",
+    text: "중앙차분 수치 미분의 근사식으로 옳은 것은?",
+    options: [
+      "f'(x) ≈ (f(x+h) − f(x))/h",
+      "f'(x) ≈ (f(x) − f(x−h))/h",
+      "f'(x) ≈ (f(x+h) − f(x−h))/(2h)",
+      "f'(x) ≈ (f(x+2h) − f(x))/2h"
+    ],
+    answer: 2,
+    explain: "중앙차분은 양·음 방향 값을 함께 써 1차 오차항을 상쇄합니다."
+  },
+  {
+    id: 5,
+    type: "mc",
+    text: "선형 회귀(OLS)가 최소화하는 목적 함수로 가장 적절한 것은?",
+    options: [
+      "절대 오차합(MAE)",
+      "잔차 제곱합(RSS) 또는 MSE",
+      "로그 우도",
+      "엔트로피"
+    ],
+    answer: 1,
+    explain: "일반적인 OLS는 잔차 제곱합(또는 평균제곱오차)을 최소화합니다."
+  },
+  {
+    id: 6,
+    type: "mc",
+    text: "다항 회귀(Polynomial Regression)에 대한 설명으로 옳은 것은?",
+    options: [
+      "모형이 비선형이므로 선형 회귀가 아니다.",
+      "특성 공간에서 다항 특성을 추가한 뒤 선형 회귀를 적용한다.",
+      "항상 과적합을 유발한다.",
+      "시그모이드를 사용한다."
+    ],
+    answer: 1,
+    explain: "다항 특성 변환 후 여전히 선형 모델(선형 결합)을 학습합니다."
+  },
+  {
+    id: 7,
+    type: "mc",
+    text: "로지스틱 회귀의 출력/의미로 옳은 것은?",
+    options: [
+      "실수 예측값",
+      "클래스 0의 확률",
+      "클래스 1의 확률 σ(w^T x)",
+      "잔차 제곱합"
+    ],
+    answer: 2,
+    explain: "시그모이드 σ(z)를 통과한 값은 양성(클래스 1)일 확률로 해석합니다."
+  },
+  {
+    id: 8,
+    type: "mc",
+    text: "Standardization과 Normalization의 짝이 올바른 것은?",
+    options: [
+      "Standardization: [0,1] 스케일, Normalization: 평균 0·분산 1",
+      "Standardization: 평균 0·분산 1, Normalization: [0,1] 스케일",
+      "둘 다 평균 0·분산 1",
+      "둘 다 [0,1] 스케일"
+    ],
+    answer: 1,
+    explain: "Standardization은 Z-점수 변환, Normalization은 최소–최대 스케일링을 의미하는 경우가 일반적입니다."
+  },
+  {
+    id: 9,
+    type: "mc",
+    text: "One‑hot encoding에 대한 설명으로 옳은 것은?",
+    options: [
+      "범주 간 순서를 암묵적으로 도입한다.",
+      "범주형 변수를 0/1의 지시 변수 벡터로 표현한다.",
+      "항상 차원을 줄여준다.",
+      "회귀 문제에서만 사용한다."
+    ],
+    answer: 1,
+    explain: "원‑핫은 순서를 부여하지 않고 각 범주에 독립 차원을 부여합니다."
+  },
+  {
+    id: 10,
+    type: "mc",
+    text: "Bias–Variance 관점에서 일반적으로 다항 차수를 높이면?",
+    options: [
+      "편향↑, 분산↓",
+      "편향↓, 분산↑",
+      "편향↓, 분산↓",
+      "편향↑, 분산↑"
+    ],
+    answer: 1,
+    explain: "모형이 유연해져 훈련 오차는 줄지만 데이터 잡음에도 민감해져 분산이 커집니다."
+  },
+  {
+    id: 11,
+    type: "mc",
+    text: "정규화(Regularization)에 대한 설명으로 옳은 것은?",
+    options: [
+      "L1은 계수를 부드럽게 축소하고, L2는 희소성을 만든다.",
+      "L1은 희소성(계수 0)을 촉진, L2는 계수를 전반적으로 줄인다.",
+      "L1/L2 모두 특성 선택 효과가 없다.",
+      "정규화는 항상 성능을 악화한다."
+    ],
+    answer: 1,
+    explain: "L1(Lasso)은 일부 계수를 0으로 만들어 특성 선택 효과, L2(Ridge)는 계수를 고르게 축소합니다."
+  },
+  {
+    id: 12,
+    type: "mc",
+    text: "Grid Search와 교차 검증(CV)을 함께 사용하는 주된 이유는?",
+    options: [
+      "훈련셋만으로 조기종료를 구현하기 위해",
+      "테스트셋을 반복 사용해 점수를 최대화하기 위해",
+      "일반화 성능을 안정적으로 추정하며 하이퍼파라미터를 선택하기 위해",
+      "모델 파라미터의 표준오차를 계산하기 위해"
+    ],
+    answer: 2,
+    explain: "CV로 과적합을 줄이며 일반화 성능을 추정하고, 그 기준으로 최적 하이퍼파라미터를 고릅니다."
+  },
+  {
+    id: 13,
+    type: "mc",
+    text: "Feature scaling의 필요성에 대해 가장 적절한 설명은?",
+    options: [
+      "거리·내적 기반 모델(선형/로지스틱/서포트벡터 등)에 중요하며, 트리 모델은 상대적으로 덜 민감하다.",
+      "모든 모델에서 반드시 불필요하다.",
+      "트리 모델에서만 필요하다.",
+      "딥러닝에서만 필요하다."
+    ],
+    answer: 0,
+    explain: "가중합/거리/정규화 제약을 쓰는 모델들은 스케일에 민감합니다. 트리·랜덤포레스트는 덜 민감합니다."
+  },
+  {
+    id: 14,
+    type: "mc",
+    text: "다중공선성(multicollinearity) 상황에서 더 안정적인 계수를 주는 경향이 있는 것은?",
+    options: [
+      "L1 정규화(Lasso)",
+      "L2 정규화(Ridge)",
+      "드롭아웃",
+      "원‑핫 인코딩"
+    ],
+    answer: 1,
+    explain: "Ridge(L2)는 상관된 특성들에 가중치를 분산시켜 계수 추정을 안정화합니다."
+  },
+  {
+    id: 15,
+    type: "mc",
+    text: "로지스틱 회귀에서 분류 임계값을 0.5→0.3으로 낮추면 일반적으로 어떻게 되는가?",
+    options: [
+      "정밀도↑, 재현율↓",
+      "정밀도↓ 가능, 재현율↑",
+      "정밀도↑, 재현율↑",
+      "정밀도↓, 재현율↓"
+    ],
+    answer: 1,
+    explain: "양성 판정을 더 쉽게 하므로 더 많은 양성을 잡아 재현율은 올라가고, 오탐이 늘며 정밀도는 떨어질 수 있습니다."
+  }
+];
+
+function renderQuiz() {
+  const root = document.getElementById("quiz");
+  root.innerHTML = "";
+  QUESTIONS.forEach((q, idx) => {
+    const card = document.createElement("div");
+    card.className = "card";
+    const opts = q.options.map((opt, i) => {
+      const name = `q${q.id}`;
+      const id = `${name}_${i}`;
+      return `
+        <label class="opt" for="${id}" data-qid="${q.id}" data-idx="${i}">
+          <input type="radio" id="${id}" name="${name}" value="${i}">
+          <div>${opt}</div>
+        </label>
+      `;
+    }).join("");
+    card.innerHTML = `
+      <div class="q">
+        <div class="q-no">${idx+1}</div>
+        <div class="q-body">
+          <h3>${q.text}</h3>
+          <div class="opts">${opts}</div>
+          <div class="explain" id="exp_${q.id}">해설: ${q.explain}</div>
+        </div>
+      </div>
+    `;
+    root.appendChild(card);
+  });
+}
+
+function check() {
+  let correct = 0;
+  QUESTIONS.forEach(q => {
+    const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
+    const allLabels = document.querySelectorAll(`label.opt[data-qid="${q.id}"]`);
+    allLabels.forEach(lb => lb.classList.remove("correct", "wrong"));
+    if (!selected) { 
+      document.getElementById(`exp_${q.id}`).classList.add("show");
+      return;
+    }
+    const picked = parseInt(selected.value, 10);
+    const pickedLabel = document.querySelector(`label.opt[for="${selected.id}"]`);
+    if (picked === q.answer) {
+      correct += 1;
+      pickedLabel.classList.add("correct");
+    } else {
+      pickedLabel.classList.add("wrong");
+      // 정답 라벨에 표시
+      const correctLabel = document.querySelector(`label.opt[data-qid="${q.id}"][data-idx="${q.answer}"]`);
+      if (correctLabel) correctLabel.classList.add("correct");
+    }
+    document.getElementById(`exp_${q.id}`).classList.add("show");
+  });
+  document.getElementById("score").textContent = `점수: ${correct} / ${QUESTIONS.length}`;
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+}
+
+function resetQuiz() {
+  document.querySelectorAll("input[type='radio']").forEach(r => r.checked = false);
+  document.querySelectorAll("label.opt").forEach(lb => lb.classList.remove("correct","wrong"));
+  document.querySelectorAll(".explain").forEach(ex => ex.classList.remove("show"));
+  document.getElementById("score").textContent = `점수: - / ${QUESTIONS.length}`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function toggleAll() {
+  const anyHidden = Array.from(document.querySelectorAll(".explain")).some(el => !el.classList.contains("show"));
+  document.querySelectorAll(".explain").forEach(el => el.classList.toggle("show", anyHidden));
+}
+
+renderQuiz();
+document.getElementById("checkBtn").addEventListener("click", check);
+document.getElementById("resetBtn").addEventListener("click", resetQuiz);
+document.getElementById("toggleAll").addEventListener("click", toggleAll);
+</script>
+</body>
+</html>

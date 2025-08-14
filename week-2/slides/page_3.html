@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>행렬 연산의 이해</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 826px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;}
+        .slide {
+            width: 1280px;
+            min-height: 826px;
+
+            position: relative;
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .matrix-box {
+            display: inline-block;
+            border: 2px solid #006400;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: white;
+        }
+        .operation-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .example-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #FFA500;
+        }
+        .application-box {
+            background-color: rgba(0, 100, 0, 0.1);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-50 p-8 flex flex-col">
+<!-- Title -->
+<div class="mb-4">
+<h1 class="title text-4xl font-bold mb-2">행렬 연산의 이해</h1>
+<div class="w-24 h-1 bg-yellow-500"></div>
+</div>
+<!-- Introduction -->
+<div class="mb-4">
+<p class="text-lg">머신러닝에서 데이터는 주로 행렬과 벡터 형태로 표현됩니다. 행렬의 구조를 변형하거나 특정 연산을 수행하기 위해 전치 행렬과 단위 행렬의 개념이 활용됩니다.</p>
+</div>
+<!-- Main Content - Two Column Layout -->
+<div class="flex flex-1 space-x-6">
+<!-- Left Column: Transpose Matrix -->
+<div class="w-1/2 flex flex-col">
+<div class="operation-box p-5 mb-4 flex-1">
+<div class="flex items-center mb-3">
+<i class="fas fa-exchange-alt text-2xl text-yellow-500 mr-3"></i>
+<h2 class="text-2xl font-semibold text-green-800">전치 행렬 (Transpose Matrix)</h2>
+</div>
+<p class="mb-3">기존 행렬의 행과 열을 서로 맞바꾼 행렬을 의미합니다. 원본 행렬 A에 대해 A<sup>T</sup>로 표기합니다.</p>
+<div class="flex items-center justify-center my-4">
+<div class="matrix-box text-center">
+<span class="text-xl">A = </span>
+<div class="border border-green-800 p-1">
+<div>1 2 3</div>
+<div>4 5 6</div>
+</div>
+</div>
+<i class="fas fa-arrow-right mx-4 text-green-700"></i>
+<div class="matrix-box text-center">
+<span class="text-xl">A<sup>T</sup> = </span>
+<div class="border border-green-800 p-1">
+<div>1 4</div>
+<div>2 5</div>
+<div>3 6</div>
+</div>
+</div>
+</div>
+<div class="example-box p-3">
+<h3 class="font-semibold mb-1">성질</h3>
+<ul class="list-disc pl-5">
+<li>크기: m × n 행렬을 전치하면 n × m 크기의 행렬이 됩니다.</li>
+<li>성질: (A<sup>T</sup>)<sup>T</sup> = A</li>
+<li>성질: (A + B)<sup>T</sup> = A<sup>T</sup> + B<sup>T</sup></li>
+<li>성질: (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></li>
+</ul>
+</div>
+</div>
+<!-- Application of Transpose in ML -->
+<div class="application-box p-3">
+<h3 class="font-semibold text-green-800 mb-1">
+<i class="fas fa-laptop-code text-yellow-500 mr-2"></i>
+                        머신러닝에서의 응용
+                    </h3>
+<p>데이터의 구조를 변환하거나 특정 계산(예: 공분산 행렬 계산)을 용이하게 할 때 사용됩니다. 특히, 입력 데이터 X와 출력 데이터 Y의 관계를 표현할 때 유용합니다.</p>
+</div>
+</div>
+<!-- Right Column: Identity Matrix -->
+<div class="w-1/2 flex flex-col">
+<div class="operation-box p-5 mb-4 flex-1">
+<div class="flex items-center mb-3">
+<i class="fas fa-1 text-2xl text-yellow-500 mr-3"></i>
+<h2 class="text-2xl font-semibold text-green-800">단위 행렬 (Identity Matrix)</h2>
+</div>
+<p class="mb-3">주대각선의 원소는 모두 1이고 나머지 원소는 모두 0인 정사각 행렬을 말합니다. 기호 I로 나타냅니다.</p>
+<div class="flex items-center justify-center my-4">
+<div class="matrix-box text-center">
+<span class="text-xl">I = </span>
+<div class="border border-green-800 p-1">
+<div>1 0 0</div>
+<div>0 1 0</div>
+<div>0 0 1</div>
+</div>
+</div>
+</div>
+<div class="example-box p-3">
+<h3 class="font-semibold mb-1">특성</h3>
+<ul class="list-disc pl-5">
+<li>단위 행렬은 숫자의 곱셈에서 1과 같은 역할을 합니다.</li>
+<li>성질: A · I = I · A = A (어떤 행렬 A에 대해서도)</li>
+<li>성질: A · A<sup>-1</sup> = I · A<sup>-1</sup> = A<sup>-1</sup> · I = A<sup>-1</sup> · A = I</li>
+<li>성질: det(I) = 1 (단위 행렬의 행렬식은 1입니다.)</li>
+</ul>
+</div>
+</div>
+<!-- Application of Identity in ML -->
+<div class="application-box p-3">
+<h3 class="font-semibold text-green-800 mb-1">
+<i class="fas fa-laptop-code text-yellow-500 mr-2"></i>
+                        머신러닝에서의 응용
+                    </h3>
+<p>행렬 연산의 기준이 되며, 역행렬을 정의하는 데 필수적입니다. 특히, 선형 회귀 모델의 정규방정식에서 역행렬을 계산할 때 단위 행렬의 특성을 활용합니다.</p>
+</div>
+</div>
+</div>
+</div>
+  <!-- Footer nav -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
+  </div>
+</div>
+</body>
+</html>

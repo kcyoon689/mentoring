@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>머신러닝 기본 수학</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+
+            position: relative;
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .matrix {
+            display: inline-block;
+            border: 1px solid #006400;
+            padding: 8px;
+            margin: 0 4px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .concept-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-50 p-8 flex flex-col">
+<!-- Title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">머신러닝 기본 수학</h1>
+<div class="w-24 h-1 bg-yellow-500"></div>
+</div>
+<!-- Introduction -->
+<div class="mb-4">
+<p class="text-lg">머신러닝은 데이터를 수학적으로 표현하고 조작하는 과정에 깊이 의존하며, 특히 선형대수와 미적분학은 그 핵심을 이룹니다.</p>
+</div>
+<!-- Main Content - Two Column Layout -->
+<div class="flex flex-1">
+<!-- Left Column: Matrix Operations -->
+<div class="w-1/2 pr-4 flex flex-col justify-between">
+<h2 class="text-2xl font-semibold text-green-800 mb-3">행렬 연산</h2>
+<!-- Transpose Matrix -->
+<div class="concept-box p-3 mb-3 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-exchange-alt text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">전치 행렬 (Transpose Matrix)</h3>
+</div>
+<p class="mb-2">기존 행렬의 행과 열을 서로 맞바꾼 행렬</p>
+<div class="flex items-center">
+<p class="mr-2">예:</p>
+<div class="matrix">A = [1 2 3; 4 5 6]</div>
+<i class="fas fa-arrow-right mx-2 text-green-700"></i>
+<div class="matrix">A<sup>T</sup> = [1 4; 2 5; 3 6]</div>
+</div>
+</div>
+<!-- Identity Matrix -->
+<div class="concept-box p-3 mb-3 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-1 text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">단위 행렬 (Identity Matrix)</h3>
+</div>
+<p class="mb-2">주대각선의 원소는 1이고 나머지 원소는 0인 정사각 행렬</p>
+<div class="flex items-center">
+<p class="mr-2">예:</p>
+<div class="matrix">I = [1 0 0; 0 1 0; 0 0 1]</div>
+</div>
+</div>
+<!-- Inverse Matrix -->
+<div class="concept-box p-3 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-undo text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">역행렬 (Inverse Matrix)</h3>
+</div>
+<p class="mb-2">정사각 행렬 A에 대해, 곱했을 때 단위 행렬이 나오는 행렬</p>
+<div class="flex items-center">
+<p class="mr-2">예:</p>
+<div class="formula">A · A<sup>-1</sup> = I</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Differentiation -->
+<div class="w-1/2 pl-4 flex flex-col">
+<h2 class="text-2xl font-semibold text-green-800 mb-3">미분과 최적화</h2>
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-line text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">미분의 역할</h3>
+</div>
+<p class="mb-3">특정 지점에서 함수의 순간 변화율(기울기)을 구하는 과정</p>
+<p class="mb-3">머신러닝에서 비용 함수의 최소값을 찾기 위해 필수적</p>
+</div>
+<!-- Gradient Descent -->
+<div class="concept-box p-4 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-arrows-alt-down text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">경사 하강법</h3>
+</div>
+<p class="mb-3">비용 함수 J(θ)의 기울기를 계산하여 최소값에 도달</p>
+<div class="formula text-center my-2">θ = θ - α · ∂J(θ)/∂θ</div>
+<p class="text-sm text-gray-600">α: 학습률, ∂J(θ)/∂θ: 그래디언트</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_1.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">1 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_3.html">다음</a>
+</div>
+</body></html>

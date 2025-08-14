@@ -1,0 +1,258 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>랜덤 포레스트</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 894px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 894px;
+            
+            position: relative;
+        }
+        .tree {
+            fill: #4CAF50;
+            stroke: #333333;
+            stroke-width: 1px;
+        }
+        .tree-random {
+            fill: #FF9800;
+            stroke: #333333;
+            stroke-width: 1px;
+        }
+        .advantage {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-left: 4px solid #4CAF50;
+        }
+        .disadvantage {
+            background-color: rgba(255, 152, 0, 0.1);
+            border-left: 4px solid #FF9800;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+<!-- Header -->
+<header class="mb-6">
+<h1 class="text-4xl font-bold text-green-600">랜덤 포레스트</h1>
+<div class="w-24 h-1 bg-green-500 mt-2"></div>
+</header>
+<!-- Main Content -->
+<div class="flex h-5/6">
+<!-- Left Column: Text Content -->
+<div class="w-1/2 pr-6">
+<!-- Concept Section -->
+<div class="mb-5">
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-tree mr-2"></i> 개념
+                    </h2>
+<p class="text-lg">
+                        랜덤 포레스트(Random Forest)는 여러 개의 결정 트리로 구성된 &#39;숲(Forest)&#39;을 만드는 앙상블 학습 기법입니다. 
+                        분류와 회귀 문제 모두에 적용되며, 단일 결정 트리의 과적합 문제를 해결하고 예측 정확도를 높이기 위해 설계되었습니다.
+                    </p>
+</div>
+<!-- Working Principle -->
+<div class="mb-5">
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-cogs mr-2"></i> 작동 원리
+                    </h2>
+<p class="text-lg mb-2">
+                        랜덤 포레스트는 두 가지 핵심적인 무작위성 기법을 통해 강력한 성능을 발휘합니다:
+                    </p>
+<div class="pl-4 mb-3">
+<h3 class="text-xl font-medium text-green-600">
+<i class="fas fa-random mr-2"></i> 배깅 (Bagging)
+                        </h3>
+<p class="text-base">
+                            원본 훈련 데이터셋에서 중복을 허용하여 무작위로 샘플을 추출해 여러 개의 작은 훈련 데이터셋(부트스트랩 샘플)을 만듭니다. 
+                            각 결정 트리는 이렇게 생성된 서로 다른 부트스트랩 샘플을 사용하여 개별적으로 학습됩니다.
+                        </p>
+</div>
+<div class="pl-4">
+<h3 class="text-xl font-medium text-green-600">
+<i class="fas fa-filter mr-2"></i> 랜덤 특성 선택
+                        </h3>
+<p class="text-base">
+                            각 결정 트리의 노드에서 분기점을 찾을 때, 전체 특성을 모두 고려하는 대신 무작위로 선택된 일부 특성 중에서 
+                            최적의 분기 기준을 찾습니다. 이는 트리들이 서로 비슷한 형태로 만들어지는 것을 방지하고 상관관계를 줄여줍니다.
+                        </p>
+</div>
+</div>
+<!-- Result Aggregation -->
+<div class="bg-white p-3 rounded-lg shadow-sm mb-5">
+<h3 class="text-xl font-medium text-green-600 mb-1">
+<i class="fas fa-layer-group mr-2"></i> 결과 취합
+                    </h3>
+<div class="flex items-center">
+<div class="w-1/2 pr-2">
+<p class="text-base"><strong>분류:</strong> 각 트리가 예측한 클래스 중 가장 많이 나온 값을 최종 예측값으로 선택합니다 (다수결 투표 방식).</p>
+</div>
+<div class="w-1/2 pl-2">
+<p class="text-base"><strong>회귀:</strong> 모든 트리가 예측한 수치들의 평균값을 최종 예측값으로 사용합니다.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Visual and Advantages/Disadvantages -->
+<div class="w-1/2 flex flex-col">
+<!-- Random Forest Visualization -->
+<div class="h-3/5 mb-4" id="forest-visualization"></div>
+<!-- Advantages and Disadvantages -->
+<div class="h-2/5">
+<div class="flex mb-2">
+<h3 class="text-xl font-semibold text-green-700 w-1/2">
+<i class="fas fa-plus-circle mr-2 text-green-600"></i>장점
+                        </h3>
+<h3 class="text-xl font-semibold text-orange-600 w-1/2">
+<i class="fas fa-minus-circle mr-2 text-orange-600"></i>단점
+                        </h3>
+</div>
+<div class="flex">
+<!-- Advantages -->
+<div class="w-1/2 pr-2">
+<div class="advantage p-2 mb-1 rounded">
+<p class="text-sm"><strong>높은 정확도와 안정성:</strong> 여러 트리의 예측을 종합하므로 단일 결정 트리보다 분산이 작고 과적합에 강하여 일반적으로 높은 예측 성능을 보입니다.</p>
+</div>
+<div class="advantage p-2 mb-1 rounded">
+<p class="text-sm"><strong>다양한 데이터 처리:</strong> 수치형 데이터와 범주형 데이터를 별도의 전처리 없이 다룰 수 있으며, 결측치가 있는 데이터도 비교적 잘 처리합니다.</p>
+</div>
+<div class="advantage p-2 mb-1 rounded">
+<p class="text-sm"><strong>특성 중요도 제공:</strong> 각 특성이 모델의 예측에 얼마나 기여했는지를 측정하는 &#39;특성 중요도&#39;를 제공하여 모델 해석에 도움을 줍니다.</p>
+</div>
+<div class="advantage p-2 rounded">
+<p class="text-sm"><strong>병렬 처리 가능:</strong> 각 트리는 독립적으로 학습되므로 병렬 처리를 통해 학습 시간을 단축할 수 있습니다.</p>
+</div>
+</div>
+<!-- Disadvantages -->
+<div class="w-1/2 pl-2">
+<div class="disadvantage p-2 mb-1 rounded">
+<p class="text-sm"><strong>해석의 어려움:</strong> 수많은 트리로 구성되어 있어 단일 결정 트리처럼 명확한 규칙을 시각화하거나 해석하기 어렵습니다. 이 때문에 &#39;블랙박스(Black-box)&#39; 모델로 불리기도 합니다.</p>
+</div>
+<div class="disadvantage p-2 mb-1 rounded">
+<p class="text-sm"><strong>메모리 및 계산 비용:</strong> 다수의 트리를 생성하고 저장해야 하므로, 단일 모델에 비해 더 많은 메모리와 계산 자원을 필요로 합니다.</p>
+</div>
+<div class="disadvantage p-2 rounded">
+<p class="text-sm"><strong>예측 시간:</strong> 학습된 모델로 새로운 데이터를 예측할 때, 모든 트리를 거쳐야 하므로 예측 속도가 상대적으로 느릴 수 있습니다.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Random Forest Visualization using D3.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = 550;
+            const height = 250;
+            
+            // Create SVG
+            const svg = d3.select("#forest-visualization")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+            
+            // Create multiple small trees to represent a forest
+            const treeCount = 5;
+            const treeWidth = 90;
+            const treeHeight = 180;
+            const horizontalGap = (width - treeWidth * treeCount) / (treeCount + 1);
+            
+            // Tree data structure
+            function createTreeData(depth, isRandom) {
+                if (depth === 0) {
+                    return { name: "Root", children: [] };
+                }
+                
+                const branches = isRandom ? 
+                    [0, 1, 2].slice(0, 1 + Math.floor(Math.random() * 2)) : 
+                    [0, 1];
+                
+                return {
+                    name: "Node",
+                    children: branches.map(branch => 
+                        createTreeData(depth - 1, isRandom)
+                    )
+                };
+            }
+            
+            // Create multiple trees
+            for (let i = 0; i < treeCount; i++) {
+                const treeData = createTreeData(3, true);
+                
+                // Create tree visualization
+                const treeSvg = svg.append("g")
+                    .attr("transform", `translate(${horizontalGap * (i + 1) + treeWidth * i}, 10)`);
+                
+                // Create hierarchical data
+                const root = d3.hierarchy(treeData);
+                
+                // Create tree layout
+                const treeLayout = d3.tree().size([treeWidth, treeHeight]);
+                treeLayout(root);
+                
+                // Add links
+                treeSvg.selectAll(".link")
+                    .data(root.links())
+                    .join("path")
+                    .attr("class", "link")
+                    .attr("d", d => {
+                        const sourceX = d.source.x;
+                        const sourceY = d.source.y;
+                        const targetX = d.target.x;
+                        const targetY = d.target.y;
+                        
+                        return `M${sourceX},${sourceY}
+                                L${targetX},${targetY}`;
+                    });
+                
+                // Add nodes
+                const nodes = treeSvg.selectAll(".node")
+                    .data(root.descendants())
+                    .join("g");
+                
+                nodes.append("circle")
+                    .attr("class", i % 2 === 0 ? "tree" : "tree-random")
+                    .attr("r", d => d.depth === 0 ? 8 : (d.depth === 1 ? 6 : 5))
+                    .attr("cx", d => d.x)
+                    .attr("cy", d => d.y);
+            }
+            
+            // Add legend
+            const legend = svg.append("g")
+                .attr("transform", "translate(20, 200)");
+            
+            // Legend items
+            const legendItems = [
+                { label: "랜덤 포레스트의 여러 개의 결정 트리", color: "#4CAF50" }
+            ];
+            
+            // Create legend
+            legend.selectAll("rect")
+                .data(legendItems)
+                .enter()
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", (d, i) => i * 25)
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", d => d.color);
+            
+            legend.selectAll("text")
+                .data(legendItems)
+                .enter()
+                .append("text")
+                .attr("x", 25)
+                .attr("y", (d, i) => i * 25 + 12)
+                .text(d => d.label)
+                .attr("font-size", "12px")
+                .attr("fill", "#333333");
+        });
+    </script>
+
+</body></html>

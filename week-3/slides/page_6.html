@@ -1,0 +1,304 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>에이다부스트(AdaBoost)</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 820px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 820px;
+            
+            position: relative;
+        }
+        .ada-boost-step {
+            transition: all 0.3s ease;
+        }
+        .ada-boost-step:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .advantage-item, .disadvantage-item {
+            transition: all 0.3s ease;
+        }
+        .advantage-item:hover, .disadvantage-item:hover {
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+<!-- Header -->
+<header class="mb-6">
+<h1 class="text-4xl font-bold text-green-600">에이다부스트(AdaBoost)</h1>
+<div class="w-24 h-1 bg-green-500 mt-2"></div>
+</header>
+<!-- Main Content -->
+<div class="flex h-5/6">
+<!-- Left Column: Text Content -->
+<div class="w-1/2 pr-6">
+<!-- Concept Section -->
+<div class="mb-6">
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-lightbulb mr-2"></i>순차적 학습 방식
+                    </h2>
+<p class="text-lg">
+                        에이다부스트는 여러 개의 약한 학습기를 순차적으로 학습시켜 이전 모델의 오류를 보완해나가는 직렬 방식의 부스팅 알고리즘입니다. 
+                        모델을 한 번에 하나씩 순차적으로 구축하며, 잘못 분류된 데이터에 가중치를 부여하여 다음 모델이 해당 데이터를 더 집중적으로 학습하도록 만듭니다.
+                    </p>
+</div>
+<!-- Working Principle -->
+<div class="mb-6">
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-cogs mr-2"></i>작동 원리
+                    </h2>
+<ol class="list-decimal pl-6 text-lg space-y-2">
+<li><strong>초기 가중치 할당</strong>: 모든 학습 데이터 샘플에 동일한 가중치(<span class="text-green-600">w = 1/N</span>)를 부여</li>
+<li><strong>약한 학습기 학습</strong>: 현재 데이터 가중치를 반영하여 약한 학습기(예: 결정 스텀프)를 학습시킴</li>
+<li><strong>학습기 성능 계산</strong>: 
+                            <ul class="list-disc pl-6 mt-1">
+<li>총 오류(Total Error, TE): 잘못 분류된 샘플들의 가중치 합계</li>
+<li>학습기 가중치(α): <span class="bg-green-100 px-1 py-0.5 rounded text-green-800">α = 0.5 ln((1-TE)/TE)</span></li>
+</ul>
+</li>
+<li><strong>데이터 가중치 갱신</strong>:
+                            <ul class="list-disc pl-6 mt-1">
+<li>정답을 맞힌 샘플: 가중치를 낮춤 (<span class="text-green-600">새 가중치 = 기존 가중치 × e<sup>-α</sup></span>)</li>
+<li>틀린 샘플: 가중치를 높임 (<span class="text-green-600">새 가중치 = 기존 가중치 × e<sup>α</sup></span>)</li>
+</ul>
+</li>
+<li><strong>반복</strong>: 지정된 횟수만큼 2~4단계를 반복하여 여러 개의 약한 학습기를 생성</li>
+<li><strong>최종 예측</strong>: 가중 투표(weighted majority vote)를 통해 최종 예측 결과를 결정</li>
+</ol>
+</div>
+</div>
+<!-- Right Column: Visual and Advantages/Disadvantages -->
+<div class="w-1/2 flex flex-col">
+<!-- Visualization -->
+<div class="h-3/5 mb-4" id="ada-boost-visualization"></div>
+<!-- Advantages and Disadvantages -->
+<div class="flex flex-grow">
+<!-- Advantages -->
+<div class="w-1/2 pr-2">
+<div class="bg-green-50 rounded-lg p-4 h-full shadow-md">
+<h3 class="text-xl font-semibold mb-3 text-green-700 flex items-center">
+<i class="fas fa-thumbs-up mr-2 text-green-600"></i>장점
+                            </h3>
+<ul class="space-y-2">
+<li class="advantage-item flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>단일 모델보다 높은 예측 정확도</span>
+</li>
+<li class="advantage-item flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>다양한 종류의 약한 학습기와 결합 가능</span>
+</li>
+<li class="advantage-item flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>과적합에 대한 저항성이 비교적 강한 편</span>
+</li>
+<li class="advantage-item flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>구현이 비교적 단순하고 하이퍼파라미터 튜닝이 덜 복잡</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Disadvantages -->
+<div class="w-1/2 pl-2">
+<div class="bg-orange-50 rounded-lg p-4 h-full shadow-md">
+<h3 class="text-xl font-semibold mb-3 text-orange-700 flex items-center">
+<i class="fas fa-thumbs-down mr-2 text-orange-600"></i>단점
+                            </h3>
+<ul class="space-y-2">
+<li class="disadvantage-item flex items-start">
+<i class="fas fa-exclamation-circle text-orange-500 mt-1 mr-2"></i>
+<span>노이즈 및 이상치에 민감</span>
+</li>
+<li class="disadvantage-item flex items-start">
+<i class="fas fa-exclamation-circle text-orange-500 mt-1 mr-2"></i>
+<span>순차적으로 학습을 진행하기 때문에 병렬 처리가 어려워 학습 시간이 길어짐</span>
+</li>
+<li class="disadvantage-item flex items-start">
+<i class="fas fa-exclamation-circle text-orange-500 mt-1 mr-2"></i>
+<span>복잡한 약한 학습기가 너무 복잡하면 알고리즘이 과적합되기 쉽습니다</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // AdaBoost Visualization using D3.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = 550;
+            const height = 300;
+            
+            // Create SVG
+            const svg = d3.select("#ada-boost-visualization")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+            
+            // Data for visualization
+            const steps = [
+                { 
+                    id: 1, 
+                    title: "초기 가중치", 
+                    description: "모든 데이터에 동일한 가중치 부여", 
+                    correctColor: "#4CAF50", 
+                    misColor: "#FF9800" 
+                },
+                { 
+                    id: 2, 
+                    title: "첫 번째 모델", 
+                    description: "가중치에 따라 데이터 학습", 
+                    correctColor: "#4CAF50", 
+                    misColor: "#FF9800" 
+                },
+                { 
+                    id: 3, 
+                    title: "가중치 업데이트", 
+                    description: "오류 데이터 가중치 증가", 
+                    correctColor: "#4CAF5080", 
+                    misColor: "#FF9800FF" 
+                },
+                { 
+                    id: 4, 
+                    title: "두 번째 모델", 
+                    description: "업데이트된 가중치 반영", 
+                    correctColor: "#4CAF50", 
+                    misColor: "#FF9800" 
+                }
+            ];
+            
+            // Create step groups
+            const stepWidth = 130;
+            const stepHeight = 200;
+            const stepSpacing = (width - steps.length * stepWidth) / (steps.length + 1);
+            
+            const stepGroups = svg.selectAll(".step-group")
+                .data(steps)
+                .enter()
+                .append("g")
+                .attr("class", "ada-boost-step")
+                .attr("transform", (d, i) => `translate(${stepSpacing + i * (stepWidth + stepSpacing)}, 50)`);
+            
+            // Add step rectangles
+            stepGroups.append("rect")
+                .attr("width", stepWidth)
+                .attr("height", stepHeight)
+                .attr("rx", 8)
+                .attr("ry", 8)
+                .attr("fill", "white")
+                .attr("stroke", "#4CAF50")
+                .attr("stroke-width", 2);
+            
+            // Add step titles
+            stepGroups.append("text")
+                .attr("x", stepWidth / 2)
+                .attr("y", 25)
+                .attr("text-anchor", "middle")
+                .attr("font-weight", "bold")
+                .attr("font-size", "14px")
+                .attr("fill", "#333333")
+                .text(d => d.title);
+            
+            // Create data points for each step
+            const numPoints = 10;
+            const pointRadius = 6;
+            const pointSpacing = stepHeight / (numPoints + 1);
+            
+            for (let i = 0; i < steps.length; i++) {
+                const stepGroup = stepGroups.filter(d => d.id === i + 1);
+                
+                // Create data points
+                for (let j = 0; j < numPoints; j++) {
+                    const isMisclassified = j % 3 === 0 && i >= 1; // Some points are misclassified
+                    
+                    stepGroup.append("circle")
+                        .attr("cx", stepWidth / 2)
+                        .attr("cy", 40 + j * pointSpacing)
+                        .attr("r", pointRadius)
+                        .attr("fill", isMisclassified ? steps[i].misColor : steps[i].correctColor)
+                        .attr("stroke", "#333333")
+                        .attr("stroke-width", 1);
+                }
+                
+                // Add description
+                stepGroup.append("text")
+                    .attr("x", stepWidth / 2)
+                    .attr("y", stepHeight - 15)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "12px")
+                    .attr("fill", "#555555")
+                    .text(d => d.description);
+            }
+            
+            // Add arrows between steps
+            for (let i = 0; i < steps.length - 1; i++) {
+                svg.append("path")
+                    .attr("d", `M${stepSpacing + (i + 1) * stepWidth + i * stepSpacing},100 
+                              L${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing},100`)
+                    .attr("stroke", "#333333")
+                    .attr("stroke-width", 2)
+                    .attr("marker-end", "url(#arrow)");
+                
+                // Add arrowhead
+                svg.append("polygon")
+                    .attr("points", `${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing - 5},95 
+                                   ${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing + 5},100 
+                                   ${stepSpacing + (i + 1) * stepWidth + i * stepSpacing + stepSpacing - 5},105`)
+                    .attr("fill", "#333333");
+            }
+            
+            // Add legend
+            const legend = svg.append("g")
+                .attr("transform", `translate(${width - 150}, 20)`);
+            
+            // Legend items
+            const legendItems = [
+                { label: "정확히 분류된 데이터", color: "#4CAF50" },
+                { label: "잘못 분류된 데이터", color: "#FF9800" }
+            ];
+            
+            // Create legend
+            legend.selectAll("rect")
+                .data(legendItems)
+                .enter()
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", (d, i) => i * 25)
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("fill", d => d.color);
+            
+            legend.selectAll("text")
+                .data(legendItems)
+                .enter()
+                .append("text")
+                .attr("x", 25)
+                .attr("y", (d, i) => i * 25 + 12)
+                .text(d => d.label)
+                .attr("font-size", "12px")
+                .attr("fill", "#333333");
+                
+            // Add title
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("font-weight", "bold")
+                .attr("font-size", "16px")
+                .attr("fill", "#333333")
+                .text("에이다부스트의 가중치 업데이트 과정");
+        });
+    </script>
+
+</body></html>

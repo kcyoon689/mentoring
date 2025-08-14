@@ -1,0 +1,209 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>역행렬과 미분</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+
+            position: relative;
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .concept-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+        .gradient-step {
+            transition: all 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-50 p-8 flex flex-col">
+<!-- Title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">역행렬과 미분</h1>
+<div class="w-24 h-1 bg-yellow-500"></div>
+</div>
+<!-- Main Content - Two Column Layout -->
+<div class="flex flex-1">
+<!-- Left Column: Inverse Matrix -->
+<div class="w-1/2 pr-4 flex flex-col">
+<h2 class="text-2xl font-semibold text-green-800 mb-3">역행렬 (Inverse Matrix)</h2>
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-undo text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">정의</h3>
+</div>
+<p class="mb-3">정사각 행렬 A에 대해, 곱했을 때 단위 행렬(I)이 나오는 행렬</p>
+<div class="formula text-center my-2">
+                        A · A<sup>-1</sup> = I
+                    </div>
+<p class="mb-3">모든 정사각 행렬이 역행렬을 갖지는 않으며, 행렬식이 0이 아닌 경우에만 존재합니다.</p>
+</div>
+<!-- Linear Regression Example -->
+<div class="concept-box p-4 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-line text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">선형 회귀에서의 활용</h3>
+</div>
+<p class="mb-3">선형 회귀의 계수 벡터 β는 정규방정식을 통해 계산:</p>
+<div class="formula text-center my-2 text-lg">
+                        β = (X<sup>T</sup>X)<sup>-1</sup>X<sup>T</sup>Y
+                    </div>
+<p class="text-sm text-gray-600 mt-2">이 공식은 비용 함수를 최소화하는 최적 가중치(계수)를 직접 계산합니다.</p>
+</div>
+</div>
+<!-- Right Column: Differentiation -->
+<div class="w-1/2 pl-4 flex flex-col">
+<h2 class="text-2xl font-semibold text-green-800 mb-3">미분 (Differentiation)</h2>
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-line text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">정의</h3>
+</div>
+<p class="mb-3">특정 지점에서 함수의 순간 변화율(기울기)을 구하는 과정</p>
+<p class="mb-3">머신러닝에서 비용 함수의 최소값을 찾기 위해 필수적</p>
+</div>
+<!-- Gradient Descent -->
+<div class="concept-box p-4 rounded shadow-sm">
+<div class="flex items-center mb-2">
+<i class="fas fa-arrows-alt-down text-yellow-500 mr-2"></i>
+<h3 class="text-xl font-semibold">경사 하강법</h3>
+</div>
+<p class="mb-3">비용 함수 J(θ)의 기울기를 계산하여 최소값에 도달</p>
+<div class="formula text-center my-2">
+                        θ = θ - α · ∂J(θ)/∂θ
+                    </div>
+<p class="text-sm text-gray-600 mb-3">α: 학습률, ∂J(θ)/∂θ: 그래디언트</p>
+<!-- Gradient Descent Visualization -->
+<div class="h-32 w-full" id="gradient-visualization"></div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-4 text-sm text-gray-500 text-right">
+<p>머신러닝 이론과 기본 기법 | 4/10</p>
+</div>
+</div>
+<script>
+        // Simple gradient descent visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('gradient-visualization').clientWidth;
+            const height = document.getElementById('gradient-visualization').clientHeight;
+
+            const svg = d3.select('#gradient-visualization')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Create a simple parabola to represent cost function
+            const xScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([30, width - 30]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([height - 20, 20]);
+
+            // Draw cost function curve
+            const line = d3.line()
+                .x(d => xScale(d.x))
+                .y(d => yScale(d.y))
+                .curve(d3.curveBasis);
+
+            const points = [];
+            for (let i = 0; i <= 100; i++) {
+                points.push({
+                    x: i,
+                    y: 4 * (i - 50) * (i - 50) + 10
+                });
+            }
+
+            svg.append('path')
+                .datum(points)
+                .attr('fill', 'none')
+                .attr('stroke', '#006400')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            // Add gradient descent steps
+            const steps = [
+                { x: 80, y: 4 * (80 - 50) * (80 - 50) + 10 },
+                { x: 60, y: 4 * (60 - 50) * (60 - 50) + 10 },
+                { x: 45, y: 4 * (45 - 50) * (45 - 50) + 10 },
+                { x: 35, y: 4 * (35 - 50) * (35 - 50) + 10 },
+                { x: 50, y: 4 * (50 - 50) * (50 - 50) + 10 }
+            ];
+
+            // Draw steps
+            for (let i = 0; i < steps.length - 1; i++) {
+                svg.append('line')
+                    .attr('x1', xScale(steps[i].x))
+                    .attr('y1', yScale(steps[i].y))
+                    .attr('x2', xScale(steps[i+1].x))
+                    .attr('y2', yScale(steps[i+1].y))
+                    .attr('stroke', '#FFA500')
+                    .attr('stroke-width', 2)
+                    .attr('stroke-dasharray', '5,5')
+                    .attr('class', 'gradient-step')
+                    .style('animation-delay', `${i * 0.2}s`);
+            }
+
+            // Add points
+            svg.selectAll('.point')
+                .data(steps)
+                .enter()
+                .append('circle')
+                .attr('cx', d => xScale(d.x))
+                .attr('cy', d => yScale(d.y))
+                .attr('r', 5)
+                .attr('fill', '#FFA500')
+                .attr('class', 'gradient-step')
+                .style('animation-delay', (d, i) => `${i * 0.2}s`);
+
+            // Add optimal point
+            svg.append('circle')
+                .attr('cx', xScale(steps[steps.length-1].x))
+                .attr('cy', yScale(steps[steps.length-1].y))
+                .attr('r', 8)
+                .attr('fill', '#006400');
+
+            // Add labels
+            svg.append('text')
+                .attr('x', 20)
+                .attr('y', 20)
+                .text('비용 함수')
+                .attr('font-size', '12px')
+                .attr('fill', '#006400');
+
+            svg.append('text')
+                .attr('x', width - 100)
+                .attr('y', height - 10)
+                .text('최적점')
+                .attr('font-size', '12px')
+                .attr('fill', '#006400');
+        });
+    </script>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_3.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">4 / 11</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_5.html">다음</a>
+</div>
+
+</body></html>

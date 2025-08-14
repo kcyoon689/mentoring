@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PCA(주성분 분석)</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 1060px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 1060px;
+            
+            position: relative;
+        }
+        .axis line, .axis path {
+            stroke: #cccccc;
+        }
+        .axis text {
+            font-size: 10px;
+            fill: #666666;
+        }
+        .data-point {
+            fill: #4CAF50;
+            opacity: 0.7;
+        }
+        .data-point-2 {
+            fill: #FF9800;
+            opacity: 0.7;
+        }
+        .eigenvector {
+            stroke: #FF5722;
+            stroke-width: 2px;
+            stroke-dasharray: 5,5;
+        }
+        .eigenvector-2 {
+            stroke: #7B1FA2;
+            stroke-width: 2px;
+            stroke-dasharray: 5,5;
+        }
+        .principal-component {
+            stroke: #2196F3;
+            stroke-width: 2px;
+        }
+        .principal-component-2 {
+            stroke: #9C27B0;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+<!-- Header -->
+<header class="mb-6">
+<h1 class="text-4xl font-bold text-green-600">PCA(주성분 분석)</h1>
+<div class="w-24 h-1 bg-green-500 mt-2"></div>
+</header>
+<!-- Main Content -->
+<div class="flex h-5/6">
+<!-- Left Column: Text Content -->
+<div class="w-1/2 pr-6">
+<!-- Basic Concept Section -->
+<div class="mb-6">
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-lightbulb mr-2"></i>기본 원리
+                    </h2>
+<p class="text-lg mb-3">
+                        주성분 분석(PCA)은 가장 널리 사용되는 선형 차원 축소 기법입니다. PCA의 핵심 아이디어는 
+                        데이터의 분산을 가장 잘 설명하는 새로운 축, 즉 주성분(Principal Component)을 찾는 것입니다.
+                    </p>
+<ul class="list-disc pl-6 text-lg space-y-1">
+<li>첫 번째 주성분은 데이터의 분산이 가장 큰 방향을 나타냅니다.</li>
+<li>두 번째 주성분은 첫 번째 주성분과 직교하면서 다음으로 분산이 큰 방향을 나타냅니다.</li>
+<li>이러한 방식으로 원본 특성 공간을 데이터의 분산을 최대한 보존하는 새로운 저차원 공간으로 변환합니다.</li>
+</ul>
+</div>
+<!-- Working Process -->
+<div class="mb-6">
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-cogs mr-2"></i>작동 방식
+                    </h2>
+<ol class="list-decimal pl-6 text-lg space-y-1">
+<li><strong>데이터 표준화:</strong> 각 특성의 스케일이 다를 경우, 데이터를 표준화하여 분산에 미치는 영향을 동일하게 만듭니다.</li>
+<li><strong>공분산 행렬 계산:</strong> 특성 간의 선형 관계를 나타내는 공분산 행렬을 계산합니다.</li>
+<li><strong>고유값 분해:</strong> 공분산 행렬을 고유값(eigenvalue)과 고유벡터(eigenvector)로 분해합니다. 고유벡터는 주성분의 방향을, 고유값은 해당 주성분의 설명력을 의미합니다.</li>
+<li><strong>주성분 선택:</strong> 고유값이 큰 순서대로 주성분을 선택합니다. 선택된 주성분의 수가 축소될 차원의 수가 됩니다.</li>
+<li><strong>데이터 변환:</strong> 원본 데이터를 선택된 주성분 축으로 투영하여 저차원의 새로운 데이터셋을 생성합니다.</li>
+</ol>
+</div>
+<!-- Advantages and Disadvantages -->
+<div>
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-balance-scale mr-2"></i>장단점
+                    </h2>
+<div class="flex">
+<div class="w-1/2 pr-2">
+<h3 class="text-lg font-medium text-green-600 mb-1">장점</h3>
+<ul class="list-disc pl-4 text-base space-y-1">
+<li>구현이 간단하고 계산 효율성이 높습니다.</li>
+<li>데이터의 노이즈를 일부 제거하는 효과가 있습니다.</li>
+<li>비지도 학습 기법으로, 레이블이 없는 데이터에도 적용 가능합니다.</li>
+</ul>
+</div>
+<div class="w-1/2 pl-2">
+<h3 class="text-lg font-medium text-orange-600 mb-1">단점</h3>
+<ul class="list-disc pl-4 text-base space-y-1">
+<li> 새로 생성된 주성분은 원본 특성들의 선형 결합이므로, 그 의미를 해석하기 어려울 수 있습니다.</li>
+<li> 데이터의 비선형 구조를 잘 파악하지 못합니다.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Visual Representation -->
+<div class="w-1/2 flex flex-col">
+<!-- PCA Visualization -->
+<div class="flex-grow" id="pca-visualization"></div>
+<!-- Example -->
+<div class="bg-white p-4 rounded-lg shadow-md mt-4">
+<h3 class="text-xl font-semibold mb-2 text-green-700">
+<i class="fas fa-code mr-2"></i>Python 코드 예시
+                    </h3>
+<pre class="text-base bg-gray-100 p-2 rounded text-gray-800">from sklearn.decomposition import PCA
+from sklearn.datasets import load_iris
+
+# 데이터 로드
+data = load_iris()
+X = data.data
+
+# PCA 객체 생성 (2차원으로 축소)
+pca = PCA(n_components=2)
+
+# 데이터 변환
+X_pca = pca.fit_transform(X)
+
+# 변환된 데이터 출력
+print(X_pca.shape)  # (150, 2)
+</pre>
+<p class="text-sm mt-2 text-gray-600">
+                        이 코드는 붓꽃 데이터셋을 2차원으로 PCA로 축소하는 예시입니다. 
+                        원래 4차원 데이터가 2차원으로 효과적으로 변환됩니다.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // PCA Visualization using D3.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = 550;
+            const height = 350;
+            const margin = {top: 20, right: 20, bottom: 40, left: 50};
+            
+            // Create SVG
+            const svg = d3.select("#pca-visualization")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+            
+            // Set up scales
+            const xScale = d3.scaleLinear()
+                .domain([-3, 3])
+                .range([0, width - margin.left - margin.right]);
+            
+            const yScale = d3.scaleLinear()
+                .domain([-3, 3])
+                .range([height - margin.top - margin.bottom, 0]);
+            
+            // Draw axes
+            const xAxis = d3.axisBottom(xScale)
+                .ticks(5)
+                .tickFormat(d => d);
+            
+            const yAxis = d3.axisLeft(yScale)
+                .ticks(5)
+                .tickFormat(d => d);
+            
+            svg.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
+                .call(xAxis);
+            
+            svg.append("g")
+                .attr("class", "axis")
+                .call(yAxis);
+            
+            // Add axis labels
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", (width - margin.left - margin.right) / 2)
+                .attr("y", height - margin.top - 5)
+                .text("주성분 1")
+                .attr("fill", "#333333")
+                .attr("font-size", "12px");
+            
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("transform", "rotate(-90)")
+                .attr("y", -margin.left + 15)
+                .attr("x", -(height - margin.top - margin.bottom) / 2)
+                .text("주성분 2")
+                .attr("fill", "#333333")
+                .attr("font-size", "12px");
+            
+            // Generate some sample data points
+            const originalData = [];
+            for (let i = 0; i < 50; i++) {
+                // Create two clusters of data
+                if (i < 25) {
+                    originalData.push({
+                        x: -1 + Math.random() * 2,
+                        y: -1 + Math.random() * 2,
+                        group: 0
+                    });
+                } else {
+                    originalData.push({
+                        x: 1 + Math.random() * 2,
+                        y: 1 + Math.random() * 2,
+                        group: 1
+                    });
+                }
+            }
+            
+            // Draw original data points
+            svg.selectAll(".data-point")
+                .data(originalData.filter(d => d.group === 0))
+                .enter()
+                .append("circle")
+                .attr("class", "data-point")
+                .attr("cx", d => xScale(d.x))
+                .attr("cy", d => yScale(d.y))
+                .attr("r", 4);
+            
+            svg.selectAll(".data-point-2")
+                .data(originalData.filter(d => d.group === 1))
+                .enter()
+                .append("circle")
+                .attr("class", "data-point-2")
+                .attr("cx", d => xScale(d.x))
+                .attr("cy", d => yScale(d.y))
+                .attr("r", 4);
+            
+            // Draw eigenvectors
+            svg.append("line")
+                .attr("class", "eigenvector")
+                .attr("x1", xScale(0))
+                .attr("y1", yScale(0))
+                .attr("x2", xScale(2))
+                .attr("y2", yScale(0));
+            
+            svg.append("line")
+                .attr("class", "eigenvector-2")
+                .attr("x1", xScale(0))
+                .attr("y1", yScale(0))
+                .attr("x2", xScale(0))
+                .attr("y2", yScale(2));
+            
+            // Draw principal components
+            svg.append("line")
+                .attr("class", "principal-component")
+                .attr("x1", xScale(-3))
+                .attr("y1", yScale(-3))
+                .attr("x2", xScale(3))
+                .attr("y2", yScale(-3));
+            
+            svg.append("line")
+                .attr("class", "principal-component-2")
+                .attr("x1", xScale(-3))
+                .attr("y1", yScale(-3))
+                .attr("x2", xScale(-3))
+                .attr("y2", yScale(3));
+            
+            // Add legend
+            const legend = svg.append("g")
+                .attr("transform", `translate(${width - margin.left - margin.right - 150}, 10)`);
+            
+            // Legend items
+            const legendItems = [
+                { label: "클래스 1", color: "#4CAF50" },
+                { label: "클래스 2", color: "#FF9800" },
+                { label: "주성분 1", color: "#2196F3" },
+                { label: "주성분 2", color: "#9C27B0" }
+            ];
+            
+            // Create legend
+            legend.selectAll("rect")
+                .data(legendItems)
+                .enter()
+                .append("rect")
+                .attr("x", 0)
+                .attr("y", (d, i) => i * 20)
+                .attr("width", 12)
+                .attr("height", 12)
+                .attr("fill", d => d.color);
+            
+            legend.selectAll("text")
+                .data(legendItems)
+                .enter()
+                .append("text")
+                .attr("x", 20)
+                .attr("y", (d, i) => i * 20 + 10)
+                .text(d => d.label)
+                .attr("font-size", "10px")
+                .attr("fill", "#333333");
+        });
+    </script>
+
+</body></html>

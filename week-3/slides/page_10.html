@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>결론 및 적용 방안</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 808px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 808px;
+            
+            position: relative;
+        }
+        .conclusion-card {
+            background-color: white;
+            border-left: 4px solid #4CAF50;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .conclusion-card:hover {
+            transform: translateY(-5px);
+        }
+        .strategy-item {
+            position: relative;
+            padding-left: 28px;
+        }
+        .strategy-item:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 10px;
+            height: 10px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+<!-- Header -->
+<header class="mb-6">
+<h1 class="text-4xl font-bold text-green-600">결론 및 적용 방안</h1>
+<div class="w-24 h-1 bg-green-500 mt-2"></div>
+</header>
+<!-- Main Content -->
+<div class="grid grid-cols-2 gap-6 h-5/6">
+<!-- Left Column: Decision Tree Models -->
+<div class="flex flex-col space-y-4">
+<div class="bg-green-50 rounded-t-lg p-3">
+<h2 class="text-2xl font-semibold text-green-700 flex items-center">
+<i class="fas fa-tree mr-2"></i>결정 트리 기반 모델의 적용
+                    </h2>
+</div>
+<div class="conclusion-card p-4 flex-grow">
+<h3 class="text-xl font-medium mb-2 text-green-600">적용 시 고려사항</h3>
+<ul class="space-y-2 mb-4">
+<li class="strategy-item">
+<strong>과적합 방지:</strong> 트리의 복잡도를 제어하기 위해 가지치기(Pruning) 기법을 적절히 적용
+                        </li>
+<li class="strategy-item">
+<strong>데이터 특성:</strong> 특성의 스케일 및 특성 간의 관계성에 따라 적절한 분할 기준 선택
+                        </li>
+<li class="strategy-item">
+<strong>모델 해석:</strong> 속성 중요도를 활용하여 모델의 결정 근거를 파악
+                        </li>
+</ul>
+<h3 class="text-xl font-medium mb-2 text-green-600">구현 전략</h3>
+<ul class="space-y-2">
+<li class="strategy-item">
+<strong>파라미터 튜닝:</strong> 최대 깊이, 최소 샘플 수 등 하이퍼파라미터를 데이터 특성에 맞게 조정
+                        </li>
+<li class="strategy-item">
+<strong>앙상블 방법:</strong> 랜덤 포레스트 또는 에이다부스트와 같은 앙상블 기법을 통해 모델의 안정성 및 정확도 향상
+                        </li>
+<li class="strategy-item">
+<strong>교차 검증:</strong> 모델의 일반화 성능을 평가하기 위해 k-폴드 교차 검증을 적용
+                        </li>
+</ul>
+</div>
+</div>
+<!-- Right Column: Dimensionality Reduction -->
+<div class="flex flex-col space-y-4">
+<div class="bg-orange-50 rounded-t-lg p-3">
+<h2 class="text-2xl font-semibold text-orange-700 flex items-center">
+<i class="fas fa-compress-arrows-alt mr-2"></i>차원 축소 기법의 적용
+                    </h2>
+</div>
+<div class="conclusion-card p-4 flex-grow" style="border-left-color: #FF9800;">
+<h3 class="text-xl font-medium mb-2 text-orange-600">적용 시 고려사항</h3>
+<ul class="space-y-2 mb-4">
+<li class="strategy-item">
+<strong>데이터 특성:</strong> 선형 구조인지 비선형 구조인지에 따라 적절한 차원 축소 기법 선택
+                        </li>
+<li class="strategy-item">
+<strong>정보 보존:</strong> 축소된 차원이 원본 데이터의 중요한 정보를 최대한 유지하도록 기법 선택
+                        </li>
+<li class="strategy-item">
+<strong>계산 자원:</strong> 데이터셋의 크기에 따라 적절한 알고리즘 선택(t-SNE보다 UMAP이 계산 효율적)
+                        </li>
+</ul>
+<h3 class="text-xl font-medium mb-2 text-orange-600">구현 전략</h3>
+<ul class="space-y-2">
+<li class="strategy-item">
+<strong>목적에 따른 선택:</strong> 시각화 목적이라면 t-SNE, 전처리 목적이라면 PCA 또는 UMAP
+                        </li>
+<li class="strategy-item">
+<strong>파라미터 조정:</strong> 주요 하이퍼파라미터(예: PCA의 주성분 개수, t-SNE의 perplexity)를 적절히 설정
+                        </li>
+<li class="strategy-item">
+<strong>결과 검증:</strong> 차원 축소 후 데이터의 군집 구조 및 분포 특성을 확인하고 필요하다면 다시 조정
+                        </li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Final Tips -->
+<div class="mt-4 bg-white p-4 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold mb-2 text-gray-700 flex items-center">
+<i class="fas fa-lightbulb text-yellow-500 mr-2"></i>종합적용 전략
+            </h3>
+<p class="text-base">
+                실제 문제 해결에서는 데이터의 특성과 해결하려는 문제 목적에 따라 적절한 기법을 선택해야 합니다. 
+                예를 들어, 데이터가 높은 차원이고 시각화가 필요한 경우에는 PCA 또는 UMAP을 먼저 적용한 후, 
+                결과 데이터에 결정 트리 모델을 적용하는 방식이 효과적일 수 있습니다. 또한, 모델의 성능을 높이기 위해 
+                여러 기법의 조합을 시도해보는 것도 좋은 접근법입니다.
+            </p>
+</div>
+<!-- Footer -->
+<footer class="absolute bottom-4 right-8 text-sm text-gray-500">
+            Report Generate Date: 2025-08-14
+        </footer>
+</div>
+
+</body></html>

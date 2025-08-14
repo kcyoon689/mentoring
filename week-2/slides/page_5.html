@@ -1,0 +1,257 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>선형 회귀와 다중 선형 회귀</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 864px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F0F0F0;
+            color: #333;}
+        .slide {
+            width: 1280px;
+            min-height: 864px;
+
+            position: relative;
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+        }
+        .concept-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+    </style>
+</head>
+<body>
+<div class="slide bg-gray-50 p-8 flex flex-col">
+<!-- Title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">선형 회귀와 다중 선형 회귀</h1>
+<div class="w-24 h-1 bg-yellow-500"></div>
+</div>
+<!-- Introduction -->
+<div class="mb-4">
+<p class="text-lg">선형 회귀는 통계학에서 파생된 지도 학습 기법으로, 연속적인 값을 예측하는 데 사용됩니다. 하나 이상의 독립 변수와 종속 변수 사이의 선형 관계를 모델링합니다.</p>
+</div>
+<!-- Main Content - Two Column Layout -->
+<div class="flex flex-1 space-x-6">
+<!-- Left Column: Simple Linear Regression -->
+<div class="w-1/2 flex flex-col">
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-line text-yellow-500 mr-2 text-xl"></i>
+<h3 class="text-xl font-semibold">단순 선형 회귀</h3>
+</div>
+<p class="mb-3">하나의 독립 변수와 하나의 종속 변수 간의 관계를 직선으로 표현</p>
+<div class="formula text-center my-3 text-xl">
+                        Y = aX + b
+                    </div>
+<ul class="list-disc ml-5 mb-3">
+<li><strong>Y</strong>: 종속 변수 (예측하려는 값)</li>
+<li><strong>X</strong>: 독립 변수 (예측에 사용되는 값)</li>
+<li><strong>a</strong>: 기울기 (독립 변수가 한 단위 증가할 때 종속 변수의 변화량)</li>
+<li><strong>b</strong>: y절편 (독립 변수가 0일 때의 종속 변수 값)</li>
+</ul>
+</div>
+<!-- Simple Linear Regression Visualization -->
+<div class="concept-box p-4 rounded shadow-sm flex-1 flex flex-col">
+<h4 class="text-lg font-semibold mb-2">단순 선형 회귀 시각화</h4>
+<div class="flex-1" id="simpleRegression"></div>
+</div>
+</div>
+<!-- Right Column: Multiple Linear Regression -->
+<div class="w-1/2 flex flex-col">
+<div class="concept-box p-4 rounded shadow-sm mb-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-project-diagram text-yellow-500 mr-2 text-xl"></i>
+<h3 class="text-xl font-semibold">다중 선형 회귀</h3>
+</div>
+<p class="mb-3">두 개 이상의 독립 변수를 사용하여 종속 변수를 예측하는 모델</p>
+<div class="formula text-center my-3 text-xl">
+                        Y = b₀ + b₁X₁ + b₂X₂ + ... + bₙXₙ
+                    </div>
+<ul class="list-disc ml-5 mb-3">
+<li><strong>Y</strong>: 종속 변수</li>
+<li><strong>X₁, X₂, ..., Xₙ</strong>: 독립 변수들</li>
+<li><strong>b₀</strong>: 절편</li>
+<li><strong>b₁, b₂, ..., bₙ</strong>: 각 독립 변수에 대한 회귀 계수</li>
+</ul>
+</div>
+<!-- Multiple Linear Regression Visualization -->
+<div class="concept-box p-4 rounded shadow-sm flex-1 flex flex-col">
+<h4 class="text-lg font-semibold mb-2">다중 선형 회귀 개념</h4>
+<div class="flex-1" id="multipleRegression"></div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-4 text-sm text-gray-500 text-right">
+<p>머신러닝 이론과 기본 기법 | 5/10</p>
+</div>
+</div>
+<script>
+        // Simple Linear Regression Visualization
+        const simpleRegressionSvg = d3.select("#simpleRegression")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 400 200");
+
+        // Add axes
+        simpleRegressionSvg.append("line")
+            .attr("x1", 50)
+            .attr("y1", 150)
+            .attr("x2", 350)
+            .attr("y2", 150)
+            .attr("stroke", "#333")
+            .attr("stroke-width", 1);
+
+        simpleRegressionSvg.append("line")
+            .attr("x1", 50)
+            .attr("y1", 150)
+            .attr("x2", 50)
+            .attr("y2", 20)
+            .attr("stroke", "#333")
+            .attr("stroke-width", 1);
+
+        // Add axis labels
+        simpleRegressionSvg.append("text")
+            .attr("x", 200)
+            .attr("y", 180)
+            .attr("text-anchor", "middle")
+            .text("독립 변수 X");
+
+        simpleRegressionSvg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -85)
+            .attr("y", 20)
+            .attr("text-anchor", "middle")
+            .text("종속 변수 Y");
+
+        // Generate linear data points
+        const linearData = [];
+        for (let i = 0; i < 10; i++) {
+            linearData.push({
+                x: 70 + i * 25,
+                y: 130 - i * 10 + Math.random() * 10
+            });
+        }
+
+        // Draw data points
+        simpleRegressionSvg.selectAll("circle")
+            .data(linearData)
+            .enter()
+            .append("circle")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("r", 4)
+            .attr("fill", "#FFA500");
+
+        // Draw regression line
+        const lineGenerator = d3.line()
+            .x(d => d.x)
+            .y(d => 150 - 0.3 * (d.x - 50));
+
+        simpleRegressionSvg.append("path")
+            .datum([{x: 50, y: 0}, {x: 350, y: 0}])
+            .attr("d", lineGenerator)
+            .attr("fill", "none")
+            .attr("stroke", "#006400")
+            .attr("stroke-width", 2);
+
+        // Multiple Linear Regression Concept Visualization
+        const multipleRegressionSvg = d3.select("#multipleRegression")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 400 200");
+
+        // Create a 3D-like representation
+        multipleRegressionSvg.append("polygon")
+            .attr("points", "50,150 350,150 300,50 100,50")
+            .attr("fill", "none")
+            .attr("stroke", "#333")
+            .attr("stroke-width", 1);
+
+        // Add grid lines to represent 3D space
+        for (let i = 0; i < 6; i++) {
+            multipleRegressionSvg.append("line")
+                .attr("x1", 50 + i * 50)
+                .attr("y1", 150)
+                .attr("x2", 100 + i * 50)
+                .attr("y2", 50)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 0.5)
+                .attr("stroke-dasharray", "3,3");
+        }
+
+        for (let i = 0; i < 4; i++) {
+            multipleRegressionSvg.append("line")
+                .attr("x1", 100)
+                .attr("y1", 50 + i * 25)
+                .attr("x2", 300)
+                .attr("y2", 50 + i * 25)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 0.5)
+                .attr("stroke-dasharray", "3,3");
+        }
+
+        // Add axis labels
+        multipleRegressionSvg.append("text")
+            .attr("x", 200)
+            .attr("y", 175)
+            .attr("text-anchor", "middle")
+            .text("X₁");
+
+        multipleRegressionSvg.append("text")
+            .attr("x", 250)
+            .attr("y", 75)
+            .attr("text-anchor", "middle")
+            .text("X₂");
+
+        multipleRegressionSvg.append("text")
+            .attr("x", 85)
+            .attr("y", 100)
+            .attr("text-anchor", "middle")
+            .text("Y");
+
+        // Draw a plane representing multiple linear regression
+        multipleRegressionSvg.append("polygon")
+            .attr("points", "100,80 200,70 300,80 200,120")
+            .attr("fill", "#006400")
+            .attr("opacity", 0.2)
+            .attr("stroke", "#006400")
+            .attr("stroke-width", 1);
+
+        // Add data points
+        const multiData = [
+            {x: 120, y: 90, z: 70},
+            {x: 180, y: 100, z: 60},
+            {x: 220, y: 85, z: 100},
+            {x: 280, y: 95, z: 75}
+        ];
+
+        multipleRegressionSvg.selectAll(".multi-point")
+            .data(multiData)
+            .enter()
+            .append("circle")
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y)
+            .attr("r", 4)
+            .attr("fill", "#FFA500");
+    </script>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_4.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">5 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_6.html">다음</a>
+</div>
+
+</body></html>

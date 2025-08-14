@@ -1,0 +1,268 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>차원 축소의 개념과 필요성</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans', sans-serif;
+            background-color: #f5f5f5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .point {
+            transition: all 0.5s ease-in-out;
+        }
+        .point:hover {
+            r: 8;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8">
+<!-- Header -->
+<header class="mb-6">
+<h1 class="text-4xl font-bold text-green-600">차원 축소의 개념과 필요성</h1>
+<div class="w-24 h-1 bg-green-500 mt-2"></div>
+</header>
+<!-- Main Content -->
+<div class="flex h-5/6">
+<!-- Left Column: Text Content -->
+<div class="w-1/2 pr-6">
+<!-- Curse of Dimensionality Section -->
+<div class="mb-6">
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-exclamation-triangle mr-2"></i>차원의 저주 (Curse of Dimensionality)
+                    </h2>
+<p class="text-lg mb-4">
+                        특성의 수가 증가할수록 데이터 공간의 부피가 기하급수적으로 커져 데이터의 밀도가 희소(sparse)해집니다. 이로 인해:
+                    </p>
+<ul class="list-disc pl-6 text-lg space-y-2">
+<li>모델이 데이터의 패턴을 학습하기 어려워집니다.</li>
+<li>과적합의 위험이 커집니다.</li>
+<li>모델 학습에 필요한 계산량이 증가하여 시간과 자원 소모가 커집니다.</li>
+<li>3차원을 초과하는 데이터는 직관적인 시각화가 불가능합니다.</li>
+</ul>
+</div>
+<!-- Role of Dimensionality Reduction -->
+<div>
+<h2 class="text-2xl font-semibold mb-2 text-green-700">
+<i class="fas fa-compress-arrows-alt mr-2"></i>차원 축소의 역할
+                    </h2>
+<ul class="list-disc pl-6 text-lg space-y-2">
+<li><strong>모델 성능 향상</strong>: 데이터의 본질적인 구조는 최대한 유지하면서 특성(feature) 수를 줄여 과적합을 방지하고 학습 속도를 높입니다.</li>
+<li><strong>데이터 시각화</strong>: 고차원 데이터를 2차원이나 3차원으로 줄여 직관적인 시각화가 가능하도록 합니다.</li>
+<li><strong>계산 효율성</strong>: 저차원 데이터로 변환하여 모델 학습과 예측의 계산 복잡도를 감소시킵니다.</li>
+<li><strong>데이터의 내재적 패턴 파악</strong>: 차원 축소는 데이터의 클러스터링 구조와 같은 내재적 패턴을 더 쉽게 드러내어 분석에 도움이 됩니다.</li>
+</ul>
+</div>
+</div>
+<!-- Right Column: Visual Representation -->
+<div class="w-1/2 flex flex-col">
+<!-- Dimensionality Reduction Visualization -->
+<div class="flex-grow" id="visualization-container"></div>
+<!-- Key Takeaway -->
+<div class="bg-white p-4 rounded-lg shadow-md mt-4">
+<h3 class="text-xl font-semibold mb-2 text-green-700">
+<i class="fas fa-lightbulb mr-2"></i>키 포인트
+                    </h3>
+<p class="text-lg">
+                        차원 축소는 &#39;차원의 저주(Curse of Dimensionality)&#39;를 해결하기 위해 데이터의 본질적인 구조는 최대한 유지하면서, 원본 데이터의 특성(feature) 수를 줄이는 기법입니다. 이를 통해 모델의 학습 속도를 높이고 과적합을 방지하며, 데이터의 내재적 패턴을 더 쉽게 파악할 수 있습니다.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Visualization using D3.js
+        document.addEventListener('DOMContentLoaded', function() {
+            // Container dimensions
+            const containerWidth = 550;
+            const containerHeight = 400;
+            
+            // Create container
+            const container = d3.select("#visualization-container")
+                .append("div")
+                .attr("width", containerWidth)
+                .attr("height", containerHeight)
+                .attr("class", "relative");
+            
+            // High-dimensional data visualization (left)
+            const highDimContainer = container.append("div")
+                .attr("class", "absolute left-0 top-0 w-5/12 h-full flex flex-col items-center justify-center")
+                .append("svg")
+                .attr("width", containerWidth * 0.5)
+                .attr("height", containerHeight * 0.8);
+            
+            // Low-dimensional data visualization (right)
+            const lowDimContainer = container.append("div")
+                .attr("class", "absolute right-0 top-0 w-5/12 h-full flex flex-col items-center justify-center")
+                .append("svg")
+                .attr("width", containerWidth * 0.5)
+                .attr("height", containerHeight * 0.8);
+            
+            // Add titles
+            container.append("div")
+                .attr("class", "absolute left-0 top-10 w-5/12 text-center")
+                .append("h3")
+                .attr("class", "text-lg font-semibold")
+                .text("고차원 데이터 (n차원)");
+            
+            container.append("div")
+                .attr("class", "absolute right-0 top-10 w-5/12 text-center")
+                .append("h3")
+                .attr("class", "text-lg font-semibold")
+                .text("낮은 차원으로 축소 (2D/3D)");
+            
+            // Create high-dimensional data (conceptual)
+            const numPoints = 50;
+            const highDimPoints = [];
+            
+            for (let i = 0; i < numPoints; i++) {
+                // Create points in a conceptual n-dimensional space
+                const point = {
+                    id: i,
+                    x: Math.random() * 100,
+                    y: Math.random() * 100,
+                    z: Math.random() * 100,
+                    w: Math.random() * 100,
+                    v: Math.random() * 100
+                };
+                highDimPoints.push(point);
+            }
+            
+            // Draw high-dimensional data (conceptual)
+            highDimContainer.selectAll(".point")
+                .data(highDimPoints)
+                .enter()
+                .append("circle")
+                .attr("class", "point")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", 5)
+                .attr("opacity", d => 0.3 + Math.random() * 0.5)
+                .attr("fill", d => {
+                    // Color based on some conceptual "cluster" in high-dimensional space
+                    if (d.x > 50 && d.y > 50 && d.z > 50) return "#4CAF50";
+                    if (d.x < 30 && d.y < 30 && d.z < 30) return "#FF9800";
+                    return "#9E9E9E";
+                });
+            
+            // Create low-dimensional representation
+            const lowDimPoints = highDimPoints.map(d => {
+                // Simplified 2D representation
+                return {
+                    id: d.id,
+                    x: d.x + d.y + d.z + d.w + d.v,
+                    y: d.x * d.y * d.z * d.w * d.v,
+                    original: d
+                };
+            });
+            
+            // Scale for low-dimensional visualization
+            const xScale = d3.scaleLinear()
+                .domain([0, 400])
+                .range([0, containerWidth * 0.5]);
+            
+            const yScale = d3.scaleLinear()
+                .domain([0, 100000000000])
+                .range([containerHeight * 0.8, 0]);
+            
+            // Draw low-dimensional data
+            lowDimContainer.selectAll(".point")
+                .data(lowDimPoints)
+                .enter()
+                .append("circle")
+                .attr("class", "point")
+                .attr("cx", d => xScale(d.x))
+                .attr("cy", d => yScale(d.y))
+                .attr("r", 5)
+                .attr("fill", d => {
+                    // Same color as original high-dimensional point
+                    if (d.original.x > 50 && d.original.y > 50 && d.original.z > 50) return "#4CAF50";
+                    if (d.original.x < 30 && d.original.y < 30 && d.original.z < 30) return "#FF9800";
+                    return "#9E9E9E";
+                });
+            
+            // Add axis for low-dimensional visualization
+            lowDimContainer.append("line")
+                .attr("x1", 0)
+                .attr("y1", containerHeight * 0.8)
+                .attr("x2", containerWidth * 0.5)
+                .attr("y2", containerHeight * 0.8)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 1);
+            
+            lowDimContainer.append("line")
+                .attr("x1", 0)
+                .attr("y1", 0)
+                .attr("x2", 0)
+                .attr("y2", containerHeight * 0.8)
+                .attr("stroke", "#333")
+                .attr("stroke-width", 1);
+            
+            // Add labels
+            lowDimContainer.append("text")
+                .attr("x", containerWidth * 0.5 / 2)
+                .attr("y", containerHeight * 0.8 + 20)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#333")
+                .attr("font-size", "10px")
+                .text("축 1");
+            
+            lowDimContainer.append("text")
+                .attr("x", -15)
+                .attr("y", containerHeight * 0.8 / 2)
+                .attr("text-anchor", "middle")
+                .attr("transform", `rotate(-90, 0, ${containerHeight * 0.8 / 2})`)
+                .attr("fill", "#333")
+                .attr("font-size", "10px")
+                .text("축 2");
+            
+            // Add arrow to show the transformation
+            container.append("div")
+                .attr("class", "absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2")
+                .append("svg")
+                .attr("width", 100)
+                .attr("height", 60)
+                .append("path")
+                .attr("d", "M0,30 L80,30")
+                .attr("stroke", "#4CAF50")
+                .attr("stroke-width", 2)
+                .attr("fill", "none")
+                .attr("marker-end", "url(#arrow)");
+            
+            // Add arrowhead
+            container.append("div")
+                .attr("class", "absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2")
+                .append("svg")
+                .attr("width", 100)
+                .attr("height", 60)
+                .append("polygon")
+                .attr("points", "70,20 80,30 70,40")
+                .attr("fill", "#4CAF50");
+            
+            // Add transformation label
+            container.append("div")
+                .attr("class", "absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2")
+                .append("svg")
+                .attr("width", 100)
+                .attr("height", 60)
+                .append("text")
+                .attr("x", 40)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#4CAF50")
+                .attr("font-size", "12px")
+                .attr("font-weight", "bold")
+                .text("차원 축소");
+        });
+    </script>
+
+</body></html>
