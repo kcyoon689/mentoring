@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>이변량 분석 ④ — 채널·세그먼트 & 체류 특성</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      width: 1280px;
+      min-height: 904px;
+      overflow: hidden;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .slide {
+      width: 1280px;
+      min-height: 904px;
+      position: relative;
+    }
+    .content-box {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .section-title {
+      border-left: 4px solid #2563eb;
+      padding-left: 10px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .25rem .6rem;
+      border-radius: 9999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: .78rem;
+    }
+    .stat-box {
+      transition: transform .2s ease;
+    }
+    .stat-box:hover {
+      transform: translateY(-2px);
+    }
+    .highlight-text {
+      color: #2563eb;
+      font-weight: 600;
+    }
+
+    /* Figure styling */
+    figure {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .plot-wrap {
+      width: 100%;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    figure img {
+      width: 100%;
+      height: 100%;
+      object-fit: scale-down;
+      object-position: center;
+      border-radius: 8px;
+      image-rendering: auto;
+      image-rendering: -webkit-optimize-contrast;
+      -webkit-font-smoothing: antialiased;
+      transform: translateZ(0);
+    }
+    figure figcaption {
+      font-size: .78rem;
+      color: #475569;
+      margin-top: .5rem;
+      line-height: 1.45;
+      text-align: left;
+      width: 100%;
+    }
+
+    html { overflow: hidden; }
+  </style>
+</head>
+<body>
+<div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8" style="overflow: hidden;">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">이변량 분석 ④ — 채널·세그먼트 & 체류 특성</h1>
+    <div class="w-24 h-1 bg-blue-600 mt-2"></div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="grid grid-cols-5 gap-6 min-h-[320px]">
+    <!-- Left Column - Agent & Company Analysis -->
+    <div class="col-span-2 content-box p-5 flex flex-col stat-box">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold section-title">Agent &amp; Company</h2>
+        <span class="chip"><i class="fa-solid fa-user-tie"></i> 계약/중개</span>
+      </div>
+
+      <div class="flex-1 flex flex-col">
+        <ul class="list-disc list-inside text-sm text-gray-700 space-y-1 mb-4">
+          <li><strong class="highlight-text">Agent 있음 + Company 없음</strong> → 취소율 높음 (≈39%)</li>
+          <li><strong class="highlight-text">Company 있음</strong> → 취소율 낮음 (≈7–18%)으로 안정적</li>
+        </ul>
+
+        <figure>
+          <div class="plot-wrap">
+            <img loading="lazy" src="images/image20.png" alt="Cancellation Rate by Agent/Company Presence"/>
+          </div>
+          <figcaption>
+            Agent가 존재하고 Company가 없을 때 취소율이 가장 높으며, Company(계약 고객)가 있을수록 예약 유지 가능성이 커진다.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Right Column - Channel & Segment Analysis -->
+    <div class="col-span-3 content-box p-5 flex flex-col stat-box">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold section-title">예약 채널 / 세그먼트 분석</h2>
+        <span class="chip"><i class="fa-solid fa-chart-area"></i> 호텔×채널</span>
+      </div>
+
+      <div class="flex-1">
+        <p class="text-sm text-gray-700 mb-4 highlight-text">
+          <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+          OTA·Group > Direct·Corporate — OTA/Group 측이 상대적으로 불안정
+        </p>
+
+        <figure>
+          <div class="plot-wrap">
+            <img loading="lazy" src="images/image16.png" alt="Cancellation Rate by Hotel × Distribution Channel"/>
+          </div>
+          <figcaption>
+            City 호텔은 TA/TO·Undefined 채널에서 높은 취소율을 보이고, Resort 호텔은 Direct·Corporate 예약에서 비교적 안정적이다.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Row - Detailed Analysis -->
+  <div class="grid grid-cols-2 gap-6 mt-4">
+    <!-- Market Segment -->
+    <div class="content-box p-4 stat-box">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold section-title">Market Segment 취소율</h3>
+        <span class="chip"><i class="fa-solid fa-layer-group"></i> Segment</span>
+      </div>
+      <figure>
+        <div class="plot-wrap" style="height: 200px;">
+          <img loading="lazy" src="images/image18.png" alt="Cancellation Rate by Market Segment"/>
+        </div>
+        <figcaption>
+          세그먼트별로 Groups·Undefined는 취소율이 높고, Direct·Corporate는 낮아 안정적 수요로 분류된다.
+        </figcaption>
+      </figure>
+    </div>
+
+    <!-- Distribution Channel -->
+    <div class="content-box p-4 stat-box">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold section-title">Distribution 채널 취소율</h3>
+        <span class="chip"><i class="fa-solid fa-sitemap"></i> Channel</span>
+      </div>
+      <figure>
+        <div class="plot-wrap" style="height: 200px;">
+          <img loading="lazy" src="images/image19.png" alt="Cancellation Rate by Distribution Channel"/>
+        </div>
+        <figcaption>
+          채널 중 TA/TO는 상대적으로 취소율이 높고 Corporate·GDS·Direct는 낮다.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-4 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_9.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">10 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_11.html">다음</a>
+  </div>
+</div>
+</body>
+</html>

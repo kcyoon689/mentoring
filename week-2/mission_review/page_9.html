@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ko"><head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>이변량 분석 ③ — 과거 행동</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { width:1280px; min-height:720px; overflow:hidden; font-family:'Noto Sans KR',sans-serif; }
+    .slide { width:1280px; min-height:720px; position:relative; }
+    .content-box { background-color:rgba(255,255,255,0.92); border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+    .section-title { border-left:4px solid #2563eb; padding-left:10px; }
+    .chip { display:inline-flex; align-items:center; gap:.4rem; padding:.2rem .55rem; border-radius:9999px; background:#eef2ff; color:#3730a3; font-size:.75rem; font-weight:600; }
+    img { border-radius:8px; }
+    /* 2x2 영역이 헤더/푸터를 제외한 높이를 꽉 채우도록 */
+    .content-grid {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap:16px;
+      min-height: 500px; /* 고정 높이 대신 최소 높이 설정 */
+    }
+  </style>
+</head>
+<body>
+  <div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8">
+    <!-- Header -->
+    <header class="mb-4">
+      <h1 class="text-3xl font-bold text-blue-700">이변량 분석 ③ — 과거 행동</h1>
+      <div class="w-24 h-1 bg-blue-600 mt-2"></div>
+    </header>
+
+    <!-- 2x2 GRID -->
+    <div class="content-grid">
+      <!-- (1) 과거 취소 이력 -->
+      <section class="content-box p-4 flex flex-col">
+        <h2 class="text-lg font-bold mb-2 section-title">과거 취소 이력</h2>
+        <div class="flex-1 flex items-center justify-center">
+          <img src="images/image10.png" alt="Past cancellation bar" class="w-full h-40 md:h-44 object-contain mx-auto"/>
+        </div>
+      </section>
+
+      <!-- (2) 호텔 × 과거 취소 -->
+      <section class="content-box p-4 flex flex-col">
+        <h2 class="text-lg font-bold mb-2 section-title">호텔 × 과거 취소</h2>
+        <div class="flex-1 flex items-center justify-center">
+          <img src="images/image11.png" alt="Hotel × Past cancellation heatmap" class="w-full h-40 md:h-44 object-contain mx-auto"/>
+        </div>
+      </section>
+
+      <!-- (3) 호텔 × 과거취소 × 고객유형 -->
+      <section class="content-box p-4 flex flex-col">
+        <h2 class="text-lg font-bold mb-2 section-title">호텔 × 과거취소 × 고객유형</h2>
+        <div class="flex-1 flex items-center justify-center">
+          <img src="images/image12.png" alt="3-way heatmap" class="w-full h-44 md:h-48 object-contain mx-auto"/>
+        </div>
+      </section>
+
+      <!-- (4) 인사이트 카드 -->
+      <section class="content-box p-4 overflow-hidden">
+        <div class="space-y-3 text-slate-700 text-sm">
+          <div>
+            <span class="chip"><i class="fas fa-lightbulb"></i>&nbsp;핵심 인사이트</span>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>신규 + 과거 취소 경험 → 최상위 위험 (City 70%+)</li>
+              <li>재방문이어도 과거 취소 경험 있으면 취소율 상승</li>
+              <li>Resort는 전반적으로 낮으나 <b>장기 리드타임</b> 비중이 변수</li>
+            </ul>
+          </div>
+          <!-- <div>
+            <span class="chip"><i class="fas fa-cogs"></i>&nbsp;운영 액션</span>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>신규·장기·OTA/Group → <b>보증금/사전결제/취소 수수료</b> 강화</li>
+              <li>재방문·Direct·Corporate → 혜택 강화로 락인</li>
+            </ul>
+          </div> -->
+          <div>
+            <span class="chip"><i class="fas fa-balance-scale"></i>&nbsp;요약</span>
+            <div class="grid grid-cols-2 gap-3 mt-2">
+              <div>
+                <b class="text-red-600">High Risk</b>
+                <p class="mt-1">City + 신규 + OTA/Group + 장기 리드타임</p>
+              </div>
+              <div>
+                <b class="text-green-600">Low Risk</b>
+                <p class="mt-1">Resort + 재방문 + Direct/Corporate + 짧은 리드타임</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
+  </div>
+</body>
+</html>

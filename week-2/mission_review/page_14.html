@@ -1,0 +1,451 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>핵심 인사이트</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 840px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+        .slide {
+            width: 1280px;
+            min-height: 840px;
+
+            position: relative;
+        }
+        .insight-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .insight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .insight-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8" style=" overflow: hidden;">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="text-3xl font-bold text-blue-700">핵심 인사이트</h1>
+<div class="w-24 h-1 bg-blue-600 mt-2"></div>
+</div>
+<!-- Main Content -->
+<div class="grid grid-cols-3 gap-5 min-h-[560px]">
+<!-- Insight 1: Lead Time Effect -->
+<div class="insight-card p-5 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="insight-icon bg-blue-100 text-blue-600 mr-3">
+<i class="fas fa-hourglass-half text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-blue-700">리드타임 효과</h2>
+</div>
+<div class="flex-1">
+<div class="mb-3">
+<div class="w-full h-32" id="leadTimeChart" data-sk-source-container="chart" data-sk-source-id="JVM5H3" data-sk-source-type="pdf"></div>
+</div>
+<ul class="text-sm space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>0~7일: 취소율 &lt;10%</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>300일+: 취소율 &gt;70%</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>리드타임이 가장 큰 영향 요인</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Insight 2: Hotel Type Differences -->
+<div class="insight-card p-5 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="insight-icon bg-orange-100 text-orange-600 mr-3">
+<i class="fas fa-hotel text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-orange-700">호텔 유형 차이</h2>
+</div>
+<div class="flex-1">
+<div class="mb-3">
+<div class="w-full h-32" id="hotelTypeChart" data-sk-source-container="chart" data-sk-source-id="JVM5FV" data-sk-source-type="pdf"></div>
+</div>
+<ul class="text-sm space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>도시 호텔 &gt; 리조트 호텔</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>시티 호텔에서의 취소율이 리조트 호텔보다 훨씬 높음</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>도심 호텔이 상대적으로 불안정</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Insight 3: Reservation Channel Differences -->
+<div class="insight-card p-5 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="insight-icon bg-purple-100 text-purple-600 mr-3">
+<i class="fas fa-funnel-dollar text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-purple-700">예약 채널 차이</h2>
+</div>
+<div class="flex-1">
+<div class="mb-3">
+<div class="w-full h-32" id="channelChart" data-sk-source-container="chart" data-sk-source-id="JVM5GL" data-sk-source-type="pdf"></div>
+</div>
+<ul class="text-sm space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>Group·OTA 예약: 취소율 높음 (약 61%)</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>Direct·Corporate 예약: 안정적 (약 15%)</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>특히 City Hotel은 OTA 의존도가 높음</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Insight 4: Customer Loyalty Effect -->
+<div class="insight-card p-5 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="insight-icon bg-green-100 text-green-600 mr-3">
+<i class="fas fa-heart text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-green-700">고객 충성도 효과</h2>
+</div>
+<div class="flex-1">
+<div class="mb-3">
+<div class="w-full h-32" id="loyaltyChart"></div>
+</div>
+<ul class="text-sm space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>신규고객: 약 37.8% 취소율</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>재방문고객: 약 14.5% 취소율</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>신규 고객은 충성도가 낮아 취소율이 높음</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Insight 5: Past Behavior Influence -->
+<div class="insight-card p-5 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="insight-icon bg-red-100 text-red-600 mr-3">
+<i class="fas fa-history text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-red-700">과거 행동 영향</h2>
+</div>
+<div class="flex-1">
+<div class="mb-3">
+<div class="w-full h-32" id="pastBehaviorChart" data-sk-source-container="chart" data-sk-source-id="JVM5HD" data-sk-source-type="pdf"></div>
+</div>
+<ul class="text-sm space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>과거에 취소 경험 있는 고객: 취소율 크게 증가</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>City Hotel: 과거 취소 경험 있음 → 약 67% 취소율</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span>과거 행동 패턴은 미래 예약 취소에 큰 영향</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Summary Box -->
+<div class="insight-card p-5 flex flex-col bg-blue-50">
+<div class="flex items-center mb-4">
+<div class="insight-icon bg-blue-100 text-blue-600 mr-3">
+<i class="fas fa-lightbulb text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-blue-700">요약</h2>
+</div>
+<div class="flex-1">
+<p class="text-sm mb-3">
+                        취소율을 높이는 주요 변수들의 영향력을 확인했습니다. 가장 큰 영향은 <span class="font-bold">리드타임</span>이었으며, 이는 예약 일찍한 고객일수록 취소율이 낮다는 것을 의미합니다.
+                    </p>
+<p class="text-sm">
+                        또한, <span class="font-bold">고객 유형</span>과 <span class="font-bold">호텔 유형</span>의 조합이 취소율에 큰 영향을 미쳤으며, 특히 신규 고객 + 도시 호텔 조합이 취소율을 크게 높였습니다.
+                    </p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-4 right-8 text-sm text-gray-500" style="visibility: hidden;">
+<p>페이지 8 / 10</p>
+</div>
+</div>
+<script>
+        // Simple D3.js visualizations
+
+        // Lead Time Chart
+        const leadTimeData = [
+            {category: "0~7일", value: 10},
+            {category: "7~30일", value: 30},
+            {category: "30~100일", value: 50},
+            {category: "100~300일", value: 65},
+            {category: "300일+", value: 75}
+        ];
+
+        const leadTimeChart = d3.select("#leadTimeChart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 300 120");
+
+        const x = d3.scaleBand()
+            .domain(leadTimeData.map(d => d.category))
+            .range([20, 280])
+            .padding(0.3);
+
+        const y = d3.scaleLinear()
+            .domain([0, 100])
+            .range([100, 20]);
+
+        leadTimeChart.selectAll("rect")
+            .data(leadTimeData)
+            .enter()
+            .append("rect")
+            .attr("x", d => x(d.category))
+            .attr("y", d => y(d.value))
+            .attr("width", x.bandwidth())
+            .attr("height", d => 100 - y(d.value))
+            .attr("fill", d => {
+                if (d.value < 10) return "#34D399";
+                if (d.value < 50) return "#FBBF24";
+                return "#EF4444";
+            });
+
+        leadTimeChart.append("g")
+            .attr("transform", "translate(0, 100)")
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        leadTimeChart.append("g")
+            .attr("transform", "translate(20, 0)")
+            .call(d3.axisLeft(y).ticks(5))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        // Hotel Type Chart
+        const hotelTypeData = [
+            {type: "City Hotel", value: 41.7},
+            {type: "Resort Hotel", value: 27.8}
+        ];
+
+        const hotelTypeChart = d3.select("#hotelTypeChart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 300 120");
+
+        const hotelX = d3.scaleBand()
+            .domain(hotelTypeData.map(d => d.type))
+            .range([50, 250])
+            .padding(0.4);
+
+        const hotelY = d3.scaleLinear()
+            .domain([0, 50])
+            .range([100, 20]);
+
+        hotelTypeChart.selectAll("rect")
+            .data(hotelTypeData)
+            .enter()
+            .append("rect")
+            .attr("x", d => hotelX(d.type))
+            .attr("y", d => hotelY(d.value))
+            .attr("width", hotelX.bandwidth())
+            .attr("height", d => 100 - hotelY(d.value))
+            .attr("fill", (d, i) => i === 0 ? "#F97316" : "#0EA5E9");
+
+        hotelTypeChart.append("g")
+            .attr("transform", "translate(0, 100)")
+            .call(d3.axisBottom(hotelX))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        hotelTypeChart.append("g")
+            .attr("transform", "translate(50, 0)")
+            .call(d3.axisLeft(hotelY).ticks(5))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        // Channel Chart
+        const channelData = [
+            {channel: "Group", value: 61},
+            {channel: "OTA", value: 41},
+            {channel: "Direct", value: 15},
+            {channel: "Corporate", value: 10}
+        ];
+
+        const channelChart = d3.select("#channelChart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 300 120");
+
+        const channelX = d3.scaleBand()
+            .domain(channelData.map(d => d.channel))
+            .range([20, 280])
+            .padding(0.3);
+
+        const channelY = d3.scaleLinear()
+            .domain([0, 70])
+            .range([100, 20]);
+
+        channelChart.selectAll("rect")
+            .data(channelData)
+            .enter()
+            .append("rect")
+            .attr("x", d => channelX(d.channel))
+            .attr("y", d => channelY(d.value))
+            .attr("width", channelX.bandwidth())
+            .attr("height", d => 100 - channelY(d.value))
+            .attr("fill", d => {
+                if (d.value > 50) return "#EF4444";
+                if (d.value > 20) return "#FBBF24";
+                return "#34D399";
+            });
+
+        channelChart.append("g")
+            .attr("transform", "translate(0, 100)")
+            .call(d3.axisBottom(channelX))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        channelChart.append("g")
+            .attr("transform", "translate(20, 0)")
+            .call(d3.axisLeft(channelY).ticks(5))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        // Loyalty Chart
+        const loyaltyData = [
+            {type: "신규고객", value: 37.8},
+            {type: "재방문고객", value: 14.5}
+        ];
+
+        const loyaltyChart = d3.select("#loyaltyChart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 300 120");
+
+        const loyaltyX = d3.scaleBand()
+            .domain(loyaltyData.map(d => d.type))
+            .range([70, 230])
+            .padding(0.4);
+
+        const loyaltyY = d3.scaleLinear()
+            .domain([0, 40])
+            .range([100, 20]);
+
+        loyaltyChart.selectAll("rect")
+            .data(loyaltyData)
+            .enter()
+            .append("rect")
+            .attr("x", d => loyaltyX(d.type))
+            .attr("y", d => loyaltyY(d.value))
+            .attr("width", loyaltyX.bandwidth())
+            .attr("height", d => 100 - loyaltyY(d.value))
+            .attr("fill", (d, i) => i === 0 ? "#EF4444" : "#34D399");
+
+        loyaltyChart.append("g")
+            .attr("transform", "translate(0, 100)")
+            .call(d3.axisBottom(loyaltyX))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        loyaltyChart.append("g")
+            .attr("transform", "translate(70, 0)")
+            .call(d3.axisLeft(loyaltyY).ticks(5))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        // Past Behavior Chart
+        const pastBehaviorData = [
+            {type: "취소 경험 없음", value: 36},
+            {type: "취소 경험 있음", value: 67}
+        ];
+
+        const pastBehaviorChart = d3.select("#pastBehaviorChart")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 300 120");
+
+        const pastX = d3.scaleBand()
+            .domain(pastBehaviorData.map(d => d.type))
+            .range([50, 250])
+            .padding(0.4);
+
+        const pastY = d3.scaleLinear()
+            .domain([0, 70])
+            .range([100, 20]);
+
+        pastBehaviorChart.selectAll("rect")
+            .data(pastBehaviorData)
+            .enter()
+            .append("rect")
+            .attr("x", d => pastX(d.type))
+            .attr("y", d => pastY(d.value))
+            .attr("width", pastX.bandwidth())
+            .attr("height", d => 100 - pastY(d.value))
+            .attr("fill", (d, i) => i === 0 ? "#34D399" : "#EF4444");
+
+        pastBehaviorChart.append("g")
+            .attr("transform", "translate(0, 100)")
+            .call(d3.axisBottom(pastX))
+            .selectAll("text")
+            .attr("font-size", "8px");
+
+        pastBehaviorChart.append("g")
+            .attr("transform", "translate(50, 0)")
+            .call(d3.axisLeft(pastY).ticks(5))
+            .selectAll("text")
+            .attr("font-size", "8px");
+    </script>
+</div>
+        <!-- Navigation Footer -->
+        <div class="mt-8 flex justify-between items-center">
+            <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_12.html">이전</a>
+            <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">13 / 10</div>
+            <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_14.html">다음</a>
+        </div>
+    </main>
+</body>
+</html>

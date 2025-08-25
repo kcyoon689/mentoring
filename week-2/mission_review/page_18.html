@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>결론 및 제언 — 통합(전략 로드맵 포함)</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { width:1280px; min-height:904px; overflow:hidden; font-family:'Noto Sans KR', sans-serif; }
+    .slide { width:1280px; min-height:904px; position:relative; }
+    .content-box { background-color:rgba(255,255,255,0.9); border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+    .recommendation-item { transition:all .3s ease; }
+    .recommendation-item:hover { transform:translateY(-4px); box-shadow:0 8px 16px rgba(0,0,0,.08); }
+    .conclusion-item { border-left:3px solid #3b82f6; }
+    html { overflow:hidden; }
+  </style>
+</head>
+<body>
+  <div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8" style="overflow:hidden;">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-blue-700">결론 및 제언</h1>
+      <div class="w-24 h-1 bg-blue-600 mt-2"></div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-2 gap-6 min-h-[700px]">
+      <!-- Left Column: Key Conclusions -->
+      <div class="content-box p-6 flex flex-col">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
+          <span>주요 결론</span>
+        </h2>
+        <div class="space-y-4 flex-1">
+          <div class="conclusion-item pl-4 py-2">
+            <h3 class="font-semibold text-blue-800">취소율 현황</h3>
+            <p class="text-sm mt-1">전체 예약 중 약 37%가 취소되었으며, 이는 호텔 운영에 직접적인 영향을 줌</p>
+          </div>
+          <div class="conclusion-item pl-4 py-2">
+            <h3 class="font-semibold text-blue-800">호텔 유형별 차이</h3>
+            <p class="text-sm mt-1">시티 호텔 취소율(41.7%)이 리조트 호텔(27.8%)보다 1.5배 더 높음</p>
+          </div>
+          <div class="conclusion-item pl-4 py-2">
+            <h3 class="font-semibold text-blue-800">고객 유형별 특성</h3>
+            <p class="text-sm mt-1">신규 고객 취소율(37.8%)이 재방문 고객(14.5%)의 2.5배임</p>
+          </div>
+          <div class="conclusion-item pl-4 py-2">
+            <h3 class="font-semibold text-blue-800">리드타임 영향</h3>
+            <p class="text-sm mt-1">리드타임이 0~7일: 취소율 &lt; 10%, 300일+: 취소율 &gt; 70%</p>
+          </div>
+          <div class="conclusion-item pl-4 py-2">
+            <h3 class="font-semibold text-blue-800">예약 채널별 특성</h3>
+            <p class="text-sm mt-1">Group 예약(61%) &gt; OTA(41%) &gt; Direct(15%)</p>
+          </div>
+        </div>
+        <div class="mt-4 bg-blue-50 p-3 rounded-lg">
+          <p class="text-sm text-blue-700 font-semibold flex items-center">
+            <i class="fas fa-lightbulb mr-2"></i>
+            가장 취소 위험한 고객군: City Hotel + 신규 고객 + OTA/Group 예약 + 긴 리드타임
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Column: Actionable Recos + Roadmap (merged) -->
+      <div class="content-box p-6 flex flex-col">
+        <!-- Recommendations -->
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+          <i class="fas fa-bullhorn text-blue-600 mr-3"></i>
+          <span>실행 가능한 제언</span>
+        </h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="recommendation-item bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center mb-2">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-calendar-day text-blue-600"></i>
+              </div>
+              <h3 class="font-semibold text-blue-800">리드타임 관리</h3>
+            </div>
+            <p class="text-xs text-gray-600">긴 리드타임 예약에 사전결제 또는 취소 수수료 적용</p>
+          </div>
+
+          <div class="recommendation-item bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center mb-2">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-user-shield text-blue-600"></i>
+              </div>
+              <h3 class="font-semibold text-blue-800">신규고객 리스크 완화</h3>
+            </div>
+            <p class="text-xs text-gray-600">신규고객에 보증금 또는 선결제 의무화</p>
+          </div>
+
+          <div class="recommendation-item bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center mb-2">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-medal text-blue-600"></i>
+              </div>
+              <h3 class="font-semibold text-blue-800">고객 충성도 강화</h3>
+            </div>
+            <p class="text-xs text-gray-600">재방문 고객에 포인트, 업그레이드, 할인 제공</p>
+          </div>
+
+          <div class="recommendation-item bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center mb-2">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-sitemap text-blue-600"></i>
+              </div>
+              <h3 class="font-semibold text-blue-800">예약 채널 최적화</h3>
+            </div>
+            <p class="text-xs text-gray-600">Group/OTA 예약별 별도 관리 정책</p>
+          </div>
+
+          <div class="recommendation-item bg-white p-4 rounded-lg shadow-sm col-span-2">
+            <div class="flex items-center mb-2">
+              <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-history text-blue-600"></i>
+              </div>
+              <h3 class="font-semibold text-blue-800">고객 과거 이력 기반 정책</h3>
+            </div>
+            <p class="text-xs text-gray-600">취소 이력이 많은 고객: 사전결제 필수, 취소 제한 강화 · 취소 이력이 적은 고객: 유연한 조건 제공</p>
+          </div>
+        </div>
+
+        <!-- Impact Note -->
+        <div class="mt-4 bg-amber-50 p-3 rounded-lg border-l-4 border-amber-400">
+          <p class="text-sm text-amber-700 font-semibold flex items-center">
+            <i class="fas fa-chart-line mr-2"></i>
+            예상 영향: 취소율 감소로 인한 예약 안정성 증가, 수익 증가
+          </p>
+        </div>
+
+        <!-- Divider -->
+        <div class="my-5 border-t border-slate-200"></div>
+
+        <!-- Roadmap (from page_16) -->
+        <h2 class="text-lg font-bold mb-3 flex items-center">
+          <i class="fas fa-road text-blue-600 mr-3"></i>
+          <span>구현 로드맵</span>
+        </h2>
+        <div class="bg-blue-50 rounded-xl p-4">
+          <div class="space-y-3">
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2">1</div>
+              <p class="text-sm">리드타임 300일+ 고객에 사전결제 정책 적용</p>
+            </div>
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2">2</div>
+              <p class="text-sm">신규 고객 보증금 및 선결제 의무화</p>
+            </div>
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2">3</div>
+              <p class="text-sm">고객 충성도 프로그램 론칭</p>
+            </div>
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2">4</div>
+              <p class="text-sm">예약 채널별 분별된 정책 구현</p>
+            </div>
+            <div class="flex items-center">
+              <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mr-2">5</div>
+              <p class="text-sm">고객 이력 기반 취소 예측 모델 도입</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer (hidden) -->
+    <div class="absolute bottom-4 right-8 text-sm text-gray-500 flex items-center" style="visibility:hidden;">
+      <i class="fas fa-check-circle text-green-500 mr-2"></i>
+      <p>최종 슬라이드</p>
+    </div>
+  </div>
+</body>
+</html>

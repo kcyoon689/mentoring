@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>위험군과 안정적 고객군 비교</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 824px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+        .slide {
+            width: 1280px;
+            min-height: 824px;
+
+            position: relative;
+        }
+        .content-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .risk-group {
+            border-left: 4px solid #ef4444;
+        }
+        .stable-group {
+            border-left: 4px solid #0284c7;
+        }
+        .comparison-item {
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        .comparison-item:last-child {
+            border-bottom: none;
+        }
+
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8" style=" overflow: hidden;">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="text-3xl font-bold text-blue-700">위험군과 안정적 고객군 비교</h1>
+<div class="w-24 h-1 bg-blue-600 mt-2"></div>
+</div>
+<!-- Main Content -->
+<div class="grid grid-cols-2 gap-6 min-h-[540px]">
+<!-- Left Column - High Risk Group -->
+<div class="content-box p-5 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mr-3">
+<i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-red-600">취소 위험군</h2>
+</div>
+<div class="flex-1 overflow-auto">
+<div class="space-y-1">
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-hotel text-red-500 mr-3"></i>
+<span class="font-semibold w-24">호텔 유형:</span>
+<span class="ml-2">도심 호텔 (City Hotel)</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                신규 고객 취소율 42% (최고 위험군)
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-user text-red-500 mr-3"></i>
+<span class="font-semibold w-24">고객 유형:</span>
+<span class="ml-2">개인 고객 (Direct Booking)</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                충성도가 낮은 신규 고객이 취소율을 크게 끌어올림
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-globe text-red-500 mr-3"></i>
+<span class="font-semibold w-24">예약 채널:</span>
+<span class="ml-2">OTA (Online Travel Agent)</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                OTA 의존도가 높은 City Hotel은 취소율이 높음
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-calendar-alt text-red-500 mr-3"></i>
+<span class="font-semibold w-24">리드타임:</span>
+<span class="ml-2">긴 예약 (300일+)</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                리드타임이 가장 큰 영향 요인 (취소율 &gt;70%)
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-history text-red-500 mr-3"></i>
+<span class="font-semibold w-24">과거 행동:</span>
+<span class="ml-2">과거 취소 경험 있음</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                이전에 취소한 고객은 이후에도 취소 확률이 증가
+                            </div>
+</div>
+</div>
+</div>
+<div class="mt-4 p-3 bg-red-50 rounded-lg">
+<p class="text-sm text-red-700"><i class="fas fa-chart-line mr-2"></i>취소율 특성: OTA 의존도 높음, 개인 고객 중심, 리드타임 길수록 취소율 급등, 신규 고객은 충성도 낮음</p>
+</div>
+</div>
+<!-- Right Column - Stable Group -->
+<div class="content-box p-5 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+<i class="fas fa-shield-alt text-blue-500 text-2xl"></i>
+</div>
+<h2 class="text-xl font-bold text-blue-600">안정적 고객군</h2>
+</div>
+<div class="flex-1 overflow-auto">
+<div class="space-y-1">
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-umbrella-beach text-blue-500 mr-3"></i>
+<span class="font-semibold w-24">호텔 유형:</span>
+<span class="ml-2">리조트 호텔 (Resort Hotel)</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                신규 고객도 29%로 상대적으로 안정적
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-building text-blue-500 mr-3"></i>
+<span class="font-semibold w-24">고객 유형:</span>
+<span class="ml-2">회사 고객 (Group Booking)</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                재방문 고객의 취소율은 약 13%로 가장 낮음
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-handshake text-blue-500 mr-3"></i>
+<span class="font-semibold w-24">예약 채널:</span>
+<span class="ml-2">Direct/Corporate</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                직접 예약 비중 높은 Resort Hotel은 안정적 수익 확보
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-clock text-blue-500 mr-3"></i>
+<span class="font-semibold w-24">리드타임:</span>
+<span class="ml-2">짧은 예약 (0~7일)</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                짧은 리드타임의 취소율은 10% 미만으로 안정적
+                            </div>
+</div>
+<div class="comparison-item py-3">
+<div class="flex items-center">
+<i class="fas fa-sync-alt text-blue-500 mr-3"></i>
+<span class="font-semibold w-24">과거 행동:</span>
+<span class="ml-2">과거 취소 경험 없음</span>
+</div>
+<div class="ml-9 mt-1 text-sm text-gray-600">
+                                과거에 한번이라도 취소한 경험이 있는 고객: 취소율 크게 증가
+                            </div>
+</div>
+</div>
+</div>
+<div class="mt-4 p-3 bg-blue-50 rounded-lg">
+<p class="text-sm text-blue-700"><i class="fas fa-chart-line mr-2"></i>취소율 특성: 장기 휴가 목적 예약, 회사 계약 및 재방문 고객 중심, 직접 예약 고객에 추가 혜택 제공</p>
+</div>
+</div>
+</div>
+<!-- Bottom Summary -->
+<div class="mt-4 p-4 bg-white rounded-lg shadow-sm">
+<h3 class="text-lg font-bold text-blue-700 mb-2"><i class="fas fa-lightbulb mr-2"></i>취소율 패턴의 핵심 특성</h3>
+<div class="grid grid-cols-3 gap-4 text-sm">
+<div class="flex items-start">
+<i class="fas fa-arrow-trend-up text-red-500 mt-1 mr-2"></i>
+<p>리드타임이 가장 큰 영향 요인 (0~7일: 10% 미만, 300일+: 70% 초과)</p>
+</div>
+<div class="flex items-start">
+<i class="fas fa-hotel text-orange-500 mt-1 mr-2"></i>
+<p>호텔 유형 차이: City Hotel &gt; Resort Hotel (도심 호텔이 상대적으로 불안정)</p>
+</div>
+<div class="flex items-start">
+<i class="fas fa-user-friends text-blue-500 mt-1 mr-2"></i>
+<p>고객 충성도 효과: 신규 고객 취소율 = 재방문 고객의 2.5배</p>
+</div>
+</div>
+</div>
+</div>
+        <!-- Navigation Footer -->
+        <div class="mt-8 flex justify-between items-center">
+            <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_12.html">이전</a>
+            <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">13 / 10</div>
+            <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_14.html">다음</a>
+        </div>
+    </main>
+</body>
+</html>

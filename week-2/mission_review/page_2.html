@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>데이터셋 구조 및 분석 개요</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            width: 1280px;
+            min-height: 744px;
+            overflow: hidden;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .slide {
+            width: 1280px;
+            min-height: 744px;
+            position: relative;
+        }
+        .content-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight-text {
+            color: #2563eb;
+            font-weight: 600;
+        }
+        .section-title {
+            border-left: 4px solid #2563eb;
+            padding-left: 10px;
+        }
+        html {
+            overflow: hidden;
+        }
+        .navigation {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        .page-indicator {
+            padding: 8px 16px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            font-weight: 500;
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8" style="overflow: hidden;">
+        <!-- Header -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-blue-700">데이터셋 구조 및 분석 개요</h1>
+            <div class="w-24 h-1 bg-blue-600 mt-2"></div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-2 gap-6 min-h-[560px]">
+            <!-- Left Column -->
+            <div class="flex flex-col gap-5">
+                <!-- Dataset Structure -->
+                <div class="content-box p-5 flex-1">
+                    <h2 class="text-xl font-bold mb-3 section-title">데이터셋 구조 <span class="text-sm font-normal text-gray-500">(hotel_data_modified.csv)</span></h2>
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-bullseye mr-2"></i>타겟 변수</h3>
+                            <p class="text-sm">is_canceled: 0(유지), 1(취소)</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-calendar-check mr-2"></i>예약 특성</h3>
+                            <p class="text-sm">lead_time, stays_in_weekend_nights, stays_in_week_nights, adults, children, babies</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-user mr-2"></i>고객 특성</h3>
+                            <p class="text-sm">country, market_segment, distribution_channel, is_repeated_guest</p>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-history mr-2"></i>예약 이력</h3>
+                            <p class="text-sm">previous_cancellations, previous_bookings_not_canceled, booking_changes, total_of_special_requests</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="flex flex-col gap-5">
+                <!-- Analysis Objectives -->
+                <div class="content-box p-5 flex-1">
+                    <h2 class="text-xl font-bold mb-3 section-title">분석 목적</h2>
+                    <ul class="space-y-3 mt-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-chart-line text-blue-600 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-semibold">예약 취소율 패턴 파악</p>
+                                <p class="text-sm text-gray-600">city hotel vs resort hotel, 고객 유형별, 예약 채널별 취소율 특성 비교</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-search text-blue-600 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-semibold">취소 결정요인 파악</p>
+                                <p class="text-sm text-gray-600">리드타임, 예약 변경, 특별 요청 등 변수들의 영향력 파악</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-user-shield text-blue-600 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-semibold">취소 위험군 vs 안정적 고객군 구분</p>
+                                <p class="text-sm text-gray-600">특히 신규 고객, OTA/중개인 예약, 긴 리드타임 등 위험 요인 식별</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-coins text-blue-600 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-semibold">취소율 개선 방안 모색</p>
+                                <p class="text-sm text-gray-600">리드타임 관리, 신규 고객 리스크 완화, 고객 충성도 강화 등</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Analysis Methodology -->
+                <div class="content-box p-5">
+                    <h2 class="text-xl font-bold mb-3 section-title">분석 방법론</h2>
+                    <div class="grid grid-cols-2 gap-4 mt-3">
+                        <div class="text-center">
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-database mr-2"></i>단변량 분석</h3>
+                            <p class="text-sm">취소율의 관점에서 변수별 특성 파악</p>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-project-diagram mr-2"></i>이변량 분석</h3>
+                            <p class="text-sm">is_canceled와의 관계 확인, 변수별로 탐색</p>
+                        </div>
+                        <!-- <div class="text-center">
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-chart-pie mr-2"></i>범주화 분석</h3>
+                            <p class="text-sm">도메인 지식 기반 가설 세우기 => CDA</p>
+                        </div> -->
+                        <div class="text-center">
+                            <h3 class="text-lg font-semibold mb-2 highlight-text"><i class="fas fa-brain mr-2"></i>예측 모델</h3>
+                            <p class="text-sm">로지스틱 회귀, 랜덤 포레스트, XGBoost 등</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_1.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">2 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_3.html">다음</a>
+</div>
+
+</body>
+</html>

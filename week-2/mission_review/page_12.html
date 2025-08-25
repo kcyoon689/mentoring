@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>이변량 분석 ⑥ — 체류 특성</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --pri:#2563eb; --pri-ink:#1e40af;
+      --chip-bg:#eef2ff; --chip-ink:#3730a3; --good:#059669; --bad:#b91c1c;
+    }
+    body { width:1280px; min-height:904px; font-family:'Noto Sans KR',sans-serif; color:var(--ink); }
+    .slide { width:1280px; min-height:904px; position:relative; }
+    .content-box { background:rgba(255,255,255,.9); border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+    .section-title { border-left:4px solid var(--pri); padding-left:10px; }
+    .chip { display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .6rem; border-radius:9999px; background:var(--chip-bg); color:var(--chip-ink); font-size:.8rem; }
+    .grid-2x2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; min-height:480px; }
+    .figure { display:flex; flex-direction:column; gap:10px; height:100%; }
+    .figure img { border-radius:8px; border:1px solid var(--line); width:100%; height:200px; object-fit:contain; }
+    .caption { font-size:.85rem; color:var(--muted); line-height:1.4; background:#f8fafc; border:1px dashed var(--line); border-radius:8px; padding:8px 10px; flex-grow:1; }
+    .key { display:inline-flex; align-items:center; gap:.35rem; font-weight:600; color:#0f172a; }
+    .badge-good { color:var(--good); font-weight:700; }
+    .badge-bad { color:var(--bad); font-weight:700; }
+    .highlight-text { color:#2563eb; font-weight:600; }
+  </style>
+</head>
+<body>
+  <div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8">
+    <!-- Header -->
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-blue-700">이변량 분석 ⑥ — 체류 특성</h1>
+      <div class="w-24 h-1 bg-blue-600 mt-2"></div>
+    </header>
+
+    <!-- Main Content - 2x2 Grid -->
+    <div class="grid-2x2">
+      <!-- 주중 숙박일 × 취소 -->
+      <section class="content-box p-4">
+        <div class="figure">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-bold section-title">주중 숙박일 × 취소</h3>
+            <span class="chip"><i class="fa-solid fa-bed"></i> Weeknights</span>
+          </div>
+          <img src="images/image21.png" alt="Weeknights vs Cancellation"/>
+          <div class="caption">
+            <span class="key"><i class="fa-regular fa-note-sticky"></i> 해석</span>
+            <div class="mt-2 space-y-2 text-slate-700">
+              <p><i class="fa-solid fa-info-circle text-blue-600 mr-2"></i>
+                주중 숙박일이 <b>길어질수록 분산↑</b> (고객군 간 편차 확대).</p>
+              <ul class="list-disc list-inside text-xs space-y-1">
+                <li>구간에 따라 <span class="badge-bad">취소율↑</span>/<span class="badge-good">↓</span>의 차등 효과가 뚜렷</li>
+                <li>장기 체류에서도 <span class="highlight-text">세그먼트별 행동 차이</span>를 고려해야 함</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 주말 숙박일 × 취소 -->
+      <section class="content-box p-4">
+        <div class="figure">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-bold section-title">주말 숙박일 × 취소</h3>
+            <span class="chip"><i class="fa-solid fa-moon"></i> Weekends</span>
+          </div>
+          <img src="images/image22.png" alt="Weekend nights vs Cancellation"/>
+          <div class="caption">
+            <span class="key"><i class="fa-regular fa-note-sticky"></i> 해석</span>
+            <div class="mt-2 space-y-2 text-slate-700">
+              <p><i class="fa-solid fa-info-circle text-blue-600 mr-2"></i>
+                주말 숙박일이 <b>늘수록 변동성↑</b>, 일부 구간에서 주중 대비 상이한 취소 패턴 존재.</p>
+              <ul class="list-disc list-inside text-xs space-y-1">
+                <li>프로모션/이벤트 달력과 교차하면 <span class="highlight-text">주말 특이점</span> 포착 가능</li>
+                <li>주말 장기 체류는 특별한 목적(이벤트, 휴가)을 동반하는 경우가 많음</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 주차 공간 요구 -->
+      <section class="content-box p-4">
+        <div class="figure">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-bold section-title">주차 공간 요구</h3>
+            <span class="chip"><i class="fa-solid fa-square-parking"></i> Parking</span>
+          </div>
+          <img src="images/image23.png" alt="Car parking spaces vs Cancellation"/>
+          <div class="caption">
+            <span class="key"><i class="fa-regular fa-note-sticky"></i> 해석</span>
+            <div class="mt-2 space-y-2 text-slate-700">
+              <p><i class="fa-solid fa-info-circle text-blue-600 mr-2"></i>
+                주차 요구가 많을수록 <span class="badge-good">취소율↓</span>—<b>커밋먼트(Commitment) 효과</b>로 해석 가능.</p>
+              <ul class="list-disc list-inside text-xs space-y-1">
+                <li>현장 방문/차량 동반이 전제돼 <span class="highlight-text">예약 유지 가능성↑</span></li>
+                <li>물리적 이동 계획이 확정된 경우 취소 비용(심리적)이 높음</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Special Requests 수 -->
+      <section class="content-box p-4">
+        <div class="figure">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-bold section-title">Special Requests 수</h3>
+            <span class="chip"><i class="fa-solid fa-wand-magic-sparkles"></i> Requests</span>
+          </div>
+          <img src="images/image24.png" alt="Special requests vs Cancellation"/>
+          <div class="caption">
+            <span class="key"><i class="fa-regular fa-note-sticky"></i> 해석</span>
+            <div class="mt-2 space-y-2 text-slate-700">
+              <p><i class="fa-solid fa-info-circle text-blue-600 mr-2"></i>
+                요청 건수가 늘수록 <b>취소율 급감</b>—구체적 요구가 있을수록 <span class="highlight-text">예약 유지</span> 성향 강화.</p>
+              <ul class="list-disc list-inside text-xs space-y-1">
+                <li>사전 응대/요청 수락 자동화는 <span class="badge-good">No‑Show/취소 리스크 완화</span>에 유효</li>
+                <li>개인화된 서비스 기대치가 높을수록 예약 이행 의지↑</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Action Items -->
+    <div class="mt-6 content-box p-4">
+      <h3 class="text-lg font-bold mb-3 section-title">운영 액션 포인트</h3>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="flex items-start">
+          <i class="fas fa-car text-blue-600 mt-1 mr-3"></i>
+          <div>
+            <p class="font-semibold text-sm">주차/특별요청 활용</p>
+            <p class="text-xs text-gray-600"><b>주차 공간 확보 인센티브</b> 및 <b>Special Request 적극 수용</b>으로 고객 커밋먼트 강화. 요청 처리 자동화 시스템 구축.</p>
+          </div>
+        </div>
+        <div class="flex items-start">
+          <i class="fas fa-calendar-week text-blue-600 mt-1 mr-3"></i>
+          <div>
+            <p class="font-semibold text-sm">주중/주말 차등 전략</p>
+            <p class="text-xs text-gray-600">장기 체류 고객군별 <b>개별화된 취소 정책</b> 및 <b>주말 이벤트 연동 패키지</b>로 변동성 관리 및 수익 최적화.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- 페이지 넘버 -->
+    <div class="mt-6 flex justify-between items-center">
+      <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_11.html">이전</a>
+      <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">12 / 10</div>
+      <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_13.html">다음</a>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>전체 예약 취소율 현황</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+    .slide {
+        width: 1280px;
+        min-height: 720px;
+        position: relative;
+    }
+    .content-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .highlight-text {
+        color: #2563eb;
+        font-weight: 600;
+    }
+    .section-title {
+        border-left: 4px solid #2563eb;
+        padding-left: 10px;
+    }
+    /* 왼쪽 원형 차트 이미지 */
+    .chart-left img {
+        width: 300px;
+        height: 300px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    /* 오른쪽 막대 차트 이미지 */
+    .chart-right img {
+        width: 100%;
+        height: 300px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    html { overflow: hidden; }
+  </style>
+</head>
+<body>
+<div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8" style="overflow: hidden;">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">전체 예약 취소율 현황</h1>
+    <div class="w-24 h-1 bg-blue-600 mt-2"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="grid grid-cols-5 gap-6 min-h-[560px]">
+    <!-- Left Column - Overall Stats -->
+    <div class="col-span-2 content-box p-5 flex flex-col">
+      <h2 class="text-xl font-bold mb-4 section-title">전체 취소율</h2>
+      <div class="flex-1 flex flex-col justify-center items-center">
+        <div class="chart-left">
+          <img src="images/image4.png" alt="전체 예약 취소율 그래프"/>
+        </div>
+        <div class="mt-8 text-center">
+          <p class="text-gray-700"><i class="fas fa-info-circle text-blue-500 mr-2"></i>전체 예약 중 약 37%가 취소되었으며, 이는 호텔 운영에 직접적인 영향을 줄 수 있는 상당히 높은 수준.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Hotel Type Comparison -->
+    <div class="col-span-3 content-box p-5 flex flex-col">
+      <h2 class="text-xl font-bold mb-4 section-title">호텔 유형별 취소율 비교</h2>
+      <!-- Chart Area -->
+      <div class="chart-right">
+        <img src="images/image5.png" alt="호텔 유형별 취소율 비교 그래프"/>
+      </div>
+
+      <!-- Analysis Points -->
+      <div class="mt-4">
+        <h3 class="text-lg font-semibold highlight-text mb-2">취소율 차이의 원인 탐색</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex items-start">
+            <i class="fas fa-map-marker-alt text-blue-600 mt-1 mr-3"></i>
+            <div>
+              <p class="font-semibold">호텔 위치 및 성격</p>
+              <p class="text-sm text-gray-600">city 호텔 vs resort 호텔의 위치와 특성 차이로 인한 고객층의 차이</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <i class="fas fa-users text-blue-600 mt-1 mr-3"></i>
+            <div>
+              <p class="font-semibold">주요 고객층</p>
+              <p class="text-sm text-gray-600">개인 고객(Direct Booking) vs 여행사/중개인(Agent) vs 회사(Company)</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <i class="fas fa-history text-blue-600 mt-1 mr-3"></i>
+            <div>
+              <p class="font-semibold">고객 충성도</p>
+              <p class="text-sm text-gray-600">신규 고객 vs 재방문 고객의 취소율 차이</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <i class="fas fa-calendar-alt text-blue-600 mt-1 mr-3"></i>
+            <div>
+              <p class="font-semibold">예약 특성</p>
+              <p class="text-sm text-gray-600">리드타임, 특별 요청, 예약 변경 등이 취소율에 미치는 영향</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_4.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">5 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_6.html">다음</a>
+  </div>
+</div>
+</body>
+</html>

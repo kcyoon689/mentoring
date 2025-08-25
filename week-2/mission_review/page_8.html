@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>이변량 분석 ② — 고객 카테고리 & 호텔 유형 교차</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { width:1280px; min-height:720px; overflow:hidden; font-family:'Noto Sans KR', sans-serif; }
+    .slide { width:1280px; min-height:720px; position:relative; }
+    .content-box { background-color:rgba(255,255,255,0.9); border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.08); }
+    .section-title { border-left:4px solid #2563eb; padding-left:10px; }
+    .highlight-text { color:#2563eb; font-weight:600; }
+    .grid-3 { display:grid; grid-template-columns:2fr 2fr 2fr; gap:20px; }
+    .chart img { width:100%; height:280px; object-fit:contain; border-radius:8px; }
+    .chart-tall img { width:100%; height:300px; object-fit:contain; border-radius:8px; }
+    .chip { display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .6rem; border-radius:9999px; background:#eef2ff; color:#3730a3; font-size:.8rem; }
+    html { overflow:hidden; }
+  </style>
+</head>
+<body>
+<div class="slide bg-gradient-to-br from-blue-50 to-gray-100 p-8">
+
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">이변량 분석 ② — 고객 카테고리 & 호텔 유형 교차</h1>
+    <div class="w-24 h-1 bg-blue-600 mt-2"></div>
+  </div>
+
+  <!-- Main - 3 column grid -->
+  <div class="grid-3 min-h-[560px]">
+    <!-- Left: Agent × Company -->
+    <section class="content-box p-4 flex flex-col">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold mb-3 section-title">Agent × Company</h2>
+        <span class="chip"><i class="fa-solid fa-handshake"></i> 계약 관계</span>
+      </div>
+
+      <div class="chart-tall">
+        <!-- Agent/Company 히트맵 (image20.png) -->
+        <img src="images/image20.png" alt="Agent/Company heatmap"/>
+      </div>
+
+      <!-- Insight -->
+      <div class="mt-3 space-y-2 text-slate-700">
+        <p><i class="fa-solid fa-info-circle text-blue-600 mr-2"></i>
+          에이전트가 있고 회사 계약이 없는 경우의 <span class="highlight-text">취소율이 39%로 가장 높음</span>.</p>
+        <p class="text-xs text-slate-600">반대로, 에이전트와 회사가 동시에 존재할 때 취소율은 <b>7.8%</b>로 크게 낮음 → <span class="highlight-text">계약 안정성</span> 효과.</p>
+        <ul class="list-disc list-inside text-xs text-slate-700 space-y-1">
+          <li>에이전트 단독: 가격·조건 유연성 높아 취소 다수 발생</li>
+          <li>회사 계약 포함: 계약 이행률↑, 취소 억제</li>
+          <li>운영 시사점: <b>에이전트 예약이라도 회사 보증 계약</b>을 붙이면 안정화 가능</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Center: Customer Category -->
+    <section class="content-box p-4 flex flex-col">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold section-title">고객 카테고리별 취소율</h2>
+        <span class="chip"><i class="fa-solid fa-chart-column"></i> Business vs Leisure</span>
+      </div>
+
+      <div class="mt-3 chart">
+        <!-- 막대 차트 (image13.png) -->
+        <img src="images/image13.png" alt="고객 카테고리별 취소율 막대 차트"/>
+      </div>
+
+      <!-- 설명 -->
+      <div class="mt-4 space-y-2 text-slate-700">
+        <p><i class="fa-solid fa-info-circle text-blue-600 mr-2"></i>
+          <span class="font-semibold">Business 고객의 취소율이 가장 높고</span>, Leisure, Other 순으로 낮아짐.</p>
+        <p class="text-sm text-slate-600">
+          업무 일정 변경·출장 취소 등 <span class="highlight-text">일정 변동성</span>이 높은 특성이 반영된 결과로 해석됨.</p>
+        <ul class="list-disc list-inside text-xs text-slate-700 space-y-1">
+          <li>Business: 즉흥적 일정 변경 → 취소율 상승</li>
+          <li>Leisure: 일정 확정 후 예약하는 경향 → 상대적으로 안정</li>
+          <li>Other: 규모·목적 불분명 집단이라 분포가 분산</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Right: Hotel × Category -->
+    <section class="content-box p-4 flex flex-col">
+      <h2 class="text-lg font-bold mb-3 section-title">호텔 유형 × 고객 카테고리</h2>
+
+      <div class="chart-tall">
+        <!-- 히트맵 (image14.png) -->
+        <img src="images/image14.png" alt="호텔 유형 × 고객 카테고리 취소율 히트맵"/>
+      </div>
+
+      <!-- 분석 포인트 -->
+      <div class="mt-3">
+        <div class="space-y-3">
+          <div class="flex items-start">
+            <i class="fas fa-city text-blue-600 mt-1 mr-2"></i>
+            <div>
+              <p class="text-sm font-semibold">City Hotel의 Business 취소↑</p>
+              <p class="text-xs text-gray-600">도심 업무 수요는 경기·일정 변화에 민감.</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <i class="fas fa-umbrella-beach text-blue-600 mt-1 mr-2"></i>
+            <div>
+              <p class="text-sm font-semibold">Resort의 Leisure 취소는 상대적 안정</p>
+              <p class="text-xs text-gray-600">휴가 일정은 사전 계획 비중이 높아 리드타임이 길고, <span class="font-medium">선결제·패키지</span>가 취소 억제.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Action Items -->
+  <div class="mt-4 content-box p-4">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex items-start">
+        <i class="fas fa-calendar-day text-blue-600 mt-1 mr-3"></i>
+        <div>
+          <p class="font-semibold text-sm">운영 액션</p>
+          <p class="text-xs text-gray-600">City·Business 구간에 <b>차등 취소 정책(리드타임 기반 수수료)</b>, <b>회사/에이전트 계약 요금의 보증</b> 재설계.</p>
+        </div>
+      </div>
+      <div class="flex items-start">
+        <i class="fas fa-bell text-blue-600 mt-1 mr-3"></i>
+        <div>
+          <p class="font-semibold text-sm">예측/조기 경보</p>
+          <p class="text-xs text-gray-600">체크인 임박 + Business + City 조합은
+            <b>취소 위험 알림</b> 및 <b>대체 제안(날짜 변경, 크레딧)</b> 자동 발송.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_7.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">8 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_9.html">다음</a>
+  </div>
+
+</div>
+</body>
+</html>

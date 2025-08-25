@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>결측치 구조 분석 (Missingness)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, 'Apple SD Gothic Neo', 'Noto Sans', 'Liberation Sans', Arial, sans-serif; }
+    .section-title { border-left: 6px solid #2563eb; padding-left: 12px; }
+    .card { background: rgba(255,255,255,.92); border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,.08); }
+    .caption { font-size: .875rem; color: #64748b; }
+    .badge { font-size: .75rem; padding: .15rem .5rem; border-radius: .5rem; background: #e2e8f0; color:#334155; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-sky-100">
+  <main class="max-w-6xl mx-auto px-6 py-10">
+    <!-- Header -->
+    <header class="mb-8">
+      <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800">결측치 구조 분석</h1>
+      <p class="text-slate-600 mt-2">호텔 예약 데이터에서 결측치 패턴을 시각화하고, 결측 여부가 취소율에 미치는 영향을 정리합니다.</p>
+    </header>
+
+    <!-- Section 1: 상관계수 개념 -->
+    <section class="mb-10">
+    <h2 class="section-title text-2xl font-bold text-slate-900">1) 상관계수 개념</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+      <!-- 왼쪽: 이미지 -->
+      <figure class="card p-5 flex flex-col items-center">
+        <img src="images/image1.png" alt="상관계수 개념과 예시"
+            class="rounded-lg max-h-[360px] object-contain" />
+        <figcaption class="caption mt-3">상관계수(correlation coefficient) 값에 따른 산점도 패턴.</figcaption>
+      </figure>
+
+      <!-- 오른쪽: 설명 -->
+      <div class="card p-5">
+        <p class="text-slate-700 leading-relaxed">
+          상관계수(correlation coefficient) <b>r</b>는 두 변수 간의 선형적 관계(직선적인 관계)의
+          강도와 방향을 나타내는 값입니다.
+        </p>
+        <ul class="list-disc list-inside mt-3 space-y-1 text-slate-700">
+          <li>범위: <b>-1 ≤ r ≤ 1</b></li>
+          <li><b>r = 1</b> : 완벽한 양의 상관관계 → 공부 시간 ↑ → 시험 점수 ↑</li>
+          <li><b>r = -1</b> : 완벽한 음의 상관관계 → TV 시청 시간 ↑ → 시험 점수 ↓</li>
+          <li><b>r = 0</b> : 상관 없음 (선형 관계 거의 없음)</li>
+        </ul>
+        <p class="text-slate-700 mt-2">
+          ∣r∣ 값이 클수록 (즉, -1이나 1에 가까울수록) 관계가 강합니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+    <!-- Section 2: 결측치 상관 구조 -->
+    <section class="mb-10">
+      <h2 class="section-title text-2xl font-bold text-slate-900">2) 결측치 상관 구조</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
+        <figure class="lg:col-span-2 card p-5">
+          <img src="images/image2.png" alt="결측치 상관 히트맵" class="rounded-lg w-full max-h-[420px] object-contain bg-white" />
+          <figcaption class="caption mt-2">결측 여부(Indicator) 간 correlation heatmap.</figcaption>
+        </figure>
+        <div class="card p-6">
+          <ul class="list-disc list-inside space-y-2 text-slate-700">
+            <li><span class="font-semibold">company ↔ agent</span>
+              <ul class="list-disc list-inside ml-4 mt-1">
+                <li><span class="badge">상관 ≈ -0.59</span> 한쪽이 결측일 때 다른 쪽은 채워진 경우가 많음</li>
+                <li><span class="badge">company</span> 대부분 결측 → <b>개인 고객 중심</b></li>
+                <li><span class="badge">agent</span> 결측 적음 → <b>중개인 예약 다수</b></li>
+                <li>즉, <b>법인/단체 계약 없음 ≈ 중개인 없음</b>과 유사한 패턴</li>
+              </ul>
+            </li>
+            <li><span class="font-semibold">country, children</span>
+              <ul class="list-disc list-inside ml-4 mt-1">
+                <li>다른 변수와의 상관이 거의 없음 → 결측이 <b>독립적</b>으로 발생</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: 결측 여부와 취소율 -->
+    <section class="mb-10">
+      <h2 class="section-title text-2xl font-bold text-slate-900">3) 결측 여부와 취소율</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
+        <figure class="card p-5">
+          <img src="images/image3.png" alt="결측 여부에 따른 취소율" class="rounded-lg w-full max-h-[480px] object-contain bg-white" />
+          <figcaption class="caption mt-2">결측 그룹별 취소율 비교.</figcaption>
+        </figure>
+        <div class="card p-6">
+          <ol class="list-decimal list-inside space-y-3 text-slate-700">
+            <li><b>회사 정보(<code>company_missing</code>)</b><br/>
+              <span class="badge">Not Missing</span> 17.5% → <span class="badge">Missing</span> 38.2%<br/>
+              <span class="text-slate-600">회사 계약 고객 &lt; 개인 고객의 취소율</span>
+            </li>
+            <li><b>중개인 정보(<code>agent_missing</code>)</b><br/>
+              <span class="badge">Not Missing</span> 39.0% → <span class="badge">Missing</span> 24.7%<br/>
+              <span class="text-slate-600">OTA/중개인 예약이 <b>직접 예약</b>보다 취소율 높음</span>
+            </li>
+            <li><b>국가 정보(<code>country_missing</code>)</b><br/>
+              <span class="badge">Not Missing</span> 37.1% → <span class="badge">Missing</span> 13.7%<br/>
+              <span class="text-slate-600">결측은 <b>극소수</b>이며 취소율 낮음 → “Unknown” 범주 처리</span>
+            </li>
+            <li><b>아동 수(<code>children_missing</code>)</b><br/>
+              <span class="badge">Not Missing</span> 37.0% → <span class="badge">Missing</span> 100%<br/>
+              <span class="text-slate-600">표본 4건으로 의미 제한적 → <b>0으로 대체</b> 권장</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="mt-6 flex justify-between items-center">
+      <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
+      <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 10</div>
+      <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
+    </div>
+
+  </main>
+</body>
+</html>
