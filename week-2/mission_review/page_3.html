@@ -9,15 +9,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, 'Apple SD Gothic Neo', 'Noto Sans', 'Liberation Sans', Arial, sans-serif; }
+    body { font-family: 'Noto Sans KR', system-ui, -apple-system, Segoe UI, Roboto, 'Apple SD Gothic Neo', 'Noto Sans', 'Liberation Sans', Arial, sans-serif; width: 1280px; }
     .section-title { border-left: 6px solid #2563eb; padding-left: 12px; }
     .card { background: rgba(255,255,255,.92); border-radius: 14px; box-shadow: 0 10px 25px rgba(0,0,0,.08); }
     .caption { font-size: .875rem; color: #64748b; }
     .badge { font-size: .75rem; padding: .15rem .5rem; border-radius: .5rem; background: #e2e8f0; color:#334155; }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-50 via-slate-50 to-sky-100">
-  <main class="max-w-6xl mx-auto px-6 py-10">
+<body class="bg-gradient-to-br from-blue-50 to-gray-100">
+  <main class="px-6 py-10">
     <!-- Header -->
     <header class="mb-8">
       <h1 class="text-3xl md:text-4xl font-extrabold text-slate-800">결측치 구조 분석</h1>
@@ -103,7 +103,7 @@
             </li>
             <li><b>국가 정보(<code>country_missing</code>)</b><br/>
               <span class="badge">Not Missing</span> 37.1% → <span class="badge">Missing</span> 13.7%<br/>
-              <span class="text-slate-600">결측은 <b>극소수</b>이며 취소율 낮음 → “Unknown” 범주 처리</span>
+              <span class="text-slate-600">결측은 <b>극소수</b>이며 취소율 낮음 → "Unknown" 범주 처리</span>
             </li>
             <li><b>아동 수(<code>children_missing</code>)</b><br/>
               <span class="badge">Not Missing</span> 37.0% → <span class="badge">Missing</span> 100%<br/>
