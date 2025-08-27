@@ -1,299 +1,123 @@
-<!DOCTYPE html><html lang="ko"><head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>편향-분산 트레이드오프</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script><style>
-        body {width: 1280px; min-height: 752px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
-            background-color: #F0F0F0;
-            color: #333;}
-        .slide {
-            width: 1280px;
-            min-height: 752px;
-
-            position: relative;
-        }
-        .title {
-            font-family: 'Nanum Square', sans-serif;
-            color: #006400;
-        }
-        .concept-box {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-left: 4px solid #006400;
-        }
-        .formula {
-            font-family: 'Times New Roman', Times, serif;
-            font-style: italic;
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body {
+        width: 1280px;
+        min-height: 752px;
+        clip-path: inset(0 0 0 0);
+        font-family: 'Nanum Gothic', sans-serif;
+        background-color: #F0F0F0;
+        color: #333;
+    }
+    .slide {
+        width: 1280px;
+        min-height: 752px;
+        position: relative;
+    }
+    .title {
+        font-family: 'Nanum Square', sans-serif;
+        color: #006400;
+    }
+    .concept-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-left: 4px solid #006400;
+    }
+    .formula {
+        font-family: 'Times New Roman', Times, serif;
+        font-style: italic;
+    }
+    .image-box img {
+        width: 100%;
+        max-height: 320px;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
 </head>
 <body>
 <div class="slide bg-gray-50 p-8 flex flex-col">
-<!-- Title -->
-<div class="mb-6">
-<h1 class="title text-4xl font-bold mb-2">편향-분산 트레이드오프</h1>
-<div class="w-24 h-1 bg-yellow-500"></div>
+    <!-- Title -->
+    <div class="mb-6">
+        <h1 class="title text-4xl font-bold mb-2">편향-분산 트레이드오프</h1>
+        <div class="w-24 h-1 bg-yellow-500"></div>
+    </div>
+
+    <!-- Introduction -->
+    <div class="mb-4">
+        <p class="text-lg">
+            머신러닝 모델의 예측 오차는 편향(Bias), 분산(Variance), 그리고 줄일 수 없는 오차(Irreducible Error)의 합으로 분해될 수 있습니다.
+            편향과 분산은 서로 상충 관계에 있어, 이를 <strong>편향-분산 트레이드오프</strong>라고 합니다.
+        </p>
+    </div>
+
+    <!-- Main Content - Two Column Layout -->
+    <div class="flex flex-1">
+        <!-- Left Column: Concept Explanation -->
+        <div class="w-1/2 pr-4 flex flex-col justify-between">
+            <!-- Bias -->
+            <div class="concept-box p-3 mb-3 rounded shadow-sm">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-bullseye text-yellow-500 mr-2"></i>
+                    <h3 class="text-xl font-semibold">편향 (Bias)</h3>
+                </div>
+                <p class="mb-2">모델이 지나치게 단순하여 데이터의 근본적인 패턴을 학습하지 못할 때 발생하는 오차</p>
+                <p>편향이 높은 모델은 훈련 데이터조차 제대로 예측하지 못하는 <strong>과소적합(Underfitting)</strong> 상태에 빠지기 쉽습니다.</p>
+            </div>
+            <!-- Variance -->
+            <div class="concept-box p-3 mb-3 rounded shadow-sm">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-random text-yellow-500 mr-2"></i>
+                    <h3 class="text-xl font-semibold">분산 (Variance)</h3>
+                </div>
+                <p class="mb-2">모델이 훈련 데이터의 노이즈까지 과도하게 학습하여, 새로운 데이터에 대한 예측 성능이 불안정해지는 경향</p>
+                <p>분산이 높은 모델은 훈련 데이터에서는 높은 성능을 보이지만 테스트 데이터에서는 성능이 급격히 저하되는 <strong>과적합(Overfitting)</strong> 상태가 될 가능성이 높습니다.</p>
+            </div>
+            <!-- Tradeoff -->
+            <div class="concept-box p-3 rounded shadow-sm">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-balance-scale text-yellow-500 mr-2"></i>
+                    <h3 class="text-xl font-semibold">트레이드오프 관계</h3>
+                </div>
+                <p class="mb-2">모델의 복잡도가 낮으면 편향은 높고 분산은 낮아집니다.</p>
+                <p class="mb-2">반대로 복잡도를 높이면 편향은 낮아지지만 분산이 커집니다.</p>
+                <p>최적의 모델은 편향과 분산이 균형을 이루는 지점에서 달성됩니다.</p>
+            </div>
+        </div>
+
+        <!-- Right Column: Visualization -->
+        <div class="w-1/2 pl-4 flex flex-col">
+            <div class="bg-white rounded-lg shadow-sm p-4 flex-1 flex flex-col image-box">
+                <h3 class="text-xl font-semibold text-green-800 mb-3">편향-분산 트레이드오프 시각화</h3>
+                <img src="images/img4.png" alt="Bias-Variance Tradeoff Visualization"/>
+            </div>
+            <!-- Key Insight -->
+            <div class="mt-4 bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded-r">
+                <div class="flex items-center">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2 text-xl"></i>
+                    <p><strong>키 포인트:</strong> 총 오차를 최소화하는 최적의 모델 복잡도를 찾는 것이 중요하며, 이는 편향과 분산이 균형을 이루는 지점에서 달성됩니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-4 text-sm text-gray-500 text-right">
+        <p>머신러닝 이론과 기본 기법 | 9/10</p>
+    </div>
 </div>
-<!-- Introduction -->
-<div class="mb-4">
-<p class="text-lg">머신러닝 모델의 예측 오차는 편향(Bias), 분산(Variance), 그리고 줄일 수 없는 오차(Irreducible Error)의 합으로 분해될 수 있습니다. 편향과 분산은 서로 상충 관계에 있어, 이를 <strong>편향-분산 트레이드오프</strong>라고 합니다.</p>
-</div>
-<!-- Main Content - Two Column Layout -->
-<div class="flex flex-1">
-<!-- Left Column: Concept Explanation -->
-<div class="w-1/2 pr-4 flex flex-col justify-between">
-<!-- Bias -->
-<div class="concept-box p-3 mb-3 rounded shadow-sm">
-<div class="flex items-center mb-2">
-<i class="fas fa-bullseye text-yellow-500 mr-2"></i>
-<h3 class="text-xl font-semibold">편향 (Bias)</h3>
-</div>
-<p class="mb-2">모델이 지나치게 단순하여 데이터의 근본적인 패턴을 학습하지 못할 때 발생하는 오차</p>
-<p>편향이 높은 모델은 훈련 데이터조차 제대로 예측하지 못하는 <strong>과소적합(Underfitting)</strong> 상태에 빠지기 쉽습니다.</p>
-</div>
-<!-- Variance -->
-<div class="concept-box p-3 mb-3 rounded shadow-sm">
-<div class="flex items-center mb-2">
-<i class="fas fa-random text-yellow-500 mr-2"></i>
-<h3 class="text-xl font-semibold">분산 (Variance)</h3>
-</div>
-<p class="mb-2">모델이 훈련 데이터의 노이즈까지 과도하게 학습하여, 새로운 데이터에 대한 예측 성능이 불안정해지는 경향</p>
-<p>분산이 높은 모델은 훈련 데이터에서는 높은 성능을 보이지만 테스트 데이터에서는 성능이 급격히 저하되는 <strong>과적합(Overfitting)</strong> 상태가 될 가능성이 높습니다.</p>
-</div>
-<!-- Tradeoff -->
-<div class="concept-box p-3 rounded shadow-sm">
-<div class="flex items-center mb-2">
-<i class="fas fa-balance-scale text-yellow-500 mr-2"></i>
-<h3 class="text-xl font-semibold">트레이드오프 관계</h3>
-</div>
-<p class="mb-2">모델의 복잡도가 낮으면 편향은 높고 분산은 낮아집니다.</p>
-<p class="mb-2">반대로 복잡도를 높이면 편향은 낮아지지만 분산이 커집니다.</p>
-<p>최적의 모델은 편향과 분산이 균형을 이루는 지점에서 달성됩니다.</p>
-</div>
-</div>
-<!-- Right Column: Visualization -->
-<div class="w-1/2 pl-4 flex flex-col">
-<div class="bg-white rounded-lg shadow-sm p-4 flex-1 flex flex-col">
-<h3 class="text-xl font-semibold text-green-800 mb-3">편향-분산 트레이드오프 시각화</h3>
-<div class="flex-1" id="visualization"></div>
-<!-- Legend -->
-<div class="flex justify-center space-x-6 mt-4">
-<div class="flex items-center">
-<div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
-<span>과소적합 (High Bias, Low Variance)</span>
-</div>
-<div class="flex items-center">
-<div class="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
-<span>적절한 모델 (Balanced)</span>
-</div>
-<div class="flex items-center">
-<div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div>
-<span>과적합 (Low Bias, High Variance)</span>
-</div>
-</div>
-</div>
-<!-- Key Insight -->
-<div class="mt-4 bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded-r">
-<div class="flex items-center">
-<i class="fas fa-lightbulb text-yellow-500 mr-2 text-xl"></i>
-<p><strong>키 포인트:</strong> 총 오차를 최소화하는 최적의 모델 복잡도를 찾는 것이 중요하며, 이는 편향과 분산이 균형을 이루는 지점에서 달성됩니다.</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Footer -->
-<div class="mt-4 text-sm text-gray-500 text-right">
-<p>머신러닝 이론과 기본 기법 | 9/10</p>
-</div>
-</div>
-<script>
-        // D3.js visualization for bias-variance tradeoff
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set up dimensions
-            const width = 500;
-            const height = 280;
-            const margin = {top: 20, right: 20, bottom: 40, left: 50};
-
-            // Create SVG
-            const svg = d3.select("#visualization")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
-
-            // Define scales
-            const x = d3.scaleLinear()
-                .domain([0, 10])
-                .range([0, width - margin.left - margin.right]);
-
-            const y = d3.scaleLinear()
-                .domain([0, 10])
-                .range([height - margin.top - margin.bottom, 0]);
-
-            // Add X axis
-            svg.append("g")
-                .attr("transform", `translate(0,${height - margin.top - margin.bottom})`)
-                .call(d3.axisBottom(x).ticks(5))
-                .append("text")
-                .attr("x", width - margin.left - margin.right)
-                .attr("y", 30)
-                .attr("fill", "#333")
-                .attr("text-anchor", "end")
-                .text("모델 복잡도");
-
-            // Add Y axis
-            svg.append("g")
-                .call(d3.axisLeft(y).ticks(5))
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", -40)
-                .attr("x", -height/2 + margin.top)
-                .attr("fill", "#333")
-                .attr("text-anchor", "middle")
-                .text("오차");
-
-            // Add X axis label
-            svg.append("text")
-                .attr("x", (width - margin.left - margin.right) / 2)
-                .attr("y", height - margin.top)
-                .attr("text-anchor", "middle")
-                .attr("fill", "#333")
-                .text("모델 복잡도 증가");
-
-            // Add Y axis label
-            svg.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("x", -(height - margin.top - margin.bottom) / 2)
-                .attr("y", -30)
-                .attr("text-anchor", "middle")
-                .attr("fill", "#333")
-                .text("오차 증가");
-
-            // Generate curve data for bias
-            const biasData = Array.from({length: 100}, (_, i) => ({
-                x: i,
-                y: 9 - Math.sqrt(i) * 0.9
-            }));
-
-            // Generate curve data for variance
-            const varianceData = Array.from({length: 100}, (_, i) => ({
-                x: i,
-                y: 9 - Math.sqrt(100 - i) * 0.9
-            }));
-
-            // Generate curve data for total error
-            const errorData = Array.from({length: 100}, (_, i) => ({
-                x: i,
-                y: 9 - Math.abs(Math.sqrt(i) - Math.sqrt(100 - i)) * 0.9
-            }));
-
-            // Add bias curve
-            svg.append("path")
-                .datum(biasData)
-                .attr("fill", "none")
-                .attr("stroke", "#FF3B30")
-                .attr("stroke-width", 2)
-                .attr("d", d3.line()
-                    .x(d => x(d.x))
-                    .y(d => y(d.y))
-                    .curve(d3.curveBasis)
-                );
-
-            // Add variance curve
-            svg.append("path")
-                .datum(varianceData)
-                .attr("fill", "none")
-                .attr("stroke", "#4682B4")
-                .attr("stroke-width", 2)
-                .attr("d", d3.line()
-                    .x(d => x(d.x))
-                    .y(d => y(d.y))
-                    .curve(d3.curveBasis)
-                );
-
-            // Add total error curve
-            svg.append("path")
-                .datum(errorData)
-                .attr("fill", "none")
-                .attr("stroke", "#36A2EB")
-                .attr("stroke-width", 2)
-                .attr("d", d3.line()
-                    .x(d => x(d.x))
-                    .y(d => y(d.y))
-                    .curve(d3.curveBasis)
-                );
-
-            // Add vertical line for optimal model
-            svg.append("line")
-                .attr("x1", x(50))
-                .attr("y1", 0)
-                .attr("x2", x(50))
-                .attr("y2", height - margin.top - margin.bottom)
-                .attr("stroke", "#006400")
-                .attr("stroke-dasharray", "4")
-                .attr("stroke-width", 1.5);
-
-            // Add optimal model point
-            svg.append("circle")
-                .attr("cx", x(50))
-                .attr("cy", y(5))
-                .attr("r", 5)
-                .attr("fill", "#006400");
-
-            // Add labels for curves
-            svg.append("text")
-                .attr("x", x(20))
-                .attr("y", y(8.5))
-                .attr("fill", "#FF3B30")
-                .attr("text-anchor", "start")
-                .text("편향");
-
-            svg.append("text")
-                .attr("x", x(80))
-                .attr("y", y(8.5))
-                .attr("fill", "#4682B4")
-                .attr("text-anchor", "end")
-                .text("분산");
-
-            svg.append("text")
-                .attr("x", x(50))
-                .attr("y", y(8.5))
-                .attr("fill", "#36A2EB")
-                .attr("text-anchor", "middle")
-                .text("총 오차");
-
-            // Add underfitting label
-            svg.append("text")
-                .attr("x", x(15))
-                .attr("y", y(2))
-                .attr("fill", "#FF3B30")
-                .attr("text-anchor", "middle")
-                .text("과소적합");
-
-            // Add overfitting label
-            svg.append("text")
-                .attr("x", x(85))
-                .attr("y", y(2))
-                .attr("fill", "#4682B4")
-                .attr("text-anchor", "middle")
-                .text("과적합");
-
-            // Add optimal label
-            svg.append("text")
-                .attr("x", x(50))
-                .attr("y", y(4))
-                .attr("fill", "#006400")
-                .attr("text-anchor", "middle")
-                .text("최적 모델");
-        });
-    </script>
 
 <div class="mt-6 flex justify-between items-center">
-<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
-<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
 </div>
-</body></html>
+</body>
+</html>

@@ -1,308 +1,127 @@
-<!DOCTYPE html><html lang="ko"><head>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>다항 회귀와 과적합 문제</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script><style>
-        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Nanum Gothic', sans-serif;
-            background-color: #F0F0F0;
-            color: #333;}
-        .slide {
-            width: 1280px;
-            min-height: 720px;
-
-            position: relative;
-        }
-        .title {
-            font-family: 'Nanum Square', sans-serif;
-            color: #006400;
-        }
-        .formula {
-            font-family: 'Times New Roman', Times, serif;
-            font-style: italic;
-        }
-        .concept-box {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-left: 4px solid #006400;
-        }
-        .problem-box {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-left: 4px solid #FFA500;
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    body {
+        width: 1280px;
+        min-height: 720px;
+        clip-path: inset(0 0 0 0);
+        font-family: 'Nanum Gothic', sans-serif;
+        background-color: #F0F0F0;
+        color: #333;
+    }
+    .slide {
+        width: 1280px;
+        min-height: 720px;
+        position: relative;
+    }
+    .title {
+        font-family: 'Nanum Square', sans-serif;
+        color: #006400;
+    }
+    .formula {
+        font-family: 'Times New Roman', Times, serif;
+        font-style: italic;
+    }
+    .concept-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-left: 4px solid #006400;
+    }
+    .problem-box {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-left: 4px solid #FFA500;
+    }
+    .image-box img {
+        width: 100%;
+        max-height: 320px;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
 </head>
 <body>
 <div class="slide bg-gray-50 p-8 flex flex-col">
-<!-- Title -->
-<div class="mb-6">
-<h1 class="title text-4xl font-bold mb-2">다항 회귀와 과적합 문제</h1>
-<div class="w-24 h-1 bg-yellow-500"></div>
-</div>
-<!-- Main Content - Two Column Layout -->
-<div class="flex flex-1">
-<!-- Left Column: Polynomial Regression -->
-<div class="w-1/2 pr-4 flex flex-col">
-<div class="concept-box p-4 rounded shadow-sm mb-4">
-<div class="flex items-center mb-2">
-<i class="fas fa-chart-line text-yellow-500 mr-2"></i>
-<h3 class="text-xl font-semibold">다항 회귀 특징</h3>
-</div>
-<p class="mb-3">비선형 관계를 모델링하는 기법으로, 독립 변수를 고차항으로 변환합니다.</p>
-<div class="formula text-center my-3 text-lg">
-                        Y = b₀ + b₁X + b₂X²
+    <!-- Title -->
+    <div class="mb-6">
+        <h1 class="title text-4xl font-bold mb-2">다항 회귀와 과적합 문제</h1>
+        <div class="w-24 h-1 bg-yellow-500"></div>
+    </div>
+
+    <!-- Main Content - Two Column Layout -->
+    <div class="flex flex-1">
+        <!-- Left Column: Polynomial Regression -->
+        <div class="w-1/2 pr-4 flex flex-col">
+            <div class="concept-box p-4 rounded shadow-sm mb-4">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-chart-line text-yellow-500 mr-2"></i>
+                    <h3 class="text-xl font-semibold">다항 회귀 특징</h3>
+                </div>
+                <p class="mb-3">비선형 관계를 모델링하는 기법으로, 독립 변수를 고차항으로 변환합니다.</p>
+                <div class="formula text-center my-3 text-lg">
+                    Y = b₀ + b₁X + b₂X²
+                </div>
+                <p class="mb-2">이 모델은 X와 X²을 별개의 독립 변수로 취급하므로, 본질적으로는 선형 회귀의 틀 안에서 비선형 관계를 학습할 수 있습니다.</p>
+            </div>
+            <!-- Visualization (Image) -->
+            <div class="concept-box p-4 rounded shadow-sm image-box">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-eye text-yellow-500 mr-2"></i>
+                    <h3 class="text-xl font-semibold">비선형 관계 표현</h3>
+                </div>
+                <img src="images/img3.png" alt="Polynomial Regression Visualization"/>
+            </div>
+        </div>
+
+        <!-- Right Column: Overfitting Problem -->
+        <div class="w-1/2 pl-4 flex flex-col">
+            <div class="problem-box p-4 rounded shadow-sm mb-4">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                    <h3 class="text-xl font-semibold">과적합 문제</h3>
+                </div>
+                <p class="mb-3">다항 회귀에서 다항식의 차수(degree)를 너무 높게 설정하면 발생합니다.</p>
+                <ul class="list-disc pl-5 mb-3">
+                    <li>모델이 훈련 데이터의 노이즈까지 학습</li>
+                    <li>복잡한 곡선을 생성하여 데이터에 너무 잘 맞춤</li>
+                    <li>훈련 데이터에서는 높은 정확도를 보이지만, 새로운 데이터에 대해서는 예측 성능이 급격히 떨어짐</li>
+                </ul>
+            </div>
+            <div class="concept-box p-4 rounded shadow-sm">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-tools text-yellow-500 mr-2"></i>
+                    <h3 class="text-xl font-semibold">해결 방안</h3>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-gray-50 p-3 rounded">
+                        <h4 class="font-semibold text-green-700 mb-1">적절한 차수 선택</h4>
+                        <p class="text-sm">교차 검증(Cross-validation) 등을 통해 모델의 일반화 성능이 가장 좋은 최적의 차수를 찾습니다.</p>
                     </div>
-<p class="mb-2">이 모델은 X와 X²을 별개의 독립 변수로 취급하므로, 본질적으로는 선형 회귀의 틀 안에서 비선형 관계를 학습할 수 있습니다.</p>
+                    <div class="bg-gray-50 p-3 rounded">
+                        <h4 class="font-semibold text-green-700 mb-1">정규화</h4>
+                        <p class="text-sm">모델의 복잡도에 페널티를 부과하여 회귀 계수의 크기를 제한하는 L1 또는 L2 정규화 기법을 적용합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-4 text-sm text-gray-500 text-right">
+        <p>머신러닝 이론과 기본 기법 | 6/10</p>
+    </div>
 </div>
-<!-- Visualization -->
-<div class="concept-box p-4 rounded shadow-sm">
-<div class="flex items-center mb-2">
-<i class="fas fa-eye text-yellow-500 mr-2"></i>
-<h3 class="text-xl font-semibold">비선형 관계 표현</h3>
-</div>
-<div class="w-full h-48 bg-white rounded" id="visualization"></div>
-</div>
-</div>
-<!-- Right Column: Overfitting Problem -->
-<div class="w-1/2 pl-4 flex flex-col">
-<div class="problem-box p-4 rounded shadow-sm mb-4">
-<div class="flex items-center mb-2">
-<i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-<h3 class="text-xl font-semibold">과적합 문제</h3>
-</div>
-<p class="mb-3">다항 회귀에서 다항식의 차수(degree)를 너무 높게 설정하면 발생합니다.</p>
-<ul class="list-disc pl-5 mb-3">
-<li>모델이 훈련 데이터의 노이즈까지 학습</li>
-<li>복잡한 곡선을 생성하여 데이터에 너무 잘 맞춤</li>
-<li>훈련 데이터에서는 높은 정확도를 보이지만, 새로운 데이터에 대해서는 예측 성능이 급격히 떨어짐</li>
-</ul>
-</div>
-<div class="concept-box p-4 rounded shadow-sm">
-<div class="flex items-center mb-2">
-<i class="fas fa-tools text-yellow-500 mr-2"></i>
-<h3 class="text-xl font-semibold">해결 방안</h3>
-</div>
-<div class="grid grid-cols-2 gap-3">
-<div class="bg-gray-50 p-3 rounded">
-<h4 class="font-semibold text-green-700 mb-1">적절한 차수 선택</h4>
-<p class="text-sm">교차 검증(Cross-validation) 등을 통해 모델의 일반화 성능이 가장 좋은 최적의 차수를 찾습니다.</p>
-</div>
-<div class="bg-gray-50 p-3 rounded">
-<h4 class="font-semibold text-green-700 mb-1">정규화</h4>
-<p class="text-sm">모델의 복잡도에 페널티를 부과하여 회귀 계수의 크기를 제한하는 L1 또는 L2 정규화 기법을 적용합니다.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Footer -->
-<div class="mt-4 text-sm text-gray-500 text-right">
-<p>머신러닝 이론과 기본 기법 | 6/10</p>
-</div>
-</div>
-<script>
-        // Simple conceptual visualization of underfitting, appropriate fitting, and overfitting
-        document.addEventListener('DOMContentLoaded', function() {
-            const svg = d3.select("#visualization")
-                .append("svg")
-                .attr("width", "100%")
-                .attr("height", "100%")
-                .attr("viewBox", "0 0 400 150");
-
-            // Draw axes
-            svg.append("line")
-                .attr("x1", 40)
-                .attr("y1", 120)
-                .attr("x2", 380)
-                .attr("y2", 120)
-                .attr("stroke", "#333")
-                .attr("stroke-width", 1);
-
-            svg.append("line")
-                .attr("x1", 40)
-                .attr("y1", 20)
-                .attr("x2", 40)
-                .attr("y2", 120)
-                .attr("stroke", "#333")
-                .attr("stroke-width", 1);
-
-            // X axis label
-            svg.append("text")
-                .attr("x", 380)
-                .attr("y", 135)
-                .attr("text-anchor", "end")
-                .attr("font-size", "12px")
-                .text("X");
-
-            // Y axis label
-            svg.append("text")
-                .attr("x", 25)
-                .attr("y", 25)
-                .attr("text-anchor", "start")
-                .attr("font-size", "12px")
-                .text("Y");
-
-            // Generate conceptual data points
-            const generatePoints = (numPoints, noise) => {
-                const points = [];
-                for (let i = 0; i < numPoints; i++) {
-                    const x = 40 + i * (340 / (numPoints - 1));
-                    const trueY = 20 + 0.01 * Math.pow((i - 50), 2);
-                    const randomNoise = (Math.random() - 0.5) * noise;
-                    points.push({ x, y: trueY + randomNoise });
-                }
-                return points;
-            };
-
-            const points = generatePoints(100, 15);
-
-            // Draw true curve (without noise)
-            const line = d3.line()
-                .x(d => 40 + d * (340 / 99))
-                .y(d => 20 + 0.01 * Math.pow((d - 50), 2));
-
-            svg.append("path")
-                .datum([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
-                .attr("fill", "none")
-                .attr("stroke", "#006400")
-                .attr("stroke-width", 2)
-                .attr("stroke-dasharray", "5,5")
-                .attr("d", line);
-
-            // Draw underfit line (left side)
-            const underfitLine = d3.line()
-                .x(d => d.x)
-                .y(d => 100 - 0.05 * d.x);
-
-            const underfitPoints = [
-                { x: 40, y: 95 },
-                { x: 100, y: 90 },
-                { x: 180, y: 85 },
-                { x: 260, y: 80 },
-                { x: 340, y: 75 }
-            ];
-
-            svg.append("path")
-                .datum(underfitPoints)
-                .attr("fill", "none")
-                .attr("stroke", "#FFA500")
-                .attr("stroke-width", 2)
-                .attr("d", underfitLine);
-
-            // Draw overfit curve (right side)
-            const overfitLine = d3.line()
-                .x(d => d.x)
-                .y(d => {
-                    const x = (d.x - 40) / (340 / 100);
-                    return 120 - 0.02 * Math.pow(x, 2) + 0.0003 * Math.pow(x, 3) + 0.0001 * Math.pow(x, 4);
-                });
-
-            const overfitPoints = [];
-            for (let i = 0; i <= 100; i += 5) {
-                overfitPoints.push({ x: 180 + i * (160 / 20), y: 0 });
-            }
-
-            svg.append("path")
-                .datum(overfitPoints)
-                .attr("fill", "none")
-                .attr("stroke", "#FF0000")
-                .attr("stroke-width", 2)
-                .attr("d", overfitLine);
-
-            // Draw appropriate fit curve (middle)
-            const appropriateLine = d3.line()
-                .x(d => d.x)
-                .y(d => {
-                    const x = (d.x - 40) / (340 / 100);
-                    return 120 - 0.01 * Math.pow(x, 2);
-                });
-
-            const appropriatePoints = [];
-            for (let i = 0; i <= 100; i += 5) {
-                appropriatePoints.push({ x: 120 + i * (140 / 20), y: 0 });
-            }
-
-            svg.append("path")
-                .datum(appropriatePoints)
-                .attr("fill", "none")
-                .attr("stroke", "#32CD32")
-                .attr("stroke-width", 2)
-                .attr("d", appropriateLine);
-
-            // Add data points
-            svg.selectAll("circle")
-                .data(points)
-                .enter()
-                .append("circle")
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y)
-                .attr("r", 3)
-                .attr("fill", "#333");
-
-            // Add legends
-            svg.append("line")
-                .attr("x1", 270)
-                .attr("y1", 10)
-                .attr("x2", 290)
-                .attr("y2", 10)
-                .attr("stroke", "#006400")
-                .attr("stroke-width", 2)
-                .attr("stroke-dasharray", "5,5");
-
-            svg.append("text")
-                .attr("x", 295)
-                .attr("y", 13)
-                .attr("font-size", "10px")
-                .text("실제 곡선");
-
-            svg.append("line")
-                .attr("x1", 270)
-                .attr("y1", 25)
-                .attr("x2", 290)
-                .attr("y2", 25)
-                .attr("stroke", "#FFA500")
-                .attr("stroke-width", 2);
-
-            svg.append("text")
-                .attr("x", 295)
-                .attr("y", 28)
-                .attr("font-size", "10px")
-                .text("과소적합 (낮은 차수)");
-
-            svg.append("line")
-                .attr("x1", 270)
-                .attr("y1", 40)
-                .attr("x2", 290)
-                .attr("y2", 40)
-                .attr("stroke", "#FF0000")
-                .attr("stroke-width", 2);
-
-            svg.append("text")
-                .attr("x", 295)
-                .attr("y", 43)
-                .attr("font-size", "10px")
-                .text("과적합 (높은 차수)");
-
-            svg.append("line")
-                .attr("x1", 270)
-                .attr("y1", 55)
-                .attr("x2", 290)
-                .attr("y2", 55)
-                .attr("stroke", "#32CD32")
-                .attr("stroke-width", 2);
-
-            svg.append("text")
-                .attr("x", 295)
-                .attr("y", 58)
-                .attr("font-size", "10px")
-                .text("적절한 맞춤");
-        });
-    </script>
 
 <div class="mt-6 flex justify-between items-center">
-<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_5.html">이전</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">6 / 10</div>
-<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_7.html">다음</a>
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_5.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">6 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_7.html">다음</a>
 </div>
-</body></html>
+</body>
+</html>
