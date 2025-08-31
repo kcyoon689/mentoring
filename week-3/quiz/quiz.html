@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>온라인 퀴즈</title>
+  <title>머신러닝 퀴즈</title>
   <style>
     :root { --bg:#fafafa; --card:#fff; --ink:#111; --muted:#6b7280; --line:#e5e7eb; --ok:#065f46; --okbg:#ecfdf5; --bad:#991b1b; --badbg:#fef2f2; }
     * { box-sizing: border-box; }
@@ -36,13 +36,8 @@
 <body>
   <header>
     <div class="wrap row" style="justify-content:space-between;">
-      <h1>📝 온라인 퀴즈</h1>
+      <h1>📝 머신러닝 핵심 퀴즈</h1>
       <div class="row">
-        <button id="btnTemplate" class="btn">JSON 템플릿</button>
-        <label class="btn" style="cursor:pointer;">
-          퀴즈 업로드
-          <input id="fileInput" type="file" accept="application/json" style="display:none" />
-        </label>
         <button id="btnDefault" class="btn">기본 세트</button>
       </div>
     </div>
@@ -70,168 +65,40 @@
     <ol id="quizList" style="margin-top:12px;"></ol>
 
     <footer>
-      • JSON 스키마: 각 항목은 <code>id</code>, <code>type</code>(ox|short|text|mc), <code>question</code>, 정답 필드(<code>answer</code> | <code>acceptable</code> | <code>keywords_correct</code> | <code>acceptable_all</code>), <code>explanation</code>를 포함합니다. <code>mc</code>일 때는 <code>choices:[{key,text}]</code>를 사용합니다.<br>
-      • 정확 채점이 중요하면 OX/단답/객관식 위주로 구성하거나 선택지를 명시하세요. 서술형은 키워드 기반 평가입니다.
+      • 각 문제는 정답 채점과 해설을 제공합니다. OX/객관식/단답/서술형 혼합.
     </footer>
   </main>
 
   <script>
-  // ---------- 기본 데이터 (결정 트리 · 앙상블 · 차원 축소) ----------
   const DEFAULT_QUIZ = [
-    // 기초
-    { id:1, type:"short",
-      question:"결정 트리는 어떤 두 가지 문제 유형에 모두 활용되는가?",
-      acceptable:["분류와 회귀","분류 회귀","분류, 회귀","classification and regression","classification & regression"],
-      canonical:"분류와 회귀",
-      explanation:"결정 트리는 지도학습에서 분류(Classification)·회귀(Regression) 모두에 사용됩니다."
-    },
-    { id:2, type:"text",
-      question:"결정 트리의 구성요소 3가지를 쓰고 각 역할을 간단히 설명하라.",
-      keywords_correct:[
-        ["루트","root"],
-        ["내부","의사","internal","decision"],
-        ["리프","leaf","단말","terminal","예측"]
-      ],
-      explanation:"루트 노드: 전체 데이터 시작점 / 내부(의사) 노드: 분할 기준 테스트 / 리프(단말) 노드: 더 이상 분할하지 않는 최종 예측 노드."
-    },
-    { id:3, type:"short",
-      question:"지니 불순도의 식을 간단히 쓰면? (기호·공백 자유)",
-      acceptable:["1-Σpj^2","1 - Σ p_j^2","1-합(p^2)","1- sum pj^2","1- sum of p^2"],
-      canonical:"Gini = 1 − Σ(p_j^2)",
-      explanation:"지니 불순도는 클래스 확률의 제곱 합을 1에서 뺀 값입니다."
-    },
-    { id:4, type:"ox",
-      question:"지니 불순도 값이 0이면 해당 노드는 완전 순수(한 클래스만 포함) 상태다. (O/X)",
-      answer:"O",
-      explanation:"모든 샘플이 동일 클래스면 p=1, 나머지 0이므로 Σp²=1 → Gini=0."
-    },
-    { id:5, type:"ox",
-      question:"이진 분류에서 지니 불순도는 클래스가 50:50일 때 최대(가장 불순)이다. (O/X)",
-      answer:"O",
-      explanation:"p=0.5,0.5이면 Gini=1−(0.25+0.25)=0.5로 최대."
-    },
-
-    // 앙상블·랜덤 포레스트
-    { id:6, type:"short",
-      question:"랜덤 포레스트가 단일 트리 대비 과적합에 강해지는 핵심 아이디어 두 가지는?",
-      acceptable:["배깅과 무작위 특성 선택","배깅과 랜덤 특성 선택","bagging and random feature selection","bootstrap and feature randomness"],
-      canonical:"배깅 + 무작위 특성 선택",
-      explanation:"부트스트랩 샘플로 여러 트리를 학습(배깅)하고, 각 분할에서 일부 특성만 후보로 사용(무작위 특성 선택)."
-    },
-    { id:7, type:"text",
-      question:"결정 트리의 '높은 분산' 문제를 줄이는 대표적 방법과 그 이유를 설명하라.",
-      keywords_correct:[
-        ["앙상블","랜덤 포레스트","bagging","배깅"],
-        ["분산","variance","안정성","평균","다수결","상쇄"]
-      ],
-      explanation:"여러 트리의 예측을 평균/다수결로 결합해 개별 트리의 변동을 상쇄, 분산을 감소시킵니다."
-    },
-    { id:8, type:"text",
-      question:"앙상블(배깅/부스팅)의 공통적 이점을 2가지 이상 서술하라.",
-      keywords_correct:[
-        ["정확도","성능","개선","향상"],
-        ["분산","안정성","과적합","일반화"]
-      ],
-      explanation:"집단 지성으로 예측 성능 향상, 분산 감소/안정성 증가, 과적합 억제 등의 장점."
-    },
-
-    // AdaBoost
-    { id:9, type:"short",
-      question:"AdaBoost에서 약한 학습기의 가중치(α)를 계산하는 공식의 형태는? (로그·분수 구조만 맞으면 정답)",
-      acceptable:["0.5 ln((1-TE)/TE)","1/2 ln((1-TE)/TE)","0.5*ln((1-TE)/TE)","(1/2)ln((1-TE)/TE)"],
-      canonical:"α = 0.5 · ln((1−TE)/TE)",
-      explanation:"TE는 가중 오류율. 정확률이 높을수록 α가 커져 해당 학습기의 영향이 커집니다."
-    },
-    { id:10, type:"ox",
-      question:"AdaBoost에서는 잘못 분류된 샘플의 가중치가 다음 라운드에서 증가한다. (O/X)",
-      answer:"O",
-      explanation:"오분류 샘플에 더 큰 가중치를 부여해 다음 약한 학습기가 그 부분을 보완하도록 유도합니다."
-    },
-
-    // 차원 축소 개념
-    { id:11, type:"text",
-      question:"'차원의 저주'가 모델 학습에 미치는 영향 2가지 이상을 적어라.",
-      keywords_correct:[
-        ["희소","sparse","밀도","부피"],
-        ["과적합","overfit","일반화 저하"],
-        ["계산","복잡도","시간","자원"]
-      ],
-      explanation:"차원이 커질수록 데이터가 희소해져 패턴 학습이 어려워지고, 과적합과 계산비용이 증가합니다."
-    },
-    { id:12, type:"ox",
-      question:"차원 축소의 주요 목적 중 하나는 시각화(2D/3D) 가능하도록 만드는 것이다. (O/X)",
-      answer:"O",
-      explanation:"고차원 데이터를 2D/3D로 투영해 시각화를 돕는 것이 대표 목적 중 하나입니다."
-    },
-
-    // PCA
-    { id:13, type:"text",
-      question:"PCA 절차를 순서대로 핵심 키워드로 요약하라.",
-      keywords_correct:[
-        ["표준화","스케일"],
-        ["공분산","covariance"],
-        ["고유값","고유벡터","eigen"],
-        ["정렬","선택","주성분","PC"],
-        ["투영","project","변환"]
-      ],
-      explanation:"(1)표준화 → (2)공분산 행렬 → (3)고유분해 → (4)큰 고유값 순 주성분 선택 → (5)주성분 축으로 투영."
-    },
-    { id:14, type:"text",
-      question:"PCA에서 고유벡터와 고유값이 각각 의미하는 바를 설명하라.",
-      keywords_correct:[
-        ["방향","축","벡터","주성분"],
-        ["분산","설명력","크기","고유값"]
-      ],
-      explanation:"고유벡터는 주성분의 방향, 고유값은 해당 방향의 분산(설명력)의 크기를 나타냅니다."
-    },
-
-    // t-SNE vs UMAP & 객관식 추가
-    { id:15, type:"text",
-      question:"t-SNE와 UMAP을 비교하여 UMAP의 장점을 2가지 이상 서술하라.",
-      keywords_correct:[
-        ["전역","global","구조","보존"],
-        ["속도","빠르","scal","대용량"]
-      ],
-      explanation:"UMAP은 전역/지역 구조를 비교적 잘 보존하고, t-SNE 대비 빠르며 대용량에도 유리합니다."
-    },
-
-    /* 새 객관식 1 */
-    { id:16, type:"mc",
-      question:"랜덤 포레스트에서 \"배깅(Bagging)\"이란 무엇인가?",
-      choices:[
-        { key:"a", text:"모델을 직렬로 학습시키는 방식" },
-        { key:"b", text:"데이터셋에서 중복 허용 샘플링으로 여러 데이터셋을 생성하는 방법" },
-        { key:"c", text:"모든 특성을 고려해 분할 기준을 찾는 방법" },
-        { key:"d", text:"데이터의 차원을 축소하는 방법" }
-      ],
-      answer:"b",
-      explanation:"배깅(부트스트랩 애그리게이팅)은 부트스트랩 샘플로 여러 학습기를 병렬 학습한 뒤 평균/다수결로 결합하는 기법입니다."
-    },
-
-    /* 새 객관식 2 */
-    { id:17, type:"mc",
-      question:"차원 축소가 필요한 이유로 적절하지 않은 것은 무엇인가?",
-      choices:[
-        { key:"a", text:"데이터의 희소성 문제 완화" },
-        { key:"b", text:"과적합 방지" },
-        { key:"c", text:"모델 학습 속도 향상" },
-        { key:"d", text:"데이터 레이블 생성" }
-      ],
-      answer:"d",
-      explanation:"차원 축소는 시각화·과적합 완화·계산 효율 향상 등에 유용하지만, 레이블을 생성하지는 않습니다."
-    }
+    { id:1, type:"short", question:"결정 트리는 어떤 두 가지 문제 유형에 모두 활용되는가?", acceptable:["분류와 회귀"], explanation:"지도학습에서 분류(Classification)·회귀(Regression) 모두 사용." },
+    { id:2, type:"short", question:"결정 트리의 최종 예측 노드를 무엇이라 하는가?", acceptable:["리프 노드","단말 노드"], explanation:"리프(단말) 노드는 더 이상 분할하지 않고 최종 예측을 나타냅니다." },
+    { id:3, type:"short", question:"결정 트리에서 데이터를 반복 분할하는 전략은?", acceptable:["분할 정복","divide and conquer"], explanation:"데이터를 작은 부분으로 나누어 정복하는 전략." },
+    { id:4, type:"ox", question:"지니 불순도가 0이면 해당 노드는 완전 순수 상태다. (O/X)", answer:"O", explanation:"모든 샘플이 동일 클래스면 지니=0." },
+    { id:5, type:"short", question:"속성 중요도는 어떤 기준으로 계산되는가?", acceptable:["불순도 감소","지니 중요도"], explanation:"트리 분할 시 불순도 감소량을 누적." },
+    { id:6, type:"short", question:"결정 트리가 훈련 데이터의 작은 변화에도 크게 달라지는 성질을 무엇이라 하는가?", acceptable:["높은 분산"], explanation:"트리의 불안정성 → 높은 분산 문제." },
+    { id:7, type:"short", question:"트리의 복잡도를 줄여 과적합을 방지하는 대표 방법은?", acceptable:["가지치기","pruning"], explanation:"사전/사후 가지치기로 트리 크기 제한." },
+    { id:8, type:"short", question:"여러 트리를 결합하여 단일 트리의 한계를 극복하는 방법은?", acceptable:["앙상블"], explanation:"랜덤 포레스트, AdaBoost 등 앙상블 기법." },
+    { id:9, type:"short", question:"랜덤 포레스트의 두 가지 핵심 아이디어는?", acceptable:["배깅과 무작위 특성 선택"], explanation:"부트스트랩 샘플링+특성 랜덤 선택." },
+    { id:10, type:"ox", question:"랜덤 포레스트에서 분류 문제의 최종 결과는 다수결 투표 방식이다. (O/X)", answer:"O", explanation:"분류는 다수결, 회귀는 평균." },
+    { id:11, type:"short", question:"랜덤 포레스트가 제공하는 점수로 각 특성의 기여도를 보여주는 것은?", acceptable:["특성 중요도"], explanation:"feature importance 제공." },
+    { id:12, type:"short", question:"AdaBoost에서 여러 개의 ( ) 학습기를 순차적으로 학습시켜 오류를 보완한다.", acceptable:["약한"], explanation:"약한 학습기를 직렬로 학습." },
+    { id:13, type:"ox", question:"AdaBoost에서는 잘못 분류된 샘플의 가중치가 다음 라운드에서 증가한다. (O/X)", answer:"O", explanation:"오분류 샘플에 집중 학습." },
+    { id:14, type:"short", question:"AdaBoost의 단점 중 하나는 무엇인가?", acceptable:["노이즈에 민감","이상치에 민감"], explanation:"노이즈, 이상치에 취약." },
+    { id:15, type:"short", question:"차원의 저주(Curse of Dimensionality)란?", acceptable:["특성이 증가할수록 데이터 희소"], explanation:"차원 증가 → 데이터 희소·과적합·계산량 증가." },
+    { id:16, type:"ox", question:"차원 축소의 주요 목적 중 하나는 시각화를 가능하게 하는 것이다. (O/X)", answer:"O", explanation:"2D/3D 투영 가능." },
+    { id:17, type:"short", question:"PCA에서 첫 번째 주성분은 데이터의 무엇이 가장 큰 방향인가?", acceptable:["분산"], explanation:"첫 번째 PC는 분산이 최대인 방향." },
+    { id:18, type:"short", question:"PCA에서 주성분의 방향을 나타내는 것은 무엇인가?", acceptable:["고유벡터"], explanation:"고유벡터=방향, 고유값=설명력." },
+    { id:19, type:"short", question:"PCA의 단점 중 하나는 ( ) 구조를 잘 포착하지 못한다는 점이다.", acceptable:["비선형"], explanation:"PCA는 선형 차원 축소 기법." },
+    { id:20, type:"short", question:"t-SNE와 UMAP 중 UMAP의 장점 두 가지를 적어라.", acceptable:["빠른 속도","전역 구조 보존"], explanation:"UMAP은 빠르고 전역/지역 구조 모두 보존." }
   ];
 
-  // ---------- 상태 ----------
-  let quiz = JSON.parse(localStorage.getItem('quiz-data') || 'null') || DEFAULT_QUIZ;
-  let answers = JSON.parse(localStorage.getItem('quiz-answers') || '{}');
-  let results = {}; // {id: {correct, feedback}}
+  let quiz = DEFAULT_QUIZ;
+  let answers = {};
+  let results = {};
   let gradedAll = false;
 
-  // ---------- 유틸 ----------
-  const $ = (sel) => document.querySelector(sel);
-  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
-  const norm = (s) => (s ?? '').toString().trim().toLowerCase();
+  const $ = (s)=>document.querySelector(s);
 
   function setStat() {
     $('#count').textContent = quiz.length;
@@ -239,279 +106,69 @@
     $('#graded').textContent = `${done} / ${quiz.length}`;
     if (gradedAll) {
       const correct = Object.values(results).filter(r => r && r.correct).length;
-      const pct = quiz.length ? Math.round((correct / quiz.length) * 100) : 0;
-      const line = `점수: ${correct} / ${quiz.length} (${pct}%)`;
-      const el = $('#scoreline');
-      el.textContent = line;
-      el.style.display = 'block';
+      const pct = quiz.length ? Math.round((correct/quiz.length)*100) : 0;
+      $('#scoreline').textContent = `점수: ${correct} / ${quiz.length} (${pct}%)`;
+      $('#scoreline').style.display = 'block';
     } else {
       $('#scoreline').style.display = 'none';
     }
   }
 
-  function persist() {
-    localStorage.setItem('quiz-data', JSON.stringify(quiz));
-    localStorage.setItem('quiz-answers', JSON.stringify(answers));
-  }
+  function norm(s){return (s??'').toString().trim().toLowerCase();}
 
-  // ---------- 채점 로직 ----------
-  function checkOX(item, user) {
-    const u = norm(user);
-    const a = norm(item.answer);
-    const correct = u === a || (u === 'o' && a.startsWith('o')) || (u === 'x' && a.startsWith('x'));
-    return { correct, feedback: correct ? '정답' : `오답 (정답: ${item.answer})` };
-  }
-
-  function checkMC(item, user) {
-    const u = norm(user);
-    if (!u) return { correct:false, feedback:'미응답: 보기를 선택하세요' };
-    const correct = u === norm(item.answer);
-    const choiceMap = Object.fromEntries((item.choices || []).map(c => [norm(c.key), c.text]));
-    const right = `${item.answer}) ${choiceMap[norm(item.answer)] ?? ''}`.trim();
-    return { correct, feedback: correct ? '정답' : `오답 (정답: ${right})` };
-  }
-
-  function checkShort(item, user) {
-    const u = norm(user);
-    if (!u) {
-      return { correct: false, feedback: '미응답: 답을 입력해 주세요' };
+  function checkOne(item,user){
+    if(item.type==="ox"){
+      const correct = norm(user)===norm(item.answer);
+      return {correct, feedback: correct?"정답":`정답은 ${item.answer}`};
     }
-    const acc = (item.acceptable || []).map(norm);
-    const correct = acc.some(a =>
-      u === a ||
-      u.replace(/\s+/g, '') === a.replace(/\s+/g, '') ||
-      u.includes(a)
-    );
-    const ans = item.canonical || acc[0] || '';
-    return { correct, feedback: correct ? '정답' : `오답 (키워드 예: ${ans})` };
+    if(item.acceptable){
+      const acc=item.acceptable.map(norm);
+      const correct=acc.some(a=>norm(user)===a||norm(user).includes(a));
+      return {correct, feedback: correct?"정답":`예시 정답: ${item.acceptable[0]}`};
+    }
+    return {correct:false, feedback:""};
   }
 
-  function checkText(item, user) {
-    const groups = item.keywords_correct || [];
-    const u = norm(user);
-    const correct = groups.every(group => group.some(kw => u.includes(norm(kw))));
-    let need = groups.map(group => (group.find(kw => u.includes(norm(kw))) ? null : `• ${group.join(', ')}`)).filter(Boolean).join('\n');
-    const feedback = correct ? '핵심 포인트 충족' : `부족한 키워드:\n${need}`;
-    return { correct, feedback };
-  }
-
-  function checkAllRequired(item, user) { // acceptable_all 전용
-    const u = norm(user);
-    const required = (item.acceptable_all || []).map(norm);
-    const missing = required.filter(k => !u.includes(k));
-    const correct = missing.length === 0;
-    const feedback = correct ? '정답' : `누락: ${missing.join(', ')}`;
-    return { correct, feedback };
-  }
-
-  function checkOne(item, user) {
-    if (item.type === 'ox') return checkOX(item, user);
-    if (item.type === 'mc') return checkMC(item, user);
-    if (item.type === 'short') return (item.acceptable_all ? checkAllRequired(item, user) : checkShort(item, user));
-    return checkText(item, user);
-  }
-
-  // ---------- 렌더 ----------
-  function render() {
-    const list = $('#quizList');
-    list.innerHTML = '';
-    quiz.forEach(item => {
-      const li = document.createElement('li');
-      li.className = 'card';
-
-      const q = document.createElement('p');
-      q.className = 'q';
-      q.textContent = `${item.id}. ${item.question}`;
-      li.appendChild(q);
-
+  function render(){
+    const list=$('#quizList'); list.innerHTML='';
+    quiz.forEach(item=>{
+      const li=document.createElement('li'); li.className='card';
+      const q=document.createElement('p'); q.className='q'; q.textContent=`${item.id}. ${item.question}`; li.appendChild(q);
       let inputEl;
-      if (item.type === 'ox') {
-        inputEl = document.createElement('select');
-        inputEl.innerHTML = '<option value="">선택</option><option value="O">O</option><option value="X">X</option>';
-        inputEl.value = answers[item.id] ?? '';
-        inputEl.addEventListener('input', (e) => handleInput(item, e.target.value, li));
-        li.appendChild(inputEl);
-      } else if (item.type === 'mc') {
-        const wrap = document.createElement('div');
-        (item.choices || []).forEach(ch => {
-          const id = `q${item.id}_${ch.key}`;
-          const label = document.createElement('label');
-          label.className = 'row';
-          label.style.alignItems = 'center';
-          label.style.gap = '6px';
-          label.htmlFor = id;
-
-          const radio = document.createElement('input');
-          radio.type = 'radio';
-          radio.name = `mc_${item.id}`;
-          radio.id = id;
-          radio.value = ch.key;
-          radio.checked = (answers[item.id] ?? '') === ch.key;
-
-          radio.addEventListener('change', (e) => handleInput(item, e.target.value, li));
-
-          const span = document.createElement('span');
-          span.textContent = `${ch.key}) ${ch.text}`;
-
-          label.appendChild(radio);
-          label.appendChild(span);
-          wrap.appendChild(label);
-        });
-        li.appendChild(wrap);
+      if(item.type==="ox"){
+        inputEl=document.createElement('select');
+        inputEl.innerHTML='<option value="">선택</option><option>O</option><option>X</option>';
       } else {
-        inputEl = document.createElement('textarea');
-        inputEl.placeholder = item.type === 'short' ? '정답(단답) 입력' : '핵심 키워드를 포함해 서술하세요';
-        inputEl.rows = 4;
-        inputEl.value = answers[item.id] ?? '';
-        inputEl.addEventListener('input', (e) => handleInput(item, e.target.value, li));
-        li.appendChild(inputEl);
+        inputEl=document.createElement('textarea');
+        inputEl.rows=2; inputEl.placeholder="답 입력";
       }
-
-      const actionRow = document.createElement('div');
-      actionRow.className = 'row';
-      actionRow.style.marginTop = '8px';
-
-      const btn = document.createElement('button');
-      btn.textContent = '채점';
-      btn.addEventListener('click', () => {
-        const r = checkOne(item, answers[item.id]);
-        results[item.id] = r;
-        renderRowFooter(li, item);
-        setStat();
-      });
-      actionRow.appendChild(btn);
-
-      const badge = document.createElement('span');
-      badge.className = 'badge';
-      badge.style.display = 'none';
-      badge.id = `badge-${item.id}`;
-      actionRow.appendChild(badge);
-
-      li.appendChild(actionRow);
-
-      const fbWrap = document.createElement('div');
-      fbWrap.id = `fb-${item.id}`;
-      fbWrap.style.marginTop = '8px';
-      li.appendChild(fbWrap);
-
+      inputEl.value=answers[item.id]??'';
+      inputEl.addEventListener('input',e=>{answers[item.id]=e.target.value; results[item.id]=undefined; gradedAll=false; setStat(); renderRowFooter(li,item);});
+      li.appendChild(inputEl);
+      const row=document.createElement('div'); row.className='row'; row.style.marginTop='8px';
+      const btn=document.createElement('button'); btn.textContent='채점';
+      btn.onclick=()=>{results[item.id]=checkOne(item,answers[item.id]); renderRowFooter(li,item); setStat();};
+      row.appendChild(btn);
+      const badge=document.createElement('span'); badge.id=`badge-${item.id}`; badge.className='badge'; badge.style.display='none'; row.appendChild(badge);
+      li.appendChild(row);
+      const fb=document.createElement('div'); fb.id=`fb-${item.id}`; fb.style.marginTop='8px'; li.appendChild(fb);
       list.appendChild(li);
-
-      renderRowFooter(li, item);
+      renderRowFooter(li,item);
     });
-
     setStat();
   }
 
-  function handleInput(item, value, li) {
-    answers[item.id] = value;
-    results[item.id] = undefined; // 입력 시 이전 채점 리셋
-    gradedAll = false;
-    persist();
-    setStat();
-    renderRowFooter(li, item);
+  function renderRowFooter(li,item){
+    const r=results[item.id]; const badge=li.querySelector(`#badge-${item.id}`); const fb=li.querySelector(`#fb-${item.id}`);
+    if(r){ badge.style.display='inline-block'; badge.textContent=r.correct?'정답':'오답'; badge.className=`badge ${r.correct?'ok':'bad'}`;
+      fb.innerHTML=`<p class="muted"><strong>피드백:</strong> ${r.feedback}</p><details><summary>해설 보기</summary><div class="card" style="margin-top:6px;">${item.explanation}</div></details>`;
+    } else { badge.style.display='none'; fb.innerHTML=''; }
   }
 
-  function renderRowFooter(li, item) {
-    const r = results[item.id];
-    const badge = li.querySelector(`#badge-${item.id}`);
-    const fb = li.querySelector(`#fb-${item.id}`);
+  $('#btnGradeAll').onclick=()=>{results={}; quiz.forEach(q=>{results[q.id]=checkOne(q,answers[q.id]);}); gradedAll=true; render();};
+  $('#btnReset').onclick=()=>{answers={}; results={}; gradedAll=false; render();};
+  $('#btnDefault').onclick=()=>{quiz=DEFAULT_QUIZ; answers={}; results={}; gradedAll=false; render();};
 
-    if (r) {
-      badge.style.display = 'inline-block';
-      badge.textContent = r.correct ? '정답' : '오답';
-      badge.className = `badge ${r.correct ? 'ok' : 'bad'}`;
-
-      fb.innerHTML = '';
-      const p = document.createElement('p');
-      p.className = 'muted';
-      p.style.whiteSpace = 'pre-wrap';
-      p.innerHTML = `<strong>피드백:</strong> ${r.feedback}`;
-      fb.appendChild(p);
-
-      if (item.explanation) {
-        const det = document.createElement('details');
-        const sum = document.createElement('summary');
-        sum.textContent = '해설 보기';
-        det.appendChild(sum);
-        const box = document.createElement('div');
-        box.className = 'card';
-        box.style.marginTop = '6px';
-        box.textContent = item.explanation;
-        det.appendChild(box);
-        fb.appendChild(det);
-      }
-    } else {
-      badge.style.display = 'none';
-      fb.innerHTML = '';
-    }
-  }
-
-  // ---------- 이벤트 바인딩 ----------
-  $('#btnGradeAll').addEventListener('click', () => {
-    results = {};
-    quiz.forEach(q => { results[q.id] = checkOne(q, answers[q.id]); });
-    gradedAll = true;
-    render();
-  });
-
-  $('#btnReset').addEventListener('click', () => {
-    answers = {};
-    results = {};
-    gradedAll = false;
-    persist();
-    render();
-  });
-
-  $('#btnDefault').addEventListener('click', () => {
-    quiz = JSON.parse(JSON.stringify(DEFAULT_QUIZ));
-    answers = {};
-    results = {};
-    gradedAll = false;
-    persist();
-    render();
-  });
-
-  $('#fileInput').addEventListener('change', async (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      if (!Array.isArray(data)) throw new Error('JSON은 배열이어야 합니다.');
-      data.forEach((d, i) => {
-        if (d == null || typeof d !== 'object') throw new Error(`${i+1}번째 항목이 객체가 아닙니다.`);
-        if (d.id == null || !d.question) throw new Error(`${i+1}번째 항목: id/question 누락`);
-        if (!['ox','short','text','mc'].includes(d.type)) throw new Error(`${i+1}번째 항목: 지원하지 않는 type`);
-      });
-      quiz = data;
-      answers = {};
-      results = {};
-      gradedAll = false;
-      persist();
-      render();
-    } catch (err) {
-      alert('업로드 실패: ' + err.message);
-    } finally {
-      e.target.value = '';
-    }
-  });
-
-  $('#btnTemplate').addEventListener('click', () => {
-    const template = [
-      { id:1, type:'ox', question:'예) 파이썬은 인터프리터 언어다. (O/X)', answer:'O', explanation:'간단 설명' },
-      { id:2, type:'short', question:'예) os 모듈로 현재 디렉토리 구하는 함수?', acceptable:['os.getcwd','getcwd','os.getcwd()'], canonical:'os.getcwd()', explanation:'정답/설명' },
-      { id:3, type:'text', question:'예) from X import * 의 장단점?', keywords_correct:[["장점","간편"],["단점","네임스페이스","오염","충돌"]], explanation:'키워드 기준 채점' },
-      { id:4, type:'mc', question:'예) 머신러닝 지도학습 문제 유형은?', choices:[{key:'a',text:'분류/회귀'},{key:'b',text:'클러스터링/차원축소'}], answer:'a', explanation:'지도학습은 분류/회귀가 대표적.' }
-    ];
-    const blob = new Blob([JSON.stringify(template, null, 2)], { type: 'application/json;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'quiz_template.json';
-    document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
-  });
-
-  // 초기 렌더
   render();
   </script>
 </body>

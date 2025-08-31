@@ -4,311 +4,120 @@
 <title>다양한 비선형 차원 축소 방법</title>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script><style>
-        body {width: 1280px; min-height: 1322px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans', sans-serif;
-            background-color: #f5f5f5;
-            color: #333333;}
-        .slide-container {
-            width: 1280px;
-            min-height: 1322px;
-
-            position: relative;
-        }
-        .comparison-table th {
-            background-color: rgba(76, 175, 80, 0.8);
-            color: white;
-            padding: 8px;
-        }
-        .comparison-table td {
-            padding: 8px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .technique-card {
-            transition: all 0.3s ease;
-        }
-        .technique-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-    </style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {
+    width: 1280px; min-height: 1322px; clip-path: inset(0 0 0 0);
+    font-family: 'Noto Sans', sans-serif; background-color: #f5f5f5; color: #333333;
+  }
+  .slide-container { width: 1280px; min-height: 1322px; position: relative; }
+  .comparison-table th { background-color: rgba(76, 175, 80, 0.8); color: #fff; padding: 8px; }
+  .comparison-table td { padding: 8px; border-bottom: 1px solid #e5e7eb; }
+  .technique-card { transition: all .3s ease; }
+  .technique-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05); }
+</style>
 </head>
 <body>
 <div class="slide-container bg-gray-100 p-8">
-<!-- Header -->
-<header class="mb-6">
-<h1 class="text-4xl font-bold text-green-600">다양한 비선형 차원 축소 방법</h1>
-<div class="w-24 h-1 bg-green-500 mt-2"></div>
-</header>
-<!-- Main Content -->
-<div class="grid grid-cols-12 gap-4 h-5/6">
-<!-- Left Column: Comparison Table -->
-<div class="col-span-7">
-<div class="bg-white rounded-lg shadow-md p-4 h-full">
-<h2 class="text-2xl font-semibold mb-3 text-green-700">
-<i class="fas fa-table mr-2"></i>비선형 차원 축소 기법 비교
-                    </h2>
-<table class="w-full comparison-table">
-<thead>
-<tr>
-<th class="w-1/5 rounded-tl-lg">기법</th>
-<th class="w-1/5">유형</th>
-<th class="w-1/3">주요 특징</th>
-<th class="w-1/4">장점</th>
-<th class="w-1/4 rounded-tr-lg">단점</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="font-medium">t-SNE</td>
-<td>비선형</td>
-<td>지역적 유사성 보존에 중점 (시각화 특화)</td>
-<td>복잡한 군집 구조 시각화에 탁월</td>
-<td>계산 비용 높음, 전역적 구조 보존 미흡</td>
-</tr>
-<tr>
-<td class="font-medium">UMAP</td>
-<td>비선형</td>
-<td>지역적 및 전역적 구조 보존</td>
-<td>t-SNE보다 빠르고 전역적 구조 잘 보존</td>
-<td>비교적 최신 기법으로 이론적 기반이 복잡함</td>
-</tr>
-</tbody>
-</table>
-<!-- Visualization of Techniques -->
-<div class="mt-6">
-<div class="w-full h-48" id="visualization-container"></div>
+
+  <!-- Header -->
+  <header class="mb-6">
+    <h1 class="text-4xl font-bold text-green-600">다양한 비선형 차원 축소 방법</h1>
+    <div class="w-24 h-1 bg-green-500 mt-2"></div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="grid grid-cols-12 gap-4 h-5/6">
+    <!-- Left Column: Comparison Table -->
+    <div class="col-span-7">
+      <div class="bg-white rounded-lg shadow-md p-4 h-full">
+        <h2 class="text-2xl font-semibold mb-3 text-green-700">
+          <i class="fas fa-table mr-2"></i>비선형 차원 축소 기법 비교
+        </h2>
+
+        <table class="w-full table-fixed border-collapse comparison-table text-left">
+            <thead>
+                <tr>
+                <th class="w-1/6 rounded-tl-lg">기법</th>
+                <th class="w-1/6">유형</th>
+                <th class="w-2/6">주요 특징</th>
+                <th class="w-1/6">장점</th>
+                <th class="w-1/6 rounded-tr-lg">단점</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="align-top">
+                <td class="font-medium">t-SNE</td>
+                <td>비선형</td>
+                <td class="break-words">지역적 유사성 보존에 중점<br/>(시각화 특화)</td>
+                <td class="break-words">복잡한 군집 구조 시각화에 탁월</td>
+                <td class="break-words">계산 비용 높음,<br/>전역적 구조 보존 미흡</td>
+                </tr>
+                <tr class="align-top">
+                <td class="font-medium">UMAP</td>
+                <td>비선형</td>
+                <td class="break-words">지역적 및 전역적 구조 보존</td>
+                <td class="break-words">t-SNE보다 빠르고<br/>전역적 구조 잘 보존</td>
+                <td class="break-words">비교적 최신 기법,<br/>이론적 기반이 복잡함</td>
+                </tr>
+            </tbody>
+            </table>
+
+        <!-- Visualization of Techniques (img6.png) -->
+        <div class="mt-6 flex justify-center">
+          <img src="images/img6.png"
+               alt="MNIST와 Fashion MNIST 차원 축소 시각화"
+               class="w-full h-auto rounded shadow-md"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Detailed Analysis (※ 같은 grid 안에 위치해야 함) -->
+    <div class="col-span-5">
+      <div class="grid grid-rows-2 gap-4 h-full">
+        <!-- t-SNE Analysis -->
+        <div class="technique-card bg-white rounded-lg shadow-md p-4 flex flex-col">
+          <div class="flex items-center mb-2">
+            <div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white">
+              <i class="fas fa-project-diagram"></i>
+            </div>
+            <h3 class="text-xl font-semibold ml-3 text-orange-600">t-SNE 특성</h3>
+          </div>
+          <ul class="list-disc pl-6 space-y-1 flex-grow">
+            <li><strong>지역적 구조 보존</strong>: 데이터 포인트 간의 지역적 유사성을 저차원 공간에서도 최대한 보존</li>
+            <li><strong>시각화 특화</strong>: 주로 고차원 데이터를 2D/3D로 시각화하는 데 탁월</li>
+            <li><strong>군집 구조 표현</strong>: 복잡한 비선형 데이터의 군집 구조를 시각적으로 잘 표현</li>
+            <li><strong>계산 비용</strong>: 데이터가 크면 학습 시간이 오래 걸림</li>
+            <li><strong>결과물 해석</strong>: 군집 간 거리·크기는 절대적 의미가 아니므로 해석에 주의</li>
+          </ul>
+        </div>
+
+        <!-- UMAP Analysis -->
+        <div class="technique-card bg-white rounded-lg shadow-md p-4 flex flex-col">
+          <div class="flex items-center mb-2">
+            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <h3 class="text-xl font-semibold ml-3 text-green-600">UMAP 특성</h3>
+          </div>
+          <ul class="list-disc pl-6 space-y-1 flex-grow">
+            <li><strong>지역적·전역적 구조 보존</strong>: 데이터의 지역적/전역적 구조를 모두 잘 유지</li>
+            <li><strong>빠른 계산</strong>: t-SNE보다 훨씬 빠르며 대용량 데이터셋에 유리</li>
+            <li><strong>전역 구조 해석</strong>: 데이터의 큰 구조를 더 잘 보존하여 전체 분포 이해에 도움</li>
+            <li><strong>다목적 활용</strong>: 시각화뿐 아니라 전처리/클러스터링 등에도 효과적</li>
+            <li><strong>이론적 복잡성</strong>: 비교적 최신 기법으로 이론이 다소 복잡</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pager -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
+  </div>
+
 </div>
-</div>
-</div>
-<!-- Right Column: Detailed Analysis -->
-<div class="col-span-5">
-<div class="grid grid-rows-2 gap-4 h-full">
-<!-- t-SNE Analysis -->
-<div class="technique-card bg-white rounded-lg shadow-md p-4 flex flex-col">
-<div class="flex items-center mb-2">
-<div class="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center text-white">
-<i class="fas fa-project-diagram"></i>
-</div>
-<h3 class="text-xl font-semibold ml-3 text-orange-600">t-SNE 특성</h3>
-</div>
-<ul class="list-disc pl-6 space-y-1 flex-grow">
-<li><strong>지역적 구조 보존</strong>: 데이터 포인트 간의 지역적 유사성을 저차원 공간에서도 최대한 보존</li>
-<li><strong>시각화 특화</strong>: 주로 고차원 데이터를 2차원이나 3차원으로 시각화하는 데 탁월</li>
-<li><strong>군집 구조 표현</strong>: 복잡한 비선형 데이터의 군집 구조를 시각적으로 잘 표현</li>
-<li><strong>계산 비용</strong>: 높은 계산 비용으로, 데이터셋의 크기가 크면 학습 시간이 오래 걸림</li>
-<li><strong>결과물 특성</strong>: 군집 간 거리나 크기는 특별한 의미를 갖지 않으므로 해석에 주의가 필요</li>
-</ul>
-</div>
-<!-- UMAP Analysis -->
-<div class="technique-card bg-white rounded-lg shadow-md p-4 flex flex-col">
-<div class="flex items-center mb-2">
-<div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white">
-<i class="fas fa-network-wired"></i>
-</div>
-<h3 class="text-xl font-semibold ml-3 text-green-600">UMAP 특성</h3>
-</div>
-<ul class="list-disc pl-6 space-y-1 flex-grow">
-<li><strong>지역적 및 전역적 구조 보존</strong>: 데이터의 지역적 및 전역적 구조를 모두 잘 유지</li>
-<li><strong>빠른 계산</strong>: t-SNE보다 계산 속도가 훨씬 빠르며 대용량 데이터셋에도 적용이 용이</li>
-<li><strong>전역적 구조 보존</strong>: 데이터의 전역적 구조를 더 잘 보존하여 전체적인 데이터 분포를 이해하는 데 유리</li>
-<li><strong>다목적 활용</strong>: 시각화뿐만 아니라, 머신러닝 모델의 전처리 단계에서도 효과적으로 사용될 수 있음</li>
-<li><strong>신규 기법</strong>: 비교적 최신 기법으로 이론적 기반이 복잡함</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="mt-6 flex justify-between items-center">
-<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
-<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
-</div>
-<script>
-        // Visualization of dimensionality reduction techniques
-        document.addEventListener('DOMContentLoaded', function() {
-            const width = 600;
-            const height = 180;
-
-            // Create SVG container
-            const svg = d3.select("#visualization-container")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height);
-
-            // Create t-SNE visualization (left side)
-            const tsneGroup = svg.append("g")
-                .attr("transform", "translate(50, 20)");
-
-            // Title for t-SNE
-            tsneGroup.append("text")
-                .attr("x", 150)
-                .attr("y", 0)
-                .attr("text-anchor", "middle")
-                .attr("font-size", "14px")
-                .attr("font-weight", "bold")
-                .text("t-SNE: 지역적 구조 보존");
-
-            // Create t-SNE visualization
-            const tsneData = createClusterData(5, 30, 2, 20);
-            drawDimensionalityReduction(tsneGroup, tsneData, "#FF9800", 300, 140);
-
-            // Create UMAP visualization (right side)
-            const umapGroup = svg.append("g")
-                .attr("transform", "translate(300, 20)");
-
-            // Title for UMAP
-            umapGroup.append("text")
-                .attr("x", 150)
-                .attr("y", 0)
-                .attr("text-anchor", "middle")
-                .attr("font-size", "14px")
-                .attr("font-weight", "bold")
-                .text("UMAP: 지역적/전역적 구조 보존");
-
-            // Create UMAP visualization
-            const umapData = createClusterData(5, 30, 2, 20, true);
-            drawDimensionalityReduction(umapGroup, umapData, "#4CAF50", 300, 140);
-
-            // Add legend
-            const legend = svg.append("g")
-                .attr("transform", "translate(50, 170)");
-
-            // Legend for t-SNE
-            legend.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", 12)
-                .attr("height", 12)
-                .attr("fill", "#FF9800");
-
-            legend.append("text")
-                .attr("x", 20)
-                .attr("y", 10)
-                .attr("font-size", "12px")
-                .text("t-SNE: 지역적 구조에 초점을 둔 비선형 차원 축소");
-
-            // Legend for UMAP
-            legend.append("rect")
-                .attr("x", 300)
-                .attr("y", 0)
-                .attr("width", 12)
-                .attr("height", 12)
-                .attr("fill", "#4CAF50");
-
-            legend.append("text")
-                .attr("x", 320)
-                .attr("y", 10)
-                .attr("font-size", "12px")
-                .text("UMAP: 지역적 및 전역적 구조를 모두 보존하는 최신 기법");
-        });
-
-        // Function to create cluster data for visualization
-        function createClusterData(numClusters, pointsPerCluster, xRadius, yRadius, isGlobal = false) {
-            const data = [];
-            const colors = ["#FF9800", "#4CAF50", "#2196F3", "#9C27B0", "#E91E63"];
-
-            for (let i = 0; i < numClusters; i++) {
-                const centerX = 150 + (i % 3) * 50;
-                const centerY = 70 + Math.floor(i / 3) * 30;
-
-                for (let j = 0; j < pointsPerCluster; j++) {
-                    const x = centerX + (Math.random() - 0.5) * xRadius * 2;
-                    const y = centerY + (Math.random() - 0.5) * yRadius * 2;
-                    const r = 2 + Math.random() * 2;
-
-                    data.push({
-                        x: x,
-                        y: y,
-                        r: r,
-                        color: colors[i % colors.length],
-                        global: isGlobal
-                    });
-                }
-            }
-
-            // Add some connecting points for global structure (UMAP style)
-            if (isGlobal) {
-                for (let i = 0; i < 10; i++) {
-                    const x = 50 + Math.random() * 250;
-                    const y = 30 + Math.random() * 100;
-                    const r = 1;
-
-                    data.push({
-                        x: x,
-                        y: y,
-                        r: r,
-                        color: "#888",
-                        global: true
-                    });
-                }
-            }
-
-            return data;
-        }
-
-        // Function to draw dimensionality reduction visualization
-        function drawDimensionalityReduction(group, data, color, width, height) {
-            // Draw points
-            group.selectAll("circle")
-                .data(data)
-                .enter()
-                .append("circle")
-                .attr("cx", d => d.x)
-                .attr("cy", d => d.y)
-                .attr("r", d => d.r)
-                .attr("fill", d => d.color)
-                .attr("opacity", d => d.global ? 0.5 : 0.8)
-                .attr("stroke", d => d.global ? "#fff" : "none")
-                .attr("stroke-width", d => d.global ? 1 : 0);
-
-            // Draw local structure lines (nearest neighbors)
-            const links = [];
-            for (let i = 0; i < data.length; i++) {
-                const source = data[i];
-                const candidates = [];
-
-                for (let j = 0; j < data.length; j++) {
-                    if (i !== j) {
-                        const target = data[j];
-                        const dx = source.x - target.x;
-                        const dy = source.y - target.y;
-                        const distance = Math.sqrt(dx * dx + dy * dy);
-
-                        candidates.push({
-                            target: j,
-                            distance: distance
-                        });
-                    }
-                }
-
-                // Sort by distance and take the closest points
-                candidates.sort((a, b) => a.distance - b.distance);
-                const numNeighbors = 3;
-
-                for (let k = 0; k < numNeighbors; k++) {
-                                const target = data[candidates[k].target];
-                                links.push({
-                                    source: i,
-                                    target: candidates[k].target
-                                });
-                            }
-            }
-
-            // Draw lines
-            group.selectAll("line")
-                .data(links)
-                .enter()
-                .append("line")
-                .attr("x1", d => data[d.source].x)
-                .attr("y1", d => data[d.source].y)
-                .attr("x2", d => data[d.target].x)
-                .attr("y2", d => data[d.target].y)
-                .attr("stroke", color)
-                .attr("stroke-width", 0.5)
-                .attr("opacity", 0.3);
-        }
-    </script>
-
 </body></html>
