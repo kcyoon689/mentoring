@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>역전파 알고리즘</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+        background-color: #F5F5F5; color: #333333;}
+  .slide-container {width: 1280px; min-height: 720px; position: relative;}
+  .step-box {border-left: 4px solid; padding-left: 15px; margin-bottom: 15px;}
+  html {overflow: hidden;}
+</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8 flex flex-col" style="overflow: hidden;">
+  <!-- Title -->
+  <div class="mb-6">
+    <h1 class="text-4xl font-bold text-center text-gray-800">역전파 알고리즘</h1>
+    <div class="w-32 h-1 bg-green-500 mx-auto mt-2"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex flex-1">
+    <!-- Left Column - Key Points -->
+    <div class="w-1/3 p-4">
+      <div class="bg-white rounded-lg shadow-md p-5 h-full">
+        <h2 class="text-2xl font-bold mb-4 text-green-600">
+          <i class="fas fa-lightbulb mr-2"></i> 핵심 개념
+        </h2>
+        <p class="mb-4"><strong>역전파(Backpropagation)</strong> 알고리즘은 신경망의 가중치와 편향을 효율적으로 조정하여 예측 오차를 최소화하는 방법입니다.</p>
+        <div class="bg-gray-100 p-3 rounded-md mb-4">
+          <p class="text-sm">
+            <i class="fas fa-quote-left text-green-500 mr-1"></i>
+            역전파 알고리즘은 미분의 연쇄 법칙(chain rule)을 활용하여 복잡한 신경망의 모든 가중치에 대한 기울기를 효율적으로 계산할 수 있게 해주며, 이는 다층 퍼셉트론이 복잡한 문제를 학습할 수 있도록 하는 핵심적인 메커니즘입니다.
+          </p>
+        </div>
+        <div class="mt-4">
+          <h3 class="font-bold mb-2">역전파의 목적:</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-xs mt-2 mr-2 text-green-500"></i>
+              <span>신경망의 가중치와 편향을 최적화</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-xs mt-2 mr-2 text-green-500"></i>
+              <span>예측 오차(손실)을 최소화</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-xs mt-2 mr-2 text-green-500"></i>
+              <span>비선형 문제 해결 가능케 함</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Column - Image (Backprop Visualization) -->
+    <div class="w-1/3 p-4 flex flex-col items-center justify-center">
+      <div class="w-full h-[380px] flex items-center justify-center bg-white rounded-lg shadow-md p-4">
+        <img src="images/img4-2.png" alt="역전파 알고리즘의 시각적 표현"
+             class="max-w-full max-h-full object-contain rounded"/>
+      </div>
+      <div class="mt-4 text-center">
+        <p class="text-sm text-gray-600">역전파 알고리즘의 시각적 표현</p>
+      </div>
+    </div>
+
+    <!-- Right Column - Step-by-Step Process -->
+    <div class="w-1/3 p-4">
+      <div class="bg-white rounded-lg shadow-md p-5 h-full">
+        <h2 class="text-2xl font-bold mb-4 text-green-600">
+          <i class="fas fa-tasks mr-2"></i> 역전파의 단계
+        </h2>
+        <div class="space-y-4">
+          <div class="step-box border-blue-500">
+            <h3 class="font-bold text-blue-600">1. 순전파 (Feedforward)</h3>
+            <p class="text-sm mt-1">입력 데이터가 신경망의 입력층에서 은닉층을 거쳐 출력층까지 전달되며 최종 예측값을 생성합니다.</p>
+          </div>
+          <div class="step-box border-yellow-500">
+            <h3 class="font-bold text-yellow-600">2. 오차 계산</h3>
+            <p class="text-sm mt-1">생성된 예측값과 실제 정답값 사이의 오차(손실)를 계산합니다.</p>
+          </div>
+          <div class="step-box border-red-500">
+            <h3 class="font-bold text-red-600">3. 역전파</h3>
+            <p class="text-sm mt-1">계산된 오차를 출력층에서부터 입력층 방향으로 역전파합니다. 각 층의 가중치와 편향에 대한 오차의 기울기를 계산합니다.</p>
+          </div>
+          <div class="step-box border-green-500">
+            <h3 class="font-bold text-green-600">4. 가중치 업데이트</h3>
+            <p class="text-sm mt-1">계산된 기울기를 사용하여 경사 하강법과 같은 최적화 알고리즘을 통해

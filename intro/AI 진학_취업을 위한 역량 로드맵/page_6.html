@@ -1,0 +1,223 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>포트폴리오의 중요성과 구성 방법</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 752px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;}
+        .slide-container {
+            width: 1280px;
+            min-height: 752px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #98FF98 0%, #20B2AA 100%);
+        }
+        .content-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .method-item {
+            transition: all 0.3s ease;
+        }
+        .method-item:hover {
+            transform: translateX(5px);
+        }
+        .icon-box {
+            background-color: #20B2AA;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-white" style=" overflow: hidden;">
+<!-- Header with gradient background -->
+<div class="gradient-bg h-24 w-full flex items-center px-12">
+<h1 class="text-4xl font-bold text-white">포트폴리오의 중요성과 구성 방법</h1>
+</div>
+<!-- Main Content -->
+<div class="p-8">
+<div class="grid grid-cols-2 gap-8">
+<!-- Left Column: Importance of Portfolios -->
+<div>
+<div class="content-card p-6 h-full">
+<h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+<i class="fas fa-star text-orange-500 mr-3"></i>
+                            포트폴리오의 중요성
+                        </h2>
+<div class="mb-6">
+<p class="text-gray-700 mb-4">
+                                기업 채용 담당자들은 지원자의 실질적인 기술 능력과 문제 해결 능력을 평가하기 위해 포트폴리오를 매우 중요하게 여깁니다. 포트폴리오는 단순히 이론적 지식이나 자격증을 넘어, 지원자가 실제로 수행한 프로젝트와 그 결과물을 통해 다음과 같은 정보를 제공합니다.
+                            </p>
+<div class="grid grid-cols-2 gap-3 mb-4">
+<div class="bg-gray-100 p-3 rounded-lg">
+<div class="font-semibold text-gray-800 mb-1">실질적인 기술 능력 평가</div>
+<div class="text-sm text-gray-600">사용된 언어, 도구, 프레임워크</div>
+</div>
+<div class="bg-gray-100 p-3 rounded-lg">
+<div class="font-semibold text-gray-800 mb-1">문제 해결 능력</div>
+<div class="text-sm text-gray-600">프로젝트에서의 문제와 해결법</div>
+</div>
+<div class="bg-gray-100 p-3 rounded-lg">
+<div class="font-semibold text-gray-800 mb-1">창의력과 혁신 능력</div>
+<div class="text-sm text-gray-600">독창적인 접근 방법</div>
+</div>
+<div class="bg-gray-100 p-3 rounded-lg">
+<div class="font-semibold text-gray-800 mb-1">협업 및 커뮤니케이션</div>
+<div class="text-sm text-gray-600">팀 역할과 커뮤니케이션 방식</div>
+</div>
+</div>
+</div>
+<!-- Statistics -->
+<div class="mt-4">
+<h3 class="text-lg font-semibold text-gray-700 mb-3">포트폴리오의 평가 가치</h3>
+<div class="h-32 w-full" id="chart"></div>
+<div class="text-xs text-gray-500 text-center mt-1">
+                                *LinkedIn 조사: 기술 기반 직무에서 70% 이상의 구직자가 포트폴리오 필요<br/>
+                                *Glassdoor: IT 기업 채용 담당자의 80% 이상이 포트폴리오를 통해 기술 능력 평가
+                            </div>
+</div>
+</div>
+</div>
+<!-- Right Column: Portfolio Creation Methods -->
+<div>
+<div class="content-card p-6 h-full">
+<h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+<i class="fas fa-tools text-orange-500 mr-3"></i>
+                            효과적인 포트폴리오 제작법
+                        </h2>
+<div class="space-y-3">
+<div class="method-item flex items-start">
+<div class="icon-box mr-3 flex-shrink-0">
+<i class="fas fa-bullseye"></i>
+</div>
+<div>
+<h3 class="font-semibold text-gray-800">목표와 청중 이해</h3>
+<p class="text-sm text-gray-600">포트폴리오의 목적(취업, 프로젝트 수주 등)을 명확히 하고, 포트폴리오를 볼 사람들의 기대와 요구를 파악하여 내용과 표현 방식을 조절합니다.</p>
+</div>
+</div>
+<div class="method-item flex items-start">
+<div class="icon-box mr-3 flex-shrink-0">
+<i class="fas fa-project-diagram"></i>
+</div>
+<div>
+<h3 class="font-semibold text-gray-800">구체적이고 명확한 프로젝트 설명</h3>
+<p class="text-sm text-gray-600">가장 자신 있고 성공적으로 수행한 프로젝트를 선택하여 깊이 있게 설명합니다. 프로젝트에서 본인의 역할과 기여도를 명확히 서술합니다.</p>
+</div>
+</div>
+<div class="method-item flex items-start">
+<div class="icon-box mr-3 flex-shrink-0">
+<i class="fas fa-code"></i>
+</div>
+<div>
+<h3 class="font-semibold text-gray-800">기술 스택과 도구 활용</h3>
+<p class="text-sm text-gray-600">사용한 기술 스택을 명확히 나열하고, 각 기술을 어떻게 활용했는지 설명합니다. 프로젝트에서 사용한 도구와 프레임워크를 명시합니다.</p>
+</div>
+</div>
+<div class="method-item flex items-start">
+<div class="icon-box mr-3 flex-shrink-0">
+<i class="fas fa-chart-line"></i>
+</div>
+<div>
+<h3 class="font-semibold text-gray-800">성과와 결과 강조</h3>
+<p class="text-sm text-gray-600">가능한 경우, 프로젝트의 성과를 숫자로 표현하여 정량적인 성과를 강조합니다. 프로젝트가 실제로 사용된 경우 사용자 피드백을 포함합니다.</p>
+</div>
+</div>
+<div class="method-item flex items-start">
+<div class="icon-box mr-3 flex-shrink-0">
+<i class="fas fa-sync-alt"></i>
+</div>
+<div>
+<h3 class="font-semibold text-gray-800">업데이트와 유지관리</h3>
+<p class="text-sm text-gray-600">새로운 프로젝트나 경험이 생길 때마다 포트폴리오를 정기적으로 업데이트하여 최신 정보가 반영되도록 유지합니다.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-0 left-0 right-0 h-10 gradient-bg flex items-center justify-between px-12">
+<div class="text-white text-sm">AI 진학/취업을 위한 역량 로드맵</div>
+<div class="text-white text-sm" style="visibility: hidden;">6 / 10</div>
+</div>
+</div>
+<script>
+        // Simple D3.js bar chart for statistics
+        document.addEventListener('DOMContentLoaded', function() {
+            const data = [
+                {label: "구직자 포트폴리오 필요", value: 70},
+                {label: "채용 담당자 평가", value: 80}
+            ];
+            
+            const margin = {top: 20, right: 30, bottom: 30, left: 40};
+            const width = document.getElementById('chart').clientWidth - margin.left - margin.right;
+            const height = document.getElementById('chart').clientHeight - margin.top - margin.bottom;
+            
+            const svg = d3.select("#chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+                
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.label))
+                .range([0, width])
+                .padding(0.3);
+                
+            const y = d3.scaleLinear()
+                .domain([0, 100])
+                .range([height, 0]);
+                
+            // Add bars
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => x(d.label))
+                .attr("width", x.bandwidth())
+                .attr("y", d => y(d.value))
+                .attr("height", d => height - y(d.value))
+                .attr("fill", (d, i) => i === 0 ? "#98FF98" : "#FFA500");
+                
+            // Add value labels on top of bars
+            svg.selectAll(".label")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "label")
+                .attr("x", d => x(d.label) + x.bandwidth() / 2)
+                .attr("y", d => y(d.value) - 5)
+                .attr("text-anchor", "middle")
+                .text(d => d.value + "%")
+                .attr("fill", "black")
+                .attr("font-size", "12px");
+                
+            // Add x-axis
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .attr("font-size", "10px");
+        });
+    </script>
+
+</body></html>

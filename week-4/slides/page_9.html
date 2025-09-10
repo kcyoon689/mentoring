@@ -1,0 +1,141 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LSTM과 RNN의 응용</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+        background-color: #F5F5F5; color: #333333;}
+  .slide-container {width: 1280px; min-height: 720px; position: relative;}
+  html {overflow: hidden;}
+</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8 flex flex-col" style="overflow: hidden;">
+  <!-- Title -->
+  <div class="mb-6">
+    <h1 class="text-4xl font-bold text-center text-gray-800">LSTM과 RNN의 응용</h1>
+    <div class="w-32 h-1 bg-blue-500 mx-auto mt-2"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex flex-1 space-x-6">
+    <!-- Left Column - LSTM Structure and Mechanism -->
+    <div class="w-1/2 p-4">
+      <div class="bg-white rounded-lg shadow-md p-5 h-full flex flex-col">
+        <h2 class="text-2xl font-bold mb-4 text-blue-600">
+          <i class="fas fa-cogs mr-2"></i> LSTM의 구조와 메커니즘
+        </h2>
+
+        <!-- Image instead of diagram -->
+        <div class="flex-1 flex items-center justify-center">
+          <img src="images/img8-3.png" alt="LSTM 구조와 메커니즘" class="max-w-full max-h-[360px] object-contain rounded"/>
+        </div>
+
+        <div class="mt-4">
+          <h3 class="font-bold mb-2">LSTM의 장점:</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-xs mt-2 mr-2 text-green-500"></i>
+              <span><strong>장기 의존성 해결</strong>: 셀 상태를 통해 시퀀스 전반에 걸쳐 정보 전달</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-xs mt-2 mr-2 text-green-500"></i>
+              <span><strong>기울기 소실 완화</strong>: 게이트 메커니즘으로 불필요한 정보 걸러내기</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-check-circle text-xs mt-2 mr-2 text-green-500"></i>
+              <span><strong>정보 조절</strong>: 시그모이드 및 하이퍼볼릭 탄젠트 활성화 함수로 정보의 흐름 제어</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Applications -->
+    <div class="w-1/2 p-4">
+      <div class="bg-white rounded-lg shadow-md p-5 h-full">
+        <h2 class="text-2xl font-bold mb-4 text-blue-600">
+          <i class="fas fa-laptop-code mr-2"></i> RNN/LSTM의 주요 응용 분야
+        </h2>
+        <div class="grid grid-cols-2 gap-4">
+          <!-- NLP Applications -->
+          <div class="bg-blue-50 p-3 rounded-lg">
+            <h3 class="font-bold text-blue-700 mb-2 flex items-center">
+              <i class="fas fa-comment-alt mr-2"></i> 자연어 처리
+            </h3>
+            <ul class="space-y-1 text-sm">
+              <li class="flex items-start">
+                <i class="fas fa-language text-xs mt-1 mr-2 text-blue-500"></i>
+                <span>기계 번역</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-pen-fancy text-xs mt-1 mr-2 text-blue-500"></i>
+                <span>텍스트 생성</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-smile text-xs mt-1 mr-2 text-blue-500"></i>
+                <span>감성 분석</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-chart-line text-xs mt-1 mr-2 text-blue-500"></i>
+                <span>언어 모델링</span>
+              </li>
+            </ul>
+          </div>
+          <!-- Other Applications -->
+          <div class="bg-green-50 p-3 rounded-lg">
+            <h3 class="font-bold text-green-700 mb-2 flex items-center">
+              <i class="fas fa-cog mr-2"></i> 기타 응용
+            </h3>
+            <ul class="space-y-1 text-sm">
+              <li class="flex items-start">
+                <i class="fas fa-microphone text-xs mt-1 mr-2 text-green-500"></i>
+                <span>음성 인식</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-chart-bar text-xs mt-1 mr-2 text-green-500"></i>
+                <span>시계열 예측</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-exclamation-triangle text-xs mt-1 mr-2 text-green-500"></i>
+                <span>이상 탐지</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-image text-xs mt-1 mr-2 text-green-500"></i>
+                <span>이미지 캡셔닝</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-6">
+          <h3 class="font-bold mb-2">응용 분야의 특성:</h3>
+          <ul class="space-y-2">
+            <li class="flex items-start">
+              <i class="fas fa-arrow-right text-xs mt-2 mr-2 text-blue-500"></i>
+              <span><strong>순차적 데이터 처리</strong>: RNN/LSTM은 입력 시퀀스의 순서 정보를 유지하고 이전 상태를 고려하는 데 최적화</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-arrow-right text-xs mt-2 mr-2 text-blue-500"></i>
+              <span><strong>장기 의존성</strong>: LSTM은 시퀀스의 시작 부분에서 끝 부분까지의 의존성을 모델링할 수 있어 긴 문장이나 시간 시리즈 처리에 적합</span>
+            </li>
+            <li class="flex items-start">
+              <i class="fas fa-arrow-right text-xs mt-2 mr-2 text-blue-500"></i>
+              <span><strong>실제 응용</strong>: 대부분의 자연어 처리 및 시간적 데이터 관련 인공지능 시스템의 핵심 구성 요소</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
+  </div>
+</div>
+</body></html>

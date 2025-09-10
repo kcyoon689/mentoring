@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>합성곱 신경망(CNN)</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+        background-color: #F5F5F5; color: #333333;}
+  .slide-container {width: 1280px; min-height: 720px; position: relative;}
+  html {overflow: hidden;}
+</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-8 flex flex-col" style="overflow: hidden;">
+  <!-- Title -->
+  <div class="mb-6">
+    <h1 class="text-4xl font-bold text-center text-gray-800">합성곱 신경망(CNN)</h1>
+    <div class="w-32 h-1 bg-red-500 mx-auto mt-2"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex flex-1 space-x-6">
+    <!-- Left Column - Concept and Features -->
+    <div class="w-1/2">
+      <div class="bg-white rounded-lg shadow-md p-5 h-full">
+        <h2 class="text-2xl font-bold mb-4 text-red-600">
+          <i class="fas fa-image mr-2"></i> 개념과 특징
+        </h2>
+        <div class="mb-5">
+          <p class="mb-3">
+            <strong>합성곱 신경망(Convolutional Neural Network, CNN)</strong>은 이미지와 같은 시각적 데이터를 처리하고 분석하는 데 특화된 딥러닝 모델입니다.
+          </p>
+        </div>
+        <h3 class="font-bold mb-2 text-lg text-green-600">CNN의 주요 특징</h3>
+        <ul class="space-y-3 mb-5">
+          <li class="flex items-start">
+            <i class="fas fa-filter text-xs mt-2 mr-2 text-red-500"></i>
+            <span><strong>필터링 기법</strong>: 이미지의 형태를 보존하면서 데이터를 처리</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-puzzle-piece text-xs mt-2 mr-2 text-red-500"></i>
+            <span><strong>특징 자동 학습</strong>: 이미지의 특징을 자동으로 학습</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-compress-arrows-alt text-xs mt-2 mr-2 text-red-500"></i>
+            <span><strong>파라미터 효율성</strong>: 기존 FNN보다 훨씬 적은 수의 파라미터로 고차원 데이터 처리</span>
+          </li>
+        </ul>
+        <h3 class="font-bold mb-2 text-lg text-blue-600">기존 신경망의 한계</h3>
+        <ul class="space-y-3">
+          <li class="flex items-start">
+            <i class="fas fa-times-circle text-xs mt-2 mr-2 text-blue-500"></i>
+            <span><strong>공간 정보 손실</strong>: 이미지를 1차원 벡터로 변환하면 픽셀 간의 공간적 관계 손실</span>
+          </li>
+          <li class="flex items-start">
+            <i class="fas fa-chart-line text-xs mt-2 mr-2 text-blue-500"></i>
+            <span><strong>파라미터 증가</strong>: 1024x1024 컬러 이미지 처리 시 약 315만 차원의 입력 필요</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right Column - Single Image -->
+    <div class="w-1/2">
+      <div class="bg-white rounded-lg shadow-md p-5 h-full flex flex-col">
+        <h2 class="text-2xl font-bold mb-4 text-blue-600">
+          <i class="fas fa-exchange-alt mr-2"></i> CNN vs 기존 신경망
+        </h2>
+
+        <!-- Image area -->
+        <div class="flex-1 flex items-center justify-center">
+          <img src="images/img5.png" alt="CNN vs FNN 비교"
+               class="max-w-full max-h-[420px] object-contain rounded"/>
+        </div>
+
+        <!-- Keep both explanations -->
+        <div class="mt-2 text-center text-sm text-gray-600">
+          <p>Fully Connected Network: 이미지가 1차원 벡터로 변환되어 공간 정보가 손실됨</p>
+          <p>convolutional Neural Network:합성곱 연산으로 특징 맵을 생성하여 공간 정보 보존</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pager -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_5.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">6 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_7.html">다음</a>
+  </div>
+</div>
+</body></html>

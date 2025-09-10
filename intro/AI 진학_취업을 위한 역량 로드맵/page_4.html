@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>핵심 AI 기술 및 최신 동향</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 772px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;}
+        .slide-container {
+            width: 1280px;
+            min-height: 772px;
+            
+            position: relative;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #98FF98 0%, #20B2AA 100%);
+        }
+        .tech-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        .tech-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .library-card {
+            border-left-color: #20B2AA;
+        }
+        .architecture-card {
+            border-left-color: #FFA500;
+        }
+        .trend-card {
+            border-left-color: #98FF98;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-white" style=" overflow: hidden;">
+<!-- Header with gradient background -->
+<div class="gradient-bg h-24 w-full flex items-center px-12">
+<h1 class="text-4xl font-bold text-white">핵심 AI 기술 및 최신 동향</h1>
+</div>
+<!-- Main Content -->
+<div class="p-8 grid grid-cols-2 gap-6 h-[calc(100%-96px)]">
+<!-- Left Column -->
+<div class="flex flex-col space-y-6">
+<!-- Core Libraries Section -->
+<div>
+<div class="flex items-center mb-3">
+<i class="fas fa-book text-2xl text-teal-600 mr-3"></i>
+<h2 class="text-2xl font-bold text-gray-800">주요 라이브러리</h2>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="tech-card library-card p-3">
+<h3 class="font-bold text-gray-800">Scikit-Learn</h3>
+<p class="text-sm text-gray-600">머신러닝 모델 구축, 다양한 알고리즘 제공</p>
+</div>
+<div class="tech-card library-card p-3">
+<h3 class="font-bold text-gray-800">XGBoost</h3>
+<p class="text-sm text-gray-600">부스팅 알고리즘, 성능 최적화에 강점</p>
+</div>
+<div class="tech-card library-card p-3">
+<h3 class="font-bold text-gray-800">TensorFlow</h3>
+<p class="text-sm text-gray-600">딥러닝 모델, 구글 개발, 배포에 최적화</p>
+</div>
+<div class="tech-card library-card p-3">
+<h3 class="font-bold text-gray-800">PyTorch</h3>
+<p class="text-sm text-gray-600">딥러닝 연구, 페이스북 개발, 유연한 사용</p>
+</div>
+</div>
+</div>
+<!-- Core Model Architectures -->
+<div>
+<div class="flex items-center mb-3">
+<i class="fas fa-layer-group text-2xl text-orange-500 mr-3"></i>
+<h2 class="text-2xl font-bold text-gray-800">코어 모델 아키텍처</h2>
+</div>
+<div class="space-y-3">
+<div class="tech-card architecture-card p-3">
+<h3 class="font-bold text-gray-800">트랜스포머 (Transformer)</h3>
+<p class="text-sm text-gray-600">생성형 AI 시대의 핵심, 컨텍스트 길이에 따라 연산 요구량이 제곱 단위로 증가</p>
+</div>
+<div class="tech-card architecture-card p-3">
+<h3 class="font-bold text-gray-800">전문가 혼합 (MoE, Mixture of Experts)</h3>
+<p class="text-sm text-gray-600">1991년부터 존재하는 개념, Mistral AI의 Mixtral 모델, DeepSeek-R1 등으로 다시 주목받음</p>
+</div>
+<div class="tech-card architecture-card p-3">
+<h3 class="font-bold text-gray-800">맘바 (Mamba)</h3>
+<p class="text-sm text-gray-600">2023년 도입, 상태 공간 모델로 트랜스포머의 대안, 계산 요구 사항이 선형적으로 확장</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Latest Technology Trends -->
+<div>
+<div class="flex items-center mb-3">
+<i class="fas fa-rocket text-2xl text-mint-500 mr-3"></i>
+<h2 class="text-2xl font-bold text-gray-800">최신 기술 트렌드</h2>
+</div>
+<div class="space-y-4">
+<div class="tech-card trend-card p-4">
+<div class="flex items-start">
+<div class="bg-green-100 p-2 rounded-full mr-3">
+<i class="fas fa-paint-brush text-green-600"></i>
+</div>
+<div>
+<h3 class="font-bold text-gray-800">생성형 AI (Generative AI)</h3>
+<p class="text-gray-600">ChatGPT, DALL·E와 같이 텍스트, 이미지 등 새로운 콘텐츠를 생성하는 AI 기술이 급속도로 발전하고 있습니다.</p>
+</div>
+</div>
+</div>
+<div class="tech-card trend-card p-4">
+<div class="flex items-start">
+<div class="bg-green-100 p-2 rounded-full mr-3">
+<i class="fas fa-comment-dots text-green-600"></i>
+</div>
+<div>
+<h3 class="font-bold text-gray-800">대규모 언어 모델 (LLM)</h3>
+<p class="text-gray-600">GPT-4, BERT, LLaMA와 같은 모델들은 자연어 처리의 수준을 크게 향상시키며 다양한 응용 분야에서 활용되고 있습니다.</p>
+</div>
+</div>
+</div>
+<div class="tech-card trend-card p-4">
+<div class="flex items-start">
+<div class="bg-green-100 p-2 rounded-full mr-3">
+<i class="fas fa-cogs text-green-600"></i>
+</div>
+<div>
+<h3 class="font-bold text-gray-800">MLOps</h3>
+<p class="text-gray-600">AI 모델을 실제 서비스에 배포하고 운영하는 기술로, 데이터 수집부터 학습, 배포 전반의 파이프라인을 관리하는 역할을 합니다. Docker, Kubernetes, mlflow, BentoML 등의 도구가 활용됩니다.</p>
+</div>
+</div>
+</div>
+<div class="tech-card trend-card p-4">
+<div class="flex items-start">
+<div class="bg-green-100 p-2 rounded-full mr-3">
+<i class="fas fa-robot text-green-600"></i>
+</div>
+<div>
+<h3 class="font-bold text-gray-800">AutoML</h3>
+<p class="text-gray-600">AI 모델 개발 과정을 자동화하는 기술로, AI 개발의 진입 장벽을 낮추는 데 기여하고 있습니다.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 bg-gray-100 p-3 rounded-lg">
+<p class="text-sm text-gray-700 flex items-center">
+<i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+<span><strong>정보 참고:</strong> AI 최신 동향을 파악하는 데 유용한 사이트: AI타임스, 인공지능신문, TheMiilk, 오픈프롬프트, MIT Technology Review, Medium, AI News, DeepMind Blog</span>
+</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-0 left-0 right-0 h-10 gradient-bg flex items-center justify-between px-12">
+<div class="text-white text-sm">AI 진학/취업을 위한 역량 로드맵</div>
+<div class="text-white text-sm" style="visibility: hidden;">4 / 10</div>
+</div>
+</div>
+
+</body></html>
