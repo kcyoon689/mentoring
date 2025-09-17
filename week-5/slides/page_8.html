@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="ko"><head>
+<title>Variational Inference</title>
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+  .slide-container { width: 1280px; min-height: 720px; }
+  .concept-box { background-color: rgba(255,255,255,0.95); border-left: 5px solid #667eea; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .step-box { background: linear-gradient(45deg,#a8edea,#fed6e3); padding:16px; border-radius:10px; border-left:5px solid #667eea; }
+  .formula { background:#2d3748; color:#f7fafc; border-radius:10px; padding:12px; text-align:center; font-family:'Courier New', monospace; }
+  html { overflow:hidden; }
+</style>
+
+</head>
+<body>
+<div class="slide-container bg-gray-100 flex flex-col">
+  <!-- Header -->
+  <div class="bg-gray-800 text-white py-4 px-10 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Variational Inference</h1>
+    <div class="text-sm">8/13</div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-1 p-8 flex flex-col gap-6">
+    <div class="concept-box p-5 rounded-lg">
+      <div class="flex items-center gap-3 mb-1">
+        <i class="fas fa-lightbulb text-2xl text-purple-600"></i>
+        <h2 class="text-xl font-bold text-gray-800">핵심 아이디어</h2>
+      </div>
+      <p class="text-sm">계산이 어려운 <b>True Posterior p(z|x)</b>를, 계산 가능한 간단한 분포 <b>q<sub>φ</sub>(z|x)</b>로 근사합니다.</p>
+    </div>
+
+    <div class="grid grid-cols-3 gap-6">
+      <div class="concept-box p-5 rounded-lg">
+        <h3 class="font-bold mb-2">요소</h3>
+        <ul class="list-disc pl-5 text-sm space-y-1">
+          <li><b>True Posterior</b>: p(z|x)</li>
+          <li><b>Prior</b>: p(z) (예: N(0,1))</li>
+          <li><b>Approx.</b>: q<sub>φ</sub>(z|x) (예: Gaussian)</li>
+        </ul>
+      </div>
+      <div class="step-box">
+        <h3 class="font-bold mb-2">과정</h3>
+        <p class="text-sm">① 근사 분포 형태 선택 → ② 파라미터 φ=(μ, σ) 학습 → ③ KL 최소화 → ④ q<sub>φ</sub>에서 샘플링</p>
+      </div>
+      <div class="concept-box p-5 rounded-lg">
+        <h3 class="font-bold mb-2">목표</h3>
+        <div class="formula">KL(q<sub>φ</sub>(z|x) || p(z|x)) → 0</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Navigation -->
+<div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_7.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">8 / 13</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_9.html">다음</a>
+</div>
+</body></html>

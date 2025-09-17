@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoEncoder & Variational AutoEncoder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .slide {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            margin: auto;
+            padding: 60px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        .slide h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .slide h2 {
+            color: #764ba2;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .slide h3 {
+            color: #667eea;
+            margin: 25px 0 15px 0;
+            font-size: 1.5em;
+        }
+        
+        .slide ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        
+        .slide li {
+            margin: 10px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .slide p {
+            margin: 15px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .formula {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #e9ecef;
+        }
+        
+        .architecture {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #667eea;
+        }
+        
+        .nav-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+        
+        .nav-btn {
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .step-box {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .equation {
+            background: #2d3748;
+            color: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="slideshow-container">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">13</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>AutoEncoder & Variational AutoEncoder</h1>
+            <div class="highlight">
+                <h2 style="text-align: center; border: none; margin: 0;">딥러닝 비지도 학습의 핵심</h2>
+                <p style="text-align: center; font-size: 1.3em; margin-top: 20px;">
+                    From Representation Learning to Generative Modeling
+                </p>
+            </div>
+            <div style="text-align: center; margin-top: 50px;">
+                <p style="font-size: 1.2em; color: #666;">
+                    본 슬라이드는 이활석님의 'AutoEncoder의 모든 것' 강연을 바탕으로 제작되었습니다.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Deep Learning Fundamentals -->
+        <div class="slide">
+            <h2>딥러닝 학습의 두 가지 관점</h2>
+            <div class="highlight">
+                <h3>핵심 아이디어</h3>
+                <p><strong>Deep Neural Network의 학습 방법 = Maximum Likelihood Estimation (MLE)</strong></p>
+            </div>
+            
+            <h3>1. Backpropagation 관점</h3>
+            <ul>
+                <li>네트워크 출력과 정답 사이의 <strong>차이</strong>를 최소화</li>
+                <li>Gradient Descent를 통한 파라미터 최적화</li>
+                <li>MSE vs Cross Entropy의 차이</li>
+            </ul>
+            
+            <h3>2. Maximum Likelihood 관점</h3>
+            <ul>
+                <li>데이터의 <strong>확률분포</strong>를 학습</li>
+                <li>P(y|f(x))를 최대화</li>
+                <li>확률분포를 찾으면 <strong>Sampling</strong>이 가능!</li>
+            </ul>
+            
+            <div class="formula">
+                Gaussian Loss ≡ MSE &nbsp;&nbsp;&nbsp; Bernoulli Loss ≡ Cross-entropy
+            </div>
+        </div>
+
+        <!-- Slide 3: Manifold Learning -->
+        <div class="slide">
+            <h2>Manifold Learning</h2>
+            <div class="highlight">
+                <h3>핵심 개념</h3>
+                <p>고차원 데이터를 잘 표현하는 <strong>저차원 부공간(subspace)</strong>이 존재한다!</p>
+            </div>
+            
+            <h3>Manifold Learning의 활용</h3>
+            <ul>
+                <li><strong>Data Compression</strong>: 차원 축소를 통한 효율적 저장</li>
+                <li><strong>Data Visualization</strong>: 고차원 데이터의 2D/3D 시각화</li>
+                <li><strong>Curse of Dimensionality</strong>: 차원의 저주 해결</li>
+                <li><strong>Feature Discovery</strong>: 중요한 특성 발견</li>
+            </ul>
+            
+            <div class="step-box">
+                <h3>차원의 저주 (Curse of Dimensionality)</h3>
+                <p>• 차원이 증가할수록 데이터 밀도가 급속히 희박해짐</p>
+                <p>• 필요한 샘플 데이터 개수가 기하급수적으로 증가</p>
+                <p>• Manifold는 이 문제를 해결하는 열쇠!</p>
+            </div>
+            
+            <div class="architecture">
+                고차원 입력 → <strong>Manifold 발견</strong> → 저차원 표현
+            </div>
+        </div>
+
+        <!-- Slide 4: AutoEncoder Basics -->
+        <div class="slide">
+            <h2>AutoEncoder란 무엇인가?</h2>
+            <div class="highlight">
+                <h3>AutoEncoder의 특징</h3>
+                <ul>
+                    <li><strong>Unsupervised Learning</strong>: 라벨 없이 학습</li>
+                    <li><strong>입력 = 출력</strong>: 자기 자신을 복원</li>
+                    <li><strong>Bottleneck Structure</strong>: 정보 압축</li>
+                </ul>
+            </div>
+            
+            <div class="architecture">
+                <h3>AutoEncoder 구조</h3>
+                <p>Input → <strong>Encoder</strong> → Latent Space (z) → <strong>Decoder</strong> → Output</p>
+                <p style="margin-top: 15px; color: #666;">
+                    Latent Variable = Feature = Hidden Representation
+                </p>
+            </div>
+            
+            <h3>학습 과정</h3>
+            <div class="step-box">
+                <p><strong>목표:</strong> Loss = ||x - x̂||² 최소화</p>
+                <p>• x: 입력 데이터</p>
+                <p>• x̂: 복원된 출력</p>
+                <p>• z: 압축된 latent representation</p>
+            </div>
+            
+            <h3>AutoEncoder의 장점</h3>
+            <ul>
+                <li><strong>Encoder</strong>: 최소한 training data를 잘 복원 (성능 보장)</li>
+                <li><strong>Decoder</strong>: 최소한 training data를 생성 가능</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: AutoEncoder Applications -->
+        <div class="slide">
+            <h2>AutoEncoder의 활용</h2>
+            
+            <h3>1. Dimension Reduction & Feature Extraction</h3>
+            <ul>
+                <li>고차원 데이터의 핵심 특성 추출</li>
+                <li>PCA보다 강력한 비선형 차원 축소</li>
+            </ul>
+            
+            <h3>2. Pre-training for Deep Networks</h3>
+            <div class="step-box">
+                <h4>Stacking AutoEncoder</h4>
+                <p>• Batch-Norm, Xavier Initialization이 없던 시절의 해결책</p>
+                <p>• 층별로 AutoEncoder 학습 → 전체 네트워크 초기화</p>
+                <p>• 각 층이 의미있는 representation 학습 보장</p>
+            </div>
+            
+            <h3>3. Denoising AutoEncoder</h3>
+            <ul>
+                <li><strong>입력</strong>: 원본 데이터 + Random Noise</li>
+                <li><strong>출력</strong>: 깨끗한 원본 데이터</li>
+                <li><strong>효과</strong>: 더 robust한 feature 학습</li>
+                <li><strong>성능</strong>: 일반 AutoEncoder보다 약 25% 개선</li>
+            </ul>
+            
+            <div class="formula">
+                Noisy Input → Encoder → z → Decoder → Clean Output
+            </div>
+        </div>
+
+        <!-- Slide 6: VAE Introduction -->
+        <div class="slide">
+            <h2>Variational AutoEncoder (VAE)</h2>
+            <div class="highlight">
+                <h3>중요한 차이점</h3>
+                <p><strong>AutoEncoder ≠ Variational AutoEncoder</strong></p>
+                <p>수학적으로 완전히 다른 모델입니다!</p>
+            </div>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>구분</th>
+                    <th>AutoEncoder</th>
+                    <th>Variational AutoEncoder</th>
+                </tr>
+                <tr>
+                    <td><strong>목적</strong></td>
+                    <td>Manifold Learning</td>
+                    <td>Generative Modeling</td>
+                </tr>
+                <tr>
+                    <td><strong>구조</strong></td>
+                    <td>압축을 위해 뒷단 추가</td>
+                    <td>생성을 위해 앞단 추가</td>
+                </tr>
+                <tr>
+                    <td><strong>Latent Space</strong></td>
+                    <td>결정적 (deterministic)</td>
+                    <td>확률적 (probabilistic)</td>
+                </tr>
+                <tr>
+                    <td><strong>Sampling</strong></td>
+                    <td>불가능</td>
+                    <td>가능</td>
+                </tr>
+            </table>
+            
+            <div class="step-box">
+                <h3>VAE의 핵심</h3>
+                <p>• <strong>Generative Model</strong>: 새로운 샘플 생성</p>
+                <p>• <strong>Probabilistic Approach</strong>: 확률분포 학습</p>
+                <p>• <strong>Controllable Generation</strong>: latent vector로 제어 가능</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Generative Model Problem -->
+        <div class="slide">
+            <h2>왜 MLE를 직접 사용할 수 없을까?</h2>
+            
+            <div class="highlight">
+                <h3>문제점</h3>
+                <p>Prior p(z)에서 직접 sampling하면 의미없는 결과가 나온다!</p>
+            </div>
+            
+            <h3>MSE의 한계</h3>
+            <div class="step-box">
+                <p><strong>예시:</strong> 원본 이미지 vs 변형된 이미지</p>
+                <p>• (a) 원본 이미지</p>
+                <p>• (b) 일부가 잘린 이미지</p>
+                <p>• (c) 픽셀이 조금 이동한 이미지</p>
+                <br>
+                <p><strong>결과:</strong> MSE((a), (b)) < MSE((a), (c))</p>
+                <p><strong>문제:</strong> 의미론적으로는 (a)와 (c)가 더 유사함!</p>
+            </div>
+            
+            <h3>해결책: Variational Inference</h3>
+            <ul>
+                <li>이상적인 sampling 함수 q<sub>φ</sub>(z|x) 도입</li>
+                <li>x가 주어졌을 때 의미있는 z를 생성</li>
+                <li>True posterior p(z|x)를 근사</li>
+            </ul>
+            
+            <div class="formula">
+                p(z) (prior) → q<sub>φ</sub>(z|x) (ideal sampling function)
+            </div>
+        </div>
+
+        <!-- Slide 8: Variational Inference -->
+        <div class="slide">
+            <h2>Variational Inference</h2>
+            
+            <div class="highlight">
+                <h3>핵심 아이디어</h3>
+                <p>복잡한 True Posterior를 간단한 분포로 근사하자!</p>
+            </div>
+            
+            <h3>주요 구성요소</h3>
+            <ul>
+                <li><strong>True Posterior</strong>: p(z|x) - 우리가 알고 싶은 실제 분포</li>
+                <li><strong>Prior</strong>: p(z) - 사전 분포 (예: N(0,1))</li>
+                <li><strong>Approximation</strong>: q<sub>φ</sub>(z|x) - 근사 분포 (예: Gaussian)</li>
+            </ul>
+            
+            <div class="step-box">
+                <h3>Variational Inference 과정</h3>
+                <p><strong>Step 1:</strong> 근사 분포 형태 선택 (예: Gaussian)</p>
+                <p><strong>Step 2:</strong> 파라미터 φ (μ, σ) 학습</p>
+                <p><strong>Step 3:</strong> KL divergence 최소화</p>
+                <p><strong>Step 4:</strong> 학습된 분포에서 sampling</p>
+            </div>
+            
+            <div class="architecture">
+                <h3>목표</h3>
+                <p>KL(q<sub>φ</sub>(z|x) || p(z|x)) → 0</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: ELBO Derivation -->
+        <div class="slide">
+            <h2>ELBO (Evidence Lower BOund)</h2>
+            
+            <div class="highlight">
+                <h3>목표</h3>
+                <p>log p(x) 최대화 → Training data와 유사한 분포 학습</p>
+            </div>
+            
+            <h3>ELBO 유도 과정</h3>
+            <div class="equation">
+                log p(x) = ELBO(φ) + KL(q<sub>φ</sub>(z|x)||p(z|x))
+            </div>
+            
+            <div class="step-box">
+                <p><strong>문제:</strong> KL(q<sub>φ</sub>(z|x)||p(z|x))는 계산 불가능</p>
+                <p><strong>해결:</strong> ELBO(φ) 최대화 (Lower Bound)</p>
+                <p><strong>이유:</strong> KL ≥ 0 이므로 ELBO ≤ log p(x)</p>
+            </div>
+            
+            <h3>ELBO 분해</h3>
+            <div class="equation">
+                ELBO = E<sub>q<sub>φ</sub>(z|x)</sub>[log p(x|z)] - KL(q<sub>φ</sub>(z|x)||p(z))
+            </div>
+            
+            <ul>
+                <li><strong>Reconstruction Term</strong>: E<sub>q<sub>φ</sub>(z|x)</sub>[log p(x|z)]</li>
+                <li><strong>Regularization Term</strong>: -KL(q<sub>φ</sub>(z|x)||p(z))</li>
+            </ul>
+        </div>
+
+        <!-- Slide 10: VAE Training -->
+        <div class="slide">
+            <h2>VAE 학습 과정</h2>
+            
+            <div class="highlight">
+                <h3>목표 함수</h3>
+                <p>ELBO = Reconstruction + Regularization</p>
+            </div>
+            
+            <h3>각 Term의 의미</h3>
+            <div class="step-box">
+                <h4>1. Reconstruction Term: E<sub>q<sub>φ</sub>(z|x)</sub>[log p(x|z)]</h4>
+                <p>• "샘플링된 z로부터 원본 x를 잘 복원해야 함"</p>
+                <p>• Generator(Decoder) 학습</p>
+                <p>• 파라미터 θ에 대한 MLE 문제</p>
+            </div>
+            
+            <div class="step-box">
+                <h4>2. Regularization Term: -KL(q<sub>φ</sub>(z|x)||p(z))</h4>
+                <p>• "이상적인 sampling 함수가 prior와 비슷해야 함"</p>
+                <p>• Encoder 학습</p>
+                <p>• 파라미터 φ에 대한 최적화</p>
+            </div>
+            
+            <h3>Reparameterization Trick</h3>
+            <div class="formula">
+                z = μ + σ ⊙ ε, &nbsp;&nbsp; ε ~ N(0,1)
+            </div>
+            <p>Sampling 과정을 미분 가능하게 만드는 핵심 기법!</p>
+        </div>
+
+        <!-- Slide 11: VAE vs AE -->
+        <div class="slide">
+            <h2>VAE vs AutoEncoder 비교</h2>
+            
+            <div class="highlight">
+                <h3>핵심 차이점</h3>
+                <p>AutoEncoder: 의미있는 latent space 보장 X</p>
+                <p>VAE: Prior condition으로 의미있는 latent space 보장 ✓</p>
+            </div>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>특성</th>
+                    <th>AutoEncoder</th>
+                    <th>VAE</th>
+                </tr>
+                <tr>
+                    <td><strong>Latent Space</strong></td>
+                    <td>불규칙적, 구멍 존재</td>
+                    <td>연속적, 의미있는 구조</td>
+                </tr>
+                <tr>
+                    <td><strong>새로운 샘플 생성</strong></td>
+                    <td>어려움 (어떤 z를 사용?)</td>
+                    <td>쉬움 (prior에서 sampling)</td>
+                </tr>
+                <tr>
+                    <td><strong>Interpolation</strong></td>
+                    <td>의미없는 결과</td>
+                    <td>부드럭고 의미있는 변화</td>
+                </tr>
+                <tr>
+                    <td><strong>Controllability</strong></td>
+                    <td>제한적</td>
+                    <td>z 벡터로 속성 제어 가능</td>
+                </tr>
+            </table>
+            
+            <div class="step-box">
+                <h3>VAE의 강력함</h3>
+                <p>• <strong>연속적인 latent space</strong>: 비슷한 데이터는 가까이 위치</p>
+                <p>• <strong>의미있는 interpolation</strong>: 두 점 사이의 보간도 의미있음</p>
+                <p>• <strong>controllable generation</strong>: latent 차원별로 특성 제어</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: VAE Applications -->
+        <div class="slide">
+            <h2>VAE의 활용과 확장</h2>
+            
+            <h3>주요 활용 분야</h3>
+            <ul>
+                <li><strong>Image Generation</strong>: 새로운 이미지 생성</li>
+                <li><strong>Data Augmentation</strong>: 학습 데이터 증강</li>
+                <li><strong>Anomaly Detection</strong>: 이상치 탐지</li>
+                <li><strong>Disentangled Representation</strong>: 해석 가능한 특성 분리</li>
+            </ul>
+            
+            <h3>VAE 파생 모델들</h3>
+            <div class="step-box">
+                <h4>Conditional VAE (CVAE)</h4>
+                <p>• 조건부 생성: p(x|c)를 학습</p>
+                <p>• 특정 클래스의 샘플 생성 가능</p>
+            </div>
+            
+            <div class="step-box">
+                <h4>β-VAE</h4>
+                <p>• KL term에 가중치 β 추가</p>
+                <p>• Disentangled representation 향상</p>
+            </div>
+            
+            <div class="step-box">
+                <h4>Adversarial AutoEncoder (AAE)</h4>
+                <p>• GAN과 VAE의 결합</p>
+                <p>• 더 강력한 prior matching</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Summary -->
+        <div class="slide">
+            <h2>정리 및 결론</h2>
+            
+            <div class="highlight">
+                <h3>핵심 메시지</h3>
+                <p>AutoEncoder와 VAE는 완전히 다른 철학을 가진 모델!</p>
+            </div>
+            
+            <h3>AutoEncoder</h3>
+            <ul>
+                <li><strong>목적</strong>: Manifold Learning, Dimensionality Reduction</li>
+                <li><strong>방법</strong>: 데이터 압축 및 복원</li>
+                <li><strong>결과</strong>: 효율적인 representation 학습</li>
+            </ul>
+            
+            <h3>Variational AutoEncoder</h3>
+            <ul>
+                <li><strong>목적</strong>: Generative Modeling</li>
+                <li><strong>방법</strong>: 확률적 latent space 학습</li>
+                <li><strong>결과</strong>: 새로운 샘플 생성 및 제어</li>
+            </ul>
+            
+            <div class="step-box">
+                <h3>학습한 내용</h3>
+                <p>• Deep Learning = MLE 관점의 중요성</p>
+                <p>• Manifold Learning의 필요성</p>
+                <p>• Variational Inference를 통한 문제 해결</p>
+                <p>• ELBO 최적화의 의미</p>
+                <p>• Reparameterization Trick의 중요성</p>
+            </div>
+            
+            <div class="formula">
+                <strong>Thank you for your attention!</strong><br>
+                질문과 토론을 환영합니다.
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">이전</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">다음</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+        
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                changeSlide(1);
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                changeSlide(-1);
+            }
+        });
+        
+        // Initialize
+        showSlide(0);
+        
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let endX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].clientX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = startX - endX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    changeSlide(1);
+                } else {
+                    // Swipe right - previous slide
+                    changeSlide(-1);
+                }
+            }
+        }
+        
+        // Auto-resize for different screen sizes
+        function adjustSlideSize() {
+            const slides = document.querySelectorAll('.slide');
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            
+            slides.forEach(slide => {
+                if (viewportWidth < 768) {
+                    slide.style.padding = '30px 20px';
+                    slide.style.fontSize = '14px';
+                } else if (viewportWidth < 1024) {
+                    slide.style.padding = '40px 30px';
+                    slide.style.fontSize = '16px';
+                } else {
+                    slide.style.padding = '60px';
+                    slide.style.fontSize = '18px';
+                }
+            });
+        }
+        
+        window.addEventListener('resize', adjustSlideSize);
+        adjustSlideSize(); // Initial call
+    </script>
+</body>
+</html>

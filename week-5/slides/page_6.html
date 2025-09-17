@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Variational AutoEncoder (VAE)</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+  .slide-container { width: 1280px; min-height: 720px; }
+  .comparison-table { width:100%; border-collapse: collapse; background:white; border-radius:10px; overflow:hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .comparison-table th, .comparison-table td { padding:12px 14px; border-bottom:1px solid #e5e7eb; text-align:left; font-size:14px; }
+  .comparison-table th { background: linear-gradient(45deg, #667eea, #764ba2); color:white; }
+  .step-box { background: linear-gradient(45deg,#a8edea,#fed6e3); padding:16px; border-radius:10px; border-left:5px solid #667eea; }
+  html { overflow:hidden; }
+</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 flex flex-col">
+  <!-- Header -->
+  <div class="bg-gray-800 text-white py-4 px-10 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Variational AutoEncoder (VAE)</h1>
+    <div class="text-sm">6/13</div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-1 p-6 flex flex-col gap-6">
+    <div class="bg-white border-l-4 border-indigo-500 p-4 rounded">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-exclamation-circle text-indigo-600 text-2xl"></i>
+        <div>
+          <h3 class="text-lg font-bold">중요한 차이점</h3>
+          <p><b>AutoEncoder ≠ Variational AutoEncoder</b> — 수학적으로 <b>완전히 다른</b> 모델입니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <table class="comparison-table">
+      <tr>
+        <th>구분</th>
+        <th>AutoEncoder</th>
+        <th>Variational AutoEncoder</th>
+      </tr>
+      <tr>
+        <td><b>목적</b></td>
+        <td>Manifold Learning</td>
+        <td>Generative Modeling</td>
+      </tr>
+      <tr>
+        <td><b>구조</b></td>
+        <td>압축을 위해 뒷단 추가</td>
+        <td>생성을 위해 앞단(확률 모델링) 추가</td>
+      </tr>
+      <tr>
+        <td><b>Latent Space</b></td>
+        <td>결정적 (deterministic)</td>
+        <td>확률적 (probabilistic)</td>
+      </tr>
+      <tr>
+        <td><b>Sampling</b></td>
+        <td>어려움/불가능</td>
+        <td>가능 (prior에서 z 샘플)</td>
+      </tr>
+    </table>
+
+    <div class="step-box">
+      <h3 class="text-lg font-bold mb-1">VAE의 핵심</h3>
+      <p>• <b>Generative Model</b>: 새로운 샘플 생성</p>
+      <p>• <b>Probabilistic Approach</b>: 잠재분포를 학습</p>
+      <p>• <b>Controllable Generation</b>: latent 벡터로 생성물 제어</p>
+    </div>
+  </div>
+</div>
+<!-- Navigation -->
+<div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_5.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">6 / 13</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_7.html">다음</a>
+</div>
+</body></html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AutoEncoder란 무엇인가?</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 756px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+  .slide-container { width: 1280px; min-height: 756px; }
+  .concept-card { background:#fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all .3s ease; }
+  .concept-card:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+  html { overflow:hidden; }
+</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 flex flex-col">
+  <!-- Header -->
+  <div class="bg-gray-800 text-white py-4 px-10 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">AutoEncoder란 무엇인가?</h1>
+    <div class="text-sm">4/13</div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-1 p-6 flex">
+    <!-- Left -->
+    <div class="w-1/2 pr-4 flex flex-col gap-4">
+      <div class="concept-card p-5">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-info-circle text-2xl text-green-600 mr-3"></i>
+          <h2 class="text-xl font-bold text-gray-800">특징</h2>
+        </div>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li><b>Unsupervised Learning</b>: 라벨 없이 학습</li>
+          <li><b>입력 = 출력</b>: 자기 자신을 복원</li>
+          <li><b>Bottleneck Structure</b>: 정보 압축</li>
+        </ul>
+      </div>
+
+      <div class="concept-card p-5">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-tasks text-2xl text-purple-600 mr-3"></i>
+          <h2 class="text-xl font-bold text-gray-800">학습 목표</h2>
+        </div>
+        <div class="bg-indigo-50 border-l-4 border-indigo-400 p-3 rounded">
+          <p class="text-sm"><b>Loss = ||x - x̂||²</b> 를 최소화</p>
+          <p class="text-xs text-gray-600">x: 입력, x̂: 복원 출력, z: 압축된 잠재표현</p>
+        </div>
+      </div>
+
+      <div class="concept-card p-5">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-thumbs-up text-2xl text-yellow-500 mr-3"></i>
+          <h2 class="text-xl font-bold text-gray-800">장점</h2>
+        </div>
+        <ul class="list-disc pl-6 space-y-1 text-sm">
+          <li><b>Encoder</b>: 최소한 학습 데이터는 잘 복원 (성능 보장)</li>
+          <li><b>Decoder</b>: 최소한 학습 데이터 분포의 샘플 생성 가능</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="w-1/2 pl-4 flex flex-col gap-4">
+      <div class="concept-card p-5 flex-1">
+        <div class="flex items-center mb-3">
+          <i class="fas fa-project-diagram text-2xl text-blue-600 mr-3"></i>
+          <h2 class="text-xl font-bold text-gray-800">구조</h2>
+        </div>
+        <div class="h-48 w-full flex items-center justify-center mb-3" id="ae-structure"></div>
+        <p class="text-center text-sm text-gray-700">Input → <b>Encoder</b> → Latent Space (z) → <b>Decoder</b> → Output</p>
+        <p class="text-center text-xs text-gray-500 mt-1">Latent Variable = Feature = Hidden Representation</p>
+      </div>
+
+      <div class="concept-card p-5">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 p-3 rounded">
+            <div class="flex items-center mb-1">
+              <i class="fas fa-compress-arrows-alt text-green-600 mr-2"></i>
+              <p class="font-semibold">차원 축소</p>
+            </div>
+            <p class="text-xs text-gray-600">핵심 특성 추출 및 압축</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded">
+            <div class="flex items-center mb-1">
+              <i class="fas fa-layer-group text-green-600 mr-2"></i>
+              <p class="font-semibold">스택 AutoEncoder</p>
+            </div>
+            <p class="text-xs text-gray-600">층별 사전훈련으로 깊은 네트워크 초기화</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded">
+            <div class="flex items-center mb-1">
+              <i class="fas fa-filter text-green-600 mr-2"></i>
+              <p class="font-semibold">노이즈 제거</p>
+            </div>
+            <p class="text-xs text-gray-600">손상 입력에서 원본 복원</p>
+          </div>
+          <div class="bg-gray-50 p-3 rounded">
+            <div class="flex items-center mb-1">
+              <i class="fas fa-cogs text-green-600 mr-2"></i>
+              <p class="font-semibold">표현 학습</p>
+            </div>
+            <p class="text-xs text-gray-600">의미 있는 잠재 표현 학습</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// D3 structure
+document.addEventListener('DOMContentLoaded', function() {
+  const width = document.getElementById('ae-structure').clientWidth;
+  const height = document.getElementById('ae-structure').clientHeight;
+  const svg = d3.select('#ae-structure').append('svg').attr('width', width).attr('height', height);
+
+  const layers = [
+    {name:'Input', nodes:8, x: width*0.15},
+    {name:'Encoder', nodes:5, x: width*0.35},
+    {name:'Latent', nodes:3, x: width*0.50, special:true},
+    {name:'Decoder', nodes:5, x: width*0.65},
+    {name:'Output', nodes:8, x: width*0.85},
+  ];
+
+  const nodeR = 8, layerH = height*0.7, y0 = height*0.15;
+
+  layers.forEach(layer => {
+    const spacing = layerH/(layer.nodes+1);
+    for (let i=1;i<=layer.nodes;i++) {
+      svg.append('circle')
+        .attr('cx', layer.x).attr('cy', y0+i*spacing).attr('r', nodeR)
+        .attr('fill', layer.special ? '#9C27B0' : '#4CAF50').attr('opacity', 0.85);
+    }
+  });
+
+  for (let i=0;i<layers.length-1;i++) {
+    const A = layers[i], B = layers[i+1];
+    const Aspace = layerH/(A.nodes+1), Bspace = layerH/(B.nodes+1);
+    for (let j=1;j<=A.nodes;j++) {
+      const ay = y0+j*Aspace;
+      for (let k=1;k<=B.nodes;k++) {
+        const by = y0+k*Bspace;
+        svg.append('line')
+          .attr('x1', A.x+nodeR).attr('y1', ay)
+          .attr('x2', B.x-nodeR).attr('y2', by)
+          .attr('stroke', '#cbd5e1').attr('stroke-width', 1).attr('opacity', 0.35);
+      }
+    }
+  }
+});
+</script>
+<!-- Navigation -->
+<div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_3.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">4 / 13</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_5.html">다음</a>
+</div>
+</body></html>

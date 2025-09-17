@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="ko"><head>
+<title>왜 MLE를 직접 사용할 수 없을까?</title>
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+  .slide-container { width: 1280px; min-height: 720px; }
+  .concept-box { background-color: rgba(255,255,255,0.95); border-left: 5px solid #667eea; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .step-box { background: linear-gradient(45deg,#a8edea,#fed6e3); padding:16px; border-radius:10px; border-left:5px solid #667eea; }
+  .formula { background:#2d3748; color:#f7fafc; border-radius:10px; padding:12px; text-align:center; font-family:'Courier New', monospace; }
+  html { overflow:hidden; }
+</style>
+
+</head>
+<body>
+<div class="slide-container bg-gray-100 flex flex-col">
+  <!-- Header -->
+  <div class="bg-gray-800 text-white py-4 px-10 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">왜 MLE를 직접 사용할 수 없을까?</h1>
+    <div class="text-sm">7/13</div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-1 p-8 flex flex-col gap-6">
+    <div class="concept-box p-5 rounded-lg">
+      <div class="flex items-center gap-3 mb-1">
+        <i class="fas fa-triangle-exclamation text-2xl text-yellow-500"></i>
+        <h2 class="text-xl font-bold text-gray-800">문제점</h2>
+      </div>
+      <p class="text-sm">Prior <b>p(z)</b>에서 바로 샘플링해 디코더로 생성하면 <b>의미 없는 결과</b>가 나오기 쉽습니다.</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-6">
+      <div class="step-box">
+        <h3 class="text-lg font-bold mb-2">MSE의 한계</h3>
+        <p class="text-sm">예) (a) 원본, (b) 일부가 잘린 이미지, (c) 픽셀이 약간 이동한 이미지</p>
+        <p class="text-sm mt-2">계산 결과: <b>MSE((a),(b)) &lt; MSE((a),(c))</b></p>
+        <p class="text-sm">하지만 의미론적으로는 (a)와 (c)가 더 유사 ➜ <b>MSE는 의미적 유사도를 반영하지 못함</b></p>
+      </div>
+
+      <div class="concept-box p-5 rounded-lg">
+        <div class="flex items-center gap-3 mb-1">
+          <i class="fas fa-wand-magic-sparkles text-2xl text-indigo-600"></i>
+          <h3 class="text-lg font-bold text-gray-800">해결책: Variational Inference</h3>
+        </div>
+        <ul class="list-disc pl-6 text-sm space-y-1">
+          <li>이상적인 샘플링 함수 <b>q<sub>φ</sub>(z|x)</b>를 도입</li>
+          <li>x가 주어졌을 때 <b>의미 있는</b> z를 생성</li>
+          <li>True posterior <b>p(z|x)</b>를 근사</li>
+        </ul>
+        <div class="formula mt-3">p(z) &nbsp;→&nbsp; q<sub>φ</sub>(z|x) &nbsp;≈&nbsp; p(z|x)</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Navigation -->
+<div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_6.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">7 / 13</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_8.html">다음</a>
+</div>
+</body></html>

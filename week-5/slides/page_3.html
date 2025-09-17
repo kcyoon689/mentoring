@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manifold Learning</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;}
+  .slide-container { width: 1280px; min-height: 720px; }
+  .concept-box { background-color: rgba(255,255,255,0.95); border-left: 5px solid #667eea; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .highlight-text { color:#764ba2; font-weight:600; }
+  html { overflow:hidden; }
+</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 flex flex-col">
+  <!-- Header -->
+  <div class="bg-gray-800 text-white py-4 px-10 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Manifold Learning</h1>
+    <div class="text-sm">3/13</div>
+  </div>
+
+  <!-- Main -->
+  <div class="flex-1 p-8 flex">
+    <!-- Left -->
+    <div class="w-1/2 pr-4 flex flex-col gap-4">
+      <div class="concept-box p-4 rounded-lg">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-lightbulb text-2xl text-purple-600 mr-2"></i>
+          <h2 class="text-xl font-bold text-gray-800">핵심 개념</h2>
+        </div>
+        <p class="text-sm">고차원 데이터를 잘 설명하는 <b>저차원 부공간(subspace)</b>, 즉 <b>매니폴드</b>가 존재합니다.</p>
+      </div>
+
+      <div class="concept-box p-4 rounded-lg">
+        <div class="flex items-center mb-2">
+          <i class="fas fa-toolbox text-2xl text-indigo-600 mr-2"></i>
+          <h2 class="text-xl font-bold text-gray-800">활용</h2>
+        </div>
+        <ul class="text-sm list-disc pl-6">
+          <li><b>Data Compression</b>: 차원 축소 통한 효율적 저장</li>
+          <li><b>Data Visualization</b>: 2D/3D 시각화</li>
+          <li><b>Curse of Dimensionality</b> 완화</li>
+          <li><b>Feature Discovery</b>: 중요한 특성 발굴</li>
+        </ul>
+      </div>
+
+      <div class="bg-pink-50 border-l-4 border-indigo-400 p-4 rounded">
+        <h3 class="font-bold mb-1">차원의 저주 (Curse of Dimensionality)</h3>
+        <p class="text-sm">• 차원이 증가할수록 데이터 밀도는 급격히 희박해짐</p>
+        <p class="text-sm">• 필요한 샘플 수가 기하급수적으로 증가</p>
+        <p class="text-sm">• <b>매니폴드</b> 가정은 이를 해결하는 열쇠</p>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="w-1/2 pl-4 flex flex-col">
+      <div class="bg-white rounded-lg shadow-md p-4 flex-1 flex flex-col">
+        <h3 class="text-lg font-bold text-center mb-2">Manifold Learning 시각화</h3>
+        <div class="flex-1 relative" id="manifold-visualization"></div>
+        <div class="flex justify-center space-x-8 mt-4">
+          <div class="flex items-center"><div class="w-4 h-4 bg-blue-500 rounded-full mr-2"></div><span class="text-sm">고차원 데이터</span></div>
+          <div class="flex items-center"><div class="w-4 h-4 bg-red-500 rounded-full mr-2"></div><span class="text-sm">잠재 공간 매핑</span></div>
+        </div>
+      </div>
+
+      <div class="mt-4 bg-gray-700 text-white p-4 rounded-lg">
+        <div class="flex items-center">
+          <i class="fas fa-link text-yellow-300 text-2xl mr-3"></i>
+          <p><span class="highlight-text">AutoEncoder</span>는 인코더를 통해 저차원 잠재표현을 학습하며, 이는 곧 매니폴드 학습입니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// D3 visualization (same as before)
+document.addEventListener('DOMContentLoaded', function() {
+  const el = document.getElementById('manifold-visualization');
+  const width = el.clientWidth, height = el.clientHeight;
+  const svg = d3.select('#manifold-visualization').append('svg').attr('width', width).attr('height', height);
+
+  const pts = Array.from({length: 60}, () => ({
+    x: Math.random()*width*0.8 + width*0.1,
+    y: Math.random()*height*0.8 + height*0.1,
+    r: Math.random()*3 + 2
+  }));
+
+  svg.selectAll('.high-dim').data(pts).enter().append('circle')
+    .attr('class','high-dim').attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',d=>d.r)
+    .attr('fill','#3B82F6').attr('opacity',0.6);
+
+  const path = [
+    {x: width*0.2, y: height*0.3},
+    {x: width*0.3, y: height*0.5},
+    {x: width*0.4, y: height*0.3},
+    {x: width*0.5, y: height*0.6},
+    {x: width*0.6, y: height*0.4},
+    {x: width*0.7, y: height*0.5},
+    {x: width*0.8, y: height*0.3}
+  ];
+
+  const line = d3.line().x(d=>d.x).y(d=>d.y).curve(d3.curveBasis);
+  svg.append('path').attr('d', line(path)).attr('stroke','#EC4899').attr('stroke-width',3).attr('fill','none').attr('opacity',0.7);
+  svg.selectAll('.manifold').data(path).enter().append('circle')
+    .attr('class','manifold').attr('cx',d=>d.x).attr('cy',d=>d.y).attr('r',5).attr('fill','#EF4444');
+
+  for (let i=0;i<15;i++) {
+    const a = pts[Math.floor(Math.random()*pts.length)];
+    const b = path[Math.floor(Math.random()*path.length)];
+    svg.append('line').attr('x1',a.x).attr('y1',a.y).attr('x2',b.x).attr('y2',b.y)
+      .attr('stroke','#9CA3AF').attr('stroke-width',1).attr('opacity',0.4).attr('stroke-dasharray','3,3');
+  }
+});
+</script>
+<!-- Navigation -->
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 13</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
+</div>
+</body></html>
