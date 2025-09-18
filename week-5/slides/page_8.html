@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="ko"><head>
-<title>Variational Inference</title>
+<title>VAE vs AutoEncoder 비교</title>
 
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -19,37 +19,62 @@
 <div class="slide-container bg-gray-100 flex flex-col">
   <!-- Header -->
   <div class="bg-gray-800 text-white py-4 px-10 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">Variational Inference</h1>
-    <div class="text-sm">8/13</div>
+    <h1 class="text-2xl font-bold">VAE vs AutoEncoder 비교</h1>
+    <div class="text-sm">11/13</div>
   </div>
 
   <!-- Main -->
   <div class="flex-1 p-8 flex flex-col gap-6">
     <div class="concept-box p-5 rounded-lg">
       <div class="flex items-center gap-3 mb-1">
-        <i class="fas fa-lightbulb text-2xl text-purple-600"></i>
-        <h2 class="text-xl font-bold text-gray-800">핵심 아이디어</h2>
+        <i class="fas fa-code-compare text-2xl text-purple-600"></i>
+        <h2 class="text-xl font-bold text-gray-800">핵심 차이점</h2>
       </div>
-      <p class="text-sm">계산이 어려운 <b>True Posterior p(z|x)</b>를, 계산 가능한 간단한 분포 <b>q<sub>φ</sub>(z|x)</b>로 근사합니다.</p>
+      <ul class="list-disc pl-6 text-sm space-y-1">
+        <li>AE: 의미 있는 latent space <b>보장 ×</b></li>
+        <li>VAE: <b>prior 조건</b>으로 의미 있는 latent space <b>보장 ✓</b></li>
+      </ul>
     </div>
 
-    <div class="grid grid-cols-3 gap-6">
-      <div class="concept-box p-5 rounded-lg">
-        <h3 class="font-bold mb-2">요소</h3>
-        <ul class="list-disc pl-5 text-sm space-y-1">
-          <li><b>True Posterior</b>: p(z|x)</li>
-          <li><b>Prior</b>: p(z) (예: N(0,1))</li>
-          <li><b>Approx.</b>: q<sub>φ</sub>(z|x) (예: Gaussian)</li>
-        </ul>
-      </div>
-      <div class="step-box">
-        <h3 class="font-bold mb-2">과정</h3>
-        <p class="text-sm">① 근사 분포 형태 선택 → ② 파라미터 φ=(μ, σ) 학습 → ③ KL 최소화 → ④ q<sub>φ</sub>에서 샘플링</p>
-      </div>
-      <div class="concept-box p-5 rounded-lg">
-        <h3 class="font-bold mb-2">목표</h3>
-        <div class="formula">KL(q<sub>φ</sub>(z|x) || p(z|x)) → 0</div>
-      </div>
+    <div class="overflow-hidden rounded-lg shadow">
+      <table class="w-full">
+        <thead class="bg-gray-700 text-white">
+          <tr>
+            <th class="p-3 text-left">특성</th>
+            <th class="p-3 text-left">AutoEncoder</th>
+            <th class="p-3 text-left">VAE</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm">
+          <tr class="bg-white">
+            <td class="p-3 font-semibold">Latent Space</td>
+            <td class="p-3">불규칙적, &quot;구멍&quot; 존재</td>
+            <td class="p-3">연속적, 의미 있는 구조</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="p-3 font-semibold">새로운 샘플 생성</td>
+            <td class="p-3">어려움 (어떤 z를 써야 하는가?)</td>
+            <td class="p-3">쉬움 (prior에서 sampling)</td>
+          </tr>
+          <tr class="bg-white">
+            <td class="p-3 font-semibold">Interpolation</td>
+            <td class="p-3">의미 없는 결과</td>
+            <td class="p-3">부드럽고 의미 있는 변화</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="p-3 font-semibold">Controllability</td>
+            <td class="p-3">제한적</td>
+            <td class="p-3">z 벡터로 속성 제어 가능</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="step-box">
+      <h3 class="text-lg font-bold mb-1">VAE의 강력함</h3>
+      <p class="text-sm">• <b>연속적 latent space</b>: 유사한 데이터는 가깝게 위치</p>
+      <p class="text-sm">• <b>의미 있는 interpolation</b>: 두 점 사이 보간도 의미 있음</p>
+      <p class="text-sm">• <b>Controllable generation</b>: latent 차원별 특성 제어</p>
     </div>
   </div>
 </div>
