@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="ko"><head>
-<title>VAE vs AutoEncoder 비교</title>
+<title>정리 및 결론</title>
 
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -19,69 +19,53 @@
 <div class="slide-container bg-gray-100 flex flex-col">
   <!-- Header -->
   <div class="bg-gray-800 text-white py-4 px-10 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">VAE vs AutoEncoder 비교</h1>
-    <div class="text-sm">11/13</div>
+    <h1 class="text-2xl font-bold">정리 및 결론</h1>
+    <div class="text-sm">13/13</div>
   </div>
 
   <!-- Main -->
   <div class="flex-1 p-8 flex flex-col gap-6">
     <div class="concept-box p-5 rounded-lg">
       <div class="flex items-center gap-3 mb-1">
-        <i class="fas fa-code-compare text-2xl text-purple-600"></i>
-        <h2 class="text-xl font-bold text-gray-800">핵심 차이점</h2>
+        <i class="fas fa-star text-2xl text-yellow-400"></i>
+        <h2 class="text-xl font-bold text-gray-800">핵심 메시지</h2>
       </div>
-      <ul class="list-disc pl-6 text-sm space-y-1">
-        <li>AE: 의미 있는 latent space <b>보장 ×</b></li>
-        <li>VAE: <b>prior 조건</b>으로 의미 있는 latent space <b>보장 ✓</b></li>
-      </ul>
+      <p class="text-sm">AutoEncoder와 VAE는 <b>완전히 다른 철학</b>의 모델입니다.</p>
     </div>
 
-    <div class="overflow-hidden rounded-lg shadow">
-      <table class="w-full">
-        <thead class="bg-gray-700 text-white">
-          <tr>
-            <th class="p-3 text-left">특성</th>
-            <th class="p-3 text-left">AutoEncoder</th>
-            <th class="p-3 text-left">VAE</th>
-          </tr>
-        </thead>
-        <tbody class="text-sm">
-          <tr class="bg-white">
-            <td class="p-3 font-semibold">Latent Space</td>
-            <td class="p-3">불규칙적, &quot;구멍&quot; 존재</td>
-            <td class="p-3">연속적, 의미 있는 구조</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="p-3 font-semibold">새로운 샘플 생성</td>
-            <td class="p-3">어려움 (어떤 z를 써야 하는가?)</td>
-            <td class="p-3">쉬움 (prior에서 sampling)</td>
-          </tr>
-          <tr class="bg-white">
-            <td class="p-3 font-semibold">Interpolation</td>
-            <td class="p-3">의미 없는 결과</td>
-            <td class="p-3">부드럽고 의미 있는 변화</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="p-3 font-semibold">Controllability</td>
-            <td class="p-3">제한적</td>
-            <td class="p-3">z 벡터로 속성 제어 가능</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="grid grid-cols-2 gap-6">
+      <div class="concept-box p-5 rounded-lg">
+        <h3 class="font-bold mb-2">AutoEncoder</h3>
+        <ul class="list-disc pl-6 text-sm space-y-1">
+          <li><b>목적</b>: Manifold Learning, Dimensionality Reduction</li>
+          <li><b>방법</b>: 데이터 압축 및 복원</li>
+          <li><b>결과</b>: 효율적인 표현 학습</li>
+        </ul>
+      </div>
+      <div class="concept-box p-5 rounded-lg">
+        <h3 class="font-bold mb-2">Variational AutoEncoder</h3>
+        <ul class="list-disc pl-6 text-sm space-y-1">
+          <li><b>목적</b>: Generative Modeling</li>
+          <li><b>방법</b>: 확률적 latent space 학습</li>
+          <li><b>결과</b>: 새로운 샘플 생성 및 제어</li>
+        </ul>
+      </div>
     </div>
 
     <div class="step-box">
-      <h3 class="text-lg font-bold mb-1">VAE의 강력함</h3>
-      <p class="text-sm">• <b>연속적 latent space</b>: 유사한 데이터는 가깝게 위치</p>
-      <p class="text-sm">• <b>의미 있는 interpolation</b>: 두 점 사이 보간도 의미 있음</p>
-      <p class="text-sm">• <b>Controllable generation</b>: latent 차원별 특성 제어</p>
+      <h3 class="text-lg font-bold mb-1">학습한 내용</h3>
+      <p class="text-sm">• Deep Learning = MLE 관점의 중요성</p>
+      <p class="text-sm">• Manifold Learning의 필요성</p>
+      <p class="text-sm">• Variational Inference를 통한 문제 해결</p>
+      <p class="text-sm">• ELBO 최적화의 의미</p>
+      <p class="text-sm">• Reparameterization Trick의 중요성</p>
     </div>
   </div>
 </div>
 <!-- Navigation -->
 <div class="mt-6 flex justify-between items-center">
-    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_7.html">이전</a>
-    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">8 / 13</div>
-    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_9.html">다음</a>
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_7.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">8 / 8</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_1.html">처음</a>
 </div>
 </body></html>
