@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>합성곱 신경망(CNN) 구조</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+        }
+        .cnn-box {
+            position: relative;
+            border: 2px solid #006400;
+            border-radius: 8px;
+            background-color: rgba(0, 100, 0, 0.05);
+        }
+        .cnn-arrow {
+            position: relative;
+            height: 2px;
+            background-color: #006400;
+            margin: 0 10px;
+        }
+        .cnn-arrow:after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 8px solid #006400;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-white p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 border-b-4 border-green-800 pb-2 inline-block">합성곱 신경망(CNN) 구조</h1>
+</div>
+<!-- CNN Architecture Visualization -->
+<div class="flex justify-center items-center mb-8">
+<div class="cnn-box p-3 w-24 h-24 flex items-center justify-center">
+<i class="fas fa-image text-3xl text-green-700"></i>
+<div class="absolute -top-6 text-xs text-center w-full">입력</div>
+</div>
+<div class="cnn-arrow w-12"></div>
+<div class="cnn-box p-3 w-32 h-24 flex items-center justify-center">
+<i class="fas fa-filter text-3xl text-orange-500"></i>
+<div class="absolute -top-6 text-xs text-center w-full">합성곱 계층</div>
+</div>
+<div class="cnn-arrow w-12"></div>
+<div class="cnn-box p-3 w-28 h-20 flex items-center justify-center">
+<i class="fas fa-compress-arrows-alt text-3xl text-teal-600"></i>
+<div class="absolute -top-6 text-xs text-center w-full">풀링 계층</div>
+</div>
+<div class="cnn-arrow w-12"></div>
+<div class="cnn-box p-3 w-24 h-16 flex items-center justify-center">
+<i class="fas fa-network-wired text-3xl text-green-700"></i>
+<div class="absolute -top-6 text-xs text-center w-full">완전 연결</div>
+</div>
+<div class="cnn-arrow w-12"></div>
+<div class="cnn-box p-3 w-20 h-12 flex items-center justify-center">
+<i class="fas fa-tag text-2xl text-orange-500"></i>
+<div class="absolute -top-6 text-xs text-center w-full">분류</div>
+</div>
+</div>
+<!-- Main content -->
+<div class="grid grid-cols-3 gap-6">
+<!-- Convolutional Layer -->
+<div class="bg-gray-50 p-5 rounded-lg shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-filter text-2xl text-orange-500 mr-3"></i>
+<h2 class="text-xl font-semibold text-green-800">합성곱 계층</h2>
+</div>
+<ul class="text-gray-700 space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>필터(커널)를 사용하여 이미지 전체를 순회</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>행렬 곱셈을 통해 국부적 패턴 감지</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>에지, 질감과 같은 특징을 효과적으로 추출</span>
+</li>
+</ul>
+</div>
+<!-- Pooling Layer -->
+<div class="bg-gray-50 p-5 rounded-lg shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-compress-arrows-alt text-2xl text-teal-600 mr-3"></i>
+<h2 class="text-xl font-semibold text-green-800">풀링 계층</h2>
+</div>
+<ul class="text-gray-700 space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>특징 맵의 차원을 축소</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>Max Pooling: 특정 영역 내 가장 큰 값 추출</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>Average Pooling: 평균값 추출</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>계산량 감소와 과적합 방지</span>
+</li>
+</ul>
+</div>
+<!-- Fully Connected Layer -->
+<div class="bg-gray-50 p-5 rounded-lg shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-network-wired text-2xl text-green-700 mr-3"></i>
+<h2 class="text-xl font-semibold text-green-800">완전 연결 계층</h2>
+</div>
+<ul class="text-gray-700 space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>추출된 특징들을 종합</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>모든 뉴런이 다음 계층의 모든 뉴런과 연결</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span>마지막으로 이미지의 클래스를 예측</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Key benefits -->
+<div class="mt-6 bg-gray-100 p-4 rounded-lg">
+<div class="flex items-center mb-2">
+<i class="fas fa-star text-2xl text-orange-500 mr-3"></i>
+<h2 class="text-xl font-semibold text-green-800">CNN의 주요 장점</h2>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span class="text-gray-700">로컬 특징 검출: 이미지의 공간적 특성을 효과적으로 학습</span>
+</div>
+<div class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span class="text-gray-700">파라미터 공유: 동일한 필터를 여러 위치에서 사용</span>
+</div>
+<div class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span class="text-gray-700">층의 깊이 증가: 데이터셋에서 더 많은 추상적 특징 학습</span>
+</div>
+<div class="flex items-start">
+<i class="fas fa-check-circle text-teal-600 mt-1 mr-2"></i>
+<span class="text-gray-700">이미지의 위치 변화에 대한 민감도 감소</span>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<div class="mt-4 text-right">
+<span class="text-gray-500">6 / 10</span>
+</div>
+</div>
+
+</body></html>

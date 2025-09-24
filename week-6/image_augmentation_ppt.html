@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Augmentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 90vw;
+            max-width: 1200px;
+            height: 90vh;
+            max-height: 800px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            padding: 60px;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        h1 {
+            font-size: 3.5em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            font-size: 2.8em;
+            color: #34495e;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 2em;
+            color: #2980b9;
+            margin-bottom: 25px;
+        }
+
+        p, li {
+            font-size: 1.4em;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        li {
+            margin-bottom: 15px;
+            padding-left: 10px;
+            position: relative;
+        }
+
+        li:before {
+            content: "▶";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: -20px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+            text-align: left;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            color: #495057;
+            text-align: left;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 40px;
+        }
+
+        .problem-box {
+            background: #fff5f5;
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .solution-box {
+            background: #f0fff4;
+            border-left: 5px solid #27ae60;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-number">
+            <span id="current-slide">1</span> / <span id="total-slides">8</span>
+        </div>
+        
+        <div class="progress-bar" id="progress-bar"></div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active">
+            <h1>Image Augmentation</h1>
+            <p class="subtitle">데이터 증강을 통한 머신러닝 성능 향상</p>
+            <div class="highlight">
+                <p><strong>Garbage IN, Garbage OUT</strong></p>
+                <p>데이터의 품질이 모델 성능을 결정합니다</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: What is Data Augmentation -->
+        <div class="slide">
+            <h2>Data Augmentation이란?</h2>
+            <div class="highlight">
+                <p><strong>정의:</strong> 원본 데이터에 인위적인 변화를 주어 새로운 데이터를 생성함으로써 데이터의 수를 늘리는 방법</p>
+            </div>
+            <ul>
+                <li>데이터의 <strong>label 정보는 보존</strong>하면서 데이터 변형</li>
+                <li>모델의 <strong>성능 향상</strong> 및 <strong>일반화 능력</strong> 개선</li>
+                <li>데이터의 <strong>근본적인 특징 추출</strong>을 돕는 역할</li>
+                <li>원본 데이터를 <strong>'일부'만 변형</strong>시키는 것이 핵심</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3: Domain Specific Augmentation -->
+        <div class="slide">
+            <h2>도메인별 특화 Augmentation</h2>
+            <div class="problem-box">
+                <h3>❌ 문제점</h3>
+                <p>도메인마다 효과적인 augmentation 방법이 다름</p>
+            </div>
+            <ul>
+                <li><strong>전문적인 도메인 지식</strong>이 필요</li>
+                <li><strong>주관적 판단</strong>으로는 최적화가 어려움</li>
+                <li>적용할 <strong>방법과 강도</strong>를 모두 결정해야 함</li>
+                <li>데이터의 특성에 맞지 않으면 성능 저하 위험</li>
+            </ul>
+        </div>
+
+        <!-- Slide 4: Traditional Augmentation Tools -->
+        <div class="slide">
+            <h2>Albumentations 라이브러리</h2>
+            <div class="two-column">
+                <div>
+                    <h3>특징</h3>
+                    <ul>
+                        <li>빠르고 유연한 이미지 증강 라이브러리</li>
+                        <li>다양한 변환 기법 제공</li>
+                        <li>OpenCV 기반의 고성능</li>
+                        <li>파이프라인 구성 용이</li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="code-block">
+GitHub Repository:<br>
+albumentations-team/<br>
+albumentations<br><br>
+Paper: MDPI 2020<br>
+"Albumentations: Fast and<br>
+flexible image augmentation<br>
+library"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Limitations -->
+        <div class="slide">
+            <h2>Traditional Augmentation의 한계</h2>
+            <div class="problem-box">
+                <h3>🚨 주요 한계점</h3>
+                <ul>
+                    <li><strong>주관적 판단</strong>에 의존</li>
+                    <li><strong>도메인 지식</strong> 필수 요구</li>
+                    <li><strong>수동적인 방법 선택</strong></li>
+                    <li>최적의 조합 찾기 <strong>시간 소모적</strong></li>
+                </ul>
+            </div>
+            <div class="highlight">
+                <p>💡 <strong>해결책:</strong> 자동화된 Augmentation 방법의 필요성 대두</p>
+            </div>
+        </div>
+
+        <!-- Slide 6: Auto Augmentation -->
+        <div class="slide">
+            <h2>Auto Augmentation의 등장</h2>
+            <div class="solution-box">
+                <h3>✅ 해결 방안</h3>
+                <p>모델을 통해 최적의 augmentation을 자동으로 결정</p>
+            </div>
+            <ul>
+                <li><strong>AutoAugment:</strong> 강화학습을 통한 정책 학습</li>
+                <li><strong>Population-based Augmentation (PBA):</strong> 진화 알고리즘 기반</li>
+                <li><strong>Fast AutoAugment (FastAA):</strong> 빠른 탐색 방법</li>
+                <li><strong>RandAugment:</strong> 간단한 랜덤 선택 방식</li>
+            </ul>
+        </div>
+
+        <!-- Slide 7: Current Status -->
+        <div class="slide">
+            <h2>현재 상황 및 적용</h2>
+            <div class="two-column">
+                <div>
+                    <div class="problem-box">
+                        <h3>⚠️ 연구 단계</h3>
+                        <ul>
+                            <li>강화학습 기반 방법들</li>
+                            <li>아직 연구 목적으로 주로 활용</li>
+                            <li>실제 개발 단계에서는 제한적 사용</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="solution-box">
+                        <h3>✅ 실용적 접근</h3>
+                        <ul>
+                            <li>전통적 방법과 병행 사용</li>
+                            <li>도메인별 맞춤 적용</li>
+                            <li>점진적 도입 권장</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Conclusion -->
+        <div class="slide">
+            <h2>결론 및 향후 방향</h2>
+            <div class="highlight">
+                <h3>🎯 핵심 포인트</h3>
+                <ul>
+                    <li><strong>데이터 특성</strong>에 맞는 Augmentation 선택이 중요</li>
+                    <li><strong>도메인 지식</strong>과 <strong>자동화 기술</strong>의 조합</li>
+                    <li>점진적으로 <strong>Auto Augmentation</strong> 도입 검토</li>
+                    <li><strong>성능 검증</strong>을 통한 지속적 개선</li>
+                </ul>
+            </div>
+            <div class="subtitle">
+                Quality Data → Better Model → Superior Performance
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="prevBtn" onclick="changeSlide(-1)">이전</button>
+            <button class="btn" id="nextBtn" onclick="changeSlide(1)">다음</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update progress bar
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            // Update button states
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>

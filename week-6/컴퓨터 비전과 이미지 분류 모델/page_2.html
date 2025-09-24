@@ -1,0 +1,120 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>컴퓨터 비전 개요</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+        }
+        .process-arrow {
+            position: relative;
+        }
+        .process-arrow:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            width: 30px;
+            height: 2px;
+            background-color: #006400;
+            transform: translateY(-50%);
+        }
+        .process-arrow:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            width: 10px;
+            height: 10px;
+            border-top: 2px solid #006400;
+            border-right: 2px solid #006400;
+            transform: translateY(-50%) rotate(45deg);
+            margin-right: -5px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-white p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="mb-8">
+<h1 class="title text-4xl font-bold text-gray-800 border-b-4 border-green-800 pb-2 inline-block">컴퓨터 비전 개요</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-col flex-grow">
+<!-- Definition section -->
+<div class="mb-8">
+<h2 class="text-2xl font-semibold text-green-800 mb-4">정의</h2>
+<p class="text-lg text-gray-700">
+                    컴퓨터 비전은 컴퓨터가 시각적 데이터를 해석하고 이해할 수 있도록 하는 인공지능의 한 분야입니다.
+                    이는 사람의 눈과 뇌가 시각 정보를 처리하는 방식을 모방하여 이미지와 비디오에서 유의미한 정보를 추출하고 이를 기반으로 의사결정을 내리는 기술입니다.
+                </p>
+</div>
+<!-- Process visualization -->
+<div class="mb-8">
+<h2 class="text-2xl font-semibold text-green-800 mb-4">컴퓨터 비전 처리 과정</h2>
+<div class="flex justify-between items-center">
+<div class="process-arrow flex flex-col items-center w-1/4 p-4 bg-gray-100 rounded-lg shadow">
+<i class="fas fa-file-image text-4xl text-green-700 mb-2"></i>
+<p class="text-center font-medium">데이터 입력</p>
+<p class="text-center text-sm text-gray-600">이미지/비디오</p>
+</div>
+<div class="process-arrow flex flex-col items-center w-1/4 p-4 bg-gray-100 rounded-lg shadow">
+<i class="fas fa-filter text-4xl text-green-700 mb-2"></i>
+<p class="text-center font-medium">전처리</p>
+<p class="text-center text-sm text-gray-600">사이즈 조정, 정규화</p>
+</div>
+<div class="process-arrow flex flex-col items-center w-1/4 p-4 bg-gray-100 rounded-lg shadow">
+<i class="fas fa-fingerprint text-4xl text-green-700 mb-2"></i>
+<p class="text-center font-medium">특징 추출</p>
+<p class="text-center text-sm text-gray-600">특징 벡터 생성</p>
+</div>
+<div class="flex flex-col items-center w-1/4 p-4 bg-gray-100 rounded-lg shadow">
+<i class="fas fa-sitemap text-4xl text-green-700 mb-2"></i>
+<p class="text-center font-medium">분류</p>
+<p class="text-center text-sm text-gray-600">범주로 분류</p>
+</div>
+</div>
+</div>
+<!-- Key points -->
+<div>
+<h2 class="text-2xl font-semibold text-green-800 mb-4">인간 시각 처리 방식의 특성</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="flex items-start">
+<i class="fas fa-eye text-2xl text-orange-500 mr-3 mt-1"></i>
+<p class="text-gray-700">인간의 눈은 빛의 강도(명암)를 감지하고 처리합니다.</p>
+</div>
+<div class="flex items-start">
+<i class="fas fa-brain text-2xl text-orange-500 mr-3 mt-1"></i>
+<p class="text-gray-700">뇌는 시각적 정보를 처리하고 의미있는 패턴을 인식합니다.</p>
+</div>
+<div class="flex items-start">
+<i class="fas fa-cogs text-2xl text-orange-500 mr-3 mt-1"></i>
+<p class="text-gray-700">컴퓨터 비전은 이 과정을 인공지능으로 모방합니다.</p>
+</div>
+<div class="flex items-start">
+<i class="fas fa-robot text-2xl text-orange-500 mr-3 mt-1"></i>
+<p class="text-gray-700">최종 목적은 컴퓨터가 &#34;보기&#34;로 인식하고 이해할 수 있게 하는 것입니다.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<div class="mt-6 text-right">
+<span class="text-gray-500">2 / 10</span>
+</div>
+</div>
+
+</body></html>

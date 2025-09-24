@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>디지털 이미지 표현 방식</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+        }
+        .pixel-box {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+        .grayscale-gradient {
+            background: linear-gradient(to right, #000000, #FFFFFF);
+            height: 30px;
+            width: 100%;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .rgb-gradient {
+            display: flex;
+            height: 30px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .rgb-channel {
+            flex: 1;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-white p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 border-b-4 border-green-800 pb-2 inline-block">디지털 이미지 표현 방식</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-grow">
+<!-- Left column - Text explanation -->
+<div class="w-1/2 pr-6">
+<div class="mb-6">
+<h2 class="text-2xl font-semibold text-green-800 mb-2">픽셀과 빛의 강도</h2>
+<p class="text-gray-700 mb-2">
+                        컴퓨터는 이미지를 <span class="font-semibold">픽셀(pixel)</span>과 각 픽셀의 <span class="font-semibold">빛의 강도(intensity)</span> 조합으로 이해합니다.
+                    </p>
+<p class="text-gray-700">
+                        디지털 이미지는 2차원 영역을 정의하는 x, y 변수의 함수 형태로 표현되며, 각 픽셀은 0부터 255 사이의 값으로 빛의 강도를 나타냅니다.
+                    </p>
+</div>
+<div class="mb-6">
+<h2 class="text-2xl font-semibold text-green-800 mb-2">그레이스케일 이미지</h2>
+<div class="grayscale-gradient mb-3"></div>
+<p class="text-gray-700 mb-2">
+                        단일 채널로 구성되며, 각 픽셀은 0(검정)부터 255(흰색)까지의 명암 값을 가집니다.
+                    </p>
+<p class="text-gray-700">
+                        이는 계산 복잡도를 낮추기 위해 컬러 이미지를 변환하는 데 사용되기도 합니다.
+                    </p>
+</div>
+<div>
+<h2 class="text-2xl font-semibold text-green-800 mb-2">RGB 컬러 이미지</h2>
+<div class="rgb-gradient mb-3">
+<div class="rgb-channel bg-red-600"></div>
+<div class="rgb-channel bg-green-600"></div>
+<div class="rgb-channel bg-blue-600"></div>
+</div>
+<p class="text-gray-700 mb-2">
+                        빨강(Red), 초록(Green), 파랑(Blue)의 세 가지 색상 채널로 구성됩니다.
+                    </p>
+<p class="text-gray-700">
+                        각 채널은 픽셀별로 0부터 255까지의 강도 값을 가지며, 이 세 채널의 조합으로 다양한 색상을 표현합니다.
+                    </p>
+</div>
+</div>
+<!-- Right column - Visual examples -->
+<div class="w-1/2 pl-6 flex flex-col">
+<!-- Image example -->
+<div class="mb-6 flex flex-col items-center">
+<h3 class="text-xl font-medium text-green-800 mb-3">RGB 색상 예시</h3>
+<img alt="RGB 색상 원" class="rounded-lg shadow-md" src="https://picture-search.skywork.ai/aippt/image/sheet/2e18be3950c622ca8021a5e89f95e780.jpg" style="max-width: 100%; max-height: 250px;" data-sk-source-container="img" data-sk-source-url="https://hohodesign.tistory.com/52" data-sk-source-id="1970122960242413569"/>
+<p class="text-center text-gray-600 mt-2">RGB의 세 가지 채널로 구성된 색상</p>
+</div>
+<!-- Data structure example -->
+<div class="bg-gray-100 p-4 rounded-lg shadow">
+<h3 class="text-xl font-medium text-green-800 mb-3">이미지 데이터 구조</h3>
+<div class="flex items-center mb-3">
+<i class="fas fa-cube text-2xl text-orange-500 mr-3"></i>
+<p class="text-gray-700">예: 700×700 크기의 컬러 이미지는 (700, 700, 3) 형태의 데이터 구조</p>
+</div>
+<div class="flex items-center">
+<i class="fas fa-info-circle text-2xl text-orange-500 mr-3"></i>
+<p class="text-gray-700">첫 번째와 두 번째 차원은 이미지의 너비와 높이, 세 번째 차원은 RGB 채널을 나타냅니다.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<div class="mt-6 text-right">
+<span class="text-gray-500">3 / 10</span>
+</div>
+</div>
+
+</body></html>

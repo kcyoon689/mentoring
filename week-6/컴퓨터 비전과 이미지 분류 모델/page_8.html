@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>최신 기술 동향</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 816px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide {
+            width: 1280px;
+            min-height: 816px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+        }
+        .trend-card {
+            transition: all 0.3s ease;
+        }
+        .trend-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 100, 0, 0.2);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-white p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 border-b-4 border-green-800 pb-2 inline-block">최신 기술 동향</h1>
+</div>
+<!-- Brief introduction -->
+<div class="mb-6">
+<p class="text-lg text-gray-700">
+                컴퓨터 비전 분야에서는 딥러닝 기술의 심화와 함께 다양한 새로운 패러다igm이 등장하며 기술 발전을 주도하고 있습니다.
+            </p>
+</div>
+<!-- Main content - Technology trends -->
+<div class="grid grid-cols-3 gap-5 flex-grow">
+<!-- CNN to Transformer -->
+<div class="trend-card bg-gray-50 rounded-lg p-4 shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-exchange-alt text-2xl text-teal-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-green-800">CNN에서 Transformer로의 진화</h3>
+</div>
+<p class="text-sm text-gray-700">
+                    2022년 이후 Transformer 모델이 컴퓨터 비전 분야에서 강세를 보이며, CNN과 Transformer를 결합한 연구도 활발히 진행되고 있습니다. Transformer는 이미지 전체의 관계를 파악하는 데 유리하여, 더 복잡하고 장거리 의존성을 가진 특징을 학습하는 데 효과적입니다.
+                </p>
+</div>
+<!-- Multi-modal Learning -->
+<div class="trend-card bg-gray-50 rounded-lg p-4 shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-layer-group text-2xl text-teal-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-green-800">멀티모달 학습</h3>
+</div>
+<p class="text-sm text-gray-700">
+                    컴퓨터 비전과 자연어 처리 분야의 경계가 모호해지면서, 이미지뿐만 아니라 텍스트, 언어, 오디오 등 다양한 양식의 데이터를 함께 학습하여 상호 보완적인 정보를 활용하는 멀티모달 학습이 주목받고 있습니다. 이는 &#34;Open&#34;, &#34;Prompt&#34;, &#34;Vocabulary&#34;와 같은 키워드의 사용이 급증하고 있습니다.
+                </p>
+</div>
+<!-- Generative Models -->
+<div class="trend-card bg-gray-50 rounded-lg p-4 shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-paint-brush text-2xl text-teal-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-green-800">생성 모델</h3>
+</div>
+<p class="text-sm text-gray-700">
+                    이미지 생성 모델인 Diffusion 모델에 대한 연구가 크게 증가하고 있습니다. 이 모델은 노이즈 제거, 이미지 편집, 스타일 트랜스퍼 등 다양한 응용 분야에서 활용되며, 2023년 CVPR에서 573%의 연구 증가율을 보였습니다.
+                </p>
+</div>
+<!-- Edge AI -->
+<div class="trend-card bg-gray-50 rounded-lg p-4 shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-microchip text-2xl text-teal-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-green-800">Edge AI와 Edge Computing</h3>
+</div>
+<p class="text-sm text-gray-700">
+                    데이터를 중앙 서버나 클라우드로 전송하지 않고 데이터가 생성되는 &#39;엣지&#39;에서 직접 처리하는 Edge AI 및 Edge Computing 기술이 중요해지고 있습니다. Edge AI 시장은 2025년까지 연평균 21.0% 성장하여 305.6억 달러 규모에 이를 것으로 전망됩니다.
+                </p>
+</div>
+<!-- XAI -->
+<div class="trend-card bg-gray-50 rounded-lg p-4 shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-search-plus text-2xl text-teal-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-green-800">설명 가능한 인공지능(XAI)</h3>
+</div>
+<p class="text-sm text-gray-700">
+                    AI 시스템의 의사결정 과정을 사람이 이해할 수 있도록 만드는 XAI 기술은 AI의 투명성과 신뢰성을 높이는 데 기여합니다. 의료, 금융, 법률 등 중요한 의사결정이 필요한 분야에서 XAI의 역할이 커지고 있으며, 2025년까지 162억 달러 규모로 성장할 것으로 예측됩니다.
+                </p>
+</div>
+<!-- 3D Vision -->
+<div class="trend-card bg-gray-50 rounded-lg p-4 shadow">
+<div class="flex items-center mb-3">
+<i class="fas fa-cube text-2xl text-teal-600 mr-3"></i>
+<h3 class="text-xl font-semibold text-green-800">3D 비전과 깊이 감지 기술</h3>
+</div>
+<p class="text-sm text-gray-700">
+                    컴퓨터나 기계가 주변 환경을 3차원으로 인식하고 이해하는 3D 비전 및 깊이 감지 기술의 활용이 확대되고 있습니다. ToF, 구조광, 스테레오 비전 등의 기술을 통해 로봇공학, 증강현실(AR), 가상현실(VR) 분야에서 혁신을 이끌고 있습니다. 3D 센서 시장은 2025년에 79억 달러, 3D 카메라 시장은 84.5억 달러 규모로 성장할 것으로 예상됩니다.
+                </p>
+</div>
+</div>
+<!-- D3.js visualization for market projections -->
+<div class="mt-6">
+<h3 class="text-lg font-semibold text-green-800 mb-2">2025년 시장 규모 예측 (십억 달러)</h3>
+<div class="w-full h-24" id="market-chart"></div>
+</div>
+<!-- Footer with slide number -->
+<div class="mt-4 text-right">
+<span class="text-gray-500">8 / 10</span>
+</div>
+</div>
+<script>
+        // D3.js visualization for market projections
+        document.addEventListener('DOMContentLoaded', function() {
+            const data = [
+                {category: "Edge AI", value: 30.56},
+                {category: "XAI", value: 16.2},
+                {category: "3D 센서", value: 7.9},
+                {category: "3D 카메라", value: 8.45}
+            ];
+            
+            const margin = {top: 10, right: 30, bottom: 30, left: 60};
+            const width = 1200 - margin.left - margin.right;
+            const height = 100 - margin.top - margin.bottom;
+            
+            const svg = d3.select("#market-chart")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+                
+            // X scale
+            const x = d3.scaleBand()
+                .domain(data.map(d => d.category))
+                .range([0, width])
+                .padding(0.3);
+                
+            // Y scale
+            const y = d3.scaleLinear()
+                .domain([0, d3.max(data, d => d.value) * 1.1])
+                .range([height, 0]);
+                
+            // Add X axis
+            svg.append("g")
+                .attr("transform", `translate(0,${height})`)
+                .call(d3.axisBottom(x))
+                .selectAll("text")
+                .style("font-size", "10px");
+                
+            // Add Y axis
+            svg.append("g")
+                .call(d3.axisLeft(y).ticks(3))
+                .selectAll("text")
+                .style("font-size", "10px");
+                
+            // Add bars
+            svg.selectAll("rect")
+                .data(data)
+                .join("rect")
+                .attr("x", d => x(d.category))
+                .attr("y", d => y(d.value))
+                .attr("width", x.bandwidth())
+                .attr("height", d => height - y(d.value))
+                .attr("fill", "#006400");
+                
+            // Add labels on top of bars
+            svg.selectAll(".label")
+                .data(data)
+                .join("text")
+                .attr("class", "label")
+                .attr("x", d => x(d.category) + x.bandwidth() / 2)
+                .attr("y", d => y(d.value) - 5)
+                .attr("text-anchor", "middle")
+                .text(d => d.value)
+                .style("font-size", "10px")
+                .style("fill", "#006400");
+        });
+    </script>
+
+</body></html>

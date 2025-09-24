@@ -1,0 +1,185 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>특징 추출 방법</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 800px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;}
+        .slide {
+            width: 1280px;
+            min-height: 800px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+        }
+        .method-box {
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .method-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 100, 0, 0.2);
+        }
+        .feature-icon {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 2px;
+            background-color: #006400;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-white p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold text-gray-800 border-b-4 border-green-800 pb-2 inline-block">특징 추출 방법</h1>
+</div>
+<!-- Definition section -->
+<div class="mb-6">
+<p class="text-lg text-gray-700">
+<span class="font-semibold text-green-800">특징(feature)</span>은 사물을 식별할 수 있는 모양, 색상 등의 정보를 의미하며, 컴퓨터 비전의 핵심 요소입니다.
+                특징 추출은 이미지에서 이러한 정보를 자동으로 식별하고 추출하는 과정입니다.
+            </p>
+</div>
+<!-- Main content - comparison -->
+<div class="flex justify-between space-x-6 mb-4">
+<!-- Traditional methods -->
+<div class="w-1/2 method-box bg-gray-50 p-6 border-l-4 border-orange-500 shadow">
+<div class="flex items-center mb-4">
+<i class="fas fa-history text-2xl text-orange-500 mr-3"></i>
+<h2 class="text-2xl font-semibold text-gray-800">전통적인 특징 추출 방법</h2>
+</div>
+<p class="text-gray-600 mb-4 text-sm">
+                    딥러닝이 등장하기 전에는 사람이 직접 특징을 선택하고 알고리즘을 설계하여 이미지를 분석했습니다.
+                </p>
+<h3 class="font-semibold text-green-700 mb-2">주요 방법</h3>
+<ul class="text-gray-700 space-y-2 mb-4">
+<li class="flex items-start">
+<i class="fas fa-fingerprint text-orange-500 mr-2 mt-1"></i>
+<span><span class="font-medium">HOG</span>: 기울기 방향성 히스토그램</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-th-large text-orange-500 mr-2 mt-1"></i>
+<span><span class="font-medium">Haar Cascades</span>: 얼굴 등 특별한 모양 검출</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-compress-arrows-alt text-orange-500 mr-2 mt-1"></i>
+<span><span class="font-medium">SIFT</span>: Scale-Invariant Feature Transform</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-tachometer-alt text-orange-500 mr-2 mt-1"></i>
+<span><span class="font-medium">SURF</span>: Speeded-Up Robust Features</span>
+</li>
+</ul>
+<div class="bg-white p-3 rounded-lg shadow-inner">
+<h3 class="font-semibold text-gray-700 mb-2">특성</h3>
+<div class="flex items-center mb-1">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p class="text-sm">특징을 사람이 직접 설계</p>
+</div>
+<div class="flex items-center mb-1">
+<i class="fas fa-check-circle text-green-600 mr-2"></i>
+<p class="text-sm">SVM 등 분류기에 입력</p>
+</div>
+<div class="flex items-center">
+<i class="fas fa-times-circle text-red-500 mr-2"></i>
+<p class="text-sm">색상 정보 활용이 한계적</p>
+</div>
+</div>
+</div>
+<!-- Deep learning methods -->
+<div class="w-1/2 method-box bg-gray-50 p-6 border-l-4 border-teal-500 shadow">
+<div class="flex items-center mb-4">
+<i class="fas fa-brain text-2xl text-teal-500 mr-3"></i>
+<h2 class="text-2xl font-semibold text-gray-800">딥러닝 기반 특징 추출</h2>
+</div>
+<p class="text-gray-600 mb-4 text-sm">
+                    딥러닝, 특히 합성곱 신경망(CNN)은 신경망이 자동으로 이미지에서 특징을 추출합니다.
+                </p>
+<div class="mb-4">
+<h3 class="font-semibold text-green-700 mb-2">특성</h3>
+<div class="flex items-start mb-3">
+<i class="fas fa-robot text-teal-500 mr-2 mt-1"></i>
+<div>
+<p class="font-medium">자동 특징 학습</p>
+<p class="text-sm text-gray-600">뉴런 간의 연결에 부여된 가중치를 통해 출력에 미치는 특징의 중요도를 학습</p>
+</div>
+</div>
+<div class="flex items-start mb-3">
+<i class="fas fa-object-group text-teal-500 mr-2 mt-1"></i>
+<div>
+<p class="font-medium">특징 추출과 분류기 통합</p>
+<p class="text-sm text-gray-600">신경망은 특징 추출과 분류기의 기능을 통합하여 수행</p>
+</div>
+</div>
+<div class="flex items-start">
+<i class="fas fa-layer-group text-teal-500 mr-2 mt-1"></i>
+<div>
+<p class="font-medium">추상적 특징 학습</p>
+<p class="text-sm text-gray-600">신경망의 층수가 깊어질수록 데이터셋에서 더 많은 추상적인 특징을 학습</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-3 rounded-lg shadow-inner">
+<div class="flex items-center">
+<i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+<p class="text-sm font-medium">CNN은 자동으로 특징을 추출하고, 이 특징들을 바탕으로 이미지를 분류</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Visual comparison -->
+<div class="mt-4">
+<div class="flex justify-between items-center">
+<div class="text-center w-1/2">
+<div class="flex justify-center mb-2">
+<i class="fas fa-cogs text-3xl text-orange-500 mr-2"></i>
+<i class="fas fa-arrow-right text-2xl text-gray-400"></i>
+<div class="flex">
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+</div>
+<i class="fas fa-arrow-right text-2xl text-gray-400"></i>
+<i class="fas fa-sitemap text-3xl text-orange-500"></i>
+</div>
+<p class="text-sm text-gray-600">직접 설계된 특징 → 분류</p>
+</div>
+<div class="text-center w-1/2">
+<div class="flex justify-center mb-2">
+<i class="fas fa-image text-3xl text-teal-500 mr-2"></i>
+<i class="fas fa-arrow-right text-2xl text-gray-400"></i>
+<i class="fas fa-network-wired text-3xl text-teal-500 mr-2"></i>
+<i class="fas fa-arrow-right text-2xl text-gray-400"></i>
+<div class="flex">
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+<span class="feature-icon"></span>
+</div>
+<i class="fas fa-arrow-right text-2xl text-gray-400"></i>
+<i class="fas fa-sitemap text-3xl text-teal-500"></i>
+</div>
+<p class="text-sm text-gray-600">신경망을 통한 자동 특징 추출 → 분류</p>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<div class="mt-auto text-right" style="visibility: hidden;">
+<span class="text-gray-500">5 / 10</span>
+</div>
+</div>
+
+</body></html>

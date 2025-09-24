@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>컴퓨터 비전과 이미지 분류 모델</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Noto+Serif+KR:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; height: 720px; overflow: hidden; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background: linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%);
+            
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .subtitle {
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #333333;
+        }
+        .grid-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 206, 209, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 206, 209, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .neural-node {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: rgba(255, 165, 0, 0.7);
+            box-shadow: 0 0 15px rgba(255, 165, 0, 0.5);
+        }
+        .neural-line {
+            position: absolute;
+            height: 2px;
+            background-color: rgba(0, 100, 0, 0.5);
+            transform-origin: left center;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col items-center justify-center" style=" overflow: hidden;">
+<!-- Background grid pattern -->
+<div class="grid-pattern"></div>
+<!-- Neural network visualization (CSS-based) -->
+<div class="absolute inset-0">
+<!-- Nodes -->
+<div class="neural-node" style="top: 150px; left: 300px;"></div>
+<div class="neural-node" style="top: 250px; left: 300px;"></div>
+<div class="neural-node" style="top: 350px; left: 300px;"></div>
+<div class="neural-node" style="top: 450px; left: 300px;"></div>
+<div class="neural-node" style="top: 550px; left: 300px;"></div>
+<div class="neural-node" style="top: 180px; left: 640px;"></div>
+<div class="neural-node" style="top: 280px; left: 640px;"></div>
+<div class="neural-node" style="top: 380px; left: 640px;"></div>
+<div class="neural-node" style="top: 480px; left: 640px;"></div>
+<div class="neural-node" style="top: 580px; left: 640px;"></div>
+<div class="neural-node" style="top: 220px; left: 980px;"></div>
+<div class="neural-node" style="top: 320px; left: 980px;"></div>
+<div class="neural-node" style="top: 420px; left: 980px;"></div>
+<!-- Lines (connections between nodes) -->
+<div class="neural-line" style="width: 340px; top: 150px; left: 310px; transform: rotate(15deg);"></div>
+<div class="neural-line" style="width: 340px; top: 250px; left: 310px; transform: rotate(5deg);"></div>
+<div class="neural-line" style="width: 340px; top: 350px; left: 310px; transform: rotate(-5deg);"></div>
+<div class="neural-line" style="width: 340px; top: 450px; left: 310px; transform: rotate(-15deg);"></div>
+<div class="neural-line" style="width: 340px; top: 180px; left: 650px; transform: rotate(10deg);"></div>
+<div class="neural-line" style="width: 340px; top: 280px; left: 650px; transform: rotate(0deg);"></div>
+<div class="neural-line" style="width: 340px; top: 380px; left: 650px; transform: rotate(-10deg);"></div>
+<div class="neural-line" style="width: 340px; top: 220px; left: 650px; transform: rotate(15deg);"></div>
+<div class="neural-line" style="width: 340px; top: 320px; left: 650px; transform: rotate(5deg);"></div>
+<div class="neural-line" style="width: 340px; top: 420px; left: 650px; transform: rotate(-5deg);"></div>
+</div>
+<!-- Content overlay -->
+<div class="z-10 text-center px-12 py-8 bg-white bg-opacity-80 rounded-lg shadow-lg">
+<h1 class="title text-6xl font-bold mb-6">컴퓨터 비전과 이미지 분류 모델</h1>
+<p class="subtitle text-2xl mb-8">기초 개념부터 최신 응용까지의 포괄적 이해</p>
+<div class="flex justify-center space-x-16 mt-10">
+<div class="text-center">
+<i class="fas fa-eye text-5xl text-teal-600 mb-4"></i>
+<p class="subtitle text-xl">시각적 데이터 해석</p>
+</div>
+<div class="text-center">
+<i class="fas fa-brain text-5xl text-teal-600 mb-4"></i>
+<p class="subtitle text-xl">인공지능 학습</p>
+</div>
+<div class="text-center">
+<i class="fas fa-image text-5xl text-teal-600 mb-4"></i>
+<p class="subtitle text-xl">이미지 분석</p>
+</div>
+<div class="text-center">
+<i class="fas fa-cogs text-5xl text-teal-600 mb-4"></i>
+<p class="subtitle text-xl">응용 분야</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-8 right-8 text-gray-600 text-sm">
+<p>2025-09-22</p>
+</div>
+</div>
+
+</body></html>
