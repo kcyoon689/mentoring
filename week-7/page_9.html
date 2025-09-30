@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>주요 응용 분야</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;family=Noto+Serif+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #333333;
+        }
+        .app-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .app-card:hover {
+            transform: translateY(-5px);
+        }
+        .icon-bg {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .recognition {
+            color: #4CAF50;
+        }
+        .segmentation {
+            color: #FF9800;
+        }
+
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">주요 응용 분야</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Main Content - Grid Layout -->
+<div class="grid grid-cols-3 gap-6 flex-1">
+<!-- Autonomous Driving -->
+<div class="app-card p-5">
+<div class="flex items-center mb-4">
+<div class="icon-bg bg-blue-100 mr-3">
+<i class="fas fa-car text-2xl text-blue-600"></i>
+</div>
+<h2 class="text-xl font-semibold">자율 주행</h2>
+</div>
+<div class="mb-3">
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-object-group text-sm recognition mr-2"></i>
+                        객체 인식
+                    </p>
+<p class="text-sm ml-6">도로 위의 다른 차량, 보행자, 교통 표지판 등을 실시간으로 인식하여 안전한 주행 경로 결정</p>
+</div>
+<div>
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-crop-alt text-sm segmentation mr-2"></i>
+                        이미지 세그멘테이션
+                    </p>
+<p class="text-sm ml-6">도로, 차선, 보행자를 정확히 파악하고 장애물을 정밀하게 감지하여 충돌 방지</p>
+</div>
+</div>
+<!-- Medical Image Analysis -->
+<div class="app-card p-5">
+<div class="flex items-center mb-4">
+<div class="icon-bg bg-red-100 mr-3">
+<i class="fas fa-heartbeat text-2xl text-red-600"></i>
+</div>
+<h2 class="text-xl font-semibold">의료 영상 분석</h2>
+</div>
+<div class="mb-3">
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-object-group text-sm recognition mr-2"></i>
+                        객체 인식
+                    </p>
+<p class="text-sm ml-6">X선, MRI, CT 스캔에서 종양, 병변, 특정 장기의 존재를 탐지하고 분류</p>
+</div>
+<div>
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-crop-alt text-sm segmentation mr-2"></i>
+                        이미지 세그멘테이션
+                    </p>
+<p class="text-sm ml-6">종양의 크기, 모양, 위치를 정밀하게 분석하고 특정 장기를 정확히 분리하여 분석</p>
+</div>
+</div>
+<!-- Security and Surveillance -->
+<div class="app-card p-5">
+<div class="flex items-center mb-4">
+<div class="icon-bg bg-purple-100 mr-3">
+<i class="fas fa-shield-alt text-2xl text-purple-600"></i>
+</div>
+<h2 class="text-xl font-semibold">보안 및 감시</h2>
+</div>
+<div class="mb-3">
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-object-group text-sm recognition mr-2"></i>
+                        객체 인식
+                    </p>
+<p class="text-sm ml-6">감시 카메라 영상에서 사람, 차량, 특정 물품을 실시간으로 탐지하여 침입 감지, 범죄 예방</p>
+</div>
+<div>
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-crop-alt text-sm segmentation mr-2"></i>
+                        이미지 세그멘테이션
+                    </p>
+<p class="text-sm ml-6">움직이는 객체를 배경과 분리하여 의심스러운 활동 인식하고 군중 분석을 통해 사람 수 세기</p>
+</div>
+</div>
+<!-- Satellite Image Analysis -->
+<div class="app-card p-5">
+<div class="flex items-center mb-4">
+<div class="icon-bg bg-teal-100 mr-3">
+<i class="fas fa-satellite text-2xl text-teal-600"></i>
+</div>
+<h2 class="text-xl font-semibold">위성 이미지 분석</h2>
+</div>
+<div class="mb-3">
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-object-group text-sm recognition mr-2"></i>
+                        객체 인식
+                    </p>
+<p class="text-sm ml-6">위성 이미지에서 건물, 도로, 차량, 지형지물을 식별하여 지도 제작, 도시 계획에 활용</p>
+</div>
+<div>
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-crop-alt text-sm segmentation mr-2"></i>
+                        이미지 세그멘테이션
+                    </p>
+<p class="text-sm ml-6">토지 피복 유형을 분류하고 자연재해의 피해 범위를 정밀하게 분석하여 환경 모니터링에 기여</p>
+</div>
+</div>
+<!-- Retail and E-commerce -->
+<div class="app-card p-5">
+<div class="flex items-center mb-4">
+<div class="icon-bg bg-amber-100 mr-3">
+<i class="fas fa-shopping-cart text-2xl text-amber-600"></i>
+</div>
+<h2 class="text-xl font-semibold">소매 및 전자상거래</h2>
+</div>
+<div class="mb-3">
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-object-group text-sm recognition mr-2"></i>
+                        객체 인식
+                    </p>
+<p class="text-sm ml-6">매장 내 고객 행동 분석, 제품 재고 관리, 도난 방지 등에 활용</p>
+</div>
+<div>
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-crop-alt text-sm segmentation mr-2"></i>
+                        이미지 세그멘테이션
+                    </p>
+<p class="text-sm ml-6">제품 이미지를 배경과 분리하여 상품 분류를 자동화하고 고객 흐름 패턴을 분석하여 매장 배치 최적화</p>
+</div>
+</div>
+<!-- Industrial Inspection -->
+<div class="app-card p-5">
+<div class="flex items-center mb-4">
+<div class="icon-bg bg-green-100 mr-3">
+<i class="fas fa-industry text-2xl text-green-600"></i>
+</div>
+<h2 class="text-xl font-semibold">산업 검사 및 품질 관리</h2>
+</div>
+<div class="mb-3">
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-object-group text-sm recognition mr-2"></i>
+                        객체 인식
+                    </p>
+<p class="text-sm ml-6">제조 공정에서 불량품이나 특정 부품의 존재 여부를 검사</p>
+</div>
+<div>
+<p class="text-sm font-semibold mb-1 flex items-center">
+<i class="fas fa-crop-alt text-sm segmentation mr-2"></i>
+                        이미지 세그멘테이션
+                    </p>
+<p class="text-sm ml-6">제조된 제품의 결함을 픽셀 단위로 정확하게 식별하고 분류하여 품질 관리 및 공정 최적화 지원</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_8.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">9 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_10.html">다음</a>
+  </div>
+</div>
+
+</body></html>

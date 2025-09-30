@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>객체 인식의 주요 접근 방식</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;family=Noto+Serif+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 925px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 925px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #333333;
+        }
+        .ml-card {
+            border-left: 4px solid #4CAF50;
+        }
+        .dl-card {
+            border-left: 4px solid #FF9800;
+        }
+        .comparison-table th {
+            background-color: #f0f0f0;
+        }
+        .comparison-table tr:nth-child(even) {
+            background-color: #eaeaea;
+        }
+        .comparison-table tr:nth-child(odd) {
+            background-color: white;
+        }
+
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">객체 인식의 주요 접근 방식</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-1 space-x-6 mb-6">
+<!-- Left Column: Machine Learning -->
+<div class="w-1/2">
+<div class="bg-white p-6 rounded-lg shadow-md h-full ml-card">
+<div class="flex items-center mb-4">
+<i class="fas fa-cogs text-2xl text-green-500 mr-3"></i>
+<h2 class="text-2xl font-semibold">머신러닝 기반 접근 방식</h2>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-search text-green-600 mr-2"></i>
+                            특징 추출
+                        </h3>
+<p class="text-sm ml-6">수동 특징 추출 (예: HOG, SURF, MSER)</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-sort-amount-up text-green-600 mr-2"></i>
+                            분류
+                        </h3>
+<p class="text-sm ml-6">SVM, Bag-of-Words 모델, Viola-Jones 알고리즘 등</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-database text-green-600 mr-2"></i>
+                            데이터 요구량
+                        </h3>
+<p class="text-sm ml-6">최소한의 데이터로도 정확한 결과 가능</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-graduation-cap text-green-600 mr-2"></i>
+                            훈련 방식
+                        </h3>
+<p class="text-sm ml-6">특징 추출 알고리즘으로 데이터에서 특징을 선택 후 머신러닝 모델에 추가하여 분류</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-plus-circle text-green-600 mr-2"></i>
+                            장점
+                        </h3>
+<p class="text-sm ml-6">다양한 특징 및 분류기 조합 가능, 적은 데이터로도 효과적</p>
+</div>
+<div>
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-minus-circle text-green-600 mr-2"></i>
+                            단점
+                        </h3>
+<p class="text-sm ml-6">특징 추출 과정의 수동성, 복잡한 패턴 인식의 한계</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Deep Learning -->
+<div class="w-1/2">
+<div class="bg-white p-6 rounded-lg shadow-md h-full dl-card">
+<div class="flex items-center mb-4">
+<i class="fas fa-brain text-2xl text-orange-500 mr-3"></i>
+<h2 class="text-2xl font-semibold">딥러닝 기반 접근 방식</h2>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-search text-orange-500 mr-2"></i>
+                            특징 추출
+                        </h3>
+<p class="text-sm ml-6">자동 특징 학습 (예: CNN을 통한 특징 자동 학습)</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-sort-amount-up text-orange-500 mr-2"></i>
+                            분류
+                        </h3>
+<p class="text-sm ml-6">CNN 기반 모델 (예: AlexNet, GoogLeNet)</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-database text-orange-500 mr-2"></i>
+                            데이터 요구량
+                        </h3>
+<p class="text-sm ml-6">높은 수준의 정밀도를 위해 대량의 레이블링된 데이터 필요</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-graduation-cap text-orange-500 mr-2"></i>
+                            훈련 방식
+                        </h3>
+<p class="text-sm ml-6">CNN과 같은 딥러닝 모델이 객체 고유의 특징을 자동으로 학습</p>
+</div>
+<div class="mb-4">
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-plus-circle text-orange-500 mr-2"></i>
+                            장점
+                        </h3>
+<p class="text-sm ml-6">높은 정밀도 제공, 복잡한 특징 자동 학습</p>
+</div>
+<div>
+<h3 class="font-semibold mb-2 flex items-center">
+<i class="fas fa-minus-circle text-orange-500 mr-2"></i>
+                            단점
+                        </h3>
+<p class="text-sm ml-6">대량의 데이터와 고성능 GPU 필요</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Comparison Table -->
+<div class="bg-white p-4 rounded-lg shadow-md">
+<h3 class="text-lg font-semibold mb-3">두 접근 방식의 비교</h3>
+<table class="w-full comparison-table text-sm">
+<thead>
+<tr>
+<th class="p-2 border border-gray-300 rounded-tl-lg">특징</th>
+<th class="p-2 border border-gray-300 bg-green-100">
+<div class="flex items-center">
+<i class="fas fa-cogs text-green-600 mr-1"></i>
+                                    머신러닝 기반
+                                </div>
+</th>
+<th class="p-2 border border-gray-300 bg-orange-100 rounded-tr-lg">
+<div class="flex items-center">
+<i class="fas fa-brain text-orange-500 mr-1"></i>
+                                    딥러닝 기반
+                                </div>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="p-2 border border-gray-300 font-medium">특징 추출</td>
+<td class="p-2 border border-gray-300">수동 특징 추출</td>
+<td class="p-2 border border-gray-300">자동 특징 학습</td>
+</tr>
+<tr>
+<td class="p-2 border border-gray-300 font-medium">훈련 방식</td>
+<td class="p-2 border border-gray-300">특징 선택 후 모델 훈련</td>
+<td class="p-2 border border-gray-300">특징 자동 학습</td>
+</tr>
+<tr>
+<td class="p-2 border border-gray-300 font-medium">데이터 요구량</td>
+<td class="p-2 border border-gray-300">적은 데이터로도 가능</td>
+<td class="p-2 border border-gray-300">대량의 레이블링된 데이터</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_3.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">4 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_5.html">다음</a>
+  </div>
+</div>
+
+</body></html>

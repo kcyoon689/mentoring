@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>결론 및 미래 전망</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;family=Noto+Serif+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 836px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 836px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #333333;
+        }
+        .highlight {
+            color: #4CAF50;
+        }
+        .accent {
+            color: #FF9800;
+        }
+        .conclusion-card {
+            background-color: white;
+            border-left: 4px solid #4CAF50;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .future-card {
+            background-color: white;
+            border-left: 4px solid #FF9800;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .timeline-node {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">결론 및 미래 전망</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-1 space-x-6">
+<!-- Left Column: Summary and Current Achievements -->
+<div class="w-1/2 flex flex-col space-y-5">
+<!-- Summary Card -->
+<div class="conclusion-card p-6 rounded-r-lg flex-1">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-check-circle text-green-500 mr-3"></i>
+                        주요 결론
+                    </h2>
+<ul class="space-y-3">
+<li class="flex items-start">
+<i class="fas fa-dot-circle text-green-500 mt-1 mr-2"></i>
+<p>객체 인식과 이미지 세그멘테이션은 딥러닝의 발전과 함께 CNN, R-CNN, YOLO, FCN, U-Net, DeepLab 등 다양한 모델을 통해 비약적인 발전을 이루었습니다.</p>
+</li>
+<li class="flex items-start">
+<i class="fas fa-dot-circle text-green-500 mt-1 mr-2"></i>
+<p>인코더-디코더 구조와 같은 혁신적인 아키텍처는 복잡한 시각 데이터를 효과적으로 처리할 수 있게 했습니다.</p>
+</li>
+<li class="flex items-start">
+<i class="fas fa-dot-circle text-green-500 mt-1 mr-2"></i>
+<p>이 두 기술은 자율 주행, 의료 영상 분석, 보안 감시, 위성 이미지 분석 등 광범위한 산업 분야에서 혁신을 가속화하는 핵심 동력으로 작용하고 있습니다.</p>
+</li>
+</ul>
+</div>
+<!-- Current Achievements -->
+<div class="conclusion-card p-6 rounded-r-lg flex-1">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-trophy text-green-500 mr-3"></i>
+                        현재 성과
+                    </h2>
+<p class="mb-3">객체 인식과 이미지 세그멘테이션은 컴퓨터가 인간의 시각 능력을 모방하고 나아가 이를 뛰어넘는 수준으로 발전하는 데 결정적인 역할을 하고 있습니다.</p>
+<div class="flex items-center justify-around mt-4">
+<div class="text-center">
+<i class="fas fa-car text-3xl text-gray-700"></i>
+<p class="text-sm mt-1">자율 주행</p>
+</div>
+<div class="text-center">
+<i class="fas fa-heartbeat text-3xl text-gray-700"></i>
+<p class="text-sm mt-1">의료 영상</p>
+</div>
+<div class="text-center">
+<i class="fas fa-shield-alt text-3xl text-gray-700"></i>
+<p class="text-sm mt-1">보안 감시</p>
+</div>
+<div class="text-center">
+<i class="fas fa-satellite text-3xl text-gray-700"></i>
+<p class="text-sm mt-1">위성 이미지</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Future Outlook -->
+<div class="w-1/2 flex flex-col">
+<!-- Future Outlook -->
+<div class="future-card p-6 rounded-r-lg flex-1">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-lightbulb text-orange-500 mr-3"></i>
+                        미래 전망
+                    </h2>
+<!-- Technology Evolution Timeline -->
+<div class="relative h-64 mb-6" id="timeline-container">
+<!-- Timeline will be drawn here with D3.js -->
+</div>
+<div class="space-y-4">
+<div class="flex items-start">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+<i class="fas fa-brain text-orange-500"></i>
+</div>
+<div>
+<h3 class="font-semibold text-lg">더 정교한 모델 개발</h3>
+<p class="text-gray-600">마케팅, 소셜 미디어 등 새로운 응용 분야에서 요구되는 더 정교하고 작은 객체 인식 및 세그멘테이션 모델의 개발</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+<i class="fas fa-project-diagram text-orange-500"></i>
+</div>
+<div>
+<h3 class="font-semibold text-lg">기술의 융합</h3>
+<p class="text-gray-600">객체 인식과 세그멘테이션 기술이 서로 보완하고, 3D 인식, 동영상 이해 등 더 복잡한 시각 태스크로 확장될 것입니다.</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+<i class="fas fa-users text-orange-500"></i>
+</div>
+<div>
+<h3 class="font-semibold text-lg">인간-기술 협력</h3>
+<p class="text-gray-600">사람의 시각적 인식과 기계의 데이터 처리 능력을 결합한 새로운 인터페이스 및 상호작용 방식의 개발</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-6 flex justify-between items-center">
+<a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_9.html">이전</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">10 / 10</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_1.html">처음</a>
+</div>
+</div>
+</div>
+<script>
+        // Simple timeline visualization with D3.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = d3.select("#timeline-container");
+            const width = container.node().getBoundingClientRect().width;
+            const height = container.node().getBoundingClientRect().height;
+
+            // Create SVG
+            const svg = container.append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            // Timeline data
+            const timelineData = [
+                { label: "객체 인식", x: width * 0.2, y: height * 0.5 },
+                { label: "이미지 세그멘테이션", x: width * 0.4, y: height * 0.5 },
+                { label: "현재", x: width * 0.6, y: height * 0.5 },
+                { label: "미래", x: width * 0.8, y: height * 0.5 }
+            ];
+
+            // Draw timeline line
+            svg.append("line")
+                .attr("x1", width * 0.1)
+                .attr("y1", height * 0.5)
+                .attr("x2", width * 0.9)
+                .attr("y2", height * 0.5)
+                .attr("stroke", "#333333")
+                .attr("stroke-width", 3);
+
+            // Draw timeline nodes
+            const nodes = svg.selectAll(".timeline-node")
+                .data(timelineData)
+                .enter()
+                .append("g")
+                .attr("transform", d => `translate(${d.x}, ${d.y})`);
+
+            nodes.append("circle")
+                .attr("r", 8)
+                .attr("fill", (d, i) => {
+                    if (i < 2) return "#4CAF50";
+                    else if (i === 2) return "#FF9800";
+                    else return "#9C27B0";
+                })
+                .attr("stroke", "#FFFFFF")
+                .attr("stroke-width", 2);
+
+            // Add labels
+            nodes.append("text")
+                .attr("y", -15)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#333333")
+                .style("font-size", "14px")
+                .text(d => d.label);
+
+            // Add description for future
+            svg.append("text")
+                .attr("x", width * 0.8)
+                .attr("y", height * 0.7)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#9C27B0")
+                .style("font-size", "12px")
+                .style("font-style", "italic")
+                .text("더 정교하고 다양한 응용이 가능한 기술");
+        });
+    </script>
+
+</body></html>

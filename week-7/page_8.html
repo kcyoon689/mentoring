@@ -1,0 +1,192 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>객체 인식과 이미지 세그멘테이션 비교</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;family=Noto+Serif+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 738px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 738px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #333333;
+        }
+        .highlight {
+            color: #4CAF50;
+        }
+        .accent {
+            color: #FF9800;
+        }
+        .comparison-row:nth-child(odd) {
+            background-color: rgba(245, 245, 245, 0.5);
+        }
+        .comparison-row:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        .object-recognition {
+            border-left: 4px solid #4CAF50;
+        }
+        .image-segmentation {
+            border-left: 4px solid #FF9800;
+        }
+
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">객체 인식과 이미지 세그멘테이션 비교</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col">
+<!-- Visual Representation -->
+<div class="flex justify-center mb-6">
+<div class="w-1/2 flex items-center justify-center">
+<div class="text-center p-4 bg-white rounded-lg shadow-md object-recognition mr-4 w-full">
+<i class="fas fa-object-group text-4xl text-green-500 mb-2"></i>
+<h3 class="text-xl font-semibold">객체 인식</h3>
+<p class="text-sm mt-1">객체 단위로 분석</p>
+</div>
+</div>
+<div class="flex items-center mx-4">
+<i class="fas fa-exchange-alt text-2xl text-gray-500"></i>
+</div>
+<div class="w-1/2 flex items-center justify-center">
+<div class="text-center p-4 bg-white rounded-lg shadow-md image-segmentation w-full">
+<i class="fas fa-crop-alt text-4xl text-orange-500 mb-2"></i>
+<h3 class="text-xl font-semibold">이미지 세그멘테이션</h3>
+<p class="text-sm mt-1">픽셀 단위로 분석</p>
+</div>
+</div>
+</div>
+<!-- Comparison Table -->
+<div class="bg-white rounded-lg shadow-lg overflow-hidden">
+<div class="grid grid-cols-7 gap-0 bg-gray-200">
+<div class="col-span-1 p-3 font-semibold text-gray-700 flex items-center justify-center border-r border-gray-300">
+<i class="fas fa-table-columns text-gray-600 mr-2"></i>
+                        구분
+                    </div>
+<div class="col-span-3 p-3 font-semibold text-green-700 flex items-center justify-center border-r border-gray-300">
+<i class="fas fa-object-group text-green-500 mr-2"></i>
+                        객체 인식 (Object Recognition)
+                    </div>
+<div class="col-span-3 p-3 font-semibold text-orange-700 flex items-center justify-center">
+<i class="fas fa-crop-alt text-orange-500 mr-2"></i>
+                        이미지 세그멘테이션 (Image Segmentation)
+                    </div>
+</div>
+<!-- Analysis Unit Row -->
+<div class="comparison-row grid grid-cols-7 gap-0 border-b border-gray-200">
+<div class="col-span-1 p-3 flex items-center justify-center border-r border-gray-300 bg-gray-100">
+<i class="fas fa-cube text-gray-600 mr-2"></i>
+<span class="font-medium">분석 단위</span>
+</div>
+<div class="col-span-3 p-3 text-sm border-r border-gray-300">
+                        이미지 내 객체 단위
+                    </div>
+<div class="col-span-3 p-3 text-sm">
+                        이미지 내 픽셀 단위
+                    </div>
+</div>
+<!-- Output Format Row -->
+<div class="comparison-row grid grid-cols-7 gap-0 border-b border-gray-200">
+<div class="col-span-1 p-3 flex items-center justify-center border-r border-gray-300 bg-gray-100">
+<i class="fas fa-file-export text-gray-600 mr-2"></i>
+<span class="font-medium">출력 형태</span>
+</div>
+<div class="col-span-3 p-3 text-sm border-r border-gray-300">
+                        객체의 종류(클래스) 및 위치(경계 상자, Bounding Box)
+                    </div>
+<div class="col-span-3 p-3 text-sm">
+                        각 픽셀에 대한 클래스 레이블 (세그멘테이션 맵, Segmentation Map)
+                    </div>
+</div>
+<!-- Precision Row -->
+<div class="comparison-row grid grid-cols-7 gap-0 border-b border-gray-200">
+<div class="col-span-1 p-3 flex items-center justify-center border-r border-gray-300 bg-gray-100">
+<i class="fas fa-bullseye text-gray-600 mr-2"></i>
+<span class="font-medium">정밀도</span>
+</div>
+<div class="col-span-3 p-3 text-sm border-r border-gray-300">
+                        객체의 대략적인 위치와 종류 식별
+                    </div>
+<div class="col-span-3 p-3 text-sm">
+                        객체의 정확한 형태와 경계 식별
+                    </div>
+</div>
+<!-- Computational Complexity Row -->
+<div class="comparison-row grid grid-cols-7 gap-0 border-b border-gray-200">
+<div class="col-span-1 p-3 flex items-center justify-center border-r border-gray-300 bg-gray-100">
+<i class="fas fa-microchip text-gray-600 mr-2"></i>
+<span class="font-medium">계산 복잡도</span>
+</div>
+<div class="col-span-3 p-3 text-sm border-r border-gray-300">
+                        상대적으로 낮음 (특히 단일 단계 탐지 모델의 경우)
+                    </div>
+<div class="col-span-3 p-3 text-sm">
+                        상대적으로 높음 (픽셀 단위 분석으로 인한 연산량 증가)
+                    </div>
+</div>
+<!-- Main Goal Row -->
+<div class="comparison-row grid grid-cols-7 gap-0 border-b border-gray-200">
+<div class="col-span-1 p-3 flex items-center justify-center border-r border-gray-300 bg-gray-100">
+<i class="fas fa-tasks text-gray-600 mr-2"></i>
+<span class="font-medium">주요 목표</span>
+</div>
+<div class="col-span-3 p-3 text-sm border-r border-gray-300">
+                        이미지 내 특정 객체의 존재 여부 및 종류 파악
+                    </div>
+<div class="col-span-3 p-3 text-sm">
+                        이미지 내 모든 픽셀을 의미 있는 범주로 분류하여 상세한 영역 분할
+                    </div>
+</div>
+<!-- Representative Models Row -->
+<div class="comparison-row grid grid-cols-7 gap-0 border-b border-gray-200">
+<div class="col-span-1 p-3 flex items-center justify-center border-r border-gray-300 bg-gray-100">
+<i class="fas fa-sitemap text-gray-600 mr-2"></i>
+<span class="font-medium">대표 모델</span>
+</div>
+<div class="col-span-3 p-3 text-sm border-r border-gray-300">
+                        R-CNN, Faster R-CNN, YOLO, SSD
+                    </div>
+<div class="col-span-3 p-3 text-sm">
+                        FCN, U-Net, DeepLab, Mask R-CNN
+                    </div>
+</div>
+<!-- Main Applications Row -->
+<div class="comparison-row grid grid-cols-7 gap-0">
+<div class="col-span-1 p-3 flex items-center justify-center border-r border-gray-300 bg-gray-100">
+<i class="fas fa-laptop-code text-gray-600 mr-2"></i>
+<span class="font-medium">주요 활용</span>
+</div>
+<div class="col-span-3 p-3 text-sm border-r border-gray-300">
+                        객체 감지 및 분류
+                    </div>
+<div class="col-span-3 p-3 text-sm">
+                        객체 분할, 배경 제거, 이미지 편집, 의료 영상 분석
+                    </div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_7.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">8 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_9.html">다음</a>
+  </div>
+</div>
+
+</body></html>

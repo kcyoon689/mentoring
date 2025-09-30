@@ -1,0 +1,144 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>이미지 세그멘테이션의 유형</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;family=Noto+Serif+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 740px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 740px;
+            position: relative;
+
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #333333;
+        }
+        .segmentation-card {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+        .semantic-border {
+            border-top: 4px solid #4CAF50;
+        }
+        .instance-border {
+            border-top: 4px solid #FF9800;
+        }
+        .panoptic-border {
+            border-top: 4px solid #3498db;
+        }
+        .highlight-semantic {
+            color: #4CAF50;
+        }
+        .highlight-instance {
+            color: #FF9800;
+        }
+        .highlight-panoptic {
+            color: #3498db;
+        }
+
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100 p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header -->
+<div class="mb-6">
+<h1 class="title text-4xl font-bold mb-2">이미지 세그멘테이션의 유형</h1>
+<div class="w-24 h-1 bg-green-500"></div>
+</div>
+<!-- Brief Introduction -->
+<div class="mb-6">
+<p>이미지 세그멘테이션은 분석의 정밀도와 목표에 따라 크게 세 가지 유형으로 나뉩니다.</p>
+</div>
+<!-- Main Content: Three Types -->
+<div class="flex flex-1 gap-5">
+<!-- Semantic Segmentation -->
+<div class="w-1/3">
+<div class="segmentation-card semantic-border rounded-lg p-5 flex flex-col">
+<div class="flex items-center mb-3">
+<i class="fas fa-tags text-2xl text-green-500 mr-3"></i>
+<h3 class="text-xl font-semibold">시맨틱 세그멘테이션</h3>
+</div>
+<div class="mb-4">
+<p class="text-sm mb-2"><span class="font-semibold">정의:</span> 이미지 내의 모든 픽셀에 대해 해당 픽셀이 속하는 클래스 레이블을 할당합니다.</p>
+<p class="text-sm mb-2"><span class="font-semibold">목표:</span> 이미지의 각 픽셀이 어떤 의미론적 범주에 속하는지 분류합니다.</p>
+<p class="text-sm mb-2"><span class="font-semibold">결과물:</span> 동일한 클래스에 속하는 모든 객체는 하나의 동일한 레이블로 표시됩니다.</p>
+<p class="text-sm"><span class="font-semibold">예시:</span> 거리 이미지에서 모든 나무를 &#39;나무&#39; 클래스로, 모든 차량을 &#39;차량&#39; 클래스로 주석 처리합니다.</p>
+</div>
+<div class="mt-auto">
+<div class="flex items-center">
+<i class="fas fa-image text-gray-400 mr-2"></i>
+<span class="text-sm font-semibold">Semantic Segmentation</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Instance Segmentation -->
+<div class="w-1/3">
+<div class="segmentation-card instance-border rounded-lg p-5 flex flex-col">
+<div class="flex items-center mb-3">
+<i class="fas fa-object-group text-2xl text-orange-500 mr-3"></i>
+<h3 class="text-xl font-semibold">인스턴스 세그멘테이션</h3>
+</div>
+<div class="mb-4">
+<p class="text-sm mb-2"><span class="font-semibold">정의:</span> 시맨틱 세그멘테이션과 유사하게 픽셀에 클래스 레이블을 할당하지만, 동일한 클래스 내의 개별 객체를 서로 구분합니다.</p>
+<p class="text-sm mb-2"><span class="font-semibold">목표:</span> 각 픽셀이 어떤 클래스에 속하는지, 해당 클래스 내의 어떤 개별 객체에 속하는지까지 식별합니다.</p>
+<p class="text-sm mb-2"><span class="font-semibold">결과물:</span> 동일한 클래스에 속하더라도 서로 다른 객체는 고유한 레이블 또는 ID를 가집니다.</p>
+<p class="text-sm"><span class="font-semibold">예시:</span> 거리 이미지에 있는 수많은 자동차를 각각 개별적인 인스턴스로 인식하고 분할합니다.</p>
+</div>
+<div class="mt-auto">
+<div class="flex items-center">
+<i class="fas fa-crop-alt text-gray-400 mr-2"></i>
+<span class="text-sm font-semibold">Instance Segmentation</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Panoptic Segmentation -->
+<div class="w-1/3">
+<div class="segmentation-card panoptic-border rounded-lg p-5 flex flex-col">
+<div class="flex items-center mb-3">
+<i class="fas fa-layer-group text-2xl text-blue-500 mr-3"></i>
+<h3 class="text-xl font-semibold">파놉틱 세그멘테이션</h3>
+</div>
+<div class="mb-4">
+<p class="text-sm mb-2"><span class="font-semibold">정의:</span> 시맨틱 세그멘테이션과 인스턴스 세그멘테이션의 장점을 결합한 유형입니다.</p>
+<p class="text-sm mb-2"><span class="font-semibold">목표:</span> 이미지의 모든 픽셀에 대해 클래스 레이블을 할당하면서, 동시에 개별 객체(Thing 클래스)는 인스턴스별로 구분하고, 배경(Stuff 클래스)은 시맨틱하게 분할합니다.</p>
+<p class="text-sm mb-2"><span class="font-semibold">결과물:</span> 이미지 전체에 대한 포괄적인 장면 이해를 제공하며, 모든 픽셀이 분류되고 개별 객체는 구분됩니다.</p>
+<p class="text-sm"><span class="font-semibold">예시:</span> 도로, 보도, 나무와 같은 배경 영역은 시맨틱하게 분할하고, 자동차, 보행자와 같은 개별 객체는 인스턴스별로 분할합니다.</p>
+</div>
+<div class="mt-auto">
+<div class="flex items-center">
+<i class="fas fa-sitemap text-gray-400 mr-2"></i>
+<span class="text-sm font-semibold">Panoptic Segmentation</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Example Image -->
+<div class="mt-6 flex justify-center">
+<div class="relative">
+<img alt="Semantic Segmentation Example" class="h-32 object-cover rounded-lg shadow-md" src="https://picture-search.skywork.ai/aippt/image/sheet/ec18c5f155f618ff50425424e4d6c68e.jpg" data-sk-source-container="img" data-sk-source-url="https://nanonets.com/blog/semantic-image-segmentation-2020/" data-sk-source-id="1970307653695086597"/>
+<div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center rounded-b-lg">
+                    Semantic Segmentation Example
+                </div>
+</div>
+</div>
+<!-- Footer -->
+  <div class="mt-6 flex justify-between items-center">
+    <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_6.html">이전</a>
+    <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">7 / 10</div>
+    <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_8.html">다음</a>
+  </div>
+</div>
+
+</body></html>
