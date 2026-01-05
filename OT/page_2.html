@@ -1,260 +1,179 @@
-<!DOCTYPE html><html lang="ko"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>AI 취업 시장 현황</title>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>포트폴리오의 중요성과 구성 방법</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.tailwindcss.com"></script><style>
-        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
-            background-color: #F5F5F5;
-            color: #333333;}
-        .slide-container {
-            width: 1280px;
-            min-height: 720px;
-            position: relative;
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { width: 1280px; height: 720px; margin: 0; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .slide-container { width: 1280px; height: 720px; position: relative; background-color: #f8fafc; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
 
+        .role-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
         }
-        .section-title {
-            color: #333333;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        .highlight {
-            color: #4CAF50;
-            font-weight: 700;
+
+        /* Researcher Theme */
+        .theme-researcher { border-top: 6px solid #10b981; }
+        .icon-researcher { background-color: #ecfdf5; color: #059669; }
+        .tag-researcher { background-color: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+
+        /* Engineer Theme */
+        .theme-engineer { border-top: 6px solid #0ea5e9; }
+        .icon-engineer { background-color: #f0f9ff; color: #0284c7; }
+        .tag-engineer { background-color: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
+
+        /* MLOps Theme */
+        .theme-mlops { border-top: 6px solid #8b5cf6; }
+        .icon-mlops { background-color: #f5f3ff; color: #7c3aed; }
+        .tag-mlops { background-color: #f5f3ff; color: #5b21b6; border: 1px solid #ede9fe; }
+
+        .skill-tag {
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 2px;
         }
-        .warning {
-            color: #FF9800;
-            font-weight: 700;
+
+        .content-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f1f5f9;
         }
-        .bar {
-            fill: #4CAF50;
+
+        .method-item {
+            padding: 1rem;
+            background-color: #fafafa;
+            border-radius: 12px;
+            transition: all 0.2s ease;
         }
-        .bar-text {
-            font-size: 12px;
-            font-family: 'Noto Sans KR', sans-serif;
+        .method-item:hover {
+            background-color: #f0f9ff;
+            transform: translateX(5px);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
         }
     </style>
 </head>
 <body>
-<div class="slide-container bg-gray-100 p-8">
-<!-- Header -->
-<header class="mb-6">
-<h1 class="text-4xl font-bold text-gray-800">AI 취업 시장 현황</h1>
-<div class="w-24 h-1 bg-green-500 mt-2"></div>
-</header>
-<!-- Main Content -->
-<div class="grid grid-cols-2 gap-6 h-5/6">
-<!-- Left Column -->
-<div class="space-y-6">
-<!-- AI Job Market Growth -->
-<div class="bg-white rounded-lg p-4 shadow-md">
-<h2 class="section-title flex items-center text-xl">
-<i class="fas fa-chart-line text-green-500 mr-2"></i>
-                        AI 취업 시장 증가
+<div class="slide-container">
+    <div class="gradient-bg h-24 w-full flex items-center px-12 shadow-lg">
+        <i class="fas fa-id-card text-teal-300 text-3xl mr-5"></i>
+        <h1 class="text-4xl font-bold text-white tracking-tight">포트폴리오의 중요성과 핵심 구성 전략</h1>
+    </div>
+
+    <div class="p-10">
+        <div class="grid grid-cols-2 gap-10">
+            <div class="flex flex-col gap-6">
+                <div class="content-card p-8 flex-grow">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="w-2 h-8 bg-teal-500 rounded-full mr-3"></span>
+                        왜 포트폴리오인가?
                     </h2>
-<ul class="mt-2 space-y-2">
-<li class="flex items-start">
-<i class="fas fa-arrow-trend-up text-green-500 mt-1 mr-2"></i>
-<span>2010년 0.5%에서 2024년 <span class="highlight">1.7%</span>로 AI 기술 요구 증가</span>
-</li>
-<li class="flex items-start">
-<i class="fas fa-user-graduate text-green-500 mt-1 mr-2"></i>
-<span>학력이 높을수록 AI 기술 요구 비중이 높아짐</span>
-</li>
-<li class="flex items-start">
-<i class="fas fa-globe text-green-500 mt-1 mr-2"></i>
-<span>국내 AI 졸업생의 약 <span class="highlight">40%</span>가 해외로 취업</span>
-</li>
-</ul>
-</div>
-<!-- Employment Duration -->
-<div class="bg-white rounded-lg p-4 shadow-md">
-<h2 class="section-title flex items-center text-xl">
-<i class="fas fa-hourglass-half text-orange-500 mr-2"></i>
-                        취업 소요 기간 증가
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <i class="fas fa-check-double text-teal-500 mb-2"></i>
+                            <div class="font-bold text-gray-800 text-sm">기술적 전문성</div>
+                            <div class="text-xs text-gray-500 mt-1">사용 도구와 숙련도 증명</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <i class="fas fa-lightbulb text-orange-500 mb-2"></i>
+                            <div class="font-bold text-gray-800 text-sm">문제 해결 사고</div>
+                            <div class="text-xs text-gray-500 mt-1">위기 대처 및 로직 전개</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <i class="fas fa-users text-blue-500 mb-2"></i>
+                            <div class="font-bold text-gray-800 text-sm">협업 커뮤니케이션</div>
+                            <div class="text-xs text-gray-500 mt-1">팀 내 역할과 기여도</div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <i class="fas fa-rocket text-purple-500 mb-2"></i>
+                            <div class="font-bold text-gray-800 text-sm">성장 가능성</div>
+                            <div class="text-xs text-gray-500 mt-1">학습 의지와 발전 속도</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col">
+                <div class="content-card p-8 h-full">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
+                        <span class="w-2 h-8 bg-orange-500 rounded-full mr-3"></span>
+                        필승 포트폴리오 제작법
                     </h2>
-<ul class="mt-2 space-y-2">
-<li class="flex items-start">
-<i class="fas fa-calendar-xmark text-orange-500 mt-1 mr-2"></i>
-<span>취업까지 수개월 소요, 수백건의 입사 지원 일반적</span>
-</li>
-<li class="flex items-start">
-<i class="fas fa-user-tie text-orange-500 mt-1 mr-2"></i>
-<span>컴퓨터공학 졸업생: <span class="warning">7개월 이상</span> 구직 활동</span>
-</li>
-<li class="flex items-start">
-<i class="fas fa-building text-orange-500 mt-1 mr-2"></i>
-<span>100곳 이상의 회사에 지원하는 경우 많음</span>
-</li>
-<li class="flex items-start">
-<i class="fas fa-filter text-orange-500 mt-1 mr-2"></i>
-<span>ATS로 인한 지원서 증가로 인사 담당자의 검토 부담 증가</span>
-</li>
-</ul>
+                    <div class="space-y-4">
+                        <div class="method-item flex items-start">
+                            <div class="icon-box mr-4 shrink-0"><i class="fas fa-crosshairs"></i></div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Targeting: 청중 분석</h3>
+                                <p class="text-sm text-gray-500 leading-snug">지원하는 기업이 쓰는 기술과 문화에 맞춰 내용을 큐레이션</p>
+                            </div>
+                        </div>
+                        <div class="method-item flex items-start">
+                            <div class="icon-box mr-4 shrink-0"><i class="fas fa-stream"></i></div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Storytelling: 과정 중심</h3>
+                                <p class="text-sm text-gray-500 leading-snug">완성작만 보여주지 말고, 어떤 고민을 거쳐 결과가 나왔는지 기록</p>
+                            </div>
+                        </div>
+                        <div class="method-item flex items-start">
+                            <div class="icon-box mr-4 shrink-0"><i class="fas fa-layer-group"></i></div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Stack: 명확한 기술 명시</h3>
+                                <p class="text-sm text-gray-500 leading-snug">단순 나열이 아닌, 해당 프로젝트에서 그 기술을 왜 썼는지 설명</p>
+                            </div>
+                        </div>
+                        <div class="method-item flex items-start">
+                            <div class="icon-box mr-4 shrink-0"><i class="fas fa-chart-pie"></i></div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Impact: 정량적 성과</h3>
+                                <p class="text-sm text-gray-500 leading-snug">"정확도 15% 개선", "처리 속도 2배 향상" 등 숫자로 명시</p>
+                            </div>
+                        </div>
+                        <div class="method-item flex items-start">
+                            <div class="icon-box mr-4 shrink-0"><i class="fas fa-history"></i></div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-lg">Keep Update: 지속성</h3>
+                                <p class="text-sm text-gray-500 leading-snug">GitHub, 기술 블로그 링크로 '성장 중'임을 어필</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
-<!-- Right Column -->
-<div class="flex flex-col space-y-6">
-<!-- Education Level Chart -->
-<div class="bg-white rounded-lg p-4 shadow-md flex-grow">
-<h2 class="section-title flex items-center text-xl mb-2">
-<i class="fas fa-graduation-cap text-blue-500 mr-2"></i>
-                        학력별 AI 기술 요구 비중
-                    </h2>
-<div class="h-64 w-full" id="chart"></div>
-</div>
-<!-- Hiring Trends -->
-<div class="bg-white rounded-lg p-4 shadow-md">
-<h2 class="section-title flex items-center text-xl">
-<i class="fas fa-briefcase text-red-500 mr-2"></i>
-                        채용 트렌드
-                    </h2>
-<div class="grid grid-cols-2 gap-4 mt-2">
-<div>
-<h3 class="font-semibold text-gray-700 mb-1">수요가 높은 산업</h3>
-<ul class="space-y-1">
-<li class="flex items-center">
-<i class="fas fa-hospital text-blue-500 mr-2"></i>
-<span>헬스케어</span>
-</li>
-<li class="flex items-center">
-<i class="fas fa-landmark text-blue-500 mr-2"></i>
-<span>금융</span>
-</li>
-<li class="flex items-center">
-<i class="fas fa-shopping-cart text-blue-500 mr-2"></i>
-<span>이커머스</span>
-</li>
-<li class="flex items-center">
-<i class="fas fa-car text-blue-500 mr-2"></i>
-<span>자동차</span>
-</li>
-<li class="flex items-center">
-<i class="fas fa-industry text-blue-500 mr-2"></i>
-<span>제조업</span>
-</li>
-</ul>
-</div>
-<div>
-<h3 class="font-semibold text-gray-700 mb-1">수요가 높은 직무</h3>
-<ul class="space-y-1">
-<li class="flex items-center">
-<i class="fas fa-brain text-green-500 mr-2"></i>
-<span>머신러닝 엔지니어 <span class="highlight">↑59%</span></span>
-</li>
-<li class="flex items-center">
-<i class="fas fa-database text-green-500 mr-2"></i>
-<span>데이터 사이언티스트</span>
-</li>
-<li class="flex items-center">
-<i class="fas fa-sitemap text-green-500 mr-2"></i>
-<span>AI 아키텍트</span>
-</li>
-<li class="flex items-center">
-<i class="fas fa-comments text-green-500 mr-2"></i>
-<span>자연어 처리 전문가</span>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Footer -->
-</div>
-<script>
-        // D3.js Chart for Education Level vs AI Job Postings
-        document.addEventListener('DOMContentLoaded', function() {
-            // Data from the document
-            const data = [
-                {education: "박사(PhD)", percentage: 5.3},
-                {education: "석사(Master's)", percentage: 5.0},
-                {education: "학사(Bachelor's)", percentage: 4.7}
-            ];
-
-            // Chart dimensions
-            const margin = {top: 20, right: 30, bottom: 40, left: 40};
-            const width = document.getElementById('chart').offsetWidth - margin.left - margin.right;
-            const height = document.getElementById('chart').offsetHeight - margin.top - margin.bottom;
-
-            // Create SVG
-            const svg = d3.select("#chart")
-                .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
-
-            // X scale
-            const x = d3.scaleBand()
-                .domain(data.map(d => d.education))
-                .range([0, width])
-                .padding(0.3);
-
-            // Y scale
-            const y = d3.scaleLinear()
-                .domain([0, 6])
-                .range([height, 0]);
-
-            // Add X axis
-            svg.append("g")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x))
-                .selectAll("text")
-                .style("font-family", "'Noto Sans KR', sans-serif")
-                .style("font-size", "12px");
-
-            // Add Y axis
-            svg.append("g")
-                .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "%"))
-                .style("font-family", "'Noto Sans KR', sans-serif")
-                .style("font-size", "12px");
-
-            // Add Y axis label
-            svg.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left)
-                .attr("x", 0 - (height / 2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .style("font-family", "'Noto Sans KR', sans-serif")
-                .style("font-size", "12px")
-                .text("AI 기술 요구 (%)");
-
-            // Add bars
-            svg.selectAll(".bar")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("class", "bar")
-                .attr("x", d => x(d.education))
-                .attr("width", x.bandwidth())
-                .attr("y", d => y(d.percentage))
-                .attr("height", d => height - y(d.percentage))
-                .attr("fill", (d, i) => {
-                    const colors = ["#FF9800", "#4CAF50", "#333333"];
-                    return colors[i];
-                });
-
-            // Add value labels on top of bars
-            svg.selectAll(".bar-text")
-                .data(data)
-                .enter()
-                .append("text")
-                .attr("class", "bar-text")
-                .attr("x", d => x(d.education) + x.bandwidth()/2)
-                .attr("y", d => y(d.percentage) - 5)
-                .attr("text-anchor", "middle")
-                .text(d => d.percentage + "%");
-        });
-    </script>
-
 <div class="mt-6 flex justify-between items-center">
 <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_1.html">이전</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">2 / 8</div>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">2 / 3</div>
 <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_3.html">다음</a>
 </div>
 </body></html>

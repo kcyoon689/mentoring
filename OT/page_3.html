@@ -1,245 +1,168 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>AI 전공자 취업 특성</title>
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #F5F5F5;
-            color: #333333;
-        }
-        .slide-container {
-            width: 1280px;
-            min-height: 720px;
-            position: relative;
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>AI 분야의 주요 직무</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { width: 1280px; height: 720px; margin: 0; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .slide-container { width: 1280px; height: 720px; position: relative; background-color: #f8fafc; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
+
+        .role-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
         }
-        .section-title {
-            color: #333333;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        .highlight {
-            color: #4CAF50;
-            font-weight: 700;
-        }
-        .warning {
-            color: #FF9800;
-            font-weight: 700;
-        }
-        .bar {
-            fill: #4CAF50;
-        }
-        .bar-text {
-            font-size: 12px;
-            font-family: 'Noto Sans KR', sans-serif;
-        }
-        .card {
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
+
+        /* Researcher Theme */
+        .theme-researcher { border-top: 6px solid #10b981; }
+        .icon-researcher { background-color: #ecfdf5; color: #059669; }
+        .tag-researcher { background-color: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+
+        /* Engineer Theme */
+        .theme-engineer { border-top: 6px solid #0ea5e9; }
+        .icon-engineer { background-color: #f0f9ff; color: #0284c7; }
+        .tag-engineer { background-color: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
+
+        /* MLOps Theme */
+        .theme-mlops { border-top: 6px solid #8b5cf6; }
+        .icon-mlops { background-color: #f5f3ff; color: #7c3aed; }
+        .tag-mlops { background-color: #f5f3ff; color: #5b21b6; border: 1px solid #ede9fe; }
+
+        .skill-tag {
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 2px;
         }
     </style>
 </head>
 <body>
-<div class="slide-container bg-gray-100 p-8">
-<!-- Header -->
-<header class="mb-6">
-<h1 class="text-4xl font-bold text-gray-800">AI 전공자 취업 특성</h1>
-<div class="w-24 h-1 bg-green-500 mt-2"></div>
-</header>
-<!-- Main Content -->
-<div class="grid grid-cols-3 gap-6 h-5/6">
-<!-- Education Level and Employment Rate -->
-<div class="bg-white rounded-lg p-5 shadow-md card">
-<h2 class="section-title flex items-center text-xl mb-4">
-<i class="fas fa-graduation-cap text-green-500 mr-2"></i>
-                    학력별 취업률 격차
-                </h2>
-<div class="h-56 w-full" id="education-chart"></div>
-<div class="mt-4 text-sm">
-<p class="text-gray-600 mb-2"><i class="fas fa-info-circle text-blue-500 mr-1"></i> 2024년 미국 애틀랜타 연방준비은행 보고서</p>
-<p class="text-gray-600"><i class="fas fa-globe text-blue-500 mr-1"></i> 국내 AI 졸업생의 약 <span class="highlight">40%</span>가 해외로 취업</p>
-</div>
-</div>
-<!-- Fresh Graduate Challenges -->
-<div class="bg-white rounded-lg p-5 shadow-md card">
-<h2 class="section-title flex items-center text-xl mb-4">
-<i class="fas fa-triangle-exclamation text-orange-500 mr-2"></i>
-                    신입 취업 시장의 어려움
-                </h2>
-<div class="mb-4">
-<div class="flex items-center mb-2">
-<div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center mr-3">
-<i class="fas fa-user-graduate text-orange-500"></i>
-</div>
-<div>
-<p class="font-semibold">신입 졸업생의 역설</p>
-<p class="text-sm text-gray-600">취업 가능성이 높은데도 불구하고 실제 취업에 어려움</p>
-</div>
-</div>
-</div>
-</li>
-<li class="flex items-start">
-<i class="fas fa-robot text-orange-500 mt-1 mr-2"></i>
-<div>
-<p class="font-semibold">자동화의 영향</p>
-<p class="text-sm text-gray-600">AI가 데이터 입력, 기초 분석 등 전통적인 신입 사원의 업무를 자동화</p>
-</div>
-</li>
-<li class="flex items-start">
-<i class="fas fa-arrow-trend-down text-orange-500 mt-1 mr-2"></i>
-<div>
-<p class="font-semibold">신입 채용 감소</p>
-<p class="text-sm text-gray-600">2024-2025년 분석: 엔지니어링(-72.2%) 및 데이터(-62.1%) 분야의 신입 채용률 감소</p>
-</div>
-</li>
-</ul>
-</div>
-<!-- Employment Advantages -->
-<div class="bg-white rounded-lg p-5 shadow-md card">
-<h2 class="section-title flex items-center text-xl mb-4">
-<i class="fas fa-trophy text-red-500 mr-2"></i>
-                    석사 이상 학위의 취업 우위
-                </h2>
-<div class="mb-6">
-<div class="flex items-center justify-between mb-2">
-<span class="font-semibold">학사</span>
-<span class="font-semibold">석사</span>
-<span class="font-semibold">박사</span>
-</div>
-<div class="flex items-center justify-between h-8 rounded-lg overflow-hidden">
-<div class="h-full bg-gray-300 rounded-l-lg" style="width: 47%"></div>
-<div class="h-full bg-green-500" style="width: 50%"></div>
-<div class="h-full bg-orange-500 rounded-r-lg" style="width: 3%"></div>
-</div>
-<div class="flex items-center justify-between mt-1 text-xs text-gray-600">
-<span>4.7%</span>
-<span>5.0%</span>
-<span>5.3%</span>
-</div>
-</div>
-<div class="space-y-4">
-<div class="p-3 bg-gray-50 rounded-lg">
-<div class="flex items-center">
-<i class="fas fa-briefcase text-green-500 mr-2"></i>
-<p class="font-semibold">포트폴리오의 중요성</p>
-</div>
-<p class="text-sm text-gray-600 mt-1">실무적인 포트폴리오를 갖춘 인재에 대한 수요 증가</p>
-</div>
-<!-- <div class="p-3 bg-gray-50 rounded-lg">
-<div class="flex items-center">
-<i class="fas fa-money-bill-trend-up text-green-500 mr-2"></i>
-</div>
-</div> -->
-<div class="p-3 bg-gray-50 rounded-lg">
-<div class="flex items-center">
-<i class="fas fa-handshake-angle text-green-500 mr-2"></i>
-<p class="font-semibold">협상력 증가</p>
-</div>
-<p class="text-sm text-gray-600 mt-1">전문성 증가에 따른 취업조건 협상력 개선</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Footer -->
- <script>
-        // D3.js Chart for Education Level vs AI Job Postings
-        document.addEventListener('DOMContentLoaded', function() {
-            // Data from the document
-            const data = [
-                {education: "박사(PhD)", percentage: 5.3},
-                {education: "석사(Master's)", percentage: 5.0},
-                {education: "학사(Bachelor's)", percentage: 4.7}
-            ];
+<div class="slide-container">
+    <div class="gradient-bg h-24 w-full flex items-center px-12 shadow-md">
+        <i class="fas fa-users-cog text-teal-400 text-3xl mr-5"></i>
+        <h1 class="text-4xl font-bold text-white tracking-tight">AI 전문 분야 및 주요 직무</h1>
+    </div>
 
-            // Chart dimensions
-            const margin = {top: 20, right: 30, bottom: 40, left: 40};
-            const width = document.getElementById('education-chart').offsetWidth - margin.left - margin.right;
-            const height = document.getElementById('education-chart').offsetHeight - margin.top - margin.bottom;
+    <div class="p-10">
+        <div class="mb-8">
+            <p class="text-xl text-slate-600 font-medium">
+                AI 산업은 <span class="text-slate-900 font-bold">연구(Research) → 구현(Engineering) → 운영(Operations)</span>의 긴밀한 파이프라인으로 구성
+            </p>
+        </div>
 
-            // Create SVG
-            const svg = d3.select("#education-chart")
-                .append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", `translate(${margin.left},${margin.top})`);
+        <div class="grid grid-cols-3 gap-8 mb-10">
+            <div class="role-card theme-researcher p-7">
+                <div class="w-14 h-14 icon-researcher rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+                    <i class="fas fa-flask text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">AI Researcher</h3>
+                <div class="space-y-4 flex-grow">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase mb-2 tracking-wider">Major Role</p>
+                        <p class="text-sm text-slate-600 leading-relaxed italic">"알고리즘 설계"</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase mb-2 tracking-wider">Key Competencies</p>
+                        <div class="flex flex-wrap">
+                            <span class="skill-tag tag-researcher">수학적 모델링</span>
+                            <span class="skill-tag tag-researcher">SOTA 논문 구현</span>
+                            <span class="skill-tag tag-researcher">PyTorch</span>
+                            <span class="skill-tag tag-researcher">학술 논문 작성</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            // X scale
-            const x = d3.scaleBand()
-                .domain(data.map(d => d.education))
-                .range([0, width])
-                .padding(0.3);
+            <div class="role-card theme-engineer p-7">
+                <div class="w-14 h-14 icon-engineer rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+                    <i class="fas fa-laptop-code text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">ML Engineer</h3>
+                <div class="space-y-4 flex-grow">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase mb-2 tracking-wider">Major Role</p>
+                        <p class="text-sm text-slate-600 leading-relaxed italic">"모델을 서비스 환경에 최적화"</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase mb-2 tracking-wider">Key Competencies</p>
+                        <div class="flex flex-wrap">
+                            <span class="skill-tag tag-engineer">모델 서빙(API)</span>
+                            <span class="skill-tag tag-engineer">Python/C++</span>
+                            <span class="skill-tag tag-engineer">파인튜닝</span>
+                            <span class="skill-tag tag-engineer">데이터 엔지니어링</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            // Y scale
-            const y = d3.scaleLinear()
-                .domain([0, 6])
-                .range([height, 0]);
+            <div class="role-card theme-mlops p-7">
+                <div class="w-14 h-14 icon-mlops rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+                    <i class="fas fa-infinity text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">MLOps Engineer</h3>
+                <div class="space-y-4 flex-grow">
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase mb-2 tracking-wider">Major Role</p>
+                        <p class="text-sm text-slate-600 leading-relaxed italic">"데이터 수집부터 배포까지의 전 과정을 자동화"</p>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-slate-400 uppercase mb-2 tracking-wider">Key Competencies</p>
+                        <div class="flex flex-wrap">
+                            <span class="skill-tag tag-mlops">Docker/K8s</span>
+                            <span class="skill-tag tag-mlops">CI/CD 파이프라인</span>
+                            <span class="skill-tag tag-mlops">클라우드(AWS/GCP)</span>
+                            <span class="skill-tag tag-mlops">MLflow</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            // Add X axis
-            svg.append("g")
-                .attr("transform", `translate(0,${height})`)
-                .call(d3.axisBottom(x))
-                .selectAll("text")
-                .style("font-family", "'Noto Sans KR', sans-serif")
-                .style("font-size", "12px");
-
-            // Add Y axis
-            svg.append("g")
-                .call(d3.axisLeft(y).ticks(5).tickFormat(d => d + "%"))
-                .style("font-family", "'Noto Sans KR', sans-serif")
-                .style("font-size", "12px");
-
-            // Add Y axis label
-            svg.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - margin.left)
-                .attr("x", 0 - (height / 2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .style("font-family", "'Noto Sans KR', sans-serif")
-                .style("font-size", "12px")
-                .text("AI 기술 요구 (%)");
-
-            // Add bars
-            svg.selectAll(".bar")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("class", "bar")
-                .attr("x", d => x(d.education))
-                .attr("width", x.bandwidth())
-                .attr("y", d => y(d.percentage))
-                .attr("height", d => height - y(d.percentage))
-                .attr("fill", (d, i) => {
-                    const colors = ["#FF9800", "#4CAF50", "#333333"];
-                    return colors[i];
-                });
-
-            // Add value labels on top of bars
-            svg.selectAll(".bar-text")
-                .data(data)
-                .enter()
-                .append("text")
-                .attr("class", "bar-text")
-                .attr("x", d => x(d.education) + x.bandwidth()/2)
-                .attr("y", d => y(d.percentage) - 5)
-                .attr("text-anchor", "middle")
-                .text(d => d.percentage + "%");
-        });
-    </script>
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h4 class="text-lg font-bold text-slate-800 mb-4 flex items-center">
+                <i class="fas fa-project-diagram text-orange-500 mr-3"></i>
+                산업군별 특화 직무 (Domain Specific)
+            </h4>
+            <div class="grid grid-cols-4 gap-4">
+                <div class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mr-3 text-xs font-bold">NLP</div>
+                    <span class="text-sm font-semibold text-slate-700">자연어 처리</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-xs font-bold">CV</div>
+                    <span class="text-sm font-semibold text-slate-700">컴퓨터 비전</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mr-3 text-xs font-bold">RE</div>
+                    <span class="text-sm font-semibold text-slate-700">추천 시스템 엔지니어</span>
+                </div>
+                <div class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mr-3 text-xs font-bold">LLM</div>
+                    <span class="text-sm font-semibold text-slate-700">프롬프트 엔지니어</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="mt-6 flex justify-between items-center">
 <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="page_2.html">이전</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 8</div>
-<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_4.html">다음</a>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">3 / 3</div>
+<a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="../index.html">홈</a>
 </div>
 </body></html>

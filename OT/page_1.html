@@ -1,97 +1,186 @@
-<!DOCTYPE html><html lang="ko"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>ai 7팀 멘토링 OT</title>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mentoring OT</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&amp;display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script><style>
-        body {width: 1280px; min-height: 720px; clip-path: inset(0 0 0 0); font-family: 'Noto Sans KR', sans-serif;
-            background-color: #F5F5F5;}
-        .slide {
-            width: 1280px;
-            min-height: 720px;
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { width: 1280px; height: 720px; margin: 0; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; background-color: #f8fafc; }
+        .slide-container { width: 1280px; height: 720px; position: relative; background-color: #f8fafc; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
 
-            position: relative;
+        .role-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
         }
-        .circuit-pattern {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 0;
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
-        .circuit-node {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background-color: #4CAF50;
-            border-radius: 50%;
-            z-index: 1;
+
+        /* Researcher Theme */
+        .theme-researcher { border-top: 6px solid #10b981; }
+        .icon-researcher { background-color: #ecfdf5; color: #059669; }
+        .tag-researcher { background-color: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+
+        /* Engineer Theme */
+        .theme-engineer { border-top: 6px solid #0ea5e9; }
+        .icon-engineer { background-color: #f0f9ff; color: #0284c7; }
+        .tag-engineer { background-color: #eff6ff; color: #1e40af; border: 1px solid #dbeafe; }
+
+        /* MLOps Theme */
+        .theme-mlops { border-top: 6px solid #8b5cf6; }
+        .icon-mlops { background-color: #f5f3ff; color: #7c3aed; }
+        .tag-mlops { background-color: #f5f3ff; color: #5b21b6; border: 1px solid #ede9fe; }
+
+        .skill-tag {
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin: 2px;
         }
-        .title-text {
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+
+        .skill-card {
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+        }
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .skill-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .header-blue {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+        .header-indigo {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        }
+        .header-amber {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .skill-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .skill-list li {
+            padding: 0.75rem 0;
+            display: flex;
+            align-items: flex-start;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .skill-list li:last-child {
+            border-bottom: none;
+        }
+        .skill-list li i {
+            margin-right: 0.75rem;
+            margin-top: 0.25rem;
+        }
+        .skill-list li span {
+            flex: 1;
+        }
+
+        .highlight {
+            font-weight: 700;
+            color: #0ea5e9;
         }
     </style>
 </head>
 <body>
-<div class="slide bg-gray-100 flex flex-col justify-center items-center p-16 relative overflow-hidden">
-<!-- Circuit board background pattern -->
-<div class="circuit-pattern"></div>
-<!-- Random circuit nodes -->
-<div class="circuit-node" style="top: 120px; left: 250px;"></div>
-<div class="circuit-node" style="top: 320px; left: 150px;"></div>
-<div class="circuit-node" style="top: 520px; left: 350px;"></div>
-<div class="circuit-node" style="top: 220px; left: 950px;"></div>
-<div class="circuit-node" style="top: 420px; left: 1050px;"></div>
-<div class="circuit-node" style="top: 620px; left: 850px;"></div>
-<!-- Main content container -->
-<div class="z-10 text-center mb-12">
-<h1 class="title-text text-6xl font-bold text-gray-800 mb-4">ai 7팀 멘토링 OT</h1>
-<h2 class="text-3xl text-gray-700 mb-2">AI 분야 취업 현황 및 접근 전략</h2>
-<div class="w-32 h-1 bg-green-500 mx-auto my-6"></div>
-</div>
-<!-- Icon grid representing key concepts -->
-<div class="grid grid-cols-4 gap-12 z-10 mb-16">
-<div class="flex flex-col items-center">
-<div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-3">
-<i class="fas fa-chart-line text-green-600 text-4xl"></i>
-</div>
-<p class="text-gray-700 font-medium">취업률 분석</p>
-</div>
-<div class="flex flex-col items-center">
-<div class="w-20 h-20 rounded-full bg-orange-100 flex items-center justify-center mb-3">
-<i class="fas fa-briefcase text-orange-600 text-4xl"></i>
-</div>
-<p class="text-gray-700 font-medium">AI 직무 세분화</p>
-</div>
-<div class="flex flex-col items-center">
-<div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-3">
-<i class="fas fa-industry text-red-500 text-4xl"></i>
-</div>
-<p class="text-gray-700 font-medium">제조업 AI 활용</p>
-</div>
-<div class="flex flex-col items-center">
-<div class="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-3">
-<i class="fas fa-bullseye text-gray-700 text-4xl"></i>
-</div>
-<p class="text-gray-700 font-medium">맞춤형 전략</p>
-</div>
-</div>
-<!-- Bottom information -->
-<div class="absolute bottom-8 left-0 right-0 flex justify-between px-16 z-10">
-<div class="text-gray-600">
-<i class="far fa-calendar-alt mr-2"></i>2025-08-12
-            </div>
-</div>
-</div>
+<div class="slide-container">
+    <div class="gradient-bg h-24 w-full flex items-center px-12 shrink-0">
+        <h1 class="text-4xl font-bold text-white tracking-tight">
+            AI  <span class="text-teal-100">기초 역량</span>
+        </h1>
+    </div>
 
+    <div class="px-12 pt-10 pb-6">
+        <p class="text-2xl text-gray-800 font-medium leading-relaxed">
+            탄탄한 기초는 복잡한 AI 모델의 원리를 이해하고 <br/>
+            실제 문제를 해결하는 <span class="border-b-4 border-teal-400">가장 강력한 무기</span>가 됩니다.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-3 gap-8 px-12 flex-grow">
+        <div class="skill-card">
+            <div class="skill-header header-blue">
+                <i class="fas fa-code text-2xl text-white mr-3"></i>
+                <h3 class="text-xl font-bold text-white">프로그래밍 기초</h3>
+            </div>
+            <div class="p-6">
+                <ul class="skill-list text-gray-700 text-base">
+                    <li><i class="fas fa-check text-teal-600"></i> <span><span class="highlight">Python</span> 숙련도 및 핵심 라이브러리(NumPy, PyTorch 등) 활용 능력</span></li>
+                    <li><i class="fas fa-check text-teal-600"></i> <span>효율적인 코드 작성을 위한 <strong>자료구조와 알고리즘</strong> 학습</span></li>
+                    <li><i class="fas fa-check text-teal-600"></i> <span>코드트리 등 플랫폼을 통한 <strong>지속적인 구현 연습</strong></span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="skill-card">
+            <div class="skill-header header-indigo">
+                <i class="fas fa-calculator text-2xl text-white mr-3"></i>
+                <h3 class="text-xl font-bold text-white">핵심 수학 지식</h3>
+            </div>
+            <div class="p-6">
+                <ul class="skill-list text-gray-700 text-base">
+                    <li><i class="fas fa-check text-indigo-600"></i> <span>데이터 특징 추출과 연산을 이해하는 <span class="highlight text-indigo-700">선형대수</span></span></li>
+                    <li><i class="fas fa-check text-indigo-600"></i> <span>모델 최적화(경사하강법)의 근간이 되는 <span class="highlight text-indigo-700">미적분</span></span></li>
+                    <li><i class="fas fa-check text-indigo-600"></i> <span>결과의 불확실성을 평가하는 <span class="highlight text-indigo-700">확률 및 통계</span></span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="skill-card">
+            <div class="skill-header header-amber">
+                <i class="fas fa-brain text-2xl text-white mr-3"></i>
+                <h3 class="text-xl font-bold text-white">AI 핵심 개념</h3>
+            </div>
+            <div class="p-6">
+                <ul class="skill-list text-gray-700 text-base">
+                    <li><i class="fas fa-check text-amber-600"></i> <span>지도/비지도/강화 학습 등 <strong>학습 패러다임</strong>의 완벽한 이해</span></li>
+                    <li><i class="fas fa-check text-amber-600"></i> <span><strong>신경망(NN)</strong>의 기본 구조와 CNN, RNN 등 주요 아키텍처 파악</span></li>
+                    <li><i class="fas fa-check text-amber-600"></i> <span>모델 성능 평가 및 <strong>오버피팅 방지</strong> 전략 습득</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-12 mt-8 mb-12">
+        <div class="bg-teal-50 p-5 rounded-xl border-l-8 border-teal-600 flex items-center">
+            <i class="fas fa-rocket text-3xl text-teal-600 mr-6"></i>
+            <div>
+                <p class="text-gray-800 text-lg">
+                    <span class="font-bold text-teal-800 underline">학습 방향:</span>
+                    <span class="font-bold">"왜 이렇게 작동하는가?"</span>에 대한 답을 스스로 찾을 수 있는 기초 체력을 기르는 것이 중요함
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="mt-6 flex justify-between items-center">
 <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400" href="../index.html">홈</a>
-<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">1 / 8</div>
+<div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">1 / 3</div>
 <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" href="page_2.html">다음</a>
 </div>
 </body></html>
