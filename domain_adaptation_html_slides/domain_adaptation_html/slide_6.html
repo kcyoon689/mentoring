@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Synthetic to Real</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;background:#f3f5f9;font-family:Arial,"Noto Sans KR",sans-serif;color:#18212f}
+    .slide{width:1600px;height:900px;margin:0 auto;background:linear-gradient(135deg,#f7f9fc,#eef3fb);position:relative;overflow:hidden}
+    .title{position:absolute;left:72px;top:54px;display:flex;align-items:center;gap:18px}.bar{width:10px;height:56px;border-radius:8px;background:#ff9c3f}
+    h1{margin:0;font-size:42px;font-weight:800}.sub{position:absolute;left:100px;top:130px;font-size:20px;color:#5d6b82}
+    .left{position:absolute;left:72px;top:210px;width:520px;bottom:70px;background:#fff;border-radius:28px;padding:30px;box-shadow:0 18px 40px rgba(47,77,122,.10)}
+    .right{position:absolute;left:625px;right:72px;top:210px;bottom:70px;background:#fff;border-radius:28px;padding:26px;box-shadow:0 18px 40px rgba(47,77,122,.10);display:flex;align-items:center;justify-content:center}
+    .lead{font-size:31px;font-weight:800;color:#c96c14;margin-bottom:18px}.body{font-size:26px;line-height:1.65;margin-bottom:22px}.note{padding:18px 20px;border-radius:18px;background:#fff7ef;border:1px solid #ffe0bf;font-size:23px;line-height:1.55}
+    img{max-width:100%;max-height:100%;display:block;border-radius:18px}
+  </style>
+</head>
+<body>
+  <main class="slide">
+    <div class="title"><div class="bar"></div><h1>Synthetic to Real</h1></div>
+    <div class="sub">시뮬레이션 데이터에서 학습한 모델이 실제 환경에서도 동작하도록 분포 차이를 줄이는 과정</div>
+    <section class="left">
+      <div class="lead">왜 문제가 될까?</div>
+      <div class="body">시뮬레이션으로 생성된 데이터는 라벨링이 쉽고 대량 생성이 가능하지만, 실제 환경과는 <strong>조명</strong>, <strong>질감</strong>, <strong>배경</strong>, <strong>노이즈</strong>가 다릅니다.</div>
+      <div class="body">이 차이 때문에 synthetic 데이터로만 학습한 모델은 real-world 데이터에서 성능이 급격히 떨어질 수 있습니다.</div>
+      <div class="note"><strong>핵심 아이디어</strong><br>Domain Adaptation을 통해 source(synthetic)와 target(real) 사이의 시각적·통계적 차이를 줄이고, 두 환경에서 공통으로 유지되는 핵심 특징을 학습하도록 만듭니다.</div>
+    </section>
+    <section class="right">
+      <img src="images/img6.png" alt="Synthetic to real domain gap illustration" />
+    </section>
+  </main>
+</body>
+</html>
