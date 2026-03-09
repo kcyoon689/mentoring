@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MLOps란 무엇인가?</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body {
+    width: 1280px;
+    min-height: 720px;
+    overflow: hidden;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: #F5F5F5;
+    color: #333333;
+    margin: 0; padding: 0;
+  }
+  html { overflow: hidden; }
+  .slide-container { width: 1280px; height: 720px; position: relative; overflow: hidden; }
+  .title { color: #003366; }
+  .icon-circle {
+    background-color: #EEF2FF; color: #003366;
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .card-orange { background: white; border-left: 4px solid #F59E0B; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .card-blue   { background: white; border-left: 4px solid #3B82F6; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .card-teal   { background: white; border-left: 4px solid #14B8A6; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .card-purple { background: white; border-left: 4px solid #8B5CF6; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .card-green  { background: white; border-left: 4px solid #22C55E; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .card-red    { background: white; border-left: 4px solid #EF4444; box-shadow: 0 4px 6px rgba(0,0,0,0.08); }
+  .slide { display: none; width: 1280px; height: 668px; }
+  .slide.active { display: flex; }
+  .nav-bar {
+    position: fixed; bottom: 0; left: 0; width: 1280px; height: 52px;
+    background: rgba(255,255,255,0.97); border-top: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: center; gap: 12px; z-index: 999;
+  }
+  .nav-bar button {
+    background: #003366; color: white; border: none; width: 32px; height: 32px;
+    border-radius: 50%; font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-bar button:disabled { background: #ccc; cursor: default; }
+  .nav-counter { font-size: 13px; font-weight: 600; color: #555; min-width: 50px; text-align: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; cursor: pointer; transition: all 0.2s; }
+  .dot.active { background: #003366; width: 20px; border-radius: 4px; }
+  #s1 {
+    background: linear-gradient(135deg, #003366 0%, #005599 50%, #0077cc 100%);
+    flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  #s1::before {
+    content: ''; position: absolute; width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%);
+    top: -120px; right: -120px; border-radius: 50%;
+  }
+  #s1::after {
+    content: ''; position: absolute; width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(0,220,180,0.12) 0%, transparent 70%);
+    bottom: -60px; left: -60px; border-radius: 50%;
+  }
+  .img-card img { width: 100%; height: 100%; object-fit: contain; border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<!-- S1: 타이틀 -->
+<div class="slide active" id="s1">
+  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:16px;">
+    <span style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);color:#a8d8ff;padding:6px 20px;border-radius:20px;font-size:13px;letter-spacing:2px;text-transform:uppercase;">Machine Learning Operations</span>
+    <h1 style="font-size:72px;font-weight:900;color:white;line-height:1;letter-spacing:-2px;">ML<span style="color:#00e5c0;">Ops</span>란 무엇인가?</h1>
+    <p style="color:#a8d8ff;font-size:20px;font-weight:300;margin-top:4px;">AI 프로젝트의 안정적인 성공을 위한 구축 가이드</p>
+    <div style="display:flex;gap:12px;margin-top:12px;">
+      <span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#c8e8ff;padding:8px 20px;border-radius:8px;font-size:15px;font-weight:600;">ML</span>
+      <span style="color:rgba(255,255,255,0.4);font-size:22px;line-height:2.1;">+</span>
+      <span style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#c8e8ff;padding:8px 20px;border-radius:8px;font-size:15px;font-weight:600;">Dev</span>
+      <span style="color:rgba(255,255,255,0.4);font-size:22px;line-height:2.1;">+</span>
+      <span style="background:rgba(0,229,192,0.2);border:1px solid rgba(0,229,192,0.4);color:#00e5c0;padding:8px 20px;border-radius:8px;font-size:15px;font-weight:600;">Ops</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2: 정의 -->
+<div class="slide" id="s2">
+  <div class="slide-container p-10 flex flex-col" style="gap:14px;">
+    <h1 class="title text-4xl font-bold">MLOps의 정의</h1>
+    <div class="grid grid-cols-2 gap-5 flex-1">
+      <div class="flex flex-col gap-4">
+        <div class="bg-white rounded-lg p-5 shadow-md">
+          <p class="text-lg font-bold mb-1" style="color:#003366;">Machine Learning + Operations</p>
+          <p class="text-base text-gray-700">머신러닝 모델의 안정적인 <strong>개발(Dev)</strong>과 <strong>운영(Ops)</strong>을 통합하여 전체 수명 주기를 효율적으로 관리하기 위한 프레임워크입니다.</p>
+          <p class="text-base text-gray-700">DevOps 철학을 ML 워크플로에 적용하여 데이터가 변하면 모델도 변해야 하고, MLOps는 이 순환을 자동화합니다.</p>
+        </div>
+        <div class="card-teal p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#F0FDFA;color:#14B8A6;"><i class="fas fa-sync-alt text-lg"></i></div>
+          <div><h3 class="font-bold mb-1">유지, 관리, 배포, 모니터링의 효율화</h3><p class="text-sm text-gray-600">자동화된 파이프라인으로 반복 작업을 제거하고 배포 속도를 가속화합니다.</p></div>
+        </div>
+        <div class="card-blue p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#EFF6FF;color:#3B82F6;"><i class="fas fa-people-arrows text-lg"></i></div>
+          <div><h3 class="font-bold mb-1">데이터 사이언스와 엔지니어링의 결합</h3><p class="text-sm text-gray-600">팀 사일로를 제거하고 협업 구조를 표준화하여 생산성을 높입니다.</p></div>
+        </div>
+        <div class="card-green p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#F0FDF4;color:#22C55E;"><i class="fas fa-check-circle text-lg"></i></div>
+          <div><h3 class="font-bold mb-1">신뢰할 수 있는 모델 서비스 제공</h3><p class="text-sm text-gray-600">한 번의 학습이 아닌, 지속적인 순환으로 모델을 운영합니다.</p></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-5 flex flex-col items-center justify-center gap-4 img-card">
+        <img src="images/img1.png" alt="MLOps 개요 이미지"/>
+        <p class="text-xs text-gray-400 italic text-center">MLOps = ML + Dev + Ops</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: CRISP-ML(Q) -->
+<div class="slide" id="s3">
+  <div class="slide-container p-10 flex flex-col" style="gap:14px;">
+    <h1 class="title text-4xl font-bold">CRISP-ML(Q) — ML 라이프사이클 프레임워크</h1>
+    <div class="grid grid-cols-2 gap-5 flex-1">
+      <div class="flex flex-col gap-3">
+        <div class="card-orange p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#FFF7ED;color:#F59E0B;"><i class="fas fa-compass text-lg"></i></div>
+          <div>
+            <h3 class="font-bold mb-1 text-gray-800">Phase 1 · Business &amp; Data Understanding</h3>
+            <p class="text-sm text-gray-600">유스케이스 정의(Ideate) → KPI 설정 → 데이터 소스 탐색. 비즈니스 목표와 ML 목표를 연결합니다.</p>
+          </div>
+        </div>
+        <div class="card-blue p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#EFF6FF;color:#3B82F6;"><i class="fas fa-cogs text-lg"></i></div>
+          <div>
+            <h3 class="font-bold mb-1 text-gray-800">Phase 2 · Model Development</h3>
+            <p class="text-sm text-gray-600">데이터 엔지니어링 → ML 모델 엔지니어링 → 모델 평가(Verify). Build-Measure-Learn 반복 루프.</p>
+          </div>
+        </div>
+        <div class="card-teal p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#F0FDFA;color:#14B8A6;"><i class="fas fa-rocket text-lg"></i></div>
+          <div>
+            <h3 class="font-bold mb-1 text-gray-800">Phase 3 · Model Operations</h3>
+            <p class="text-sm text-gray-600">ML 모델 배포(Release) → Operate → 모니터링/유지보수. 지속적 품질 관리와 재학습 루프 포함.</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-4 flex flex-col items-center justify-center gap-3 img-card">
+        <img src="images/img2.jpg" alt="CRISP-ML(Q)" style="max-height:500px;"/>
+        <p class="text-xs text-gray-400 italic text-center">CRISP-ML(Q) 단계 흐름도</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: MLOps Stack — 이미지 위/아래에 카드 그리드 추가 -->
+<div class="slide" id="s4">
+  <div class="slide-container px-10 pt-8 pb-2 flex flex-col" style="gap:8px;">
+    <h1 class="title text-4xl font-bold">MLOps 스택 — 11가지 핵심 구성 요소</h1>
+    <p class="text-gray-500 text-sm">개념 구조와 구축 관점을 함께 보여주는 다이어그램</p>
+
+    <!-- 상단 카드 4개 (01~04) -->
+    <div class="grid grid-cols-4 gap-3">
+      <div class="card-orange p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">01</span>
+        <h3 class="font-bold text-xs text-gray-800">Value Proposition</h3>
+        <p class="text-xs text-gray-500">비즈니스 가치와 ML 목표 정렬</p>
+      </div>
+      <div class="card-blue p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">02</span>
+        <h3 class="font-bold text-xs text-gray-800">Data Sources &amp; Versioning</h3>
+        <p class="text-xs text-gray-500">데이터 소스 관리 및 버전 추적</p>
+        <div class="flex gap-1"><span class="bg-blue-50 text-blue-600 text-xs px-1.5 py-0.5 rounded font-mono">DVC</span><span class="bg-blue-50 text-blue-600 text-xs px-1.5 py-0.5 rounded font-mono">LakeFS</span></div>
+      </div>
+      <div class="card-teal p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">03</span>
+        <h3 class="font-bold text-xs text-gray-800">Data Analysis &amp; Experiment Mgmt</h3>
+        <p class="text-xs text-gray-500">탐색적 분석 및 실험 추적</p>
+        <div class="flex gap-1"><span class="bg-teal-50 text-teal-600 text-xs px-1.5 py-0.5 rounded font-mono">MLflow</span><span class="bg-teal-50 text-teal-600 text-xs px-1.5 py-0.5 rounded font-mono">W&amp;B</span></div>
+      </div>
+      <div class="card-purple p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">04</span>
+        <h3 class="font-bold text-xs text-gray-800">Feature Stores</h3>
+        <p class="text-xs text-gray-500">피처 재사용 및 서빙 레이어</p>
+        <div class="flex gap-1"><span class="bg-purple-50 text-purple-600 text-xs px-1.5 py-0.5 rounded font-mono">Feast</span><span class="bg-purple-50 text-purple-600 text-xs px-1.5 py-0.5 rounded font-mono">Tecton</span></div>
+      </div>
+    </div>
+
+    <!-- 중앙 이미지 2장 -->
+    <div class="grid grid-cols-2 gap-4" style="flex:1;min-height:0;">
+      <div class="bg-white rounded-xl shadow-md p-3 flex flex-col items-center justify-center" style="overflow:hidden;">
+        <img src="images/img3.jpg" alt="MLOps stack" style="max-height:260px;object-fit:contain;border-radius:8px;"/>
+        <p class="text-xs text-gray-400 italic text-center mt-1">MLOps Stack 구성요소</p>
+      </div>
+      <div class="bg-white rounded-xl shadow-md p-3 flex flex-col items-center justify-center" style="overflow:hidden;">
+        <img src="images/img4.png" alt="MLOps phase detail" style="max-height:260px;object-fit:contain;border-radius:8px;"/>
+        <p class="text-xs text-gray-400 italic text-center mt-1">Business Understanding 부터 Operations 까지의 단계별 연결</p>
+      </div>
+    </div>
+
+    <!-- 하단 카드 4개 (05~08+) -->
+    <div class="grid grid-cols-4 gap-3">
+      <div class="card-green p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">05</span>
+        <h3 class="font-bold text-xs text-gray-800">Code Repository</h3>
+        <p class="text-xs text-gray-500">코드 버전 관리 및 협업</p>
+        <div class="flex gap-1"><span class="bg-green-50 text-green-600 text-xs px-1.5 py-0.5 rounded font-mono">Git</span><span class="bg-green-50 text-green-600 text-xs px-1.5 py-0.5 rounded font-mono">GitHub</span></div>
+      </div>
+      <div class="card-orange p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">06</span>
+        <h3 class="font-bold text-xs text-gray-800">CI/CT ML Pipeline Orchestration</h3>
+        <p class="text-xs text-gray-500">자동화된 학습 파이프라인</p>
+        <div class="flex gap-1"><span class="bg-amber-50 text-amber-600 text-xs px-1.5 py-0.5 rounded font-mono">Kubeflow</span><span class="bg-amber-50 text-amber-600 text-xs px-1.5 py-0.5 rounded font-mono">Airflow</span></div>
+      </div>
+      <div class="card-blue p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">07</span>
+        <h3 class="font-bold text-xs text-gray-800">Model Registry &amp; Versioning</h3>
+        <p class="text-xs text-gray-500">모델 아티팩트 및 메타데이터 관리</p>
+        <div class="flex gap-1"><span class="bg-blue-50 text-blue-600 text-xs px-1.5 py-0.5 rounded font-mono">MLflow</span><span class="bg-blue-50 text-blue-600 text-xs px-1.5 py-0.5 rounded font-mono">BentoML</span></div>
+      </div>
+      <div class="card-teal p-3 rounded-lg flex flex-col gap-1">
+        <span class="text-xs font-bold text-gray-400">08–11</span>
+        <h3 class="font-bold text-xs text-gray-800">Deploy / Serve / Monitor / Metadata</h3>
+        <p class="text-xs text-gray-500">배포, 예측 서빙, 성능 모니터링, 메타데이터 스토어</p>
+        <div class="flex gap-1"><span class="bg-teal-50 text-teal-600 text-xs px-1.5 py-0.5 rounded font-mono">Seldon</span><span class="bg-teal-50 text-teal-600 text-xs px-1.5 py-0.5 rounded font-mono">Evidently</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: 주요 구성 요소 -->
+<div class="slide" id="s5">
+  <div class="slide-container p-10 flex flex-col" style="gap:14px;">
+    <h1 class="title text-4xl font-bold">MLOps의 주요 구성 요소</h1>
+    <div class="grid grid-cols-2 gap-5 flex-1">
+      <div class="bg-white rounded-xl shadow-md p-4 img-card flex items-center justify-center">
+        <img src="images/img5.png" alt="MLOps 주요 구성 요소" style="max-height:520px;"/>
+      </div>
+      <div class="grid grid-cols-1 gap-3">
+        <div class="card-blue p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#EFF6FF;color:#3B82F6;"><i class="fas fa-database text-lg"></i></div>
+          <div><h3 class="font-bold text-gray-800">데이터 관리</h3><p class="text-sm text-gray-600">수집, 버전 관리, 품질 검증으로 재현성을 확보합니다.</p></div>
+        </div>
+        <div class="card-purple p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#F5F3FF;color:#8B5CF6;"><i class="fas fa-flask text-lg"></i></div>
+          <div><h3 class="font-bold text-gray-800">실험 관리</h3><p class="text-sm text-gray-600">하이퍼파라미터, 환경, 결과를 추적하여 반복 학습을 관리합니다.</p></div>
+        </div>
+        <div class="card-teal p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#F0FDFA;color:#14B8A6;"><i class="fas fa-robot text-lg"></i></div>
+          <div><h3 class="font-bold text-gray-800">학습 및 검증</h3><p class="text-sm text-gray-600">학습, 평가, 비교 검증으로 신뢰 가능한 모델만 운영에 반영합니다.</p></div>
+        </div>
+        <div class="card-orange p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#FFF7ED;color:#F59E0B;"><i class="fas fa-cloud-upload-alt text-lg"></i></div>
+          <div><h3 class="font-bold text-gray-800">배포 및 서빙</h3><p class="text-sm text-gray-600">API와 애플리케이션 형태로 실제 환경에 안정적으로 배포합니다.</p></div>
+        </div>
+        <div class="card-red p-4 rounded-lg flex items-start gap-4">
+          <div class="icon-circle" style="background:#FEF2F2;color:#EF4444;"><i class="fas fa-chart-line text-lg"></i></div>
+          <div><h3 class="font-bold text-gray-800">모니터링 및 재학습</h3><p class="text-sm text-gray-600">성능 저하를 감지하고 필요 시 재학습 파이프라인을 동작시킵니다.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: 파이프라인 5단계 -->
+<div class="slide" id="s6">
+  <div class="slide-container p-10 flex flex-col" style="gap:14px;">
+    <h1 class="title text-4xl font-bold">MLOps 파이프라인 구축 5단계</h1>
+    <div class="grid grid-cols-2 gap-5 flex-1">
+      <div class="bg-white rounded-xl shadow-md p-4 img-card flex items-center justify-center">
+        <img src="images/img6.png" alt="MLOps pipeline" style="max-height:520px;"/>
+      </div>
+      <div class="flex flex-col gap-3">
+        <div class="card-blue p-4 rounded-lg"><h3 class="font-bold mb-1">1. 데이터 수집 및 준비</h3><p class="text-sm text-gray-600">모델 학습을 위한 데이터 수집, 정제, 품질 확보 단계입니다.</p></div>
+        <div class="card-teal p-4 rounded-lg"><h3 class="font-bold mb-1">2. 모델 학습 및 튜닝</h3><p class="text-sm text-gray-600">실험 관리와 하이퍼파라미터 조정으로 성능을 향상합니다.</p></div>
+        <div class="card-green p-4 rounded-lg"><h3 class="font-bold mb-1">3. 테스트 및 검증</h3><p class="text-sm text-gray-600">성능 평가와 기준 충족 여부를 검토하여 배포 가능성을 판단합니다.</p></div>
+        <div class="card-orange p-4 rounded-lg"><h3 class="font-bold mb-1">4. 모델 배포</h3><p class="text-sm text-gray-600">실서비스 환경에 모델을 반영하고 서빙 인프라를 연결합니다.</p></div>
+        <div class="card-red p-4 rounded-lg"><h3 class="font-bold mb-1">5. 모니터링 및 유지관리</h3><p class="text-sm text-gray-600">운영 성능을 감시하고 업데이트 및 재학습을 지속 수행합니다.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: 왜 필요한가 -->
+<div class="slide" id="s7">
+  <div class="slide-container p-10 flex flex-col" style="gap:14px;">
+    <h1 class="title text-4xl font-bold">왜 MLOps가 필요한가?</h1>
+    <div class="grid grid-cols-3 gap-4 flex-1 items-stretch">
+      <div class="card-blue p-5 rounded-lg flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <div class="icon-circle" style="background:#EFF6FF;color:#3B82F6;"><i class="fas fa-bolt text-xl"></i></div>
+          <h3 class="font-bold text-base text-gray-800">효율성과 확장성</h3>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed">워크플로우 자동화로 배포 속도를 높이고, 대용량 데이터 기반 운영까지 확장할 수 있습니다.</p>
+      </div>
+      <div class="card-teal p-5 rounded-lg flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <div class="icon-circle" style="background:#F0FDFA;color:#14B8A6;"><i class="fas fa-handshake text-xl"></i></div>
+          <h3 class="font-bold text-base text-gray-800">협업 및 비용 절감</h3>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed">공통 프레임워크를 통해 팀 간 소통 비용을 줄이고 수동 작업을 자동화합니다.</p>
+      </div>
+      <div class="card-green p-5 rounded-lg flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <div class="icon-circle" style="background:#F0FDF4;color:#22C55E;"><i class="fas fa-shield-alt text-xl"></i></div>
+          <h3 class="font-bold text-base text-gray-800">안정성과 신뢰성</h3>
+        </div>
+        <p class="text-sm text-gray-600 leading-relaxed">정확성과 일관성을 유지하고 데이터 변화에 대응해 예기치 않은 성능 저하를 줄입니다.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: vs DevOps vs LLMOps -->
+<div class="slide" id="s8">
+  <div class="slide-container p-10 flex flex-col" style="gap:14px;">
+    <h1 class="title text-4xl font-bold">MLOps vs DevOps vs LLMOps</h1>
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr style="background:#003366;color:white;">
+            <th class="p-3 text-left font-semibold" style="width:18%;background:#002244;">구분</th>
+            <th class="p-3 text-left font-semibold">DevOps</th>
+            <th class="p-3 text-left font-semibold" style="background:#0052a3;">MLOps</th>
+            <th class="p-3 text-left font-semibold">LLMOps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-100">
+            <td class="p-3 font-semibold text-gray-700">운영 대상</td>
+            <td class="p-3 text-gray-600">SW 애플리케이션</td>
+            <td class="p-3 font-medium text-blue-700" style="background:#f0f5ff;">머신러닝 모델</td>
+            <td class="p-3 text-gray-600">대규모 언어 모델 (LLM)</td>
+          </tr>
+          <tr class="border-b border-gray-100 bg-gray-50">
+            <td class="p-3 font-semibold text-gray-700">대상 데이터</td>
+            <td class="p-3 text-gray-600">코드, 설정 파일</td>
+            <td class="p-3 font-medium text-blue-700" style="background:#e8f0ff;">정형/구조화 데이터</td>
+            <td class="p-3 text-gray-600">프롬프트, 벡터 DB</td>
+          </tr>
+          <tr class="border-b border-gray-100">
+            <td class="p-3 font-semibold text-gray-700">변화 원인</td>
+            <td class="p-3 text-gray-600">코드 수정 (Bug fix)</td>
+            <td class="p-3 font-medium text-blue-700" style="background:#f0f5ff;">데이터의 변화 (Drift)</td>
+            <td class="p-3 text-gray-600">프롬프트/파인튜닝</td>
+          </tr>
+          <tr class="bg-gray-50">
+            <td class="p-3 font-semibold text-gray-700">기술 스택</td>
+            <td class="p-3 text-gray-600">CI/CD, IaC</td>
+            <td class="p-3 font-medium text-blue-700" style="background:#e8f0ff;">CI/CD for ML, Feature Store</td>
+            <td class="p-3 text-gray-600">추론 최적화, GPU 관리</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-gray-700">
+      <strong style="color:#003366;">Key Insight: </strong>DevOps가 코드의 무결성을 본다면, MLOps는 <strong>데이터와 모델의 무결성</strong>을 함께 관리합니다. LLMOps는 이를 대규모 모델 환경에 맞춰 확장한 개념입니다.
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="card-orange p-4 rounded-lg flex items-start gap-4">
+        <div class="icon-circle" style="background:#FFF7ED;color:#F59E0B;"><i class="fas fa-database text-lg"></i></div>
+        <div>
+          <h3 class="font-bold text-sm text-gray-800 mb-1">DataOps와의 차이</h3>
+          <p class="text-xs text-gray-600 leading-relaxed"><strong>목표:</strong> 데이터 파이프라인의 품질과 속도 향상 · <strong>핵심:</strong> ETL, 데이터 신뢰성 확보</p>
+        </div>
+      </div>
+      <div class="card-purple p-4 rounded-lg flex items-start gap-4">
+        <div class="icon-circle" style="background:#F5F3FF;color:#8B5CF6;"><i class="fas fa-robot text-lg"></i></div>
+        <div>
+          <h3 class="font-bold text-sm text-gray-800 mb-1">AIOps와의 차이</h3>
+          <p class="text-xs text-gray-600 leading-relaxed"><strong>목표:</strong> AI로 IT 인프라 운영 최적화 · <strong>핵심:</strong> 로그 분석, 이상 탐지 및 자동 대응</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav-bar">
+  <button id="prevBtn" onclick="go(-1)" disabled>&#8592;</button>
+  <div id="dots" style="display:flex;gap:6px;align-items:center;"></div>
+  <span class="nav-counter" id="counter">1 / 8</span>
+  <button id="nextBtn" onclick="go(1)">&#8594;</button>
+</div>
+
+<script>
+  const total = 8;
+  let cur = 1;
+  const slides = Array.from({length: total}, (_, i) => document.getElementById('s' + (i+1)));
+  const dotsEl = document.getElementById('dots');
+  for (let i = 1; i <= total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 1 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  }
+  function goTo(n) {
+    slides[cur-1].classList.remove('active');
+    cur = Math.max(1, Math.min(total, n));
+    slides[cur-1].classList.add('active');
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur-1));
+    document.getElementById('counter').textContent = cur + ' / ' + total;
+    document.getElementById('prevBtn').disabled = cur === 1;
+    document.getElementById('nextBtn').disabled = cur === total;
+  }
+  function go(dir) { goTo(cur + dir); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(-1);
+  });
+</script>
+</body>
+</html>
