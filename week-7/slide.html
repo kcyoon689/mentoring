@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>객체 인식과 이미지 세그멘테이션의 이해</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:       #1A3A5C;
+    --teal:       #1C7293;
+    --teal-lt:    #EAF4F9;
+    --coral:      #C9443F;
+    --coral-lt:   #FDF2F2;
+    --slate:      #3D5A73;
+    --gray:       #6B8599;
+    --gray-line:  #D0DDE8;
+    --bg:         #F4F7FB;
+    --white:      #FFFFFF;
+  }
+
+  html {
+    background: #1a1f2e;
+    overflow-x: hidden;
+  }
+  body {
+    width: 100%;
+    min-height: 100vh;
+    background: #1a1f2e;
+    font-family: 'Noto Sans KR', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 28px 0 72px;
+    overflow-x: hidden;
+  }
+
+  /* ── Slide wrapper: 원본과 동일한 1280×720 고정 ── */
+  #deck {
+    position: relative;
+    width: 1280px;
+    height: 720px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 70px rgba(0,0,0,.55);
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    width: 1280px;
+    height: 720px;
+    background: var(--bg);
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.4,0,.2,1);
+    transform: translateX(40px);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+  }
+
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+
+  /* ── Nav: deck 아래에 위치 ── */
+  #nav {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,.1);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 999px;
+    padding: 8px 22px;
+    color: #fff;
+    user-select: none;
+  }
+  #nav button {
+    background: none; border: none; color: inherit;
+    cursor: pointer; font-size: 16px; padding: 3px 10px;
+    border-radius: 6px; transition: background .2s;
+    font-family: inherit;
+  }
+  #nav button:hover { background: rgba(255,255,255,.2); }
+  #slide-counter { font-size: 13px; opacity: .7; min-width: 46px; text-align: center; }
+
+  #dots { display: flex; gap: 7px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(255,255,255,.3); transition: background .25s;
+    cursor: pointer;
+  }
+  .dot.on { background: #fff; }
+
+  /* Keyboard hint */
+  #hint {
+    position: fixed; top: 12px; right: 20px;
+    color: rgba(255,255,255,.3); font-size: 11px;
+    font-family: 'Noto Sans KR', sans-serif;
+    pointer-events: none;
+  }
+
+  /* ══════════════════════════════════════
+     SHARED COMPONENTS
+  ══════════════════════════════════════ */
+  .slide-header {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 22.5%;
+    background: var(--teal);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 0 5.5%;
+  }
+  .slide-header.coral { background: var(--coral); }
+  .slide-header.navy  { background: var(--navy); }
+
+  .slide-header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2.6em; font-weight: 700;
+    color: #fff; line-height: 1.2;
+  }
+  .slide-header p {
+    font-size: 1.1em; color: rgba(255,255,255,.72);
+    margin-top: .4em; font-style: italic;
+  }
+
+  .content-area {
+    position: absolute;
+    top: 22.5%; left: 0; right: 0; bottom: 0;
+    padding: 3% 5.5%;
+    overflow: hidden;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-line);
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(26,58,92,.07);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 5px; height: 100%;
+    background: var(--teal);
+  }
+  .card.coral::before { background: var(--coral); }
+  .card.navy::before  { background: var(--navy); }
+  .card.gray::before  { background: var(--gray); }
+  .card.none::before  { display: none; }
+
+  .card-inner { padding: 4% 5% 4% 7%; }
+  .card h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.4em; font-weight: 700;
+    color: var(--navy); margin-bottom: .5em;
+  }
+  .card h3 .en { font-family: 'Noto Sans KR',sans-serif; font-weight: 400; font-size:.8em; color: var(--gray); display:block; margin-top:.1em; }
+  .card p, .card li {
+    font-size: 1.05em; color: var(--slate); line-height: 1.65;
+  }
+  .card ul { list-style: none; }
+  .card ul li::before { content: '▸ '; color: var(--teal); }
+  .card.coral ul li::before { color: var(--coral); }
+
+  .tag {
+    display: inline-block;
+    padding: .1em .6em;
+    border-radius: 4px;
+    font-size: .85em; font-weight: 700;
+    background: var(--teal); color: #fff;
+    vertical-align: middle;
+  }
+  .tag.coral { background: var(--coral); }
+  .tag.navy  { background: var(--navy); }
+  .tag.gray  { background: var(--gray); }
+
+  /* ══════════════════════════════════════
+     SLIDE 1 — 표지
+  ══════════════════════════════════════ */
+  #s1 { background: var(--navy); }
+
+  #s1 .left-panel {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 56%;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 7%;
+  }
+  #s1 .left-panel h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 4em; font-weight: 900; line-height: 1.18;
+    color: #fff;
+    animation: fadeUp .7s ease both;
+  }
+  #s1 .left-panel h1 span { color: #6EC6E6; display: block; }
+  #s1 .left-panel .en-title {
+    font-size: 1.15em; color: rgba(255,255,255,.5);
+    font-style: italic; margin-top: .8em;
+    animation: fadeUp .7s .12s ease both;
+  }
+  #s1 .left-panel .divider {
+    width: 50%; height: 2px; background: var(--teal);
+    margin: 1.4em 0;
+    animation: growWidth .6s .25s ease both;
+  }
+  #s1 .left-panel .subtitle {
+    font-size: 1.2em; color: rgba(255,255,255,.55);
+    animation: fadeUp .7s .3s ease both;
+  }
+
+  #s1 .right-panel {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 44%;
+    background: var(--bg);
+    display: flex; flex-direction: column;
+    justify-content: center;
+    padding: 0 6%;
+    animation: fadeUp .7s .15s ease both;
+  }
+  #s1 .right-panel .label {
+    font-size: 1.2em; font-weight: 700; color: var(--navy);
+    font-family: 'Noto Serif KR', serif;
+    margin-bottom: 1.2em;
+  }
+
+  .cover-card {
+    background: var(--white);
+    border: 1px solid var(--gray-line);
+    border-radius: 6px;
+    box-shadow: 0 2px 12px rgba(26,58,92,.08);
+    padding: 1em 1.2em 1em 1.8em;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1em;
+  }
+  .cover-card::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; width: 5px; height: 100%;
+    background: var(--teal);
+  }
+  .cover-card.coral::before { background: var(--coral); }
+  .cover-card h4 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.25em; font-weight: 700;
+    color: var(--teal); margin-bottom: .3em;
+  }
+  .cover-card.coral h4 { color: var(--coral); }
+  .cover-card p { font-size: .95em; color: var(--slate); line-height: 1.5; }
+
+  #s1 .bottom-bar {
+    position: absolute; bottom: 0; left: 0; width: 56%;
+    background: var(--teal); padding: .8em 7%;
+    font-size: 1em; color: #fff;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes growWidth {
+    from { width: 0; }
+    to   { width: 50%; }
+  }
+
+  /* ══════════════════════════════════════
+     SLIDE 2 — 서론
+  ══════════════════════════════════════ */
+  #s2 .two-col {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 3%; height: 100%;
+  }
+  #s2 .left .card { height: 100%; }
+  #s2 .left .card-inner { height: 100%; display: flex; flex-direction: column; }
+  #s2 .right { display: flex; flex-direction: column; gap: 3%; }
+  #s2 .right .card { flex: 1; }
+  #s2 .app-list { margin-top: auto; }
+  #s2 .app-list li { padding: .3em 0; border-bottom: 1px solid var(--gray-line); }
+  #s2 .app-list li:last-child { border-bottom: none; }
+
+  /* ══════════════════════════════════════
+     SLIDE 3 — 객체 인식 정의
+  ══════════════════════════════════════ */
+  #s3 .def-box {
+    background: var(--teal-lt);
+    border: 1px solid var(--teal);
+    border-left: 5px solid var(--teal);
+    border-radius: 5px;
+    padding: 1.2em 1.4em;
+    margin-bottom: 2.2%;
+  }
+  #s3 .def-box .def-label {
+    font-size: .9em; font-weight: 700; color: var(--teal);
+    margin-bottom: .4em;
+  }
+  #s3 .def-box p { font-size: 1.05em; color: var(--slate); line-height: 1.6; }
+  #s3 .goals-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.3em; font-weight: 700; color: var(--navy);
+    margin-bottom: 1.5%;
+  }
+  #s3 .grid-2x2 {
+    display: grid; grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr; gap: 2.5%;
+    flex: 1;
+  }
+  #s3 .goal-card {
+    background: var(--white);
+    border: 1px solid var(--gray-line);
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(26,58,92,.06);
+    padding: 1em 1.2em 1em 1.8em;
+    position: relative; overflow: hidden;
+    display: flex; align-items: flex-start; gap: .9em;
+  }
+  #s3 .goal-card::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; width: 5px; height: 100%;
+    background: var(--teal);
+  }
+  #s3 .badge {
+    min-width: 1.8em; height: 1.8em; border-radius: 50%;
+    background: var(--teal); color: #fff;
+    font-size: 1em; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  #s3 .goal-text h4 {
+    font-weight: 700; color: var(--navy);
+    font-size: 1.05em; margin-bottom: .25em;
+  }
+  #s3 .goal-text p { font-size: .95em; color: var(--slate); line-height: 1.5; }
+
+
+  /* ══════════════════════════════════════
+     SLIDE 4det — 객체 탐지 개념 (NEW)
+  ══════════════════════════════════════ */
+  #s4det .det-grid { display:grid; grid-template-columns:1fr 1fr; gap:3%; height:100%; }
+  #s4det .det-col  { display:flex; flex-direction:column; gap:3%; }
+  #s4det .def-box  { background:var(--teal-lt); border-left:5px solid var(--teal); border-radius:5px; padding:1em 1.3em; }
+  #s4det .def-box .lbl { font-size:.85em; font-weight:700; color:var(--teal); margin-bottom:.3em; }
+  #s4det .def-box p { font-size:.97em; color:var(--slate); line-height:1.6; }
+  #s4det .stage-wrap { display:flex; flex-direction:column; gap:3%; flex:1; }
+  #s4det .stage-card { flex:1; display:flex; overflow:hidden; background:var(--white); border:1px solid var(--gray-line); border-radius:6px; box-shadow:0 2px 8px rgba(26,58,92,.06); }
+  #s4det .s-bar { width:6px; flex-shrink:0; background:var(--teal); }
+  #s4det .s-bar.navy { background:var(--navy); }
+  #s4det .s-body { padding:.75em 1em; }
+  #s4det .s-body h4 { font-size:1em; font-weight:700; color:var(--navy); margin-bottom:.25em; }
+  #s4det .s-body p { font-size:.87em; color:var(--slate); line-height:1.52; }
+  #s4det .flow-box { background:var(--white); border:1px solid var(--gray-line); border-radius:6px; padding:.9em 1.1em; box-shadow:0 2px 8px rgba(26,58,92,.06); }
+  #s4det .flow-box h4 { font-size:.93em; font-weight:700; color:var(--navy); margin-bottom:.65em; }
+  #s4det .flow-row { display:flex; align-items:center; }
+  #s4det .flow-step { flex:1; text-align:center; background:var(--teal-lt); border:1px solid var(--teal); border-radius:4px; padding:.42em .1em; font-size:.78em; font-weight:700; color:var(--teal); line-height:1.3; }
+  #s4det .flow-arr { color:var(--gray-line); font-size:1.2em; padding:0 2px; flex-shrink:0; }
+  #s4det .mini-grid { display:grid; grid-template-columns:1fr 1fr; gap:2.5%; flex:1; }
+  #s4det .mini-card { background:var(--white); border:1px solid var(--gray-line); border-radius:6px; padding:.8em 1em .9em 1.5em; position:relative; overflow:hidden; box-shadow:0 2px 8px rgba(26,58,92,.06); }
+  #s4det .mini-card::before { content:''; position:absolute; left:0; top:0; width:5px; height:100%; background:var(--teal); }
+  #s4det .mini-card.nv::before { background:var(--navy); }
+  #s4det .mini-card h5 { font-size:.9em; font-weight:700; color:var(--teal); margin-bottom:.35em; }
+  #s4det .mini-card.nv h5 { color:var(--navy); }
+  #s4det .mini-card ul { list-style:none; }
+  #s4det .mini-card li { font-size:.82em; color:var(--slate); line-height:1.65; }
+  #s4det .mini-card li::before { content:'▸ '; color:var(--teal); }
+  #s4det .mini-card.nv li::before { color:var(--navy); }
+
+  /* ══════════════════════════════════════
+     SLIDE 5mech — Anchor · IoU · NMS (NEW)
+  ══════════════════════════════════════ */
+  #s5mech .mech-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:3%; height:100%; }
+  #s5mech .mech-card { display:flex; flex-direction:column; overflow:hidden; background:var(--white); border:1px solid var(--gray-line); border-radius:8px; box-shadow:0 2px 12px rgba(26,58,92,.07); }
+  #s5mech .mcap { height:5px; background:var(--teal); }
+  #s5mech .mcap.amber { background:#B8710A; }
+  #s5mech .mcap.navy  { background:var(--navy); }
+  #s5mech .mbody { padding:1em 1.15em; flex:1; }
+  #s5mech .mbody h3 { font-family:'Noto Serif KR',serif; font-size:1.1em; color:var(--navy); margin-bottom:.08em; }
+  #s5mech .msub { font-size:.8em; color:var(--teal); font-style:italic; margin-bottom:.6em; }
+  #s5mech .msub.amber { color:#B8710A; }
+  #s5mech .msub.navy  { color:var(--navy); }
+  #s5mech .mdiv { height:1px; background:var(--gray-line); margin:.55em 0; }
+  #s5mech .mlbl { font-size:.83em; font-weight:700; color:var(--teal); margin:.45em 0 .12em; }
+  #s5mech .mlbl.amber { color:#B8710A; }
+  #s5mech .mlbl.navy  { color:var(--navy); }
+  #s5mech .mbody p { font-size:.86em; color:var(--slate); line-height:1.56; margin-bottom:.35em; }
+  #s5mech .formula { background:#EEF4FF; border:1px solid #C5D8F0; border-radius:4px; padding:.32em .8em; font-size:.83em; font-family:'Courier New',monospace; color:var(--navy); margin:.2em 0 .45em; }
+  #s5mech .mfoot { padding:.45em 1.1em; font-size:.8em; font-weight:700; text-align:center; background:var(--teal-lt); color:var(--teal); }
+  #s5mech .mfoot.amber { background:#FEF6E7; color:#B8710A; }
+  #s5mech .mfoot.navy  { background:#EBF0F7; color:var(--navy); }
+
+  /* ══════════════════════════════════════
+     SLIDE 4 — 접근 방식
+  ══════════════════════════════════════ */
+  #s4 .vs-grid {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 2%; align-items: center; height: 100%;
+  }
+  #s4 .vs-label {
+    font-size: 2.2em; font-weight: 900; color: var(--gray-line);
+    text-align: center;
+  }
+  #s4 .approach-card {
+    height: 100%;
+    background: var(--white);
+    border: 1px solid var(--gray-line);
+    border-radius: 8px;
+    box-shadow: 0 2px 14px rgba(26,58,92,.07);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  #s4 .approach-card .ac-header {
+    padding: 1em 1.4em;
+    background: var(--teal-lt);
+    border-bottom: 1px solid var(--gray-line);
+  }
+  #s4 .approach-card.navy-card .ac-header { background: #EBF0F7; }
+  #s4 .approach-card .ac-header h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.5em; color: var(--teal); margin-bottom: .1em;
+  }
+  #s4 .approach-card.navy-card .ac-header h3 { color: var(--navy); }
+  #s4 .approach-card .ac-header .en { font-size: .85em; color: var(--gray); font-style: italic; }
+  #s4 .row {
+    padding: .7em 1.4em; border-bottom: 1px solid var(--gray-line);
+    display: grid; grid-template-columns: 5.5em 1fr;
+    gap: .8em; align-items: start;
+  }
+  #s4 .row:last-child { border-bottom: none; }
+  #s4 .row-label { font-size: .9em; font-weight: 700; color: var(--teal); }
+  #s4 .approach-card.navy-card .row-label { color: var(--navy); }
+  #s4 .row-val { font-size: .95em; color: var(--slate); line-height: 1.5; }
+
+  /* ══════════════════════════════════════
+     SLIDE 5 — 대표 모델
+  ══════════════════════════════════════ */
+  #s5 .models-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 3.5%; height: 100%;
+  }
+  #s5 .col-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.25em; font-weight: 700;
+    margin-bottom: 1.5%;
+  }
+  #s5 .col-title.teal { color: var(--teal); }
+  #s5 .col-title.navy { color: var(--navy); }
+  #s5 .model-rows { display: flex; flex-direction: column; gap: 2%; flex: 1; }
+  #s5 .model-row {
+    flex: 1; background: var(--white);
+    border: 1px solid var(--gray-line); border-radius: 6px;
+    box-shadow: 0 1px 8px rgba(26,58,92,.06);
+    padding: .7em 1em;
+    display: flex; gap: .8em; align-items: flex-start;
+  }
+  #s5 .model-row:nth-child(even) { background: #F8FBFF; }
+  #s5 .navy-side:nth-child(even) { background: #F5F7FB; }
+  #s5 .model-name { font-weight: 700; color: var(--teal); font-size: 1em; min-width: 7.5em; }
+  #s5 .navy-side .model-name { color: var(--navy); }
+  #s5 .model-desc { font-size: .9em; color: var(--slate); line-height: 1.5; }
+
+  /* ══════════════════════════════════════
+     SLIDE 6 — 세그멘테이션 정의
+  ══════════════════════════════════════ */
+  #s6 .def-box {
+    background: var(--coral-lt);
+    border: 1px solid var(--coral);
+    border-left: 5px solid var(--coral);
+    border-radius: 5px;
+    padding: 1.2em 1.4em;
+    margin-bottom: 2.5%;
+  }
+  #s6 .def-box .def-label { font-size: .9em; font-weight: 700; color: var(--coral); margin-bottom: .4em; }
+  #s6 .def-box p { font-size: 1.05em; color: var(--slate); line-height: 1.6; }
+  #s6 .compare-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.3em; font-weight: 700; color: var(--navy);
+    margin-bottom: 1.5%;
+  }
+  #s6 .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2.5%; }
+  #s6 .task-card {
+    background: var(--white);
+    border: 1px solid var(--gray-line); border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(26,58,92,.06);
+    overflow: hidden;
+  }
+  #s6 .task-card .tc-top {
+    height: 5px;
+    background: var(--gray);
+  }
+  #s6 .task-card .tc-top.teal { background: var(--teal); }
+  #s6 .task-card .tc-top.coral { background: var(--coral); }
+  #s6 .task-card .tc-body { padding: .9em 1em; }
+  #s6 .task-card h4 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.1em; color: var(--navy); margin-bottom: .5em;
+  }
+  #s6 .task-card p { font-size: .9em; color: var(--slate); line-height: 1.55; }
+  #s6 .goal-list { margin-top: 2%; }
+  #s6 .goal-list p {
+    font-size: .9em; font-weight: 700; color: var(--navy);
+    margin-bottom: .6%;
+    font-family: 'Noto Serif KR', serif;
+  }
+  #s6 .goal-list ul { list-style: none; display: flex; gap: 3%; }
+  #s6 .goal-list li { font-size: .9em; color: var(--slate); }
+  #s6 .goal-list li::before { content: '▸ '; color: var(--coral); }
+
+  /* ══════════════════════════════════════
+     SLIDE 7 — 유형 3종
+  ══════════════════════════════════════ */
+  #s7 .type-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 3%; height: 100%;
+  }
+  #s7 .type-card {
+    background: var(--white);
+    border: 1px solid var(--gray-line); border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(26,58,92,.07);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  #s7 .type-cap {
+    height: 5px; background: var(--teal);
+  }
+  #s7 .type-cap.navy  { background: var(--navy); }
+  #s7 .type-cap.coral { background: var(--coral); }
+  #s7 .type-body { padding: 1em 1.2em; flex: 1; }
+  #s7 .type-num {
+    width: 1.8em; height: 1.8em; border-radius: 50%;
+    background: var(--teal); color: #fff;
+    font-weight: 700; font-size: 1em;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: .5em;
+  }
+  #s7 .type-num.navy  { background: var(--navy); }
+  #s7 .type-num.coral { background: var(--coral); }
+  #s7 .type-body h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.2em; color: var(--navy); margin-bottom: .15em;
+  }
+  #s7 .type-body .en-sub { font-size: .85em; color: var(--teal); font-style: italic; margin-bottom: .7em; }
+  #s7 .type-body .en-sub.navy { color: var(--navy); }
+  #s7 .type-body .en-sub.coral { color: var(--coral); }
+  #s7 .divider { height: 1px; background: var(--gray-line); margin: .6em 0; }
+  #s7 .section-label { font-size: .85em; font-weight: 700; color: var(--teal); margin-bottom: .2em; }
+  #s7 .section-label.navy { color: var(--navy); }
+  #s7 .section-label.coral { color: var(--coral); }
+  #s7 .type-body p { font-size: .92em; color: var(--slate); line-height: 1.55; margin-bottom: .7em; }
+  #s7 .type-foot {
+    padding: .55em 1.2em;
+    font-size: .85em; font-weight: 700;
+    text-align: center;
+    background: var(--teal-lt); color: var(--teal);
+  }
+  #s7 .type-foot.navy  { background: #EBF0F7; color: var(--navy); }
+  #s7 .type-foot.coral { background: var(--coral-lt); color: var(--coral); }
+
+  /* ══════════════════════════════════════
+     SLIDE 8 — 비교 테이블
+  ══════════════════════════════════════ */
+  #s8 .table-wrap { width: 100%; height: 100%; display: flex; flex-direction: column; }
+  #s8 table {
+    width: 100%; border-collapse: collapse;
+    flex: 1;
+  }
+  #s8 thead tr { background: var(--navy); }
+  #s8 thead th {
+    padding: .8em 1em;
+    color: #fff; font-size: 1em; text-align: left;
+    font-family: 'Noto Serif KR', serif;
+  }
+  #s8 thead th:first-child { width: 16%; }
+  #s8 thead th.teal-head { color: #9FDDFF; }
+  #s8 thead th.coral-head { color: #FFBDBD; }
+  #s8 tbody tr { border-bottom: 1px solid var(--gray-line); }
+  #s8 tbody tr:nth-child(even) { background: #F8FBFF; }
+  #s8 tbody td { padding: .65em 1em; font-size: .95em; vertical-align: middle; }
+  #s8 tbody td:first-child { font-weight: 700; color: var(--navy); }
+  #s8 tbody td:not(:first-child) { color: var(--slate); }
+  #s8 tbody td:not(:last-child) { border-right: 1px solid var(--gray-line); }
+  #s8 .table-footer {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2%; margin-top: 2%;
+  }
+  #s8 .footer-box {
+    border-radius: 5px; padding: .55em 1em;
+    font-size: .9em;
+  }
+  #s8 .footer-box.teal { background: var(--teal-lt); color: var(--teal); border: 1px solid var(--teal); }
+  #s8 .footer-box.coral { background: var(--coral-lt); color: var(--coral); border: 1px solid var(--coral); }
+
+  /* ══════════════════════════════════════
+     SLIDE 9 — 핵심 정리
+  ══════════════════════════════════════ */
+  #s9 { background: var(--navy); }
+  #s9 .s9-header {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 22%;
+    background: var(--teal);
+    display: flex; flex-direction: column;
+    justify-content: center; padding: 0 5.5%;
+  }
+  #s9 .s9-header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 2.5em; color: #fff; font-weight: 700;
+  }
+  #s9 .s9-header p { font-size: 1.05em; color: rgba(255,255,255,.65); font-style: italic; margin-top: .3em; }
+  #s9 .s9-body {
+    position: absolute; top: 22%; left: 0; right: 0; bottom: 0;
+    padding: 2.5% 5.5%;
+    display: grid; grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr; gap: 2.5%;
+  }
+  #s9 .sum-card {
+    background: #1E3550;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  #s9 .sum-top {
+    height: 5px; background: var(--teal);
+  }
+  #s9 .sum-top.navy  { background: #2E6DA4; }
+  #s9 .sum-top.coral { background: var(--coral); }
+  #s9 .sum-top.purple { background: #6B5EA8; }
+  #s9 .sum-body { padding: .8em 1.1em; flex: 1; }
+  #s9 .sum-body h4 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.15em; font-weight: 700;
+    color: var(--teal); margin-bottom: .5em;
+  }
+  #s9 .sum-body h4.navy { color: #7BBFEF; }
+  #s9 .sum-body h4.coral { color: #F4908D; }
+  #s9 .sum-body h4.purple { color: #B0A8D8; }
+  #s9 .sum-body ul { list-style: none; }
+  #s9 .sum-body li {
+    font-size: .92em; color: #C8D8E8;
+    line-height: 1.55; padding: .15em 0;
+  }
+  #s9 .sum-body li::before { content: '▸ '; color: rgba(255,255,255,.35); }
+  #s9 .s9-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: var(--teal); padding: .6em 5.5%;
+    font-size: .9em; color: #fff; text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div id="hint">← → 키 또는 버튼으로 이동</div>
+
+<div id="deck">
+
+  <!-- ═══ SLIDE 1 표지 ═══ -->
+  <div class="slide" id="s1">
+    <div class="left-panel">
+      <h1>객체 인식&<span>이미지 세그멘테이션의 이해</span></h1>
+      <div class="divider"></div>
+      <div class="subtitle">Object Recognition &amp; Image Segmentation</div>
+    </div>
+    <div class="right-panel">
+      <div class="label">핵심 주제</div>
+      <div class="cover-card">
+        <h4>01&nbsp;&nbsp;객체 인식</h4>
+        <p>이미지/영상에서 특정 객체의<br>존재 여부와 종류를 식별</p>
+      </div>
+      <div class="cover-card coral">
+        <h4>02&nbsp;&nbsp;이미지 세그멘테이션</h4>
+        <p>이미지를 픽셀 단위로 분할하여<br>각 픽셀의 클래스를 분류</p>
+      </div>
+    </div>
+    <div class="bottom-bar">객체 인식: 객체 단위&nbsp;&nbsp;|&nbsp;&nbsp;세그멘테이션: 픽셀 단위</div>
+  </div>
+
+  <!-- ═══ SLIDE 2 서론 ═══ -->
+  <div class="slide" id="s2">
+    <div class="slide-header">
+      <h1>컴퓨터 비전과 시각적 인식</h1>
+      <p>기계가 이미지를 보고 이해하는 AI 기술 — 두 가지 핵심 축</p>
+    </div>
+    <div class="content-area">
+      <div class="two-col">
+        <div class="left">
+          <div class="card" style="height:100%">
+            <div class="card-inner" style="display:flex;flex-direction:column;height:100%">
+              <h3>컴퓨터 비전이란?</h3>
+              <p>기계가 이미지를 보고 이해할 수 있도록 하는 인공지능의 핵심 분야</p>
+              <p style="margin-top:.8em">객체 인식과 이미지 세그멘테이션은 시각 데이터를 분석하고 해석하는 데 필수적인 두 가지 기술</p>
+              <hr style="border:none;border-top:1px solid var(--gray-line);margin:1em 0">
+              <p style="font-weight:700;color:var(--navy);margin-bottom:.5em">주요 적용 분야</p>
+              <ul class="app-list">
+                <li>자율 주행</li>
+                <li>의료 영상 분석</li>
+                <li>보안 감시</li>
+                <li>산업 자동화</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="card" style="flex:1">
+            <div class="card-inner">
+              <h3>객체 인식 <span class="en">Object Recognition</span></h3>
+              <p>이미지나 비디오 내에서 특정 객체의 존재와 종류를 식별하는 기술</p>
+              <p style="margin-top:.6em;color:var(--teal);font-weight:500">→ 객체의 존재 여부와 종류만 파악</p>
+            </div>
+          </div>
+          <div class="card coral" style="flex:1">
+            <div class="card-inner">
+              <h3>이미지 세그멘테이션 <span class="en">Image Segmentation</span></h3>
+              <p>이미지를 픽셀 단위로 분할하여 각 픽셀이 어떤 객체나 영역에 속하는지 분류하는 기술</p>
+              <p style="margin-top:.6em;color:var(--coral);font-weight:500">→ 객체의 정확한 형태와 경계까지 파악</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3 객체 인식 정의 ═══ -->
+  <div class="slide" id="s3">
+    <div class="slide-header">
+      <h1>객체 인식(Object Recognition): 정의 및 목표</h1>
+      <p>이미지 내 객체의 존재 여부와 종류를 식별하는 컴퓨터 비전 기술</p>
+    </div>
+    <div class="content-area" style="display:flex;flex-direction:column">
+      <div class="def-box">
+        <div class="def-label">정의</div>
+        <p>객체 인식은 이미지/비디오 내에서 특정 객체의 존재 여부를 식별하고, 해당 객체가 무엇인지(사람, 자동차, 동물 등) 종류를 분류하는 기술 딥러닝에서 객체 탐지(Object Detection)는 객체 인식의 하위 개념으로, 종류뿐 아니라 위치(Bounding Box)까지 파악</p>
+      </div>
+      <div class="goals-label">핵심 목표</div>
+      <div class="grid-2x2">
+        <div class="goal-card">
+          <div class="badge">1</div>
+          <div class="goal-text">
+            <h4>객체의 존재 파악</h4>
+            <p>이미지/비디오 내에서 특정 객체의 존재 여부를 정확히 감지하고 위치를 파악</p>
+          </div>
+        </div>
+        <div class="goal-card">
+          <div class="badge">2</div>
+          <div class="goal-text">
+            <h4>객체의 종류 분류</h4>
+            <p>파악된 객체를 미리 정의된 클래스로 분류 (예: 사람, 자동차, 동물 등)</p>
+          </div>
+        </div>
+        <div class="goal-card">
+          <div class="badge">3</div>
+          <div class="goal-text">
+            <h4>컴퓨터의 시각적 이해</h4>
+            <p>컴퓨터가 사람처럼 이미지를 이해하고 해석할 수 있도록 함.</p>
+          </div>
+        </div>
+        <div class="goal-card">
+          <div class="badge">4</div>
+          <div class="goal-text">
+            <h4>실시간 처리</h4>
+            <p>특히 비디오에서 객체 인식 결과를 실시간으로 제공하는 것이 중요</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══ SLIDE 4det — 객체 탐지(Object Detection) 개념과 구조 ═══ -->
+  <div class="slide" id="s4det">
+    <div class="slide-header">
+      <h1>객체 탐지(Object Detection): 개념과 구조</h1>
+      <p>Recognition에서 한 발 더 — 클래스와 위치(Bounding Box)를 동시에 예측</p>
+    </div>
+    <div class="content-area">
+      <div class="det-grid">
+        <div class="det-col">
+          <div class="def-box">
+            <div class="lbl">정의</div>
+            <p>객체 탐지는 이미지 내 객체의 <strong>클래스(종류)</strong>와 <strong>위치(Bounding Box: x, y, w, h)</strong>를 동시에 예측.<br>인식(Recognition)은 "무엇이 있는가", 탐지(Detection)는 "무엇이 어디에 있는가".</p>
+          </div>
+          <div class="stage-wrap">
+            <div class="stage-card">
+              <div class="s-bar"></div>
+              <div class="s-body">
+                <h4>1-Stage 탐지기 — 속도 우선</h4>
+                <p>한 번의 forward pass로 클래스 + 위치를 동시 예측. 실시간 처리에 유리.<br>대표: <strong>YOLO, SSD, RetinaNet</strong></p>
+              </div>
+            </div>
+            <div class="stage-card">
+              <div class="s-bar navy"></div>
+              <div class="s-body">
+                <h4>2-Stage 탐지기 — 정밀도 우선</h4>
+                <p>① 후보 영역(Region Proposal) 생성 → ② 각 영역 정밀 분류의 2단계 처리.<br>대표: <strong>R-CNN, Faster R-CNN</strong></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="det-col">
+          <div class="flow-box">
+            <h4>detection 파이프라인 흐름</h4>
+            <div class="flow-row">
+              <div class="flow-step">입력<br>이미지</div>
+              <div class="flow-arr">→</div>
+              <div class="flow-step">CNN<br>특징<br>추출</div>
+              <div class="flow-arr">→</div>
+              <div class="flow-step">Region<br>Proposal/<br>Anchor</div>
+              <div class="flow-arr">→</div>
+              <div class="flow-step">분류<br>+<br>회귀</div>
+              <div class="flow-arr">→</div>
+              <div class="flow-step">NMS<br>후처리</div>
+            </div>
+          </div>
+          <div class="mini-grid">
+            <div class="mini-card"><h5>출력 형태</h5><ul><li>클래스 확률 (Softmax)</li><li>박스 좌표 (x, y, w, h)</li><li>신뢰도 점수 (Confidence)</li></ul></div>
+            <div class="mini-card nv"><h5>평가 지표</h5><ul><li>IoU — 박스 정확도</li><li>AP / mAP — 전체 성능</li><li>FPS — 처리 속도</li></ul></div>
+            <div class="mini-card"><h5>인식 vs 탐지</h5><ul><li>인식: 클래스만 예측</li><li>탐지: 클래스 + 위치</li><li>탐지 = 인식의 확장</li></ul></div>
+            <div class="mini-card nv"><h5>주요 도전 과제</h5><ul><li>다양한 크기·종횡비 객체</li><li>겹치는 객체 구분(NMS)</li><li>속도-정밀도 트레이드오프</li></ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5mech — 탐지 핵심 메커니즘: Anchor · IoU · NMS ═══ -->
+  <div class="slide" id="s5mech">
+    <div class="slide-header">
+      <h1>탐지 핵심 메커니즘: Anchor · IoU · NMS</h1>
+      <p>객체 탐지 모델 내부를 이해하는 세 가지 핵심 개념</p>
+    </div>
+    <div class="content-area">
+      <div class="mech-grid">
+        <div class="mech-card">
+          <div class="mcap"></div>
+          <div class="mbody">
+            <h3>앵커 박스 (Anchor Box)</h3>
+            <div class="msub">사전 정의된 레퍼런스 박스</div>
+            <div class="mdiv"></div>
+            <div class="mlbl">개념</div>
+            <p>이미지의 각 격자 셀에 다양한 크기·종횡비의 기준 박스를 미리 정의. 모델은 이 기준으로부터의 <strong>오프셋(offset)</strong>을 학습해 정확한 위치를 예측합니다.</p>
+            <div class="mlbl">왜 필요한가?</div>
+            <p>객체의 크기·형태가 다양하므로, 여러 스케일·비율의 앵커를 통해 크고 작은 객체를 모두 탐지할 수 있습니다.</p>
+            <div class="mlbl">앵커-프리 (최신 추세)</div>
+            <p>CenterNet, FCOS 등은 앵커 없이 객체 중심점을 직접 예측해 설계를 단순화합니다.</p>
+          </div>
+          <div class="mfoot">핵심: 다양한 크기·비율의 기준 박스를 사전 정의</div>
+        </div>
+        <div class="mech-card">
+          <div class="mcap amber"></div>
+          <div class="mbody">
+            <h3>IoU (Intersection over Union)</h3>
+            <div class="msub amber">예측 박스 품질 측정 지표</div>
+            <div class="mdiv"></div>
+            <div class="mlbl amber">공식</div>
+            <div class="formula">IoU = |예측박스 ∩ 정답박스| / |예측박스 ∪ 정답박스|</div>
+            <p>0~1 사이 값. 1에 가까울수록 예측이 정확합니다.</p>
+            <div class="mlbl amber">훈련 시 활용</div>
+            <p>IoU ≥ 0.5 → 양성(Positive) 앵커<br>IoU &lt; 0.3 → 음성(Negative) 앵커<br>중간(0.3~0.5) → 무시(Ignore)</p>
+            <div class="mlbl amber">평가 시 활용</div>
+            <p>예측 박스 IoU ≥ 임계값 → 정탐(TP)<br>예측 박스 IoU &lt; 임계값 → 오탐(FP)</p>
+          </div>
+          <div class="mfoot amber">핵심: 예측-정답 박스의 겹침 비율 (0~1)</div>
+        </div>
+        <div class="mech-card">
+          <div class="mcap navy"></div>
+          <div class="mbody">
+            <h3>NMS (Non-Maximum Suppression)</h3>
+            <div class="msub navy">중복 박스 제거 후처리</div>
+            <div class="mdiv"></div>
+            <div class="mlbl navy">동작 원리</div>
+            <p>하나의 객체에 여러 박스가 예측될 때, 가장 신뢰도 높은 박스만 남기고 중복을 제거하는 후처리 알고리즘.</p>
+            <div class="mlbl navy">처리 단계</div>
+            <p>① 신뢰도 점수 내림차순 정렬<br>② 최고 점수 박스 선택(유지)<br>③ 선택 박스와 IoU ≥ 임계값인 박스 제거<br>④ 남은 박스에서 ②~③ 반복</p>
+            <div class="mlbl navy">Soft-NMS (개선)</div>
+            <p>제거 대신 IoU에 비례해 점수를 감쇠. 밀집 객체 탐지 성능을 향상합니다.</p>
+          </div>
+          <div class="mfoot navy">핵심: 중복 예측 박스 제거 후처리 알고리즘</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4 접근 방식 ═══ -->
+  <div class="slide" id="s4">
+    <div class="slide-header">
+      <h1>객체 인식의 주요 접근 방식</h1>
+      <p>머신러닝 기반 vs 딥러닝 기반 — 특징 추출 방식의 차이</p>
+    </div>
+    <div class="content-area">
+      <div class="vs-grid">
+        <div class="approach-card">
+          <div class="ac-header">
+            <h3>머신러닝 기반</h3>
+            <div class="en">Traditional ML Approach</div>
+          </div>
+          <div class="row"><div class="row-label">특징 추출</div><div class="row-val">수동 특징 추출 (HOG, SURF, MSER 등)</div></div>
+          <div class="row"><div class="row-label">분류 모델</div><div class="row-val">SVM, Bag-of-Words, Viola-Jones 알고리즘</div></div>
+          <div class="row"><div class="row-label">데이터 요구</div><div class="row-val">최소한의 데이터로도 정확한 결과 가능</div></div>
+          <div class="row"><div class="row-label">장점</div><div class="row-val">다양한 특징/분류기 조합 가능, 적은 데이터로 효과적</div></div>
+          <div class="row"><div class="row-label">단점</div><div class="row-val">특징 추출 수동성, 복잡한 패턴 인식 한계</div></div>
+        </div>
+        <div class="vs-label">vs</div>
+        <div class="approach-card navy-card">
+          <div class="ac-header">
+            <h3>딥러닝 기반</h3>
+            <div class="en">Deep Learning Approach</div>
+          </div>
+          <div class="row"><div class="row-label">특징 추출</div><div class="row-val">자동 특징 학습 (CNN을 통한 자동 학습)</div></div>
+          <div class="row"><div class="row-label">분류 모델</div><div class="row-val">CNN 기반 모델 (AlexNet, GoogLeNet 등)</div></div>
+          <div class="row"><div class="row-label">데이터 요구</div><div class="row-val">대량의 레이블링된 데이터 필요</div></div>
+          <div class="row"><div class="row-label">장점</div><div class="row-val">높은 정밀도, 복잡한 특징 자동 학습</div></div>
+          <div class="row"><div class="row-label">단점</div><div class="row-val">대량의 데이터와 고성능 GPU 필요</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5 대표 모델 ═══ -->
+  <div class="slide" id="s5">
+    <div class="slide-header">
+      <h1>객체 인식을 위한 대표 딥러닝 모델</h1>
+      <p>R-CNN 계열(2-Stage)과 YOLO 계열(1-Stage)의 발전 흐름</p>
+    </div>
+    <div class="content-area">
+      <div class="models-grid">
+        <div style="display:flex;flex-direction:column;height:100%">
+          <div class="col-title teal">R-CNN 계열 &nbsp;—&nbsp; 2-Stage</div>
+          <div class="model-rows">
+            <div class="model-row">
+              <div class="model-name">R-CNN <span class="tag" style="font-size:.75em">기본 모델</span></div>
+              <div class="model-desc">이미지당 2,000개의 영역을 제안하고 각 영역에서 특징을 추출해 분류. 계산 비용이 많이 들고 속도가 느림.</div>
+            </div>
+            <div class="model-row">
+              <div class="model-name">Fast R-CNN <span class="tag" style="font-size:.75em">속도 개선</span></div>
+              <div class="model-desc">R-CNN의 아키텍처를 줄여 처리 시간을 단축하고 정확도를 높인 개선 버전.</div>
+            </div>
+            <div class="model-row">
+              <div class="model-name">Faster R-CNN <span class="tag" style="font-size:.75em">실시간</span></div>
+              <div class="model-desc">영역 제안 네트워크(RPN)를 도입하여 영역 제안까지 딥러닝으로 처리. 실시간 탐지에 근접.</div>
+            </div>
+            <div class="model-row">
+              <div class="model-name">Mask R-CNN <span class="tag coral" style="font-size:.75em">세그멘테이션</span></div>
+              <div class="model-desc">Faster R-CNN을 확장하여 객체 탐지뿐 아니라 픽셀 수준의 인스턴스 세그멘테이션까지 수행.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;height:100%">
+          <div class="col-title navy">YOLO 계열 &amp; 기타 &nbsp;—&nbsp; 1-Stage</div>
+          <div class="model-rows">
+            <div class="model-row navy-side">
+              <div class="model-name" style="color:var(--navy)">초기 YOLO <span class="tag navy" style="font-size:.75em">속도 우선</span></div>
+              <div class="model-desc">단일 신경망으로 탐지 작업 수행. R-CNN보다 빠르지만 지역화 오류 높고 배경 위양성(FP)은 낮음.</div>
+            </div>
+            <div class="model-row navy-side">
+              <div class="model-name" style="color:var(--navy)">후기 YOLO (v5~) <span class="tag navy" style="font-size:.75em">실시간 표준</span></div>
+              <div class="model-desc">속도와 정확도 모두 지속적으로 개선. 현재 실시간 탐지의 사실상 표준 모델.</div>
+            </div>
+            <div class="model-row navy-side">
+              <div class="model-name" style="color:var(--navy)">SSD &amp; RetinaNet <span class="tag navy" style="font-size:.75em">1단계 기타</span></div>
+              <div class="model-desc">YOLO와 유사한 간소화 아키텍처. RetinaNet은 Focal Loss로 클래스 불균형 문제 해결.</div>
+            </div>
+            <div class="model-row navy-side">
+              <div class="model-name" style="color:var(--navy)">DETR <span class="tag navy" style="font-size:.75em">Transformer</span></div>
+              <div class="model-desc">CNN과 트랜스포머를 결합. NMS 없이 Set 예측 방식으로 Faster R-CNN에 필적하는 성능.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6 세그멘테이션 정의 ═══ -->
+  <div class="slide" id="s6">
+    <div class="slide-header coral">
+      <h1>이미지 세그멘테이션</h1>
+      <p>픽셀 단위로 이미지를 분할하여 각 픽셀의 클래스를 분류하는 기술</p>
+    </div>
+    <div class="content-area" style="display:flex;flex-direction:column">
+      <div class="def-box">
+        <div class="def-label">정의</div>
+        <p>이미지 세그멘테이션은 이미지 내의 각 픽셀을 특정 객체 또는 영역에 따라 분류하는 기술 단순히 객체의 존재 여부나 위치를 파악하는 객체 인식을 넘어, 모든 픽셀에 의미론적 레이블을 할당함으로써 객체의 정확한 형태와 경계를 이해합니다.</p>
+      </div>
+      <div class="three-col" style="flex:1">
+        <div class="task-card">
+          <div class="tc-top"></div>
+          <div class="tc-body">
+            <h4>이미지 분류</h4>
+            <p>이미지 전체를 하나의 클래스로 분류<br><br>위치 정보 없음</p>
+          </div>
+        </div>
+        <div class="task-card">
+          <div class="tc-top teal"></div>
+          <div class="tc-body">
+            <h4>객체 탐지</h4>
+            <p>객체의 존재와 위치 (Bounding Box) 파악<br><br>대략적인 위치</p>
+          </div>
+        </div>
+        <div class="task-card">
+          <div class="tc-top coral"></div>
+          <div class="tc-body">
+            <h4>이미지 세그멘테이션</h4>
+            <p>모든 픽셀에 클래스 레이블 할당<br><br>정확한 형태와 경계</p>
+          </div>
+        </div>
+      </div>
+      <div class="goal-list">
+        <p>주요 목표</p>
+        <ul>
+          <li>각 픽셀에 의미론적 레이블 할당 (도로, 하늘, 사람, 자동차 등)</li>
+          <li>객체의 정확한 형태와 경계 파악</li>
+          <li>픽셀 단위 분석으로 이미지 구성 요소를 깊이 있게 이해</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7 유형 3종 ═══ -->
+  <div class="slide" id="s7">
+    <div class="slide-header coral">
+      <h1>이미지 세그멘테이션의 유형</h1>
+      <p>시맨틱 · 인스턴스 · 파놉틱 — 분석 정밀도와 목표에 따라 세 가지로 구분</p>
+    </div>
+    <div class="content-area">
+      <div class="type-grid">
+
+        <div class="type-card">
+          <div class="type-cap"></div>
+          <div class="type-body">
+            <div class="type-num">1</div>
+            <h3>시맨틱 세그멘테이션</h3>
+            <div class="en-sub">Semantic Segmentation</div>
+            <div class="divider"></div>
+            <div class="section-label">정의</div>
+            <p>이미지 내 모든 픽셀에 클래스 레이블 할당. 동일 클래스의 객체는 같은 레이블로 표시.</p>
+            <div class="section-label">결과물</div>
+            <p>동일 클래스 → 동일 레이블<br>(개체 구분 없음)</p>
+            <div class="section-label">예시</div>
+            <p>거리 이미지의 모든 나무를 '나무' 클래스로, 모든 차량을 '차량' 클래스로 분류</p>
+          </div>
+          <div class="type-foot">평가 지표: mIoU</div>
+        </div>
+
+        <div class="type-card">
+          <div class="type-cap navy"></div>
+          <div class="type-body">
+            <div class="type-num navy">2</div>
+            <h3>인스턴스 세그멘테이션</h3>
+            <div class="en-sub navy">Instance Segmentation</div>
+            <div class="divider"></div>
+            <div class="section-label navy">정의</div>
+            <p>시맨틱과 유사하지만, 동일한 클래스 내 개별 객체를 서로 구분하여 분류.</p>
+            <div class="section-label navy">결과물</div>
+            <p>동일 클래스라도 개체마다<br>고유한 ID/레이블 부여</p>
+            <div class="section-label navy">예시</div>
+            <p>거리의 수많은 자동차를 각각 개별 인스턴스로 인식하고 분할</p>
+          </div>
+          <div class="type-foot navy">평가 지표: AP (mask IoU)</div>
+        </div>
+
+        <div class="type-card">
+          <div class="type-cap coral"></div>
+          <div class="type-body">
+            <div class="type-num coral">3</div>
+            <h3>파놉틱 세그멘테이션</h3>
+            <div class="en-sub coral">Panoptic Segmentation</div>
+            <div class="divider"></div>
+            <div class="section-label coral">정의</div>
+            <p>시맨틱 + 인스턴스의 장점 결합. Thing(개체) + Stuff(배경)을 모두 분류.</p>
+            <div class="section-label coral">결과물</div>
+            <p>이미지 전체의 포괄적<br>장면 이해 제공</p>
+            <div class="section-label coral">예시</div>
+            <p>도로·나무 등 배경은 시맨틱으로, 자동차·보행자는 인스턴스 단위로 분할</p>
+          </div>
+          <div class="type-foot coral">평가 지표: PQ = RQ × SQ</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8 비교 테이블 ═══ -->
+  <div class="slide" id="s8">
+    <div class="slide-header navy">
+      <h1>객체 인식 vs 이미지 세그멘테이션 비교</h1>
+    </div>
+    <div class="content-area">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th class="teal-head">객체 인식 (Object Recognition)</th>
+              <th class="coral-head">이미지 세그멘테이션 (Image Segmentation)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>분석 단위</td>
+              <td>이미지 내 객체 단위</td>
+              <td>이미지 내 픽셀 단위</td>
+            </tr>
+            <tr>
+              <td>출력 형태</td>
+              <td>클래스 및 위치 (Bounding Box)</td>
+              <td>픽셀별 클래스 레이블 (세그멘테이션 맵)</td>
+            </tr>
+            <tr>
+              <td>정밀도</td>
+              <td>객체의 대략적인 위치와 종류 식별</td>
+              <td>객체의 정확한 형태와 경계 식별</td>
+            </tr>
+            <tr>
+              <td>계산 복잡도</td>
+              <td>상대적으로 낮음</td>
+              <td>상대적으로 높음 (픽셀 단위 분석)</td>
+            </tr>
+            <tr>
+              <td>주요 목표</td>
+              <td>이미지 내 특정 객체의 존재 여부 및 종류 파악</td>
+              <td>모든 픽셀을 의미 있는 범주로 분류하여 상세 분할</td>
+            </tr>
+            <tr>
+              <td>대표 모델</td>
+              <td>R-CNN, Faster R-CNN, YOLO, SSD</td>
+              <td>FCN, U-Net, DeepLab, Mask R-CNN</td>
+            </tr>
+            <tr>
+              <td>주요 활용</td>
+              <td>객체 감지 및 분류</td>
+              <td>객체 분할, 배경 제거, 의료 영상 분석</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="table-footer">
+          <div class="footer-box teal">객체 인식: 객체 단위 분석 → 빠르고 가벼움</div>
+          <div class="footer-box coral">세그멘테이션: 픽셀 단위 분석 → 정밀하고 상세함</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9 핵심 정리 ═══ -->
+  <div class="slide" id="s9">
+    <div class="s9-header">
+      <h1>정리</h1>
+    </div>
+    <div class="s9-body">
+      <div class="sum-card">
+        <div class="sum-top"></div>
+        <div class="sum-body">
+          <h4>객체 인식</h4>
+          <ul>
+            <li>이미지 내 객체의 존재 여부와 종류 식별</li>
+            <li>객체 탐지: 종류 + 위치 (Bounding Box) 파악</li>
+            <li>머신러닝 vs 딥러닝 접근 방식</li>
+            <li>출력: 클래스 레이블 + bbox</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-top navy"></div>
+        <div class="sum-body">
+          <h4 class="navy">대표 탐지 모델</h4>
+          <ul>
+            <li>R-CNN → Fast R-CNN → Faster R-CNN → Mask R-CNN</li>
+            <li>YOLO 계열: 단일 신경망, 실시간 탐지</li>
+            <li>SSD, RetinaNet: 1단계 탐지기</li>
+            <li>DETR: CNN + Transformer 결합</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-top coral"></div>
+        <div class="sum-body">
+          <h4 class="coral">이미지 세그멘테이션</h4>
+          <ul>
+            <li>모든 픽셀에 의미론적 레이블을 할당</li>
+            <li>시맨틱: 클래스 단위 분류</li>
+            <li>인스턴스: 개체 단위 구분</li>
+            <li>파놉틱: 시맨틱 + 인스턴스 통합</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-top purple"></div>
+        <div class="sum-body">
+          <h4 class="purple">두 기술의 핵심 차이</h4>
+          <ul>
+            <li>객체 인식: 객체 단위 분석 → 빠르고 효율적</li>
+            <li>세그멘테이션: 픽셀 단위 분석 → 정밀하고 상세</li>
+            <li>복잡도: 인식 &lt; 세그멘테이션</li>
+            <li>활용: 목적에 따라 최적 기술 선택</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="s9-footer">
+      객체 인식: 객체 단위&nbsp;&nbsp;|&nbsp;&nbsp;탐지: 위치 + 종류&nbsp;&nbsp;|&nbsp;&nbsp;세그멘테이션: 픽셀 단위&nbsp;&nbsp;|&nbsp;&nbsp;파놉틱: 시맨틱 + 인스턴스 통합
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<div id="nav">
+  <button id="btn-prev" onclick="go(-1)">&#8592;</button>
+  <div id="dots"></div>
+  <span id="slide-counter">1 / 11</span>
+  <button id="btn-next" onclick="go(1)">&#8594;</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let cur = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('prev');
+    setTimeout(() => slides[cur < n ? cur : cur].classList.remove('prev'), 500);
+
+    const prev = cur;
+    cur = (n + total) % total;
+
+    // direction-aware prev class
+    slides.forEach(s => s.classList.remove('active','prev'));
+    slides[prev].classList.add('prev');
+    slides[cur].classList.add('active');
+
+    document.getElementById('slide-counter').textContent = `${cur+1} / ${total}`;
+    document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('on', i === cur));
+
+    setTimeout(() => slides[prev].classList.remove('prev'), 500);
+  }
+
+  function go(d) { goTo(cur + d); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') go(-1);
+  });
+
+  // Init
+  goTo(0);
+</script>
+</body>
+</html>
