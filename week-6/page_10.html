@@ -4,45 +4,209 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>전략별 비교 분석</title>
-  <link rel="stylesheet" href="style.css" />
-  
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:#f3f5f9;
+      font-family:Arial,"Noto Sans KR",sans-serif;
+      color:#18212f
+    }
+
+    /* ===== SLIDE ===== */
+    .slide{
+      width:1600px;
+      height:900px;
+      margin:0 auto;
+      background:linear-gradient(135deg,#f7f9fc,#eef3fb);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .bg-circle{
+      position:absolute;
+      left:-120px;
+      bottom:-120px;
+      width:420px;
+      height:420px;
+      border-radius:50%;
+      background:rgba(255,120,120,.08)
+    }
+
+    /* ===== TITLE ===== */
+    .left-title{
+      position:absolute;
+      left:72px;
+      top:54px;
+      display:flex;
+      align-items:center;
+      gap:18px
+    }
+
+    .bar{
+      width:10px;
+      height:56px;
+      border-radius:8px;
+      background:#ef5350
+    }
+
+    h1{
+      margin:0;
+      font-size:42px;
+      font-weight:800
+    }
+
+    /* ===== CONTENT ===== */
+    .content{
+      position:absolute;
+      left:72px;
+      right:72px;
+      top:180px;
+      bottom:100px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    /* ===== TABLE ===== */
+    .compare-table{
+      width:100%;
+      max-width:1300px;
+      border-collapse:collapse;
+      background:#fff;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 18px 40px rgba(47,77,122,.10);
+    }
+
+    .compare-table th{
+      background:#fdecea;
+      color:#b93835;
+      font-size:22px;
+      padding:18px;
+      text-align:center;
+      font-weight:700;
+    }
+
+    .compare-table td{
+      font-size:20px;
+      padding:18px;
+      text-align:center;
+      border-top:1px solid #f1f3f5;
+      line-height:1.5;
+    }
+
+    .compare-table td:first-child{
+      font-weight:700;
+      background:#fafafa;
+    }
+
+    /* ===== NAV ===== */
+    .nav{
+      position:absolute;
+      bottom:24px;
+      left:0;
+      width:100%;
+      padding:0 72px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .btn-prev{
+      background:#d1d5db;
+      color:#1f2937;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .btn-next{
+      background:#2563eb;
+      color:white;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .page{
+      background:#6d28d9;
+      color:white;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:14px;
+    }
+
+  </style>
 </head>
+
 <body>
   <main class="slide">
+
     <div class="bg-circle"></div>
-    
-<div class="left-title"><div class="bar"></div><h1 class="editable" contenteditable="true">전략별 비교 분석</h1></div>
-<table class="compare-table">
-  <thead>
-    <tr>
-      <th class="editable" contenteditable="true">항목</th>
-      <th class="editable" contenteditable="true">Data Augmentation</th>
-      <th class="editable" contenteditable="true">Domain Adaptation</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="editable" contenteditable="true">주요 목적</td>
-      <td class="editable" contenteditable="true">일반화 성능 향상, 과적합 방지</td>
-      <td class="editable" contenteditable="true">다른 분포의 데이터로 지식 전이</td>
-    </tr>
-    <tr>
-      <td class="editable" contenteditable="true">데이터 의존도</td>
-      <td class="editable" contenteditable="true">labeling된 원본 데이터 중심</td>
-      <td class="editable" contenteditable="true">label 없는 Target 데이터 활용</td>
-    </tr>
-    <tr>
-      <td class="editable" contenteditable="true">학습 방식</td>
-      <td class="editable" contenteditable="true">기하학적/색상 수동 변형</td>
-      <td class="editable" contenteditable="true">통계적 정렬 및 Adversarial 학습</td>
-    </tr>
-    <tr>
-      <td class="editable" contenteditable="true">적용 환경</td>
-      <td class="editable" contenteditable="true">동일 도메인 내 데이터 부족 시</td>
-      <td class="editable" contenteditable="true">학습-실제 환경 분포 차이 존재 시</td>
-    </tr>
-  </tbody>
-</table>
+
+    <!-- TITLE -->
+    <div class="left-title">
+      <div class="bar"></div>
+      <h1 class="editable" contenteditable="true">전략별 비교 분석</h1>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>항목</th>
+            <th>Data Augmentation</th>
+            <th>Domain Adaptation</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>주요 목적</td>
+            <td>일반화 성능 향상, 과적합 방지</td>
+            <td>다른 분포의 데이터로 지식 전이</td>
+          </tr>
+
+          <tr>
+            <td>데이터 의존도</td>
+            <td>labeling된 원본 데이터 중심</td>
+            <td>label 없는 Target 데이터 활용</td>
+          </tr>
+
+          <tr>
+            <td>학습 방식</td>
+            <td>기하학적/색상 수동 변형</td>
+            <td>통계적 정렬 및 Adversarial 학습</td>
+          </tr>
+
+          <tr>
+            <td>적용 환경</td>
+            <td>동일 도메인 내 데이터 부족 시</td>
+            <td>학습-실제 환경 분포 차이 존재 시</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <!-- NAV -->
+    <div class="nav">
+
+      <a href="page_9.html" class="btn-prev">이전</a>
+
+      <div class="page">10 / 11</div>
+
+      <a href="page_11.html" class="btn-next">다음</a>
+
+    </div>
 
   </main>
 </body>

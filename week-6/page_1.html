@@ -4,16 +4,74 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Domain Adaptation</title>
-  <link rel="stylesheet" href="style.css" />
-  
+
+  <!-- Tailwind 추가 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 폰트 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #F5F5F5;
+    }
+
+    .slide-container {
+      width: 1280px;
+      height: 720px;
+      position: relative;
+    }
+
+    .title-big {
+      font-size: 64px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .bg-circle {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,92,246,0.2), transparent);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
 </head>
+
 <body>
-  <main class="slide">
+  <main class="slide-container flex items-center justify-center">
+
+    <!-- 배경 -->
     <div class="bg-circle"></div>
-    
-<div style="position:absolute;left:0;right:0;top:330px;text-align:center">
-  <div class="title-big editable" contenteditable="true">Domain Adaptation</div>
-</div>
+
+    <!-- 타이틀 -->
+    <div class="text-center">
+      <div class="title-big editable" contenteditable="true">
+        Domain Adaptation
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex justify-between items-center w-full px-8"
+         style="position:absolute; bottom:24px; left:0;">
+      <a class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
+         href="index.html">홈</a>
+
+      <div class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm">
+        1 / 11
+      </div>
+
+      <a class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+         href="page_2.html">다음</a>
+    </div>
 
   </main>
 </body>

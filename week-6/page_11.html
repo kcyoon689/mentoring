@@ -4,24 +4,179 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AutoAugment: 최적 전략의 자동화</title>
-  <link rel="stylesheet" href="style.css" />
-  
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:#f3f5f9;
+      font-family:Arial,"Noto Sans KR",sans-serif;
+      color:#18212f
+    }
+
+    /* ===== SLIDE ===== */
+    .slide{
+      width:1600px;
+      height:900px;
+      margin:0 auto;
+      background:linear-gradient(135deg,#f7f9fc,#eef3fb);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .bg-circle{
+      position:absolute;
+      right:-120px;
+      top:-120px;
+      width:420px;
+      height:420px;
+      border-radius:50%;
+      background:rgba(100,120,255,.08)
+    }
+
+    /* ===== TITLE ===== */
+    .left-title{
+      position:absolute;
+      left:72px;
+      top:54px;
+      display:flex;
+      align-items:center;
+      gap:18px
+    }
+
+    .bar{
+      width:10px;
+      height:56px;
+      border-radius:8px;
+      background:#4c6ef5
+    }
+
+    h1{
+      margin:0;
+      font-size:42px;
+      font-weight:800
+    }
+
+    /* ===== LEFT VISUAL ===== */
+    .auto-logo{
+      position:absolute;
+      left:120px;
+      top:280px;
+      font-size:120px;
+      font-weight:900;
+      color:#4c6ef5;
+    }
+
+    .auto-sub{
+      position:absolute;
+      left:140px;
+      top:420px;
+      font-size:26px;
+      color:#5d6b82;
+    }
+
+    /* ===== RIGHT TEXT ===== */
+    .content{
+      position:absolute;
+      left:820px;
+      right:72px;
+      top:260px;
+      bottom:120px;
+    }
+
+    .body-large{
+      font-size:24px;
+      line-height:1.6;
+      margin-bottom:32px;
+    }
+
+    /* ===== NAV ===== */
+    .nav{
+      position:absolute;
+      bottom:24px;
+      left:0;
+      width:100%;
+      padding:0 72px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .btn-prev{
+      background:#d1d5db;
+      color:#1f2937;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .btn-next{
+      background:#2563eb;
+      color:white;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .page{
+      background:#6d28d9;
+      color:white;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:14px;
+    }
+
+  </style>
 </head>
+
 <body>
   <main class="slide">
+
     <div class="bg-circle"></div>
-    
-<div class="left-title"><div class="bar"></div><h1 class="editable" contenteditable="true">AutoAugment: 최적 전략의 자동화</h1></div>
-<div class="auto-logo editable" contenteditable="true">Auto</div>
-<div class="auto-sub editable" contenteditable="true">Augment Policy Search</div>
-<div style="position:absolute;left:880px;top:320px;width:610px">
-  <div class="body-large editable" contenteditable="true" style="margin-bottom:34px">
-    사람이 수동으로 Augmentation 정책을 정하는 대신,
-    <strong>Reinforcement Learning</strong>이나 <strong>Adversarial Learning</strong>을 통해 모델이 스스로 최적의 변형 조합을 찾아냄
-  </div>
-  <div class="body-large editable" contenteditable="true" style="margin-bottom:34px">RandAugment, Fast AutoAugment 등 발전</div>
-  <div class="body-large editable" contenteditable="true">도메인 특징에 맞는 최적의 Magnitude와 Probability를 자동으로 결정</div>
-</div>
+
+    <!-- TITLE -->
+    <div class="left-title">
+      <div class="bar"></div>
+      <h1>AutoAugment: 최적 전략의 자동화</h1>
+    </div>
+
+    <!-- LEFT VISUAL -->
+    <div class="auto-logo">Auto</div>
+    <div class="auto-sub">Augment Policy Search</div>
+
+    <!-- RIGHT CONTENT -->
+    <div class="content">
+
+      <div class="body-large">
+        사람이 수동으로 Augmentation 정책을 정하는 대신,<br>
+        <strong>Reinforcement Learning</strong>이나 <strong>Adversarial Learning</strong>을 통해  
+        모델이 스스로 최적의 변형 조합을 탐색합니다.
+      </div>
+
+      <div class="body-large">
+        RandAugment, Fast AutoAugment 등으로 발전
+      </div>
+
+      <div class="body-large">
+        도메인 특성에 맞는 <strong>Magnitude</strong>와 <strong>Probability</strong>를 자동으로 결정
+      </div>
+
+    </div>
+
+    <!-- NAV -->
+    <div class="nav">
+
+      <a href="page_10.html" class="btn-prev">이전</a>
+
+      <div class="page">11 / 11</div>
+
+      <!-- 마지막 페이지라 next는 비활성 -->
+      <div style="width:64px;"></div>
+
+    </div>
 
   </main>
 </body>

@@ -3,25 +3,282 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Adversarial Adaptation 구조</title>
-  <link rel="stylesheet" href="style.css" />
-  
+  <title>Adversarial Adaptation</title>
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:#f3f5f9;
+      font-family:Arial,"Noto Sans KR",sans-serif;
+      color:#18212f
+    }
+
+    /* ===== SLIDE ===== */
+    .slide{
+      width:1600px;
+      height:900px;
+      margin:0 auto;
+      background:linear-gradient(135deg,#f7f9fc,#eef3fb);
+      position:relative;
+      overflow:hidden
+    }
+
+    .accent{
+      position:absolute;
+      right:-120px;
+      top:-120px;
+      width:420px;
+      height:420px;
+      border-radius:50%;
+      background:rgba(80,120,255,.08)
+    }
+
+    /* ===== TITLE ===== */
+    .title{
+      position:absolute;
+      left:72px;
+      top:54px;
+      display:flex;
+      align-items:center;
+      gap:18px
+    }
+
+    .bar{
+      width:10px;
+      height:56px;
+      border-radius:8px;
+      background:#4c6ef5
+    }
+
+    h1{
+      margin:0;
+      font-size:42px;
+      font-weight:800
+    }
+
+    .sub{
+      position:absolute;
+      left:100px;
+      top:130px;
+      font-size:20px;
+      color:#5d6b82
+    }
+
+    /* ===== CONTENT ===== */
+    .content{
+      position:absolute;
+      left:72px;
+      right:72px;
+      top:190px;
+      bottom:80px;
+
+      display:grid;
+      grid-template-columns:1.05fr 0.95fr;
+      gap:34px;
+
+      align-items:center;
+    }
+
+    /* ===== LEFT (FIGURE) ===== */
+    .figure{
+      background:#fff;
+      border-radius:28px;
+      padding:28px;
+      box-shadow:0 18px 40px rgba(47,77,122,.10);
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+
+    .figure img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      border-radius:18px;
+    }
+
+    /* ===== RIGHT (TEXT) ===== */
+    .card{
+      background:#fff;
+      border-radius:28px;
+      padding:28px;
+      box-shadow:0 18px 40px rgba(47,77,122,.10);
+    }
+
+    .section-title{
+      font-size:30px;
+      font-weight:800;
+      color:#3b5bdb;
+      margin-bottom:12px
+    }
+
+    .lead{
+      font-size:25px;
+      line-height:1.55;
+      margin-bottom:22px
+    }
+
+    .bullet{
+      display:flex;
+      gap:16px;
+      margin:16px 0
+    }
+
+    .dot{
+      width:40px;
+      height:40px;
+      border-radius:50%;
+      background:#eef2ff;
+      color:#3b5bdb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:20px;
+      font-weight:700;
+      flex:none
+    }
+
+    .text{
+      font-size:24px;
+      line-height:1.55
+    }
+
+    .text strong{
+      color:#2b4dd8
+    }
+
+    .summary{
+      margin-top:20px;
+      padding:18px 20px;
+      border-radius:18px;
+      background:#eef2ff;
+      border:1px solid #c7d2fe;
+      font-size:22px;
+      line-height:1.55
+    }
+
+    /* ===== NAV ===== */
+    .nav{
+      position:absolute;
+      bottom:24px;
+      left:0;
+      width:100%;
+      padding:0 72px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .btn-prev{
+      background:#d1d5db;
+      color:#1f2937;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .btn-next{
+      background:#2563eb;
+      color:white;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .page{
+      background:#6d28d9;
+      color:white;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:14px;
+    }
+
+  </style>
 </head>
+
 <body>
   <main class="slide">
-    <div class="bg-circle"></div>
-    
-<div class="left-title"><div class="bar"></div><h1 class="editable" contenteditable="true">Adversarial Adaptation 구조</h1></div>
-<div style="position:absolute;left:76px;top:290px;width:780px;height:540px" class="figure-box">
-  <img src="images/img8.png" alt="Adversarial adaptation architecture" class="arch-img" />
-</div>
-<div style="position:absolute;left:980px;top:310px;width:540px">
-  <div class="body-large editable" contenteditable="true" style="margin-bottom:34px"><strong>GRL (Gradient Reversal Layer)</strong>를 활용한 구조:</div>
-  <div class="body-large editable" contenteditable="true" style="margin-bottom:28px"><strong>Feature Extractor:</strong> 공통된 특징을 추출</div>
-  <div class="body-large editable" contenteditable="true" style="margin-bottom:28px"><strong>Label Predictor:</strong> 클래스 분류 (Source 라벨 사용)</div>
-  <div class="body-large editable" contenteditable="true" style="margin-bottom:34px"><strong>Domain Classifier:</strong> 어느 도메인인지 판별</div>
-  <div class="body-large editable" contenteditable="true">특징 추출기는 도메인 판별기가 헷갈리도록 학습되어 'Domain-Invariant'한 특징을 만듦</div>
-</div>
+
+    <div class="accent"></div>
+
+    <!-- TITLE -->
+    <div class="title">
+      <div class="bar"></div>
+      <h1>Adversarial Adaptation</h1>
+    </div>
+
+    <div class="sub">
+      GRL을 활용해 Source와 Target의 Feature 공간을 정렬하는 Domain Adaptation 방법
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- LEFT -->
+      <section class="figure">
+        <img src="images/img8.png" alt="Adversarial Adaptation Architecture" />
+      </section>
+
+      <!-- RIGHT -->
+      <section class="card">
+
+        <div class="section-title">Adversarial Learning 기반 구조</div>
+
+        <div class="lead">
+          Domain classifier를 속이는 방식으로<br>
+          Domain-invariant feature를 학습합니다.
+        </div>
+
+        <div class="bullet">
+          <div class="dot">F</div>
+          <div class="text">
+            <strong>Feature Extractor</strong><br>
+            Source/Target 공통 특징 추출
+          </div>
+        </div>
+
+        <div class="bullet">
+          <div class="dot">L</div>
+          <div class="text">
+            <strong>Label Predictor</strong><br>
+            Source 데이터 기반 분류
+          </div>
+        </div>
+
+        <div class="bullet">
+          <div class="dot">D</div>
+          <div class="text">
+            <strong>Domain Classifier</strong><br>
+            입력이 어느 도메인인지 판별
+          </div>
+        </div>
+
+        <div class="summary">
+          <strong>핵심</strong><br>
+          GRL을 통해 feature extractor는 domain classifier를 혼란시키도록 학습되며,<br>
+          결과적으로 Domain에 독립적인 표현을 생성합니다.
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- NAV -->
+    <div class="nav">
+
+      <a href="page_7.html" class="btn-prev">이전</a>
+
+      <div class="page">8 / 11</div>
+
+      <a href="page_9.html" class="btn-next">다음</a>
+
+    </div>
 
   </main>
 </body>

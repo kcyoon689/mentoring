@@ -4,29 +4,216 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Adaptation 효과 분석</title>
-  <link rel="stylesheet" href="style.css" />
-  
+
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:#f3f5f9;
+      font-family:Arial,"Noto Sans KR",sans-serif;
+      color:#18212f
+    }
+
+    /* ===== SLIDE 고정 ===== */
+    .slide{
+      width:1600px;
+      height:900px;
+      margin:0 auto;
+      background:linear-gradient(135deg,#f7f9fc,#eef3fb);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .bg-circle{
+      position:absolute;
+      right:-120px;
+      top:-120px;
+      width:420px;
+      height:420px;
+      border-radius:50%;
+      background:rgba(100,120,255,.08)
+    }
+
+    /* ===== TITLE ===== */
+    .left-title{
+      position:absolute;
+      left:72px;
+      top:54px;
+      display:flex;
+      align-items:center;
+      gap:18px
+    }
+
+    .bar{
+      width:10px;
+      height:56px;
+      border-radius:8px;
+      background:#4c6ef5
+    }
+
+    h1{
+      margin:0;
+      font-size:42px;
+      font-weight:800
+    }
+
+    /* ===== CONTENT ===== */
+    .content{
+      position:absolute;
+      left:72px;
+      right:72px;
+      top:180px;
+      bottom:120px;
+
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:40px;
+    }
+
+    /* ===== BAR CHART ===== */
+    .bar-chart{
+      width:100%;
+      max-width:900px;
+    }
+
+    .bar-row{
+      display:flex;
+      align-items:center;
+      margin:24px 0;
+      gap:20px;
+    }
+
+    .bar-label{
+      width:260px;
+      font-size:22px;
+      font-weight:600;
+    }
+
+    .bar-track{
+      flex:1;
+      height:36px;
+      background:#e5e7eb;
+      border-radius:18px;
+      overflow:hidden;
+    }
+
+    .bar-fill{
+      height:100%;
+      background:#4c6ef5;
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      padding-right:12px;
+      font-weight:700;
+      border-radius:18px;
+    }
+
+    /* ===== CAPTION ===== */
+    .caption{
+      font-size:24px;
+      line-height:1.6;
+      max-width:1000px;
+    }
+
+    /* ===== NAV ===== */
+    .nav{
+      position:absolute;
+      bottom:24px;
+      left:0;
+      width:100%;
+      padding:0 72px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .btn-prev{
+      background:#d1d5db;
+      color:#1f2937;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .btn-next{
+      background:#2563eb;
+      color:white;
+      padding:10px 18px;
+      border-radius:10px;
+      text-decoration:none;
+      font-weight:600;
+    }
+
+    .page{
+      background:#6d28d9;
+      color:white;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:14px;
+    }
+
+  </style>
 </head>
+
 <body>
   <main class="slide">
+
     <div class="bg-circle"></div>
-    
-<div class="left-title"><div class="bar"></div><h1 class="editable" contenteditable="true">Adaptation 효과 분석</h1></div>
-<div class="bar-chart">
-  <div class="bar-row">
-    <div class="bar-label editable" contenteditable="true">Source Only</div>
-    <div class="bar-track"><div class="bar-fill" style="width:55%">55%</div></div>
-  </div>
-  <div class="bar-row">
-    <div class="bar-label editable" contenteditable="true">Data Augmentation</div>
-    <div class="bar-track"><div class="bar-fill" style="width:68%">68%</div></div>
-  </div>
-  <div class="bar-row">
-    <div class="bar-label editable" contenteditable="true">Domain Adaptation</div>
-    <div class="bar-track"><div class="bar-fill" style="width:89%">89%</div></div>
-  </div>
-</div>
-<div class="caption editable" contenteditable="true">Target Domain에서 테스트 시, Domain Adaptation을 적용한 모델의 정확도가 비약적으로 상승함을 확인할 수 있음</div>
+
+    <!-- TITLE -->
+    <div class="left-title">
+      <div class="bar"></div>
+      <h1>Adaptation 효과 분석</h1>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <div class="bar-chart">
+
+        <div class="bar-row">
+          <div class="bar-label">Source Only</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:55%">55%</div>
+          </div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Data Augmentation</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:68%">68%</div>
+          </div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-label">Domain Adaptation</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:89%">89%</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="caption">
+        Target Domain에서 테스트 시, Domain Adaptation을 적용한 모델의 정확도가 비약적으로 상승함을 확인할 수 있음
+      </div>
+
+    </div>
+
+    <!-- NAV -->
+    <div class="nav">
+
+      <a href="page_8.html" class="btn-prev">이전</a>
+
+      <div class="page">9 / 11</div>
+
+      <a href="page_10.html" class="btn-next">다음</a>
+
+    </div>
 
   </main>
 </body>

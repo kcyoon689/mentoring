@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>텍스트 데이터와 임베딩 / 자연어 처리 발전과정</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0B1D3E;
+  --blue:   #1E3A8A;
+  --cyan:   #38BDF8;
+  --teal:   #0EA5E9;
+  --white:  #FFFFFF;
+  --light:  #E2E8F0;
+  --muted:  #94A3B8;
+  --card:   #132043;
+  --bdr:    #1D4ED8;
+  --green:  #22C55E;
+  --yellow: #FACC15;
+  --purple: #A78BFA;
+  --pink:   #F472B6;
+  --dark:   #050D1F;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+body {
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--white);
+}
+
+/* 16:9 fixed canvas */
+#stage {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  transform-origin: center center;
+  flex-shrink: 0;
+  box-shadow: 0 0 80px rgba(0,0,0,.8);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 1280px;
+  height: 720px;
+  display: flex;
+  flex-direction: column;
+  background: var(--navy);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s ease, transform .4s ease;
+  transform: translateX(50px);
+}
+.slide.active { opacity:1; pointer-events:all; transform:translateX(0); }
+.slide.prev   { opacity:0; transform:translateX(-50px); }
+
+/* components */
+.top-bar { height:6px; background:var(--blue); flex-shrink:0; }
+.top-bar.g { background:linear-gradient(90deg,var(--cyan),var(--teal),var(--purple)); }
+
+.tag {
+  display:inline-block; padding:3px 12px;
+  border:1px solid var(--teal); border-radius:4px;
+  background:rgba(14,165,233,.18);
+  font-size:11px; font-weight:700; color:var(--white);
+  letter-spacing:.04em; text-transform:uppercase;
+  margin:12px 0 4px 30px; flex-shrink:0;
+}
+.stitle { display:flex; align-items:center; gap:10px; padding:0 30px; margin-bottom:12px; flex-shrink:0; }
+.stitle-bar { width:5px; border-radius:2px; background:var(--cyan); align-self:stretch; flex-shrink:0; }
+.stitle h2  { font-family:'Syne',sans-serif; font-size:26px; font-weight:700; line-height:1.2; }
+
+.content { flex:1; padding:0 30px 14px; overflow:hidden; display:flex; flex-direction:column; gap:10px; }
+.content.row { flex-direction:row; gap:16px; }
+
+.card { background:var(--card); border:1px solid var(--bdr); border-radius:8px; padding:14px 16px; box-shadow:0 4px 18px rgba(0,0,0,.3); }
+.card.dark { background:#0A1525; }
+.card-row  { display:flex; gap:10px; }
+.card-row .card { flex:1; }
+
+.acc         { border-left:4px solid var(--cyan); padding-left:14px; }
+.acc.teal    { border-color:var(--teal); }
+.acc.green   { border-color:var(--green); }
+.acc.purple  { border-color:var(--purple); }
+.acc.muted   { border-color:var(--muted); }
+.acc.yellow  { border-color:var(--yellow); }
+
+.h3   { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:5px; }
+.h4   { font-size:13px; font-weight:700; margin-bottom:4px; }
+.body { font-size:12px; color:var(--light); line-height:1.55; }
+.muted  { color:var(--muted); }
+.mono   { font-family:'JetBrains Mono',monospace; }
+.cyan   { color:var(--cyan); }  .teal   { color:var(--teal); }
+.green  { color:var(--green); } .yellow { color:var(--yellow); }
+.purple { color:var(--purple); }.pink   { color:var(--pink); }
+
+.info-box { background:rgba(30,58,138,.45); border:1px solid var(--teal); border-radius:6px; padding:9px 14px; font-size:12px; color:var(--light); flex-shrink:0; }
+.warn-box { background:#0A1525; border:1px solid rgba(250,204,21,.3); border-radius:6px; padding:9px 14px; font-size:11px; color:var(--yellow); flex-shrink:0; }
+
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+
+.stat .num { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:var(--cyan); text-align:center; }
+.stat .lbl { font-size:11px; color:var(--muted); text-align:center; margin-top:2px; }
+
+table { width:100%; border-collapse:collapse; font-size:12px; }
+th { background:var(--blue); color:var(--white); padding:6px 9px; text-align:left; font-weight:700; }
+td { padding:6px 9px; border:1px solid var(--bdr); color:var(--light); }
+tr:nth-child(even) td { background:rgba(30,58,138,.15); }
+
+.timeline { display:flex; align-items:flex-start; flex:1; }
+.tl-item  { flex:1; display:flex; flex-direction:column; align-items:center; position:relative; }
+.tl-item::before { content:''; position:absolute; top:38px; left:50%; right:-50%; height:3px; background:var(--bdr); z-index:0; }
+.tl-item:last-child::before { display:none; }
+.tl-dot  { width:16px; height:16px; border-radius:50%; position:relative; z-index:1; flex-shrink:0; margin-top:28px; }
+.tl-year { font-family:'Syne',sans-serif; font-size:12px; font-weight:700; margin-bottom:5px; text-align:center; }
+.tl-card { margin-top:8px; width:90%; }
+
+.milestone { display:grid; grid-template-columns:68px 128px 1fr; align-items:center; gap:10px; padding:9px 12px; background:var(--card); border:1px solid var(--bdr); border-left-width:4px; border-radius:6px; }
+.m-badge { font-family:'Syne',sans-serif; font-size:12px; font-weight:800; text-align:center; padding:4px 6px; border-radius:4px; line-height:1.3; }
+.m-name  { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; }
+.m-org   { font-size:10px; color:var(--muted); font-style:italic; }
+.m-desc  { font-size:11px; color:var(--light); }
+
+.code-block { background:#0A1525; border:1px solid var(--bdr); border-radius:6px; padding:10px 14px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--light); line-height:1.65; }
+
+.summary-card { background:var(--card); border:1px solid var(--bdr); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+.summary-card .sc-head { padding:9px 14px; font-family:'Syne',sans-serif; font-weight:700; font-size:13px; color:var(--white); }
+.summary-card .sc-body { padding:10px 14px; font-size:12px; color:var(--light); flex:1; line-height:1.55; }
+
+.foot { flex-shrink:0; padding:5px 30px; font-size:10px; color:var(--muted); border-top:1px solid rgba(30,58,138,.4); background:rgba(11,29,62,.5); text-align:center; }
+
+/* animations */
+.slide.active .card,.slide.active .milestone,.slide.active .summary-card { animation:fadeUp .38s ease both; }
+.slide.active .card:nth-child(2),.slide.active .milestone:nth-child(2) { animation-delay:.06s; }
+.slide.active .card:nth-child(3),.slide.active .milestone:nth-child(3) { animation-delay:.12s; }
+.slide.active .card:nth-child(4),.slide.active .milestone:nth-child(4) { animation-delay:.18s; }
+.slide.active .milestone:nth-child(5) { animation-delay:.24s; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+
+/* hero slides */
+#s1 { background:var(--navy); justify-content:center; }
+#s1 .hl { position:absolute; left:0;top:0; width:32%;height:100%; background:rgba(30,58,138,.28); }
+#s1 .c1 { position:absolute; right:-50px;top:-70px; width:320px;height:320px; border-radius:50%; background:rgba(14,165,233,.1); border:1px solid rgba(14,165,233,.18); }
+#s1 .c2 { position:absolute; right:70px;bottom:-50px; width:200px;height:200px; border-radius:50%; background:rgba(56,189,248,.07); border:1px solid rgba(56,189,248,.13); }
+#s1 .hc { position:relative; z-index:2; padding:0 60px; }
+.part-tag { font-size:12px; font-weight:700; color:var(--cyan); letter-spacing:.14em; text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.part-tag::before { content:''; display:block; width:4px; height:26px; background:var(--cyan); border-radius:2px; }
+#s1 h1 { font-family:'Syne',sans-serif; font-size:64px; font-weight:800; line-height:1.1; margin-bottom:18px; }
+#s1 h1 span { color:var(--cyan); }
+
+#s9 { background:var(--dark); justify-content:center; }
+#s9 .c1 { position:absolute; left:-70px;bottom:-70px; width:380px;height:380px; border-radius:50%; background:rgba(14,165,233,.09); border:1px solid rgba(14,165,233,.13); }
+#s9 .c2 { position:absolute; right:-40px;top:-60px; width:480px;height:480px; border-radius:50%; background:rgba(30,58,138,.22); }
+#s9 .hc { position:relative; z-index:2; padding:0 60px 0 190px; }
+#s9 .part-tag { color:var(--teal); }
+#s9 .part-tag::before { background:var(--teal); }
+#s9 h1 { font-family:'Syne',sans-serif; font-size:64px; font-weight:800; line-height:1.1; margin-bottom:18px; }
+#s9 h1 span { color:var(--teal); }
+
+/* nav */
+#nav {
+  position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:14px;
+  background:rgba(11,29,62,.9); backdrop-filter:blur(10px);
+  border:1px solid rgba(56,189,248,.22); border-radius:50px;
+  padding:7px 18px; z-index:999;
+  box-shadow:0 6px 28px rgba(0,0,0,.55);
+}
+#nav button { background:none; border:none; color:var(--cyan); font-size:20px; cursor:pointer; padding:2px 6px; border-radius:50%; transition:background .18s; }
+#nav button:hover { background:rgba(56,189,248,.14); }
+#nav button:disabled { color:var(--muted); cursor:default; }
+#slide-counter { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); min-width:48px; text-align:center; }
+.dots { display:flex; gap:5px; }
+.dots span { width:6px;height:6px;border-radius:50%; background:var(--muted); transition:background .25s,transform .25s; cursor:pointer; }
+.dots span.on { background:var(--cyan); transform:scale(1.45); }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- S01 -->
+<div class="slide active" id="s1">
+  <div class="hl"></div><div class="c1"></div><div class="c2"></div>
+  <div class="hc">
+    <div class="part-tag">PART 1</div>
+    <h1>텍스트 데이터와<br><span>임베딩</span></h1>
+    <div style="font-size:18px;color:var(--teal);font-style:italic;margin-bottom:24px;">Text Data &amp; Embeddings</div>
+    <div style="width:260px;height:1px;background:linear-gradient(90deg,var(--muted),transparent);margin-bottom:14px;"></div>
+    <div style="font-size:13px;color:var(--muted);">자연어 처리(NLP) 기초 이론 강의</div>
+  </div>
+</div>
+
+<!-- S02 -->
+<div class="slide" id="s2">
+  <div class="top-bar"></div>
+  <span class="tag">PART 1 | 기초</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>텍스트 데이터란?</h2></div>
+  <div class="content">
+    <div class="g3" style="flex:1">
+      <div class="card"><div style="font-size:38px;margin-bottom:8px;">📄</div><div class="h3 cyan">비정형 데이터</div><div class="body">숫자나 범주가 아닌 <strong>자연어 문자열</strong>로 이루어진 데이터.<br>이메일, 뉴스, SNS, 리뷰, 코드 등 무수히 다양한 형태로 존재합니다.</div></div>
+      <div class="card"><div style="font-size:38px;margin-bottom:8px;">🌐</div><div class="h3 cyan">방대한 규모</div><div class="body">인터넷상 데이터의 약 <strong>80%가 텍스트</strong> 형태.<br>매일 수십억 개의 문서가 생성되며 분석 가치가 매우 높습니다.</div></div>
+      <div class="card"><div style="font-size:38px;margin-bottom:8px;">🤖</div><div class="h3 cyan">기계의 어려움</div><div class="body">컴퓨터는 <strong>숫자만 처리</strong>합니다.<br>텍스트를 수치 벡터로 변환하는 '표현 학습'이 NLP의 핵심 과제입니다.</div></div>
+    </div>
+    <div class="info-box">💡 텍스트를 AI가 이해하려면 반드시 <strong>수치 표현(Numerical Representation)</strong>으로 변환해야 합니다. 이것이 임베딩(Embedding)의 출발점입니다.</div>
+  </div>
+</div>
+
+<!-- S03 -->
+<div class="slide" id="s3">
+  <div class="top-bar"></div>
+  <span class="tag">PART 1 | 전처리</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>텍스트 전처리 (Preprocessing)</h2></div>
+  <div class="content">
+    <div class="g4" style="flex:1">
+      <div class="card" style="border-top:3px solid var(--cyan);"><div class="h3 cyan">01</div><div class="h4" style="color:var(--white);">정제 (Cleaning)</div><div class="body muted" style="margin-top:8px;">HTML 태그 제거<br>특수문자·숫자 처리<br>소문자 변환</div></div>
+      <div class="card" style="border-top:3px solid var(--teal);"><div class="h3 teal">02</div><div class="h4" style="color:var(--white);">토큰화 (Tokenization)</div><div class="body muted" style="margin-top:8px;">문장 → 단어 분리<br>한국어: 형태소 분석<br>영어: 공백 기준 분리</div></div>
+      <div class="card" style="border-top:3px solid var(--purple);"><div class="h3 purple">03</div><div class="h4" style="color:var(--white);">불용어 제거</div><div class="body muted" style="margin-top:8px;">분석에 불필요한<br>조사·관사·접속사 제거<br>(is, the, 이, 가…)</div></div>
+      <div class="card" style="border-top:3px solid var(--green);"><div class="h3 green">04</div><div class="h4" style="color:var(--white);">정규화 (Normalization)</div><div class="body muted" style="margin-top:8px;">어간 추출 Stemming<br>표제어 추출 Lemmatizing<br>동의어 통합</div></div>
+    </div>
+    <div class="code-block"><span class="muted">예시: </span><span class="yellow">"I am running and running fast!"</span><span class="muted"> → 토큰화 → </span><span class="green">["run", "run", "fast"]</span><span class="muted">  (불용어 제거 + 어간 추출)</span></div>
+  </div>
+</div>
+
+<!-- S04 -->
+<div class="slide" id="s4">
+  <div class="top-bar"></div>
+  <span class="tag">PART 1 | 전통 표현</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>단어 빈도 기반 표현</h2></div>
+  <div class="content row">
+    <div class="card" style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="h3 cyan">Bag of Words (BoW)</div>
+      <div class="body">단어의 순서를 무시하고 <strong>출현 빈도만 카운트</strong>하여 벡터를 구성합니다.</div>
+      <table><tr><th>단어</th><th>문서1</th><th>문서2</th></tr><tr><td>cat</td><td>2</td><td>0</td></tr><tr><td>dog</td><td>1</td><td>3</td></tr><tr><td>loves</td><td>1</td><td>1</td></tr></table>
+      <div class="body" style="margin-top:auto;"><span class="green">✅ 구현 간단</span><br><span style="color:var(--pink);">❌ 문맥·순서 무시</span><br><span style="color:var(--pink);">❌ 어휘 증가 시 고차원</span></div>
+    </div>
+    <div class="card" style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="h3 teal">TF-IDF</div>
+      <div class="body">단어 중요도를 <strong>전체 문서 대비 희귀도</strong>로 가중치 조정합니다.</div>
+      <div class="code-block" style="text-align:center;line-height:2.2;"><div><span class="yellow">TF-IDF(t,d) = TF(t,d) × IDF(t)</span></div><div><span class="cyan">IDF(t) = log( N / df(t) )</span></div></div>
+      <div class="body"><strong>TF</strong> — 문서 내 단어 출현 빈도<br><strong>IDF</strong> — 역 문서 빈도 (희귀할수록 ↑)<br>중요 단어 부각, 공통 단어 억제</div>
+      <div class="body" style="margin-top:auto;"><span class="green">✅ BoW보다 의미 있는 가중치</span><br><span style="color:var(--pink);">❌ 여전히 문맥 정보 부재</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- S05 -->
+<div class="slide" id="s5">
+  <div class="top-bar"></div>
+  <span class="tag">PART 1 | 임베딩</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>임베딩(Embedding)이란?</h2></div>
+  <div class="content">
+    <div class="card-row" style="flex-shrink:0;">
+      <div class="card dark" style="flex:1;"><div class="h4 yellow">희소 벡터 (Sparse)</div><div class="code-block" style="margin-top:8px;background:transparent;border:none;padding:0;"><span class="muted">[0, 0, 1, 0, 0, 0, 0, 1, 0, 0,<br>&nbsp;0, 0, 0, 0, 1, 0, 0, 0, ...]</span></div><div class="body muted" style="margin-top:8px;">차원: <strong>50,000+</strong></div></div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 14px;flex-shrink:0;"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);font-weight:700;text-align:center;">임베딩<br>변환</div><div style="color:var(--cyan);font-size:24px;">→</div></div>
+      <div class="card dark" style="flex:1;"><div class="h4 green">밀집 벡터 (Dense Embedding)</div><div class="code-block" style="margin-top:8px;background:transparent;border:none;padding:0;"><span style="color:var(--light);">[0.24, -0.81, 0.57, 0.13,<br>&nbsp;0.92, -0.34, 0.61, ...]</span></div><div class="body green" style="margin-top:8px;">차원: <strong>100~1024</strong></div></div>
+    </div>
+    <div class="g3" style="flex:1;">
+      <div class="card acc"><div class="h3 cyan">의미적 유사성</div><div class="body">'왕' - '남자' + '여자' ≈ '여왕'<br>유사한 단어는 벡터 공간에서 가까운 위치에 표현됩니다.</div></div>
+      <div class="card acc teal"><div class="h3 teal">저차원 밀집 표현</div><div class="body">수십~수천 차원으로 의미를 압축합니다. 정보 손실 없이 핵심 의미를 보존합니다.</div></div>
+      <div class="card acc purple"><div class="h3 purple">전이 학습 가능</div><div class="body">사전 학습된 임베딩을 다양한 태스크에 재사용할 수 있습니다 (Transfer Learning).</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S06 -->
+<div class="slide" id="s6">
+  <div class="top-bar"></div>
+  <span class="tag">PART 1 | Word2Vec</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>Word2Vec — 단어 임베딩의 혁명</h2></div>
+  <div class="content row">
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="body muted" style="font-style:italic;">Google (2013) — Tomas Mikolov et al.</div>
+      <div class="card dark acc" style="flex:1;"><div class="h3 cyan">CBOW</div><div class="body">주변 단어 → 중심 단어 예측 (Continuous Bag of Words)<br>빠른 학습 속도, 대규모 데이터에 유리</div></div>
+      <div class="card dark acc teal" style="flex:1;"><div class="h3 teal">Skip-gram</div><div class="body">중심 단어 → 주변 단어 예측<br>소량 데이터에서 더 우수한 성능, 희귀 단어 학습에 효과적</div></div>
+      <div class="info-box">📌 신경망으로 학습하여 단어 간 의미 관계를 벡터 공간에 인코딩합니다.</div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="h4" style="color:var(--teal);padding-left:4px;">벡터 연산으로 의미 유추</div>
+      <div class="code-block"><div style="color:var(--cyan);margin-bottom:10px;">king - man + woman <span class="green">= queen</span></div><div style="color:var(--teal);margin-bottom:10px;">Paris - France + Japan <span class="green">= Tokyo</span></div><div style="color:var(--purple);">walking - walk + swim <span class="green">= swimming</span></div></div>
+      <div class="card dark"><div class="h4" style="color:var(--white);margin-bottom:8px;">핵심 아이디어</div><div class="body">• 비슷한 문맥에 쓰이는 단어는 비슷한 의미<br>• 대규모 코퍼스 학습으로 풍부한 언어 지식 획득<br>• <span class="yellow">GloVe</span>, <span class="yellow">FastText</span> 등 후속 모델의 기반이 됨</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S07 -->
+<div class="slide" id="s7">
+  <div class="top-bar"></div>
+  <span class="tag">PART 1 | 문장 임베딩</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>문장 / 문서 임베딩</h2></div>
+  <div class="content">
+    <div style="font-size:10px;display:grid;grid-template-columns:108px 1fr 1fr;gap:0;padding:0 2px;color:var(--muted);font-weight:700;flex-shrink:0;"><span>방법론</span><span>설명</span><span>한계점</span></div>
+    <div class="milestone" style="border-color:var(--muted);"><div><div class="m-badge" style="background:rgba(148,163,184,.2);color:var(--muted);">평균<br>Word2Vec</div></div><div><div class="m-name">문장 내 단어 벡터의 평균</div><div class="m-org">구현 간단, 순서 무시</div></div><div class="warn-box" style="padding:6px 10px;">⚠ 문맥·어순 정보 손실</div></div>
+    <div class="milestone" style="border-color:var(--teal);"><div><div class="m-badge" style="background:rgba(14,165,233,.2);color:var(--teal);">Doc2Vec</div></div><div><div class="m-name">Word2Vec 확장</div><div class="m-org">문서 전체를 하나의 벡터로 학습</div></div><div class="warn-box" style="padding:6px 10px;">⚠ 학습 데이터 의존도 높음</div></div>
+    <div class="milestone" style="border-color:var(--cyan);"><div><div class="m-badge" style="background:rgba(56,189,248,.2);color:var(--cyan);">BERT<br>Embedding</div></div><div><div class="m-name">양방향 Transformer 문맥 임베딩</div><div class="m-org">문맥을 완전히 반영한 동적 벡터</div></div><div class="warn-box" style="padding:6px 10px;">⚠ 높은 연산 비용</div></div>
+    <div class="milestone" style="border-color:var(--green);"><div><div class="m-badge" style="background:rgba(34,197,94,.2);color:var(--green);">Sentence<br>-BERT</div></div><div><div class="m-name">문장 유사도에 최적화</div><div class="m-org">Siamese Network 구조 적용</div></div><div class="warn-box" style="padding:6px 10px;">⚠ 도메인 의존성 존재</div></div>
+  </div>
+</div>
+
+<!-- S08 -->
+<div class="slide" id="s8">
+  <div class="top-bar g"></div>
+  <span class="tag">PART 1 | 최신 임베딩</span>
+  <div class="stitle"><div class="stitle-bar" style="background:var(--purple);"></div><h2>Transformer 기반 임베딩</h2></div>
+  <div class="content">
+    <div class="card dark" style="border-top:3px solid var(--cyan);flex-shrink:0;"><div class="h4 cyan">Attention Is All You Need — Vaswani et al., 2017</div><div class="body" style="margin-top:6px;">셀프 어텐션(Self-Attention) 메커니즘으로 문장 내 모든 단어 간 관계를 <strong>동시에</strong> 고려 → 문맥을 완벽히 반영한 <strong>동적 임베딩</strong> 생성</div></div>
+    <div class="g3" style="flex:1;">
+      <div class="card" style="border-top:3px solid var(--cyan);display:flex;flex-direction:column;"><div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--cyan);">BERT</div><div class="muted body" style="font-style:italic;margin-bottom:8px;">2018 · Google</div><div style="height:1px;background:rgba(56,189,248,.3);margin-bottom:10px;"></div><div class="body" style="flex:1;">양방향 인코더<br>마스킹 언어 모델(MLM)<br>문장 분류·QA 강점</div></div>
+      <div class="card" style="border-top:3px solid var(--green);display:flex;flex-direction:column;"><div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--green);">GPT Series</div><div class="muted body" style="font-style:italic;margin-bottom:8px;">2018~현재 · OpenAI</div><div style="height:1px;background:rgba(34,197,94,.3);margin-bottom:10px;"></div><div class="body" style="flex:1;">단방향 디코더<br>자기회귀 언어 생성<br>GPT-4까지 진화</div></div>
+      <div class="card" style="border-top:3px solid var(--purple);display:flex;flex-direction:column;"><div style="font-family:'Syne',sans-serif;font-size:30px;font-weight:800;color:var(--purple);">Sentence-BERT</div><div class="muted body" style="font-style:italic;margin-bottom:8px;">2019 · UKP Lab</div><div style="height:1px;background:rgba(167,139,250,.3);margin-bottom:10px;"></div><div class="body" style="flex:1;">코사인 유사도 최적화<br>문장 검색·클러스터링<br>실시간 추론 가능</div></div>
+    </div>
+    <div class="warn-box" style="color:var(--yellow);">📌 현재 대부분의 NLP 태스크에서 Transformer 기반 임베딩이 표준으로 사용됩니다.</div>
+  </div>
+</div>
+
+<!-- S09 -->
+<div class="slide" id="s9">
+  <div class="c1"></div><div class="c2"></div>
+  <div class="hc">
+    <div class="part-tag">PART 2</div>
+    <h1>자연어 처리<br><span>발전과정</span></h1>
+    <div style="font-size:18px;color:var(--teal);font-style:italic;margin-bottom:24px;">History of Natural Language Processing</div>
+    <div style="width:260px;height:1px;background:linear-gradient(90deg,var(--muted),transparent);margin-bottom:14px;"></div>
+    <div style="font-size:13px;color:var(--muted);">1950년대부터 현재까지 — AI 언어 이해의 여정</div>
+  </div>
+</div>
+
+<!-- S10 -->
+<div class="slide" id="s10">
+  <div class="top-bar"></div>
+  <span class="tag">PART 2 | 역사</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>NLP 발전 타임라인</h2></div>
+  <div class="content">
+    <div style="display:flex;gap:8px;flex-shrink:0;">
+      <div style="flex:2;background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.35);border-radius:4px;text-align:center;padding:4px;font-size:11px;font-weight:700;color:var(--muted);">규칙 기반</div>
+      <div style="flex:2;background:rgba(14,165,233,.1);border:1px solid var(--teal);border-radius:4px;text-align:center;padding:4px;font-size:11px;font-weight:700;color:var(--teal);">통계 기반</div>
+      <div style="flex:2;background:rgba(56,189,248,.1);border:1px solid var(--cyan);border-radius:4px;text-align:center;padding:4px;font-size:11px;font-weight:700;color:var(--cyan);">딥러닝 기반</div>
+      <div style="flex:1;background:rgba(250,204,21,.1);border:1px solid var(--yellow);border-radius:4px;text-align:center;padding:4px;font-size:11px;font-weight:700;color:var(--yellow);">LLM 시대</div>
+    </div>
+    <div class="timeline" style="flex:1;">
+      <div class="tl-item"><div class="tl-year muted">1950s</div><div class="tl-dot" style="background:var(--muted);"></div><div class="card tl-card" style="border-color:var(--muted);"><div class="h4 muted">튜링 테스트</div><div class="body muted" style="font-size:11px;">규칙 기반 시작</div></div></div>
+      <div class="tl-item"><div class="tl-year teal">1960~<br>70s</div><div class="tl-dot" style="background:var(--teal);"></div><div class="card tl-card" style="border-color:var(--teal);"><div class="h4 teal">ELIZA 챗봇</div><div class="body muted" style="font-size:11px;">패턴 매칭</div></div></div>
+      <div class="tl-item"><div class="tl-year cyan">1990s</div><div class="tl-dot" style="background:var(--cyan);"></div><div class="card tl-card" style="border-color:var(--cyan);"><div class="h4 cyan">통계 기반</div><div class="body muted" style="font-size:11px;">HMM · N-gram</div></div></div>
+      <div class="tl-item"><div class="tl-year green">2013</div><div class="tl-dot" style="background:var(--green);"></div><div class="card tl-card" style="border-color:var(--green);"><div class="h4 green">Word2Vec</div><div class="body muted" style="font-size:11px;">신경망 임베딩</div></div></div>
+      <div class="tl-item"><div class="tl-year yellow">2017~<br>현재</div><div class="tl-dot" style="background:var(--yellow);"></div><div class="card tl-card" style="border-color:var(--yellow);"><div class="h4 yellow">Transformer</div><div class="body muted" style="font-size:11px;">LLM 시대</div></div></div>
+    </div>
+    <div class="info-box">NLP는 '규칙'에서 '통계'로, 통계에서 '신경망'으로, 신경망에서 '대규모 언어 모델(LLM)'로 70여 년에 걸쳐 지속적으로 진화해 왔습니다.</div>
+  </div>
+</div>
+
+<!-- S11 -->
+<div class="slide" id="s11">
+  <div class="top-bar"></div>
+  <span class="tag">PART 2 | 1950s~80s</span>
+  <div class="stitle"><div class="stitle-bar" style="background:var(--muted);"></div><h2 style="color:var(--light);">규칙 기반 NLP (Rule-Based Era)</h2></div>
+  <div class="content">
+    <div class="info-box" style="flex-shrink:0;">💡 핵심 아이디어: 언어학자가 직접 규칙을 설계 → 컴퓨터가 규칙을 적용</div>
+    <div class="milestone" style="border-color:var(--muted);"><div><div class="m-badge" style="background:rgba(148,163,184,.2);color:var(--muted);">1950</div></div><div><div class="m-name">튜링 테스트</div><div class="m-org">Alan Turing</div></div><div class="m-desc">기계 지능 판단 기준. '모방 게임'으로 인간과 기계를 구분할 수 없으면 기계가 지능적이라고 판단.</div></div>
+    <div class="milestone" style="border-color:var(--teal);"><div><div class="m-badge" style="background:rgba(14,165,233,.2);color:var(--teal);">1966</div></div><div><div class="m-name">ELIZA</div><div class="m-org">MIT · Weizenbaum</div></div><div class="m-desc">패턴 매칭으로 치료사 역할 모사. 규칙 기반 대화 시스템의 효시. 사람들이 감정적으로 몰입하는 현상 관찰됨.</div></div>
+    <div class="milestone" style="border-color:var(--teal);"><div><div class="m-badge" style="background:rgba(14,165,233,.2);color:var(--teal);">1970s</div></div><div><div class="m-name">형식 언어 이론</div><div class="m-org">Chomsky Hierarchy 기반</div></div><div class="m-desc">촘스키 문법 기반 파서 개발. 문장 구조를 파스 트리(Parse Tree)로 분석하는 방법론 확립.</div></div>
+    <div class="milestone" style="border-color:var(--muted);"><div><div class="m-badge" style="background:rgba(148,163,184,.2);color:var(--muted);">1980s</div></div><div><div class="m-name">전문가 시스템 · SYSTRAN</div><div class="m-org">다수 연구 기관</div></div><div class="m-desc">의료·법률 도메인의 지식을 IF-THEN 규칙으로 인코딩. 기계번역 시스템(SYSTRAN) 등장.</div></div>
+    <div class="warn-box">⚠ 한계: 규칙 작성 비용 급증 · 예외 처리 불가 · 언어 변화 대응 어려움 → 통계적 접근으로 전환 필요성 대두</div>
+  </div>
+</div>
+
+<!-- S12 -->
+<div class="slide" id="s12">
+  <div class="top-bar"></div>
+  <span class="tag">PART 2 | 1990s~2000s</span>
+  <div class="stitle"><div class="stitle-bar"></div><h2>통계 기반 NLP (Statistical Era)</h2></div>
+  <div class="content row">
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="h4 teal" style="padding-left:4px;">핵심 기술</div>
+      <div class="card dark acc teal" style="flex:1;"><div class="h3 cyan">N-gram 언어 모델</div><div class="body">직전 N-1개 단어로 다음 단어 확률 계산<br><span class="mono yellow">P(w|w₁…wₙ₋₁)</span></div></div>
+      <div class="card dark acc" style="flex:1;"><div class="h3 cyan">HMM (Hidden Markov Model)</div><div class="body">품사 태깅, 음성 인식에 활용<br>숨겨진 상태를 관측값으로 추정</div></div>
+      <div class="card dark acc purple" style="flex:1;"><div class="h3 purple">Naive Bayes / SVM</div><div class="body">텍스트 분류에 적용<br>스팸 필터링, 감성 분석 등</div></div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="h4 green" style="padding-left:4px;">주요 성과</div>
+      <div class="card dark acc green" style="flex:1;"><div class="h3 green">🏆 IBM Watson MT</div><div class="body">1990년대 IBM의 통계 기계번역<br>대규모 병렬 코퍼스로 학습</div></div>
+      <div class="card dark acc green" style="flex:1;"><div class="h3 green">📊 Penn Treebank (1993)</div><div class="body">표준 NLP 데이터셋 등장<br>벤치마크 평가 문화 시작</div></div>
+      <div class="card dark acc green" style="flex:1;"><div class="h3 green">🔤 WordNet 구축</div><div class="body">의미 기반 어휘 데이터베이스<br>시맨틱 분석 기반 마련</div></div>
+    </div>
+  </div>
+  <div class="warn-box" style="margin:0 30px 10px;">⚠ 한계: 데이터 희소성 문제 · 단어 독립 가정 · 의미론적 유사성 미반영 → 딥러닝으로의 전환</div>
+</div>
+
+<!-- S13 -->
+<div class="slide" id="s13">
+  <div class="top-bar"></div>
+  <span class="tag">PART 2 | 2010s</span>
+  <div class="stitle"><div class="stitle-bar" style="background:var(--green);"></div><h2>딥러닝 NLP 시대 (2010s)</h2></div>
+  <div class="content">
+    <div class="milestone" style="border-color:var(--cyan);"><div><div class="m-badge" style="background:rgba(56,189,248,.2);color:var(--cyan);">2013</div></div><div><div class="m-name cyan">Word2Vec</div><div class="m-org">Google</div></div><div class="m-desc">신경망 기반 단어 임베딩 등장. '분산 표현' 시대 개막. NLP의 패러다임을 바꾸다.</div></div>
+    <div class="milestone" style="border-color:var(--teal);"><div><div class="m-badge" style="background:rgba(14,165,233,.2);color:var(--teal);">2014</div></div><div><div class="m-name teal">Seq2Seq + Attention</div><div class="m-org">Google Brain / Bahdanau</div></div><div class="m-desc">인코더-디코더 구조로 기계번역 혁신. Attention으로 장거리 의존성 문제를 해결.</div></div>
+    <div class="milestone" style="border-color:var(--purple);"><div><div class="m-badge" style="background:rgba(167,139,250,.2);color:var(--purple);">2015</div></div><div><div class="m-name purple">GloVe / FastText</div><div class="m-org">Stanford / Facebook</div></div><div class="m-desc">글로벌 통계 기반 임베딩(GloVe), 서브워드 처리(FastText)로 OOV 문제 완화.</div></div>
+    <div class="milestone" style="border-color:var(--green);"><div><div class="m-badge" style="background:rgba(34,197,94,.2);color:var(--green);">2016</div></div><div><div class="m-name green">Character-level CNN/RNN</div><div class="m-org">다수 연구</div></div><div class="m-desc">문자 단위 처리로 형태론적 정보 학습. 다국어 NLP 발전에 기여.</div></div>
+    <div class="milestone" style="border-color:var(--yellow);"><div><div class="m-badge" style="background:rgba(250,204,21,.2);color:var(--yellow);">2017</div></div><div><div class="m-name yellow">Transformer</div><div class="m-org">Google Brain</div></div><div class="m-desc">"Attention Is All You Need" 발표. RNN을 완전히 대체하며 현대 NLP의 시작점이 됨.</div></div>
+  </div>
+</div>
+
+<!-- S14 -->
+<div class="slide" id="s14">
+  <div class="top-bar g"></div>
+  <span class="tag">PART 2 | Transformer</span>
+  <div class="stitle"><div class="stitle-bar" style="background:var(--yellow);"></div><h2>Transformer — NLP의 패러다임 전환</h2></div>
+  <div class="content row">
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="h4 cyan">Transformer 핵심 구성</div>
+      <div class="card dark acc" style="flex:1;"><div class="h4 cyan">Self-Attention</div><div class="body">모든 토큰 쌍의 관계를 동시 계산. 병렬 처리 가능 → 학습 속도 비약적 향상</div></div>
+      <div class="card dark acc teal" style="flex:1;"><div class="h4 teal">Multi-Head Attention</div><div class="body">다양한 관점에서 문맥 관계를 동시 포착. 더 풍부한 표현 학습 가능</div></div>
+      <div class="card dark acc purple" style="flex:1;"><div class="h4 purple">Positional Encoding</div><div class="body">순서 정보를 사인/코사인 함수로 인코딩. 단어 위치 정보 보존</div></div>
+      <div class="card dark acc green" style="flex:1;"><div class="h4 green">Feed-Forward + LayerNorm</div><div class="body">비선형 변환 후 정규화로 학습 안정화</div></div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="h4 yellow">사전 학습 모델 비교</div>
+      <table><tr><th>모델</th><th>방향</th><th>주요 태스크</th><th>파라미터</th></tr><tr><td class="cyan"><strong>BERT</strong></td><td>양방향</td><td>이해 (분류·QA)</td><td>110M</td></tr><tr><td class="green"><strong>GPT-3</strong></td><td>단방향</td><td>생성 (텍스트)</td><td>175B</td></tr><tr><td class="teal"><strong>T5</strong></td><td>인코더-디코더</td><td>번역·요약·QA</td><td>11B</td></tr><tr><td class="purple"><strong>RoBERTa</strong></td><td>양방향</td><td>분류 최적화</td><td>355M</td></tr></table>
+      <div class="info-box" style="margin-top:auto;">📌 <strong>Fine-tuning:</strong> 사전 학습 모델 위에 소량 데이터로 태스크별 특화 학습 가능</div>
+    </div>
+  </div>
+</div>
+
+<!-- S15 -->
+<div class="slide" id="s15">
+  <div class="top-bar g"></div>
+  <span class="tag">PART 2 | 현재</span>
+  <div class="stitle"><div class="stitle-bar" style="background:var(--yellow);"></div><h2>대규모 언어 모델 (LLM) 시대</h2></div>
+  <div class="content">
+    <div class="g4" style="flex-shrink:0;">
+      <div class="card stat"><div class="num">175B</div><div class="lbl">GPT-3 파라미터</div></div>
+      <div class="card stat"><div class="num">1.8T</div><div class="lbl">GPT-4 추정 파라미터</div></div>
+      <div class="card stat"><div class="num" style="font-size:22px;">RLHF</div><div class="lbl">인간 피드백 강화학습</div></div>
+      <div class="card stat"><div class="num" style="font-size:22px;">RAG</div><div class="lbl">검색 증강 생성</div></div>
+    </div>
+    <div class="g2" style="flex:1;">
+      <div class="milestone" style="border-color:var(--cyan);"><div><div class="m-badge" style="background:rgba(56,189,248,.2);color:var(--cyan);">2020</div></div><div><div class="m-name cyan">GPT-3</div><div class="m-org">OpenAI</div></div><div class="m-desc">In-context learning 시대 개막. 프롬프트만으로 다양한 태스크 수행.</div></div>
+      <div class="milestone" style="border-color:var(--green);"><div><div class="m-badge" style="background:rgba(34,197,94,.2);color:var(--green);">2022</div></div><div><div class="m-name green">ChatGPT / InstructGPT</div><div class="m-org">OpenAI</div></div><div class="m-desc">RLHF로 지시 따르기 능력 극적 향상. 일반 사용자도 쉽게 활용 가능.</div></div>
+      <div class="milestone" style="border-color:var(--teal);"><div><div class="m-badge" style="background:rgba(14,165,233,.2);color:var(--teal);">2023</div></div><div><div class="m-name teal">GPT-4 / Claude / Gemini</div><div class="m-org">OpenAI · Anthropic · Google</div></div><div class="m-desc">멀티모달(텍스트+이미지) 이해. 전문가 수준 추론·코딩 능력.</div></div>
+      <div class="milestone" style="border-color:var(--purple);"><div><div class="m-badge" style="background:rgba(167,139,250,.2);color:var(--purple);">2024~</div></div><div><div class="m-name purple">오픈소스 LLM 확산</div><div class="m-org">Meta · Mistral · Alibaba 등</div></div><div class="m-desc">LLaMA, Mistral, Qwen 등 온프레미스·에지 배포 가능한 소형 모델 폭발적 증가.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S16 -->
+<div class="slide" id="s16">
+  <div style="height:6px;background:linear-gradient(90deg,var(--cyan),var(--teal),var(--purple),var(--green));flex-shrink:0;"></div>
+  <div style="background:var(--blue);padding:12px 30px;flex-shrink:0;"><div style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;text-align:center;">핵심 정리 — Key Takeaways</div></div>
+  <div class="content">
+    <div class="g2" style="flex:1;">
+      <div class="summary-card"><div class="sc-head" style="background:rgba(56,189,248,.22);">01 &nbsp;텍스트 → 수치 변환</div><div class="sc-body">AI는 텍스트를 직접 이해 못합니다. 전처리 후 벡터로 변환하는 <strong>임베딩</strong>이 NLP의 핵심 기반입니다.</div></div>
+      <div class="summary-card"><div class="sc-head" style="background:rgba(14,165,233,.22);">02 &nbsp;BoW → 임베딩의 진화</div><div class="sc-body">희소·고차원(BoW/TF-IDF) → 밀집·저차원(Word2Vec) → 문맥 반영(Transformer Embedding)으로 발전.</div></div>
+      <div class="summary-card"><div class="sc-head" style="background:rgba(34,197,94,.22);">03 &nbsp;규칙 → 통계 → 딥러닝</div><div class="sc-body">NLP는 규칙 기반 → 통계 → 신경망 → <strong>LLM</strong>으로 패러다임이 전환되며 70여 년 동안 지속 발전.</div></div>
+      <div class="summary-card"><div class="sc-head" style="background:rgba(167,139,250,.22);">04 &nbsp;Transformer가 핵심</div><div class="sc-body">Self-Attention으로 문맥 완전 포착. BERT·GPT 등 현대 NLP의 모든 기반이 Transformer에서 출발.</div></div>
+    </div>
+  </div>
+  <div class="foot">자연어 처리(NLP) 기초 이론 강의 &nbsp;|&nbsp; 텍스트 데이터와 임베딩 / NLP 발전과정</div>
+</div>
+
+</div><!-- /stage -->
+
+<div id="nav">
+  <button id="btn-prev" disabled>‹</button>
+  <div class="dots" id="dots"></div>
+  <span id="slide-counter">1 / 16</span>
+  <button id="btn-next">›</button>
+</div>
+
+<script>
+const SLIDE_W = 1280, SLIDE_H = 720;
+const stage = document.getElementById('stage');
+
+function fitStage() {
+  const scale = Math.min(window.innerWidth / SLIDE_W, window.innerHeight / SLIDE_H);
+  stage.style.transform = `scale(${scale})`;
+}
+fitStage();
+window.addEventListener('resize', fitStage);
+
+const slides = document.querySelectorAll('.slide');
+const total  = slides.length;
+let cur = 0;
+
+const dotsEl    = document.getElementById('dots');
+const counterEl = document.getElementById('slide-counter');
+const btnPrev   = document.getElementById('btn-prev');
+const btnNext   = document.getElementById('btn-next');
+
+slides.forEach((_, i) => {
+  const d = document.createElement('span');
+  if (i === 0) d.classList.add('on');
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  if (n < 0 || n >= total) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('prev');
+  const old = cur; cur = n;
+  setTimeout(() => slides[old].classList.remove('prev'), 420);
+  slides[cur].classList.add('active');
+  dotsEl.querySelectorAll('span').forEach((d,i) => d.classList.toggle('on', i === cur));
+  counterEl.textContent = `${cur+1} / ${total}`;
+  btnPrev.disabled = cur === 0;
+  btnNext.disabled = cur === total-1;
+}
+
+btnPrev.addEventListener('click', () => goTo(cur-1));
+btnNext.addEventListener('click', () => goTo(cur+1));
+document.addEventListener('keydown', e => {
+  if (['ArrowRight','ArrowDown',' '].includes(e.key)) { e.preventDefault(); goTo(cur+1); }
+  if (['ArrowLeft','ArrowUp'].includes(e.key))        { e.preventDefault(); goTo(cur-1); }
+});
+let tx=0;
+document.addEventListener('touchstart', e=>{ tx=e.touches[0].clientX; },{passive:true});
+document.addEventListener('touchend',   e=>{
+  const dx=e.changedTouches[0].clientX-tx;
+  if(dx<-50) goTo(cur+1); if(dx>50) goTo(cur-1);
+},{passive:true});
+</script>
+</body>
+</html>
