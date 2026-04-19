@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI 버블 논란과 산업 생태계</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        
+        .title {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+        }
+        
+        .content-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cycle-arrow {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="w-[1280px] h-[720px] mx-auto bg-gray-50 p-10 relative">
+<!-- Title -->
+<div class="mb-8">
+<h1 class="title text-4xl text-gray-800 mb-2">AI 버블 논란과 산업 생태계</h1>
+<div class="w-32 h-1 bg-blue-500"></div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-3 gap-6 min-h-[520px]">
+<!-- NVIDIA Growth and AI Company Losses Cycle -->
+<div class="content-box p-6 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="icon-circle bg-purple-100 text-purple-600 mr-4">
+<i class="fas fa-sync-alt text-2xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-gray-700">적자 누적과 하드웨어 업장</h2>
+</div>
+<ul class="list-disc ml-6 space-y-3 text-lg mb-4">
+<li>NVIDIA는 AI 회사들이 GPU를 계속 구매함에 따라 <span class="font-bold text-purple-600">몸값이 커지고 있음</span></li>
+<li>2024년 OpenAI는 <span class="font-bold text-red-500">50억 달러</span>, Anthropic은 <span class="font-bold text-red-500">53억 달러</span> 적자 기록</li>
+<li>2025년 OpenAI는 <span class="font-bold text-red-500">80억 달러 이상</span>의 적자를 예상</li>
+</ul>
+<!-- Cycle Visualization -->
+<div class="relative flex-grow flex items-center justify-center">
+<div class="w-64 h-64 relative">
+<!-- AI Companies Box -->
+<div class="absolute top-0 left-0 w-28 h-28 bg-red-100 rounded-lg flex flex-col items-center justify-center border-2 border-red-300">
+<i class="fas fa-building text-red-500 text-2xl mb-2"></i>
+<span class="text-sm font-bold">AI 기업</span>
+<span class="text-xs">적자</span>
+</div>
+<!-- NVIDIA Box -->
+<div class="absolute top-0 right-0 w-28 h-28 bg-green-100 rounded-lg flex flex-col items-center justify-center border-2 border-green-300">
+<i class="fas fa-microchip text-green-500 text-2xl mb-2"></i>
+<span class="text-sm font-bold">NVIDIA</span>
+<span class="text-xs">성장</span>
+</div>
+<!-- GPU Box -->
+<div class="absolute bottom-0 left-0 w-28 h-28 bg-blue-100 rounded-lg flex flex-col items-center justify-center border-2 border-blue-300">
+<i class="fas fa-server text-blue-500 text-2xl mb-2"></i>
+<span class="text-sm font-bold">GPU</span>
+<span class="text-xs">매매</span>
+</div>
+<!-- Money Flow Box -->
+<div class="absolute bottom-0 right-0 w-28 h-28 bg-yellow-100 rounded-lg flex flex-col items-center justify-center border-2 border-yellow-300">
+<i class="fas fa-money-bill-wave text-yellow-500 text-2xl mb-2"></i>
+<span class="text-sm font-bold">자금 흐름</span>
+<span class="text-xs">순환</span>
+</div>
+<!-- Arrows -->
+<i class="fas fa-long-arrow-alt-up text-2xl text-gray-600 absolute top-14 left-28 transform -rotate-45"></i>
+<i class="fas fa-long-arrow-alt-right text-2xl text-gray-600 absolute top-28 left-14"></i>
+<i class="fas fa-long-arrow-alt-down text-2xl text-gray-600 absolute bottom-14 right-28 transform -rotate-45"></i>
+<i class="fas fa-long-arrow-alt-left text-2xl text-gray-600 absolute top-28 right-14"></i>
+</div>
+</div>
+</div>
+<!-- Revenue Model Limitations -->
+<div class="content-box p-6 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="icon-circle bg-red-100 text-red-500 mr-4">
+<i class="fas fa-chart-line text-2xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-gray-700">수익 모델의 한계</h2>
+</div>
+<ul class="list-disc ml-6 space-y-3 text-lg">
+<li>Perplexity는 2024년에 AWS, Anthropic, OpenAI에 <span class="font-bold text-red-500">수익의 164%</span>를 지출</li>
+<li>모델 제공사조차 적자를 보고 있는 상황</li>
+<li>이 위에 구축된 기업들이 수익을 내기 어려운 구조</li>
+<li>AI 기업들의 지속적인 적자 누적</li>
+</ul>
+<!-- Revenue vs. Loss Visualization -->
+<div class="mt-auto">
+<div class="w-full h-32" id="revenue-loss-chart"></div>
+</div>
+<script>
+                    // Simple D3.js visualization for revenue vs. loss
+                    const createChart = () => {
+                        const margin = {top: 10, right: 10, bottom: 20, left: 40};
+                        const width = 350 - margin.left - margin.right;
+                        const height = 120 - margin.top - margin.bottom;
+                        
+                        const svg = d3.select("#revenue-loss-chart")
+                            .append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform", `translate(${margin.left},${margin.top})`);
+                        
+                        // Data based on document
+                        const data = [
+                            {company: "OpenAI", revenue: 0, loss: 50},
+                            {company: "Anthropic", revenue: 0, loss: 53},
+                            {company: "Perplexity", revenue: 100, loss: 164}
+                        ];
+                        
+                        // X scale
+                        const x = d3.scaleBand()
+                            .domain(data.map(d => d.company))
+                            .range([0, width])
+                            .padding(0.3);
+                        
+                        // Y scale
+                        const y = d3.scaleLinear()
+                            .domain([0, 180])
+                            .range([height, 0]);
+                        
+                        // Add X axis
+                        svg.append("g")
+                            .attr("transform", `translate(0,${height})`)
+                            .call(d3.axisBottom(x));
+                        
+                        // Add Y axis
+                        svg.append("g")
+                            .call(d3.axisLeft(y).ticks(5));
+                        
+                        // Add revenue bars
+                        svg.selectAll(".revenue-bar")
+                            .data(data)
+                            .enter()
+                            .append("rect")
+                            .attr("class", "revenue-bar")
+                            .attr("x", d => x(d.company))
+                            .attr("y", d => y(d.revenue))
+                            .attr("width", x.bandwidth() / 2)
+                            .attr("height", d => height - y(d.revenue))
+                            .attr("fill", "#4CAF50");
+                        
+                        // Add loss bars
+                        svg.selectAll(".loss-bar")
+                            .data(data)
+                            .enter()
+                            .append("rect")
+                            .attr("class", "loss-bar")
+                            .attr("x", d => x(d.company) + x.bandwidth() / 2)
+                            .attr("y", d => y(d.loss))
+                            .attr("width", x.bandwidth() / 2)
+                            .attr("height", d => height - y(d.loss))
+                            .attr("fill", "#F44336");
+                        
+                        // Add legend
+                        const legend = svg.append("g")
+                            .attr("transform", `translate(${width - 100}, 0)`);
+                            
+                        legend.append("rect")
+                            .attr("width", 10)
+                            .attr("height", 10)
+                            .attr("fill", "#4CAF50");
+                            
+                        legend.append("text")
+                            .attr("x", 15)
+                            .attr("y", 8)
+                            .text("수익")
+                            .style("font-size", "10px");
+                            
+                        legend.append("rect")
+                            .attr("width", 10)
+                            .attr("height", 10)
+                            .attr("y", 15)
+                            .attr("fill", "#F44336");
+                            
+                        legend.append("text")
+                            .attr("x", 15)
+                            .attr("y", 23)
+                            .text("지출")
+                            .style("font-size", "10px");
+                    };
+                    
+                    // Call the function to create the chart
+                    window.addEventListener('load', createChart);
+                </script>
+</div>
+<!-- Impact on Job Market -->
+<div class="content-box p-6 flex flex-col">
+<div class="flex items-center mb-4">
+<div class="icon-circle bg-blue-100 text-blue-500 mr-4">
+<i class="fas fa-user-tie text-2xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-gray-700">취업 시장에 미치는 영향</h2>
+</div>
+<ul class="list-disc ml-6 space-y-3 text-lg">
+<li>수익성 악화는 기업들이 <span class="font-bold text-blue-500">개발자 고용에 소극적</span> 변하게 함</li>
+<li>AI 업계의 <span class="font-bold text-blue-500">취업 시장에도 부정적인 영향</span>을 미칠 수 있음</li>
+<li>모델 제공사조차 적자를 보고 있는 상황에서 그 위에 구축된 기업들이 수익을 내기 어려움</li>
+<li>&#34;AI 버블&#34; 논란이 일면서 시장 가치에 대한 의문이 제기되고 있음</li>
+</ul>
+<!-- Job Market Impact Visualization -->
+<div class="relative mt-auto flex-grow flex items-center justify-center">
+<div class="w-full flex flex-col items-center">
+<div class="flex items-center justify-center mb-4">
+<div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mr-4">
+<i class="fas fa-chart-line text-red-500 text-2xl"></i>
+</div>
+<div class="w-16 h-16 rounded-full bg-yellow-100 flex items-center justify-center mr-4">
+<i class="fas fa-money-bill-wave text-yellow-500 text-2xl"></i>
+</div>
+<div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+<i class="fas fa-user-tie text-blue-500 text-2xl"></i>
+</div>
+</div>
+<div class="flex items-center">
+<div class="w-32 h-1 bg-red-300"></div>
+<i class="fas fa-arrow-right text-gray-400 mx-2"></i>
+<div class="w-32 h-1 bg-yellow-300"></div>
+<i class="fas fa-arrow-right text-gray-400 mx-2"></i>
+<div class="w-32 h-1 bg-blue-300"></div>
+</div>
+<div class="flex justify-between w-full mt-2 text-sm">
+<span class="text-center w-16">수익 감소</span>
+<span class="text-center w-32 ml-8">고용 감소</span>
+<span class="text-center w-32 ml-8">취업 기회 감소</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-4 right-10 text-sm text-gray-500" style="visibility: hidden;">
+<p>Page 8 of 10</p>
+</div>
+</div>
+
+</body></html>

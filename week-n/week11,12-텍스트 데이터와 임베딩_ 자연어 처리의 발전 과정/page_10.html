@@ -1,0 +1,227 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>거대 언어 모델(LLM)의 진화와 미래 전망</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .model-card {
+            transition: all 0.3s ease;
+        }
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .trend-card {
+            transition: all 0.3s ease;
+        }
+        .trend-card:hover {
+            transform: scale(1.03);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">거대 언어 모델(LLM)의 진화와 미래 전망</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-grow p-6">
+<!-- Left column: GPT Evolution -->
+<div class="w-1/2 pr-4">
+<div class="bg-white rounded-lg shadow-md p-4 h-full">
+<h2 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+<i class="fas fa-chart-line text-orange-500 mr-2"></i>
+                        GPT 시리즈의 발전
+                    </h2>
+<div class="w-full h-48 mb-4" id="gpt-evolution"></div>
+<div class="grid grid-cols-3 gap-2 mt-2">
+<div class="model-card bg-gray-50 p-2 rounded">
+<h3 class="text-sm font-bold text-green-600">GPT-1 (2018)</h3>
+<p class="text-xs text-gray-600">첫 번째 생성형 AI 모델, 사전 훈련 및 파인튜닝 방식 도입</p>
+</div>
+<div class="model-card bg-gray-50 p-2 rounded">
+<h3 class="text-sm font-bold text-green-600">GPT-2 (2019)</h3>
+<p class="text-xs text-gray-600">약 10배 많은 파라미터(15억)와 데이터셋, 제로샷 학습능력</p>
+</div>
+<div class="model-card bg-gray-50 p-2 rounded">
+<h3 class="text-sm font-bold text-green-600">GPT-3 (2020)</h3>
+<p class="text-xs text-gray-600">1,750억 파라미터, 100배 많은 파라미터, 제로/원/퓨샷 학습</p>
+</div>
+<div class="model-card bg-gray-50 p-2 rounded">
+<h3 class="text-sm font-bold text-green-600">GPT-3.5 (2022)</h3>
+<p class="text-xs text-gray-600">코드-텍스트 조합 데이터로 훈련, ChatGPT에 탑재</p>
+</div>
+<div class="model-card bg-gray-50 p-2 rounded">
+<h3 class="text-sm font-bold text-green-600">GPT-4 (2023)</h3>
+<p class="text-xs text-gray-600">멀티모달(텍스트+이미지), 문맥 윈도우 8192→32868 토큰</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right column: Future Trends -->
+<div class="w-1/2 pl-4">
+<div class="bg-white rounded-lg shadow-md p-4 mb-4">
+<h2 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+<i class="fas fa-lightbulb text-orange-500 mr-2"></i>
+                        최신 임베딩 기술 동향
+                    </h2>
+<div class="grid grid-cols-2 gap-3">
+<div class="trend-card bg-gray-50 p-3 rounded border-l-4 border-green-500">
+<div class="flex items-center mb-1">
+<i class="fas fa-cube text-green-600 mr-2"></i>
+<h3 class="text-sm font-bold">LLM 기반 임베딩</h3>
+</div>
+<p class="text-xs text-gray-600">LLM의 성능을 더욱 끌어올리기 위해 개발된 고성능 임베딩 모델</p>
+</div>
+<div class="trend-card bg-gray-50 p-3 rounded border-l-4 border-green-500">
+<div class="flex items-center mb-1">
+<i class="fas fa-layer-group text-green-600 mr-2"></i>
+<h3 class="text-sm font-bold">Matryoshka Representation Learning</h3>
+</div>
+<p class="text-xs text-gray-600">임베딩 차원을 효율적으로 관리하는 기술</p>
+</div>
+<div class="trend-card bg-gray-50 p-3 rounded border-l-4 border-green-500">
+<div class="flex items-center mb-1">
+<i class="fas fa-globe text-green-600 mr-2"></i>
+<h3 class="text-sm font-bold">다국어 지원 모델</h3>
+</div>
+<p class="text-xs text-gray-600">BGE-m3와 같은 모델로 다양한 언어의 텍스트 처리</p>
+</div>
+<div class="trend-card bg-gray-50 p-3 rounded border-l-4 border-green-500">
+<div class="flex items-center mb-1">
+<i class="fas fa-tasks text-green-600 mr-2"></i>
+<h3 class="text-sm font-bold">실용성 확보</h3>
+</div>
+<p class="text-xs text-gray-600">LLM의 성능을 유지하면서도 실용적인 크기와 속도</p>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-lg shadow-md p-4">
+<h2 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+<i class="fas fa-binoculars text-orange-500 mr-2"></i>
+                        자연어 처리의 미래
+                    </h2>
+<ul class="space-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<p class="text-sm text-gray-700">언어의 복잡성을 더 깊이 이해하고, 윤리적 문제를 해결하며, 더욱 효율적인 모델을 개발</p>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<p class="text-sm text-gray-700">멀티모달 및 다중 언어 처리 능력을 갖춘 더 통합적인 AI 시스템</p>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<p class="text-sm text-gray-700">인간과 컴퓨터 간의 상호작용을 더욱 자연스럽고 지능적으로 만들며, 다양한 산업 혁신</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">10/10</div>
+</div>
+</div>
+<script>
+        // D3.js visualization for GPT evolution
+        document.addEventListener('DOMContentLoaded', function() {
+            const gptData = [
+                { model: "GPT-1", year: 2018, params: 0.1, context: 2048 },
+                { model: "GPT-2", year: 2019, params: 1.5, context: 8192 },
+                { model: "GPT-3", year: 2020, params: 175, context: 20480 },
+                { model: "GPT-3.5", year: 2022, params: 350, context: 8192 },
+                { model: "GPT-4", year: 2023, params: 700, context: 32868 }
+            ];
+            
+            const svg = d3.select("#gpt-evolution")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 500 180");
+            
+            // Parameters growth visualization
+            const xScale = d3.scaleBand()
+                .domain(gptData.map(d => d.model))
+                .range([50, 450])
+                .padding(0.3);
+            
+            const yScale = d3.scaleLog()
+                .domain([0.1, 700])
+                .range([140, 20]);
+            
+            // Draw bars
+            svg.selectAll(".bar")
+                .data(gptData)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.model))
+                .attr("y", d => yScale(d.params))
+                .attr("width", xScale.bandwidth())
+                .attr("height", d => 140 - yScale(d.params))
+                .attr("fill", "#2E8B57")
+                .attr("rx", 3)
+                .attr("ry", 3);
+            
+            // Add x-axis
+            svg.append("g")
+                .attr("transform", "translate(0, 140)")
+                .call(d3.axisBottom(xScale))
+                .selectAll("text")
+                .attr("font-size", "10px");
+            
+            // Add y-axis label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 15)
+                .attr("x", -80)
+                .attr("font-size", "10px")
+                .attr("text-anchor", "middle")
+                .text("파라미터 수(억)");
+            
+            // Add context window size markers
+            svg.selectAll(".context-marker")
+                .data(gptData)
+                .enter()
+                .append("line")
+                .attr("class", "context-marker")
+                .attr("x1", d => xScale(d.model) + xScale.bandwidth()/2)
+                .attr("x2", d => xScale(d.model) + xScale.bandwidth()/2)
+                .attr("y1", d => yScale(d.params) - 10)
+                .attr("y2", d => yScale(d.params) - 30)
+                .attr("stroke", "#FFA500")
+                .attr("stroke-width", 2);
+            
+            svg.selectAll(".context-label")
+                .data(gptData)
+                .enter()
+                .append("text")
+                .attr("class", "context-label")
+                .attr("x", d => xScale(d.model) + xScale.bandwidth()/2)
+                .attr("y", d => yScale(d.params) - 35)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "9px")
+                .attr("fill", "#FFA500")
+                .text(d => d.context + " 토큰");
+        });
+    </script>
+
+</body></html>

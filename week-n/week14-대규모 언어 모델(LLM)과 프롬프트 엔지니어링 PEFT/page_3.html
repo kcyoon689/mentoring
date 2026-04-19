@@ -1,0 +1,136 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>대규모 언어 모델(LLM)의 이해</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 776px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 776px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .highlight {
+            color: #FFA500;
+        }
+        .accent {
+            color: #00CED1;
+        }
+        .section-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .section-header {
+            border-bottom: 2px solid #E8E8E8;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<header class="mb-6">
+<h1 class="title text-4xl font-bold">대규모 언어 모델(LLM)의 이해</h1>
+<div class="w-24 h-1 bg-green-800 mt-2"></div>
+</header>
+<!-- Main content -->
+<div class="grid grid-cols-2 gap-6 flex-1">
+<!-- Definition section -->
+<div class="section-card p-5">
+<div class="section-header pb-3 mb-3">
+<h2 class="text-2xl font-semibold flex items-center">
+<i class="fas fa-book-open text-green-800 mr-3"></i>
+<span>정의</span>
+</h2>
+</div>
+<div class="pl-8">
+<p class="mb-3">대규모 언어 모델(LLM)은 방대한 양의 텍스트 데이터를 학습하여 인간과 유사한 수준의 언어 이해 및 생성 능력을 갖춘 인공지능 모델입니다.</p>
+<div class="flex items-start mt-4">
+<i class="fas fa-check-circle text-teal-500 mt-1 mr-2"></i>
+<p>번역, 요약, 질의응답, 글쓰기, 코딩, 데이터 분석 등 다양한 작업을 수행할 수 있는 범용성을 지닙니다.</p>
+</div>
+<div class="flex items-start mt-2">
+<i class="fas fa-check-circle text-teal-500 mt-1 mr-2"></i>
+<p>대표적인 LLM으로는 OpenAI의 GPT 시리즈, Meta의 LLaMA, Google의 Gemini, Anthropic의 Claude 등이 있습니다.</p>
+</div>
+</div>
+</div>
+<!-- Working principle section -->
+<div class="section-card p-5">
+<div class="section-header pb-3 mb-3">
+<h2 class="text-2xl font-semibold flex items-center">
+<i class="fas fa-cogs text-green-800 mr-3"></i>
+<span>작동 원리</span>
+</h2>
+</div>
+<div class="pl-8">
+<p class="mb-3">LLM은 주로 <span class="highlight font-semibold">트랜스포머(Transformer)</span>라는 딥러닝 구조를 기반으로 작동합니다.</p>
+<div class="flex items-start mt-2">
+<i class="fas fa-check-circle text-teal-500 mt-1 mr-2"></i>
+<p><span class="highlight font-semibold">셀프 어텐션(Self-Attention)</span> 메커니즘을 통해 문장 내 단어 간의 관계와 중요도를 효과적으로 파악합니다.</p>
+</div>
+<div class="flex items-start mt-2">
+<i class="fas fa-check-circle text-teal-500 mt-1 mr-2"></i>
+<p>병렬 처리를 가능하게 하여 학습 속도를 획기적으로 개선했습니다.</p>
+</div>
+</div>
+</div>
+<!-- Learning process section -->
+<div class="section-card p-5 col-span-2">
+<div class="section-header pb-3 mb-3">
+<h2 class="text-2xl font-semibold flex items-center">
+<i class="fas fa-graduation-cap text-green-800 mr-3"></i>
+<span>학습 과정</span>
+</h2>
+</div>
+<div class="flex justify-between mt-4">
+<!-- Pre-training -->
+<div class="w-1/2 pr-4">
+<div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-800 h-full">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-database text-green-800 mr-2"></i>
+<span>사전학습 (Pre-training)</span>
+</h3>
+<ul class="list-disc pl-8 space-y-2">
+<li>인터넷에서 수집된 <span class="highlight font-semibold">수십억에서 수조 개의 단어</span>로 이루어진 방대한 데이터를 활용</li>
+<li>언어의 패턴과 구조를 학습</li>
+<li>광범위한 지식과 언어 능력을 습득</li>
+</ul>
+</div>
+</div>
+<!-- Fine-tuning -->
+<div class="w-1/2 pl-4">
+<div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500 h-full">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-sliders-h text-orange-500 mr-2"></i>
+<span>미세조정 (Fine-tuning)</span>
+</h3>
+<ul class="list-disc pl-8 space-y-2">
+<li>사전학습된 모델을 특정 작업이나 분야에 특화되도록 추가 학습</li>
+<li>모델은 특정 도메인에 대한 이해도를 높임</li>
+<li>특정 태스크에 최적화된 성능을 발휘</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<footer class="mt-6 text-right">
+<span class="text-gray-600">3 / 10</span>
+</footer>
+</div>
+
+</body></html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BERT의 사전학습 방식</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F0F0F0;
+            color: #333333;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            background-color: #A0D995;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 0 0 30px 0;
+        }
+        .content-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            color: #FFA500;
+            font-weight: 600;
+        }
+        .mlm-box {
+            border-left: 4px solid #A0D995;
+        }
+        .nsp-box {
+            border-left: 4px solid #FFA500;
+        }
+        #bidirectional-viz {
+            height: 150px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gray-100 p-8 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title mb-6 w-1/2 flex items-center">
+<h1 class="text-3xl font-bold">BERT의 사전학습 방식</h1>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col">
+<!-- Bidirectional Context Learning Introduction -->
+<div class="content-box p-5 mb-5">
+<h2 class="text-2xl font-bold mb-3 flex items-center">
+<i class="fas fa-sync-alt text-green-500 mr-3"></i>
+                    양방향 문맥 학습
+                </h2>
+<p class="text-lg">BERT는 문장의 <span class="highlight">모든 단어</span>를 동시에 고려하여 양방향 문맥을 이해함으로써 언어 표현 능력을 크게 향상시켰습니다. 이는 이전 모델인 ELMo(좌-우, 우-좌 문맥을 각각 독립적으로 학습)와 OpenAI GPT(좌-우 단방향 문맥)보다 큰 차이점을 나타냅니다.</p>
+</div>
+<!-- Visualization of bidirectional context -->
+<div class="content-box p-3 mb-5" id="bidirectional-viz">
+<!-- D3.js visualization will be inserted here -->
+</div>
+<!-- Two Pre-training Techniques -->
+<div class="flex space-x-5">
+<!-- MLM -->
+<div class="content-box p-5 w-1/2 mlm-box">
+<h2 class="text-2xl font-bold mb-3 flex items-center">
+<i class="fas fa-mask text-green-500 mr-3"></i>
+                        마스크 언어 모델 (MLM)
+                    </h2>
+<ul class="list-disc pl-6 space-y-2">
+<li>입력 문장에서 무작위로 <span class="highlight">약 15%</span>의 토큰을 <code>[MASK]</code></li></ul></div></div></div></div></body></html>

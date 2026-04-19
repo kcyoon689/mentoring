@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PEFT: 효율적 모델 튜닝의 필요성과 개념</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .highlight {
+            color: #FFA500;
+        }
+        .accent {
+            color: #00CED1;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+        .comparison-container {
+            height: 200px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<header class="mb-6">
+<h1 class="title text-4xl font-bold">PEFT: 효율적 모델 튜닝의 필요성과 개념</h1>
+<div class="w-24 h-1 bg-green-800 mt-2"></div>
+</header>
+<!-- Main content -->
+<div class="flex flex-1 space-x-6">
+<!-- Left column: Need for PEFT -->
+<div class="w-1/2">
+<div class="card p-5 mb-6 rounded-lg shadow-md h-full">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-exclamation-triangle text-orange-500 mr-3"></i>
+<span>Full Fine-Tuning의 한계</span>
+</h2>
+<ul class="list-disc pl-10 space-y-3">
+<li>Full Fine-Tuning은 <span class="highlight font-semibold">모든 파라미터</span>를 미세조정해야 함</li>
+<li>LLM의 규모에 따른 <span class="highlight font-semibold">막대한 계산 비용</span>과 메모리 자원 요구</li>
+<li>GPU 메모리 사용량과 클라우드 컴퓨팅 비용 증가</li>
+<li>학습 시간이 길어지며, 실험 및 배포에 시간 소요</li>
+<li>재앙적 망각(Catastrophic Forgetting) 문제가 발생</li>
+</ul>
+<!-- Visualization of resource consumption -->
+<div class="comparison-container mt-4" id="comparison-chart"></div>
+</div>
+</div>
+<!-- Right column: PEFT concept and advantages -->
+<div class="w-1/2">
+<div class="card p-5 mb-6 rounded-lg shadow-md">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-lightbulb text-teal-500 mr-3"></i>
+<span>PEFT의 등장 배경</span>
+</h2>
+<p class="mb-3">PEFT(Parameter-Efficient Fine-Tuning)은 사전 학습된 대규모 언어 모델의 <span class="highlight font-semibold">대부분 파라미터를 고정</span>한 채, <span class="highlight font-semibold">소수의 추가 파라미터만을 튜닝</span>하여 특정 작업이나 데이터셋에 모델을 최적화하는 방법입니다.</p>
+</div>
+<div class="card p-5 rounded-lg shadow-md">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-check-circle text-green-700 mr-3"></i>
+<span>PEFT의 주요 장점</span>
+</h2>
+<div class="grid grid-cols-2 gap-3">
+<div class="flex items-start">
+<i class="fas fa-dollar-sign text-teal-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">계산 및 저장 비용 절감</p>
+<p class="text-sm">튜닝해야 할 파라미터 수가 극적으로 줄어듬</p>
+</div>
+</div>
+<div class="flex items-start">
+<i class="fas fa-clock text-teal-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">학습 시간 단축</p>
+<p class="text-sm">적은 수의 파라미터만 학습하므로 시간 절약</p>
+</div>
+</div>
+<div class="flex items-start">
+<i class="fas fa-brain text-teal-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">재앙적 망각 방지</p>
+<p class="text-sm">기존에 학습된 지식을 잃어버리는 현상을 방지</p>
+</div>
+</div>
+<div class="flex items-start">
+<i class="fas fa-balance-scale text-teal-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">과적합 위험 감소</p>
+<p class="text-sm">소규모 데이터셋에서도 과적합될 가능성이 적음</p>
+</div>
+</div>
+<div class="flex items-start">
+<i class="fas fa-rocket text-teal-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">배포 용이성</p>
+<p class="text-sm">튜닝된 모델의 크기가 수십 MB 수준으로 배포 용이</p>
+</div>
+</div>
+<div class="flex items-start">
+<i class="fas fa-users text-teal-500 mt-1 mr-2"></i>
+<div>
+<p class="font-semibold">접근성 향상</p>
+<p class="text-sm">적은 자원으로도 LLM을 튜닝할 수 있게 함</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<footer class="mt-4 text-right">
+<span class="text-gray-600">9 / 10</span>
+</footer>
+</div>
+<script>
+        // Simple visualization of resource comparison between Full FT and PEFT
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#comparison-chart")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%");
+            
+            // Data representation (conceptual, not actual data)
+            const fullFT = {name: "Full Fine-Tuning", value: 100, color: "#FFA500"};
+            const peft = {name: "PEFT", value: 10, color: "#00CED1"};
+            
+            // Create scales
+            const xScale = d3.scaleBand()
+                .domain([fullFT.name, peft.name])
+                .range([50, 500])
+                .padding(0.4);
+            
+            const yScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([150, 20]);
+            
+            // Add bars
+            svg.selectAll(".bar")
+                .data([fullFT, peft])
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.name))
+                .attr("y", d => yScale(d.value))
+                .attr("width", xScale.bandwidth())
+                .attr("height", d => 150 - yScale(d.value))
+                .attr("fill", d => d.color);
+            
+            // Add labels
+            svg.selectAll(".label")
+                .data([fullFT, peft])
+                .enter()
+                .append("text")
+                .attr("class", "label")
+                .attr("x", d => xScale(d.name) + xScale.bandwidth() / 2)
+                .attr("y", d => yScale(d.value) - 10)
+                .attr("text-anchor", "middle")
+                .text(d => d.name);
+            
+            // Add y-axis label
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 15)
+                .attr("x", -85)
+                .attr("font-size", "12px")
+                .attr("text-anchor", "middle")
+                .text("리소스 소비 (비율)");
+            
+            // Add title
+            svg.append("text")
+                .attr("x", 275)
+                .attr("y", 180)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("font-weight", "bold")
+                .text("Full Fine-Tuning vs PEFT: 리소스 소비 비교");
+        });
+    </script>
+
+</body></html>

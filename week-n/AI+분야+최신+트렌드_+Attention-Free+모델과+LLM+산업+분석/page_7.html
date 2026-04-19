@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LLM 산업의 비용 구조와 수익성 문제</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        
+        .title {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+        }
+        
+        .content-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bar {
+            fill: #00BCD4;
+            transition: fill 0.3s;
+        }
+        
+        .bar:hover {
+            fill: #FF9800;
+        }
+    </style>
+</head>
+<body>
+<div class="w-[1280px] h-[720px] mx-auto bg-gray-50 p-10 relative">
+<!-- Title -->
+<div class="mb-6">
+<h1 class="title text-4xl text-gray-800 mb-2">LLM 산업의 비용 구조와 수익성 문제</h1>
+<div class="w-32 h-1 bg-red-500"></div>
+</div>
+<!-- Main Content -->
+<div class="grid grid-cols-5 gap-4 min-h-[540px]">
+<!-- Cost Components -->
+<div class="col-span-3 grid grid-rows-2 gap-4">
+<!-- Top Row -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Training Cost -->
+<div class="content-box p-4 flex items-start">
+<div class="icon-circle bg-blue-100 text-blue-600 mr-4 flex-shrink-0">
+<i class="fas fa-cogs text-xl"></i>
+</div>
+<div>
+<h3 class="text-xl font-bold text-gray-700 mb-1">학습 비용</h3>
+<p class="text-gray-600">대규모 모델 훈련을 위한 과도한 계산 자원 및 시간 비용</p>
+</div>
+</div>
+<!-- Inference Cost -->
+<div class="content-box p-4 flex items-start">
+<div class="icon-circle bg-green-100 text-green-600 mr-4 flex-shrink-0">
+<i class="fas fa-brain text-xl"></i>
+</div>
+<div>
+<h3 class="text-xl font-bold text-gray-700 mb-1">추론 비용</h3>
+<p class="text-gray-600">모델 추론 시 발생하는 높은 API 호출 및 처리 비용</p>
+</div>
+</div>
+</div>
+<!-- Bottom Row -->
+<div class="grid grid-cols-2 gap-4">
+<!-- GPU Acquisition -->
+<div class="content-box p-4 flex items-start">
+<div class="icon-circle bg-purple-100 text-purple-600 mr-4 flex-shrink-0">
+<i class="fas fa-microchip text-xl"></i>
+</div>
+<div>
+<h3 class="text-xl font-bold text-gray-700 mb-1">GPU 확보</h3>
+<p class="text-gray-600">최신 GPU 하드웨어를 위한 대규모 자본 투자 필요</p>
+</div>
+</div>
+<!-- Server Infrastructure -->
+<div class="content-box p-4 flex items-start">
+<div class="icon-circle bg-orange-100 text-orange-600 mr-4 flex-shrink-0">
+<i class="fas fa-server text-xl"></i>
+</div>
+<div>
+<h3 class="text-xl font-bold text-gray-700 mb-1">서버 인프라 및 운영 비용</h3>
+<p class="text-gray-600">모델 배포 및 유지보수를 위한 서버 및 인력 비용</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Loss Visualization -->
+<div class="col-span-2 content-box p-5 flex flex-col">
+<h3 class="text-xl font-bold text-gray-700 mb-3">AI 기업들의 적자 상황</h3>
+<div class="flex-grow" id="loss-chart"></div>
+<div class="mt-4 bg-red-50 p-3 rounded-lg border-l-4 border-red-500">
+<p class="text-gray-700"><i class="fas fa-exclamation-circle text-red-500 mr-2"></i>2024년 Perplexity는 AWS, Anthropic, OpenAI에 수익의 <span class="font-bold text-red-500">164%</span>를 지출하며 적자 상태</p>
+</div>
+</div>
+</div>
+<!-- Key Insight -->
+<div class="absolute bottom-10 left-10 right-10">
+<div class="bg-gray-800 bg-opacity-10 p-4 rounded-lg border-l-4 border-yellow-500">
+<p class="text-lg"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i><span class="font-bold">핵심 인사이트:</span> AI 시장이 폭발적으로 성장하는 것처럼 보이지만, 대부분의 회사가 수익보다 비용이 훨씬 큰 적자 구조를 가지고 있습니다.</p>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-4 right-10 text-sm text-gray-500" style="visibility: hidden;">
+<p>Page 7 of 10</p>
+</div>
+</div>
+<script>
+        // Data from the document
+        const lossData = [
+            {company: "OpenAI (2024)", loss: 50},
+            {company: "Anthropic (2024)", loss: 53},
+            {company: "OpenAI (2025 예상)", loss: 80}
+        ];
+        
+        // Set up the chart dimensions
+        const margin = {top: 30, right: 30, bottom: 70, left: 60};
+        const width = 400 - margin.left - margin.right;
+        const height = 250 - margin.top - margin.bottom;
+        
+        // Create the SVG container
+        const svg = d3.select("#loss-chart")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+        
+        // X scale
+        const x = d3.scaleBand()
+            .domain(lossData.map(d => d.company))
+            .range([0, width])
+            .padding(0.3);
+        
+        // Y scale
+        const y = d3.scaleLinear()
+            .domain([0, 100])
+            .range([height, 0]);
+        
+        // Add X axis
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "translate(-10,0)rotate(-25)")
+            .style("text-anchor", "end");
+        
+        // Add Y axis
+        svg.append("g")
+            .call(d3.axisLeft(y));
+        
+        // Add Y axis label
+        svg.append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 0 - margin.left)
+            .attr("x", 0 - (height / 2))
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("적자 (억 달러)");
+        
+        // Add the bars
+        svg.selectAll(".bar")
+            .data(lossData)
+            .enter()
+            .append("rect")
+            .attr("class", "bar")
+            .attr("x", d => x(d.company))
+            .attr("y", d => y(d.loss))
+            .attr("width", x.bandwidth())
+            .attr("height", d => height - y(d.loss));
+        
+        // Add loss values on top of bars
+        svg.selectAll(".label")
+            .data(lossData)
+            .enter()
+            .append("text")
+            .attr("class", "label")
+            .attr("text-anchor", "middle")
+            .attr("x", d => x(d.company) + x.bandwidth() / 2)
+            .attr("y", d => y(d.loss) - 5)
+            .text(d => d.loss + "억");
+    </script>
+
+</body></html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>프롬프트 엔지니어링: 기본 및 고급 기법</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 920px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 920px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .highlight {
+            color: #FFA500;
+        }
+        .accent {
+            color: #00CED1;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .example {
+            background-color: rgba(0, 206, 209, 0.1);
+            border-left: 3px solid #00CED1;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<header class="mb-6">
+<h1 class="title text-4xl font-bold">프롬프트 엔지니어링: 기본 및 고급 기법</h1>
+<div class="w-24 h-1 bg-green-800 mt-2"></div>
+</header>
+<!-- Main content -->
+<div class="flex flex-1 space-x-6">
+<!-- Left column: Basic techniques -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-layer-group text-green-800 mr-2"></i>
+<span>기본 기법</span>
+</h2>
+<!-- Zero-shot -->
+<div class="card p-4 mb-4 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-bolt text-orange-500 mr-2"></i>
+<span>Zero-shot 프롬프팅</span>
+</h3>
+<p class="mb-2">모델에게 <span class="highlight font-semibold">예시 없이</span> 질문만 제시하여 답변을 얻는 방식</p>
+<p class="mb-2">모델의 일반적인 지식을 평가하거나 새로운 문제에 대한 대응 능력을 테스트할 때 주로 활용</p>
+<div class="example p-3 rounded-md mt-2">
+<p class="text-sm font-medium mb-1">예시:</p>
+<p class="text-sm italic">&#34;내일 서울의 오전 9시부터 오후 3시까지의 날씨와 온도를 알려줘.&#34;</p>
+</div>
+</div>
+<!-- Few-shot -->
+<div class="card p-4 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-list-ol text-orange-500 mr-2"></i>
+<span>Few-shot 프롬프팅</span>
+</h3>
+<p class="mb-2">몇 가지 <span class="highlight font-semibold">예시를 제공</span>하여 LLM이 문제를 이해하고 유사한 방식으로 답변할 수 있도록 돕는 기법</p>
+<p class="mb-2">제공되는 예시 수에 따라 1-Shot, 2-Shot 등으로 불리며, 예시 수가 많을수록 정확한 답변을 얻을 가능성이 높아짐</p>
+<div class="example p-3 rounded-md mt-2">
+<p class="text-sm font-medium mb-1">예시:</p>
+<p class="text-sm italic">&#34;입력: 5 * 5, 출력: 25; 입력: 8 + 2, 출력: 10; 입력에 대한 출력을 계산합니다: 7 - 4.&#34;</p>
+</div>
+</div>
+</div>
+<!-- Right column: Advanced techniques -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-brain text-green-800 mr-2"></i>
+<span>고급 기법</span>
+</h2>
+<!-- Chain of Thought -->
+<div class="card p-4 mb-4 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-link text-orange-500 mr-2"></i>
+<span>Chain of Thought (CoT) 프롬프팅</span>
+</h3>
+<p class="mb-2">모델이 <span class="highlight font-semibold">결론에 도달하는 사고 과정</span>을 단계별로 보여주며 문제를 해결하도록 유도하는 방식</p>
+<p class="mb-2">복잡한 문제를 해결할 때 각 단계를 명확히 제시하고 논리적인 순서로 문제를 해결하도록 하여, 모델이 문제를 더 깊이 이해하고 논리적 추론을 통해 정교한 답변을 생성하도록 돕습니다</p>
+<div class="example p-3 rounded-md mt-2">
+<p class="text-sm font-medium mb-1">예시:</p>
+<p class="text-sm italic">&#34;주어진 수 중에서 홀수를 모두 더해서 짝수를 만들어 줘: 15, 32, 5, 13, 82, 7, 1. 문제를 단계별로 해결해 봐.&#34;</p>
+</div>
+</div>
+<!-- RAG -->
+<div class="card p-4 rounded-lg shadow-md">
+<h3 class="text-xl font-semibold mb-2 flex items-center">
+<i class="fas fa-search-plus text-orange-500 mr-2"></i>
+<span>RAG (Retrieval-Augmented Generation)</span>
+</h3>
+<p class="mb-2">&#39;검색 증강 생성&#39;의 약자로, LLM이 답변을 생성할 때 <span class="highlight font-semibold">외부 데이터베이스에서 관련 정보를 실시간으로 검색</span>하여, 이를 근거로 더 정확하고 신뢰도 높은 답변을 생성하는 기술</p>
+<p class="mb-2">LLM의 고질적인 문제인 할루시네이션(환각 현상)을 줄이는 핵심 기술로 주목받고 있습니다</p>
+<div class="example p-3 rounded-md mt-2">
+<p class="text-sm font-medium mb-1">작동 방식:</p>
+<ol class="text-sm list-decimal pl-5 space-y-1">
+<li>데이터셋 벡터화: 외부 데이터를 벡터 데이터베이스에 저장</li>
+<li>질의 입력: 사용자 쿼리를 프롬프트로 받음</li>
+<li>문서 검색: 사용자 쿼리와 유사한 정보 청크를 벡터 데이터베이스에서 검색</li>
+<li>정보 추출: 검색된 문서를 원래 쿼리와 연결하여 LLM에 추가 컨텍스트로 제공</li>
+<li>답변 생성: 연결된 쿼리와 검색된 문서를 포함하는 프롬프트를 LLM에 입력</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<footer class="mt-4 text-right">
+<span class="text-gray-600">7 / 10</span>
+</footer>
+</div>
+
+</body></html>

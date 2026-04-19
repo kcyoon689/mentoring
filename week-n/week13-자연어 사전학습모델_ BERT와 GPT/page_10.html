@@ -1,0 +1,190 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>결론 및 미래 전망</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        body {width: 1280px; min-height: 882px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F0F0F0;
+            color: #333333;}
+        .slide {
+            width: 1280px;
+            min-height: 882px;
+            
+            position: relative;
+        }
+        .title {
+            background-color: #A0D995;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 0 0 30px 0;
+        }
+        .content-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            color: #FFA500;
+            font-weight: 600;
+        }
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .future-item {
+            border-left: 3px solid #A0D995;
+            padding-left: 15px;
+            margin-bottom: 10px;
+        }
+        #complementary-chart {
+            height: 200px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gray-100 p-8 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title mb-6 w-2/3 flex items-center">
+<h1 class="text-3xl font-bold">결론 및 미래 전망</h1>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col">
+<!-- Impact Section -->
+<div class="content-box p-5 mb-5">
+<h2 class="text-2xl font-bold mb-3 flex items-center">
+<span class="icon-circle bg-green-500 mr-3">
+<i class="fas fa-chart-line"></i>
+</span>
+                    BERT와 GPT의 영향 요약
+                </h2>
+<div class="flex justify-between">
+<div class="w-1/2 pr-4">
+<ul class="list-disc pl-6 space-y-2">
+<li>두 모델은 자연어 처리의 <span class="highlight">핵심적인 두 축인 이해</span>와 <span class="highlight">생성</span> 능력을 비약적으로 발전시켰습니다</li>
+<li>BERT: 문맥 이해를 통해 정보 추출 및 분석에 강점</li>
+<li>GPT: 문맥을 바탕으로 새로운 텍스트 창조에 탁월</li>
+<li>사전학습 모델의 등장은 NLP의 <span class="highlight">대규모 언어 모델(LLM) 시대</span>을 열었습니다</li>
+</ul>
+</div>
+<div class="w-1/2 pl-4">
+<div class="w-full" id="complementary-chart"></div>
+</div>
+</div>
+</div>
+<!-- Future Prospects -->
+<div class="content-box p-5">
+<h2 class="text-2xl font-bold mb-3 flex items-center">
+<span class="icon-circle bg-orange-500 mr-3">
+<i class="fas fa-lightbulb"></i>
+</span>
+                    인공지능의 언어 이해와 소통 능력 발전 전망
+                </h2>
+<div class="flex justify-between">
+<div class="w-1/2 pr-4">
+<div class="future-item">
+<h3 class="text-xl font-semibold mb-1">모델 경량화</h3>
+<p>Distillation, Quantization, Pruning, Parameter Sharing 등 기법으로 모델의 크기와 복잡도 줄이기</p>
+</div>
+<div class="future-item">
+<h3 class="text-xl font-semibold mb-1">멀티모달 능력 확장</h3>
+<p>텍스트, 이미지, 음성, 비디오 등 다양한 유형의 데이터를 함께 처리하는 멀티모달 기술 발전</p>
+</div>
+</div>
+<div class="w-1/2 pl-4">
+<div class="future-item">
+<h3 class="text-xl font-semibold mb-1">특정 도메인 특화 모델</h3>
+<p>의학, 과학, 금융 등 특정 분야에 특화된 BERT 변형 모델 개발</p>
+</div>
+<div class="future-item">
+<h3 class="text-xl font-semibold mb-1">강화 학습 기반 모델 개선</h3>
+<p>RLHF 기법을 통해 모델이 사용자 의도에 더 적합하고 유해하지 않은 답변 생성</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Final Conclusion -->
+<div class="mt-4 bg-gray-200 p-3 rounded-lg border-l-4 border-green-500">
+<p class="text-center text-lg font-medium">
+                BERT와 GPT는 인공지능이 인간의 언어를 더욱 깊이 이해하고 자연스럽게 소통하는 미래를 여는 데 결정적인 역할을 할 것으로 기대됩니다
+            </p>
+</div>
+<!-- Footer -->
+<div class="mt-4 text-right text-sm text-gray-500">
+<p>자연어 사전학습모델: BERT와 GPT | 10/10</p>
+</div>
+</div>
+<script>
+        // Simple D3.js visualization for complementary relationship
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#complementary-chart")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 400 200");
+            
+            // Define data
+            const data = [
+                {name: "BERT", x: 100, y: 100, r: 70, color: "#A0D995"},
+                {name: "GPT", x: 300, y: 100, r: 70, color: "#FFA500"}
+            ];
+            
+            // Draw circles
+            svg.selectAll("circle")
+                .data(data)
+                .enter()
+                .append("circle")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", d => d.r)
+                .attr("fill", d => d.color)
+                .attr("fill-opacity", 0.5)
+                .attr("stroke", d => d.color)
+                .attr("stroke-width", 2);
+            
+            // Add text
+            svg.selectAll("text.model")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "model")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "18px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333")
+                .text(d => d.name);
+            
+            // Add labels
+            svg.append("text")
+                .attr("x", 200)
+                .attr("y", 50)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .attr("fill", "#333")
+                .text("상호 보완적인 관계");
+                
+            svg.append("text")
+                .attr("x", 200)
+                .attr("y", 170)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "#666")
+                .text("이해(NLU) + 생성(NLG) = 자연어 처리의未来");
+        });
+    </script>
+
+</body></html>

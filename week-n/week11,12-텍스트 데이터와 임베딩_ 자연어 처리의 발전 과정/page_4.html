@@ -1,0 +1,207 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>통계적 접근과 딥러닝의 등장</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 724px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 724px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .model-card {
+            transition: all 0.3s ease;
+        }
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">통계적 접근과 딥러닝의 등장</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-grow p-8">
+<!-- Statistical approaches section -->
+<div class="w-1/2 pr-6">
+<div class="bg-white rounded-lg shadow-md p-6 h-full">
+<div class="flex items-center mb-4">
+<i class="fas fa-chart-bar text-3xl text-green-600 mr-3"></i>
+<h2 class="text-2xl font-bold text-green-700">통계적 접근 (1990-2000s)</h2>
+</div>
+<div class="mb-4">
+<p class="text-gray-700 mb-2"><i class="fas fa-arrow-right text-orange-500 mr-2"></i> NLP 연구가 규칙 기반에서 통계적 모델로 전환</p>
+<p class="text-gray-700 mb-2"><i class="fas fa-arrow-right text-orange-500 mr-2"></i> 대규모 텍스트 코퍼스를 활용한 언어 패턴 분석</p>
+</div>
+<div class="bg-green-50 p-4 rounded-lg mb-4">
+<h3 class="font-bold text-green-700 mb-2">주요 모델</h3>
+<ul class="space-y-2">
+<li class="flex items-start">
+<i class="fas fa-angle-right text-orange-500 mt-1 mr-2"></i>
+<div>
+<span class="font-semibold">N-gram 모델</span>: 단어 시퀀스의 확률을 예측
+                                </div>
+</li>
+<li class="flex items-start">
+<i class="fas fa-angle-right text-orange-500 mt-1 mr-2"></i>
+<div>
+<span class="font-semibold">은닉 마르코프 모델(HMM)</span>: 품사 태깅, 개체명 인식, 기계 번역
+                                </div>
+</li>
+</ul>
+</div>
+<div class="mt-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+<h3 class="font-bold text-gray-700">한계</h3>
+</div>
+<p class="text-gray-700">당시의 제한적인 컴퓨팅 파워로 인해 대규모 프로젝트 진행 어려움</p>
+</div>
+<div class="mt-6 h-24" id="statistical-models">
+<!-- D3.js visualization will be inserted here -->
+</div>
+</div>
+</div>
+<!-- Deep learning section -->
+<div class="w-1/2 pl-6">
+<div class="bg-white rounded-lg shadow-md p-6 h-full">
+<div class="flex items-center mb-4">
+<i class="fas fa-brain text-3xl text-green-600 mr-3"></i>
+<h2 class="text-2xl font-bold text-green-700">딥러닝의 등장 (2010s)</h2>
+</div>
+<div class="mb-4">
+<p class="text-gray-700 mb-2"><i class="fas fa-arrow-right text-orange-500 mr-2"></i> 딥러닝과 신경망 아키텍처의 발전이 NLP 분야에 혁명을 가져옴</p>
+<p class="text-gray-700 mb-2"><i class="fas fa-arrow-right text-orange-500 mr-2"></i> 순환 신경망(RNN)은 순차적인 데이터 처리에 특화된 모델</p>
+<p class="text-gray-700 mb-2"><i class="fas fa-arrow-right text-orange-500 mr-2"></i> RNN은 문맥을 기억하며 언어를 처리할 수 있음</p>
+</div>
+<div class="bg-green-50 p-4 rounded-lg">
+<h3 class="font-bold text-green-700 mb-2">주요 모델</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="model-card bg-white p-3 rounded border border-gray-200">
+<div class="flex items-center mb-1">
+<i class="fas fa-network-wired text-blue-500 mr-2"></i>
+<span class="font-semibold">RNN</span>
+</div>
+<p class="text-sm text-gray-600">순차적 데이터 처리의 기본 모델</p>
+</div>
+<div class="model-card bg-white p-3 rounded border border-gray-200">
+<div class="flex items-center mb-1">
+<i class="fas fa-memory text-blue-500 mr-2"></i>
+<span class="font-semibold">LSTM</span>
+</div>
+<p class="text-sm text-gray-600">장단기 메모리 모델로 기울기 소실 문제 완화</p>
+</div>
+<div class="model-card bg-white p-3 rounded border border-gray-200 col-span-2">
+<div class="flex items-center mb-1">
+<i class="fas fa-project-diagram text-blue-500 mr-2"></i>
+<span class="font-semibold">GRU (Gated Recurrent Unit)</span>
+</div>
+<p class="text-sm text-gray-600">LSTM의 간소화된 변형으로 더 적은 매개변수로 효율적인 시퀀스 처리</p>
+</div>
+</div>
+</div>
+<div class="mt-4">
+<div class="flex items-center mb-2">
+<i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+<h3 class="font-bold text-gray-700">RNN의 한계</h3>
+</div>
+<p class="text-gray-700">긴 문맥을 처리할 때 &#39;기울기 소실(gradient vanishing)&#39; 문제에 직면하여 장기 의존성을 포착하는 데 한계가 있음</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">4/10</div>
+</div>
+</div>
+<script>
+        // D3.js visualization for statistical models
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#statistical-models")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%");
+            
+            // Data for the bar chart
+            const data = [
+                {name: "N-gram", value: 30},
+                {name: "HMM", value: 45}
+            ];
+            
+            // Create scales
+            const xScale = d3.scaleBand()
+                .domain(data.map(d => d.name))
+                .range([40, 500])
+                .padding(0.4);
+                
+            const yScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([80, 10]);
+                
+            // Draw bars
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.name))
+                .attr("y", d => yScale(d.value))
+                .attr("width", xScale.bandwidth())
+                .attr("height", d => 80 - yScale(d.value))
+                .attr("fill", "#2E8B57");
+                
+            // Add labels
+            svg.selectAll(".label")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "label")
+                .attr("x", d => xScale(d.name) + xScale.bandwidth() / 2)
+                .attr("y", d => yScale(d.value) - 5)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#333")
+                .text(d => d.value);
+                
+            // Add x-axis labels
+            svg.selectAll(".x-label")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "x-label")
+                .attr("x", d => xScale(d.name) + xScale.bandwidth() / 2)
+                .attr("y", 95)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#333")
+                .text(d => d.name);
+                
+            // Add title
+            svg.append("text")
+                .attr("x", 250)
+                .attr("y", 5)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333")
+                .text("통계적 모델의 복잡성");
+        });
+    </script>
+
+</body></html>

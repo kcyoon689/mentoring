@@ -1,0 +1,237 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BERT 모델의 핵심 구조</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F0F0F0;
+            color: #333333;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            background-color: #A0D995;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 0 0 30px 0;
+        }
+        .content-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            color: #FFA500;
+            font-weight: 600;
+        }
+        .icon-box {
+            background-color: #A0D995;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .model-comparison {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .model-comparison th {
+            background-color: #A0D995;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .model-comparison td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .model-comparison tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gray-100 p-8 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title mb-6 w-1/2 flex items-center">
+<h1 class="text-3xl font-bold">BERT 모델의 핵심 구조</h1>
+</div>
+<!-- Main Content -->
+<div class="flex-1 grid grid-cols-12 gap-4">
+<!-- Left Column - Architecture -->
+<div class="col-span-5">
+<div class="content-box p-5 h-full">
+<h2 class="text-xl font-bold mb-4 flex items-center">
+<span class="icon-box mr-3">
+<i class="fas fa-cogs"></i>
+</span>
+                        트랜스포머 인코더 기반 아키텍처
+                    </h2>
+<ul class="list-disc pl-6 space-y-2">
+<li>2017년 Google이 발표한 <span class="highlight">트랜스포머(Transformer)</span> 모델의 <span class="highlight">인코더(Encoder)</span> 구조만을 활용</li>
+<li>순환 신경망(RNN)이나 합성곱 신경망(CNN) 대신 <span class="highlight">셀프 어텐션(Self-Attention)</span> 메커니즘을 도입</li>
+<li>입력 시퀀스 내의 단어들 간 관계를 <span class="highlight">병렬적으로 파악</span> 가능</li>
+</ul>
+<div class="mt-4 flex justify-center">
+<div class="h-40 w-full" id="encoder-visualization"></div>
+</div>
+</div>
+</div>
+<!-- Middle Column - Bidirectional Learning -->
+<div class="col-span-3">
+<div class="content-box p-5 h-full">
+<h2 class="text-xl font-bold mb-4 flex items-center">
+<span class="icon-box mr-3">
+<i class="fas fa-exchange-alt"></i>
+</span>
+                        양방향 문맥 학습
+                    </h2>
+<ul class="list-disc pl-6 space-y-2">
+<li>문장의 <span class="highlight">모든 단어</span>를 동시에 고려</li>
+<li>좌-우, 우-좌 문맥을 <span class="highlight">동시에 이해</span></li>
+<li>이전 모델(ELMo, OpenAI GPT)보다 언어 표현 능력 크게 향상</li>
+</ul>
+<div class="mt-4 flex justify-center">
+<div class="flex items-center justify-center space-x-2">
+<div class="text-center">
+<i class="fas fa-arrow-right text-green-500 text-xl"></i>
+<p class="text-sm">좌→우</p>
+</div>
+<div class="text-center">
+<i class="fas fa-arrow-left text-green-500 text-xl"></i>
+<p class="text-sm">우→좌</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column - Model Sizes -->
+<div class="col-span-4">
+<div class="content-box p-5 h-full">
+<h2 class="text-xl font-bold mb-4 flex items-center">
+<span class="icon-box mr-3">
+<i class="fas fa-layer-group"></i>
+</span>
+                        모델 규모
+                    </h2>
+<table class="model-comparison w-full">
+<thead>
+<tr>
+<th>모델</th>
+<th>파라미터 수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="font-semibold">BERT-base</td>
+<td>1억 1천만 개</td>
+</tr>
+<tr>
+<td class="font-semibold">BERT-large</td>
+<td>3억 4천만 개</td>
+</tr>
+</tbody>
+</table>
+<div class="mt-4 space-y-2">
+<div class="flex items-center">
+<span class="w-24 text-sm">BERT-base:</span>
+<div class="flex-1 bg-gray-200 rounded-full h-4">
+<div class="bg-green-500 h-4 rounded-full" style="width: 32%"></div>
+</div>
+</div>
+<div class="flex items-center">
+<span class="w-24 text-sm">BERT-large:</span>
+<div class="flex-1 bg-gray-200 rounded-full h-4">
+<div class="bg-orange-500 h-4 rounded-full" style="width: 100%"></div>
+</div>
+</div>
+</div>
+<div class="mt-4 text-sm">
+<p><span class="highlight">BERT-base</span>: 12개 트랜스포머 블록, 768개 히든 차원, 12개 어텐션 헤드</p>
+<p><span class="highlight">BERT-large</span>: 24개 트랜스포머 블록, 1024개 히든 차원, 16개 어텐션 헤드</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-6 text-right text-sm text-gray-500">
+<p>자연어 사전학습모델: BERT와 GPT | 3/10</p>
+</div>
+</div>
+<script>
+        // Simple visualization of Transformer encoder
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#encoder-visualization")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 400 150");
+            
+            // Create word nodes
+            const words = ["입력", "문장", "을", "처리", "합니다"];
+            const wordPositions = words.map((_, i) => ({x: 50 + i * 70, y: 50}));
+            
+            // Draw word nodes
+            svg.selectAll(".word-node")
+                .data(wordPositions)
+                .enter()
+                .append("circle")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", 20)
+                .attr("fill", "#A0D995")
+                .attr("opacity", 0.7);
+            
+            // Add word labels
+            svg.selectAll(".word-label")
+                .data(wordPositions)
+                .enter()
+                .append("text")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y + 40)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#333333")
+                .style("font-size", "12px")
+                .text((d, i) => words[i]);
+            
+            // Draw self-attention connections
+            for (let i = 0; i < wordPositions.length; i++) {
+                for (let j = i + 1; j < wordPositions.length; j++) {
+                    svg.append("line")
+                        .attr("x1", wordPositions[i].x)
+                        .attr("y1", wordPositions[i].y)
+                        .attr("x2", wordPositions[j].x)
+                        .attr("y2", wordPositions[j].y)
+                        .attr("stroke", "#FFA500")
+                        .attr("stroke-width", 1.5)
+                        .attr("opacity", 0.4);
+                }
+            }
+            
+            // Add title
+            svg.append("text")
+                .attr("x", 200)
+                .attr("y", 15)
+                .attr("text-anchor", "middle")
+                .attr("fill", "#333333")
+                .style("font-size", "14px")
+                .style("font-weight", "bold")
+                .text("셀프 어텐션 메커니즘");
+        });
+    </script>
+
+</body></html>

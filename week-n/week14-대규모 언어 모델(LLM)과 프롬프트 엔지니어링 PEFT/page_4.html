@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LLM의 주요 특징 및 한계</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #00CED1;
+        }
+        .limitation-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #FFA500;
+        }
+        .feature-icon {
+            color: #00CED1;
+        }
+        .limitation-icon {
+            color: #FFA500;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<header class="mb-6">
+<h1 class="title text-4xl font-bold">LLM의 주요 특징 및 한계</h1>
+<div class="w-24 h-1 bg-green-800 mt-2"></div>
+</header>
+<!-- Main content -->
+<div class="flex flex-1 space-x-6">
+<!-- Left column: Features -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-check-circle text-green-800 mr-2"></i>
+<span>주요 특징</span>
+</h2>
+<div class="space-y-4">
+<div class="feature-card p-4 rounded-lg shadow-md">
+<div class="flex items-start">
+<i class="fas fa-database feature-icon text-xl mt-1 mr-3"></i>
+<div>
+<h3 class="text-xl font-semibold mb-1">데이터 기반</h3>
+<p>방대한 텍스트 데이터 학습을 통해 다양한 주제, 문체, 언어의 패턴과 구조를 파악</p>
+</div>
+</div>
+</div>
+<div class="feature-card p-4 rounded-lg shadow-md">
+<div class="flex items-start">
+<i class="fas fa-cubes feature-icon text-xl mt-1 mr-3"></i>
+<div>
+<h3 class="text-xl font-semibold mb-1">범용성</h3>
+<p>텍스트뿐만 아니라 코드, 수식, 이미지, 음성 등 다양한 형태의 데이터 처리 가능</p>
+</div>
+</div>
+</div>
+<div class="feature-card p-4 rounded-lg shadow-md">
+<div class="flex items-start">
+<i class="fas fa-sync-alt feature-icon text-xl mt-1 mr-3"></i>
+<div>
+<h3 class="text-xl font-semibold mb-1">적응성</h3>
+<p>특정 산업이나 도메인에 맞게 추가 학습(파인튜닝) 및 활용 가능</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right column: Limitations -->
+<div class="w-1/2">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-exclamation-triangle text-orange-500 mr-2"></i>
+<span>주요 한계</span>
+</h2>
+<div class="space-y-4">
+<div class="limitation-card p-4 rounded-lg shadow-md">
+<div class="flex items-start">
+<i class="fas fa-brain limitation-icon text-xl mt-1 mr-3"></i>
+<div>
+<h3 class="text-xl font-semibold mb-1">환각 현상(Hallucination)</h3>
+<p>그럴듯하지만 사실이 아니거나 맥락에 맞지 않는 정보를 생성할 수 있음</p>
+</div>
+</div>
+</div>
+<div class="limitation-card p-4 rounded-lg shadow-md">
+<div class="flex items-start">
+<i class="fas fa-coins limitation-icon text-xl mt-1 mr-3"></i>
+<div>
+<h3 class="text-xl font-semibold mb-1">비용 및 자원</h3>
+<p>방대한 데이터와 컴퓨팅 리소스(GPU)를 필요로 하며, 학습 및 운영에 막대한 에너지와 비용 소모</p>
+</div>
+</div>
+</div>
+<div class="limitation-card p-4 rounded-lg shadow-md">
+<div class="flex items-start">
+<i class="fas fa-user-shield limitation-icon text-xl mt-1 mr-3"></i>
+<div>
+<h3 class="text-xl font-semibold mb-1">윤리 및 보안</h3>
+<p>개인정보 유출, 윤리적 문제, 데이터 보안 이슈 발생 가능성</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<footer class="mt-6 text-right">
+<span class="text-gray-600">4 / 10</span>
+</footer>
+</div>
+
+</body></html>

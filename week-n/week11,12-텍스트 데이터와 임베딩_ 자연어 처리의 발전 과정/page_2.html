@@ -1,0 +1,150 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>자연어 처리의 발전 단계</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .timeline-point {
+            transition: all 0.3s ease;
+        }
+        .timeline-point:hover {
+            transform: scale(1.1);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">자연어 처리의 발전 단계</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-col flex-grow p-10">
+<!-- Timeline visualization -->
+<div class="w-full h-48 my-5 relative" id="timeline">
+<!-- D3.js will render timeline here -->
+</div>
+<!-- Development stages description -->
+<div class="grid grid-cols-5 gap-4 mt-8">
+<div class="bg-white p-4 rounded-lg shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-book text-2xl text-green-600 mr-2"></i>
+<h3 class="text-lg font-bold text-green-700">초기 규칙 기반 시스템</h3>
+</div>
+<p class="text-sm text-gray-600">1950-1980년대</p>
+<p class="text-sm mt-2">언어의 문법 구조와 규칙을 수동으로 프로그래밍. Georgetown-IBM 번역 실험(1954), SHRDLU(1960s), ELIZA(1966) 등.</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-chart-bar text-2xl text-green-600 mr-2"></i>
+<h3 class="text-lg font-bold text-green-700">통계적 접근</h3>
+</div>
+<p class="text-sm text-gray-600">1990-2000년대 초반</p>
+<p class="text-sm mt-2">N-gram 모델, 은닉 마르코프 모델(HMM) 등 통계적 모델로 언어 패턴을 수학적 표현. 대규모 코퍼스 활용.</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-brain text-2xl text-green-600 mr-2"></i>
+<h3 class="text-lg font-bold text-green-700">딥러닝의 등장</h3>
+</div>
+<p class="text-sm text-gray-600">2010년대 초반</p>
+<p class="text-sm mt-2">순환 신경망(RNN) 등 딥러닝 모델의 등장. 장단기 메모리(LSTM)와 GRU 모델로 문맥 이해 능력 향상.</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-network-wired text-2xl text-green-600 mr-2"></i>
+<h3 class="text-lg font-bold text-green-700">트랜스포머</h3>
+</div>
+<p class="text-sm text-gray-600">2017년</p>
+<p class="text-sm mt-2">&#34;Attention Is All You Need&#34; 논문에서 처음 제안된 트랜스포머 아키텍처. 셀프 어텐션 메커니즘으로 문장 내 모든 단어 간의 관계 파악.</p>
+</div>
+<div class="bg-white p-4 rounded-lg shadow-md">
+<div class="flex items-center mb-2">
+<i class="fas fa-robot text-2xl text-green-600 mr-2"></i>
+<h3 class="text-lg font-bold text-green-700">거대 언어 모델</h3>
+</div>
+<p class="text-sm text-gray-600">2020년 이후</p>
+<p class="text-sm mt-2">GPT 시리즈로 이어진 LLM 시대. 방대한 파라미터와 데이터셋을 활용한 제로샷/퓨샷 학습 능력. 2023년 GPT-4로 멀티모달 모델 진화.</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">2/10</div>
+</div>
+</div>
+<script>
+        // D3.js timeline visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineData = [
+                { year: "1950", label: "초기 규칙 시스템", x: 100 },
+                { year: "1990", label: "통계적 접근", x: 340 },
+                { year: "2010", label: "딥러닝 등장", x: 580 },
+                { year: "2017", label: "트랜스포머", x: 820 },
+                { year: "2020", label: "거대 언어 모델", x: 1060 }
+            ];
+            
+            const svg = d3.select("#timeline")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 1160 180");
+            
+            // Draw the timeline line
+            svg.append("line")
+                .attr("x1", 50)
+                .attr("y1", 90)
+                .attr("x2", 1110)
+                .attr("y2", 90)
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 4);
+            
+            // Draw timeline points and labels
+            const points = svg.selectAll(".timeline-point")
+                .data(timelineData)
+                .enter()
+                .append("g")
+                .attr("class", "timeline-point");
+            
+            points.append("circle")
+                .attr("cx", d => d.x)
+                .attr("cy", 90)
+                .attr("r", 12)
+                .attr("fill", "#FFA500");
+            
+            points.append("text")
+                .attr("x", d => d.x)
+                .attr("y", 65)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333333")
+                .text(d => d.year);
+            
+            points.append("text")
+                .attr("x", d => d.x)
+                .attr("y", 125)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "#333333")
+                .text(d => d.label);
+        });
+    </script>
+
+</body></html>

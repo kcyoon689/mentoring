@@ -1,0 +1,165 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RAG vs 파인튜닝</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 794px; overflow: hidden; font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 794px;
+            position: relative;
+            
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .comparison-card {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .rag-header {
+            background-color: rgba(0, 100, 0, 0.1);
+            border-bottom: 2px solid #006400;
+        }
+        .tuning-header {
+            background-color: rgba(255, 165, 0, 0.1);
+            border-bottom: 2px solid #FFA500;
+        }
+        .feature-row:nth-child(odd) {
+            background-color: rgba(0, 206, 209, 0.05);
+        }
+        .feature-icon {
+            color: #006400;
+        }
+        .tuning-icon {
+            color: #FFA500;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<h1 class="title text-4xl font-bold mb-6">RAG vs 파인튜닝</h1>
+<!-- Introduction -->
+<div class="bg-white rounded-lg p-4 shadow-md mb-6">
+<p class="text-lg">
+                RAG와 파인튜닝은 모두 LLM의 성능을 향상하고 특정 작업에 맞게 조정하는 데 사용되지만, 접근 방식과 장단점에서 큰 차이를 보입니다. 다음은 두 기법을 여러 기준에 따라 비교 분석한 것입니다.
+            </p>
+</div>
+<!-- Comparison Table -->
+<div class="comparison-card rounded-lg overflow-hidden">
+<!-- Table Header -->
+<div class="grid grid-cols-5 gap-0">
+<div class="p-3 font-bold text-center bg-gray-100">
+<span class="text-gray-700">비교 기준</span>
+</div>
+<div class="rag-header p-3 font-bold text-center col-span-2">
+<div class="flex items-center justify-center">
+<i class="fas fa-search-plus mr-2"></i>
+<span>RAG (Retrieval-Augmented Generation)</span>
+</div>
+</div>
+<div class="tuning-header p-3 font-bold text-center col-span-2">
+<div class="flex items-center justify-center">
+<i class="fas fa-sliders-h mr-2"></i>
+<span>파인튜닝 (Fine-tuning)</span>
+</div>
+</div>
+</div>
+<!-- Approach Row -->
+<div class="grid grid-cols-5 gap-0 feature-row">
+<div class="p-3 flex items-center">
+<i class="fas fa-lightbulb feature-icon mr-2"></i>
+<span class="font-bold">접근 방식</span>
+</div>
+<div class="p-3 col-span-2">
+                    외부 지식 소스에서 관련 정보를 검색하여 LLM의 답변 생성 과정에 통합
+                </div>
+<div class="p-3 col-span-2">
+                    LLM을 특정 작업에 맞게 미세 조정하고, 고정된 답변을 생성
+                </div>
+</div>
+<!-- Advantages Row -->
+<div class="grid grid-cols-5 gap-0 feature-row">
+<div class="p-3 flex items-center">
+<i class="fas fa-plus-circle feature-icon mr-2"></i>
+<span class="font-bold">장점</span>
+</div>
+<div class="p-3 col-span-2">
+<ul class="list-disc pl-5 space-y-1">
+<li>최신 정보 및 특정 도메인 지식을 효과적으로 활용</li>
+<li>환각(Hallucination) 현상을 줄일 수 있음</li>
+<li>외부 지식 소스의 내용을 쉽게 업데이트 가능</li>
+</ul>
+</div>
+<div class="p-3 col-span-2">
+<ul class="list-disc pl-5 space-y-1">
+<li>특정 작업에 특화된 높은 성능</li>
+<li>단순하고 직관적인 접근 방식</li>
+<li>파인튜닝된 모델은 입력에 대해 항상 동일한 답변 반환</li>
+</ul>
+</div>
+</div>
+<!-- Disadvantages Row -->
+<div class="grid grid-cols-5 gap-0 feature-row">
+<div class="p-3 flex items-center">
+<i class="fas fa-minus-circle feature-icon mr-2"></i>
+<span class="font-bold">단점</span>
+</div>
+<div class="p-3 col-span-2">
+<ul class="list-disc pl-5 space-y-1">
+<li>검색 및 통합 과정에서 오버헤드 증가</li>
+<li>외부 지식 소스의 질에 의존性强</li>
+<li>시스템 구성이 복잡하고 유지보수에 어려움</li>
+</ul>
+</div>
+<div class="p-3 col-span-2">
+<ul class="list-disc pl-5 space-y-1">
+<li>새로운 정보 추가가 어렵거나 비효율적</li>
+<li>도메인 특화가 높으면 다른 작업에 적합성 떨어짐</li>
+<li>훈련 데이터의 편향이 그대로 유지됨</li>
+</ul>
+</div>
+</div>
+<!-- Use Cases Row -->
+<div class="grid grid-cols-5 gap-0 feature-row">
+<div class="p-3 flex items-center">
+<i class="fas fa-tasks feature-icon mr-2"></i>
+<span class="font-bold">적합한 활용</span>
+</div>
+<div class="p-3 col-span-2">
+<ul class="list-disc pl-5 space-y-1">
+<li>빠르게 변화하는 정보 환경에서의 정보 검색</li>
+<li>특정 도메인 지식이 필요한 복잡한 질문</li>
+<li>외부 지식 소스의 내용을 주기적으로 업데이트해야 하는 경우</li>
+</ul>
+</div>
+<div class="p-3 col-span-2">
+<ul class="list-disc pl-5 space-y-1">
+<li>특정 작업에 대해 높은 정확도가 필요한 경우</li>
+<li>문맥이 중요한 긴 텍스트 생성</li>
+<li>도메인 특화된 용어나 개념이 많이 사용되는 경우</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Summary -->
+<div class="bg-white rounded-lg p-4 shadow-md mt-6">
+<p class="text-center text-gray-700 italic">
+<i class="fas fa-info-circle mr-1 text-blue-500"></i>
+                RAG은 외부 지식을 활용하는 검색-생성 접근 방식인 반면, 파인튜닝은 LLM을 특정 작업에 특화시키는 접근 방식입니다.
+                두 기법은 서로 보완적인 역할을 하며, 특정 작업에 따라 적절히 선택하거나 조합하여 사용될 수 있습니다.
+            </p>
+</div>
+</div>
+
+</body></html>

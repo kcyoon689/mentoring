@@ -1,0 +1,226 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>프롬프트 엔지니어링: 개념과 중요성</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 816px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 816px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .highlight {
+            color: #FFA500;
+        }
+        .accent {
+            color: #00CED1;
+        }
+        .concept-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .importance-item {
+            border-left: 3px solid #006400;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<header class="mb-6">
+<h1 class="title text-4xl font-bold">프롬프트 엔지니어링: 개념과 중요성</h1>
+<div class="w-24 h-1 bg-green-800 mt-2"></div>
+</header>
+<!-- Main content -->
+<div class="flex flex-1 space-x-8">
+<!-- Left column: Definition -->
+<div class="w-1/2">
+<div class="concept-box p-6 mb-6">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-lightbulb text-orange-500 mr-3"></i>
+<span>정의</span>
+</h2>
+<p class="text-lg mb-4">
+<span class="font-semibold">프롬프트 엔지니어링</span>은 AI 모델, 특히 대규모 언어 모델(LLM)로부터 최적의 결과를 얻기 위해 입력하는 질문이나 명령(프롬프트)을 설계하고 최적화하는 기술입니다.
+                    </p>
+<div class="bg-gray-100 p-4 rounded-lg">
+<p class="italic text-gray-700">
+                            &#34;AI의 답변 품질은 질문 방식에 따라 크게 달라지므로, 프롬프트 엔지니어링은 LLM의 성능을 극대화하고 원하는 결과물을 얻는 데 필수적인 요소로 부각되고 있습니다.&#34;
+                        </p>
+</div>
+</div>
+<!-- Importance visualization -->
+<div class="concept-box p-6">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-chart-line text-teal-500 mr-3"></i>
+<span>효과 시각화</span>
+</h2>
+<div class="h-48 w-full" id="visualization"></div>
+</div>
+</div>
+<!-- Right column: Importance -->
+<div class="w-1/2">
+<div class="concept-box p-6">
+<h2 class="text-2xl font-semibold mb-4 flex items-center">
+<i class="fas fa-star text-orange-500 mr-3"></i>
+<span>중요성</span>
+</h2>
+<div class="space-y-4">
+<div class="importance-item pl-4 py-2">
+<h3 class="font-semibold text-lg flex items-center">
+<i class="fas fa-bullseye text-green-800 mr-2"></i>
+                                최적 결과 획득
+                            </h3>
+<p class="ml-7">질문 방식에 따라 AI의 답변 품질이 크게 달라지므로, 효과적인 프롬프트 설계가 필요</p>
+</div>
+<div class="importance-item pl-4 py-2">
+<h3 class="font-semibold text-lg flex items-center">
+<i class="fas fa-unlock text-green-800 mr-2"></i>
+                                LLM 성능 극대화
+                            </h3>
+<p class="ml-7">모델의 잠재력을 최대한으로 발휘하기 위해 프롬프트를 잘 설계해야 함</p>
+</div>
+<div class="importance-item pl-4 py-2">
+<h3 class="font-semibold text-lg flex items-center">
+<i class="fas fa-key text-green-800 mr-2"></i>
+                                키 지식 접근
+                            </h3>
+<p class="ml-7">잘 설계된 프롬프트로 인해 모델의 광범위한 지식에 접근할 수 있음</p>
+</div>
+<div class="importance-item pl-4 py-2">
+<h3 class="font-semibold text-lg flex items-center">
+<i class="fas fa-tasks text-green-800 mr-2"></i>
+                                복잡한 작업 수행
+                            </h3>
+<p class="ml-7">구조화된 프롬프트로 복잡한 정보 처리나 문제 해결이 가능해짐</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<footer class="mt-6 text-right">
+<span class="text-gray-600">6 / 10</span>
+</footer>
+</div>
+<script>
+        // Simple visualization to show how prompt engineering affects output quality
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('visualization').clientWidth;
+            const height = document.getElementById('visualization').clientHeight;
+            
+            const svg = d3.select("#visualization")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+            
+            // Draw arrow showing relationship between prompt quality and output quality
+            const arrowGroup = svg.append("g")
+                .attr("transform", `translate(${width/2}, ${height/2})`);
+            
+            // Draw arrow line
+            arrowGroup.append("line")
+                .attr("x1", -width/3)
+                .attr("y1", 0)
+                .attr("x2", width/3)
+                .attr("y2", 0)
+                .attr("stroke", "#006400")
+                .attr("stroke-width", 3);
+            
+            // Draw arrow head
+            arrowGroup.append("polygon")
+                .attr("points", `${width/3-10},${-5} ${width/3},${5} ${width/3-10},${5}`)
+                .attr("fill", "#006400");
+            
+            // Add labels
+            arrowGroup.append("text")
+                .attr("x", -width/3)
+                .attr("y", -20)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "#333333")
+                .text("낮은 품질의 프롬프트");
+            
+            arrowGroup.append("text")
+                .attr("x", width/3)
+                .attr("y", -20)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "#333333")
+                .text("높은 품질의 프롬프트");
+            
+            arrowGroup.append("text")
+                .attr("x", 0)
+                .attr("y", -40)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#006400")
+                .text("프롬프트 엔지니어링");
+            
+            // Add circles representing prompt types
+            const promptExamples = [
+                { x: -width/6, y: 0, r: 20, color: "#FFA500", icon: "fa-times" },
+                { x: 0, y: 0, r: 20, color: "#00CED1", icon: "fa-question" },
+                { x: width/6, y: 0, r: 20, color: "#006400", icon: "fa-check" }
+            ];
+            
+            const promptGroups = arrowGroup.selectAll(".prompt-group")
+                .data(promptExamples)
+                .enter()
+                .append("g")
+                .attr("class", "prompt-group")
+                .attr("transform", d => `translate(${d.x}, ${d.y})`);
+            
+            promptGroups.append("circle")
+                .attr("r", d => d.r)
+                .attr("fill", d => d.color)
+                .attr("opacity", 0.7);
+            
+            // Add icons to circles
+            promptGroups.append("text")
+                .attr("text-anchor", "middle")
+                .attr("dy", "0.3em")
+                .attr("fill", "white")
+                .attr("font-family", "FontAwesome")
+                .attr("font-size", "14px")
+                .html(d => {
+                    if (d.icon === "fa-times") return "\uf00d"; // Font Awesome times icon
+                    if (d.icon === "fa-question") return "\uf128"; // Font Awesome question icon
+                    if (d.icon === "fa-check") return "\uf00c"; // Font Awesome check icon
+                });
+            
+            // Add output quality labels
+            arrowGroup.append("text")
+                .attr("x", -width/3)
+                .attr("y", 30)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "#FFA500")
+                .text("낮은 품질의 출력");
+            
+            arrowGroup.append("text")
+                .attr("x", width/3)
+                .attr("y", 30)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "#006400")
+                .text("높은 품질의 출력");
+        });
+    </script>
+
+</body></html>

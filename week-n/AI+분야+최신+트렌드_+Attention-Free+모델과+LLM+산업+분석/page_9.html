@@ -1,0 +1,250 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DeepSeek의 가성비 전략과 혁신</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        
+        .title {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+        }
+        
+        .content-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="w-[1280px] h-[720px] mx-auto bg-gray-50 p-10 relative">
+<!-- Title -->
+<div class="mb-8">
+<h1 class="title text-4xl text-gray-800 mb-2">DeepSeek의 가성비 전략과 혁신</h1>
+<div class="w-32 h-1 bg-blue-500"></div>
+</div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-2 gap-8 min-h-[520px]">
+<!-- Left Side: Cost-Performance Strategy -->
+<div class="content-box p-6 flex flex-col">
+<div class="flex items-center mb-5">
+<div class="icon-circle bg-blue-100 text-blue-500 mr-4">
+<i class="fas fa-tags text-2xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-gray-700">가성비 경쟁으로의 포지셔닝</h2>
+</div>
+<div class="space-y-4 text-lg">
+<p><span class="font-bold text-blue-500">전통적 접근:</span> 최고 성능의 모델 추구</p>
+<p><span class="font-bold text-blue-500">DeepSeek 전략:</span> &#34;가성비 경쟁&#34;이라는 차별화된 전략으로 시장 접근</p>
+</div>
+<div class="mt-4 p-4 bg-blue-50 rounded-lg">
+<p class="text-lg"><i class="fas fa-quote-left text-blue-300 mr-2"></i>DeepSeek-OCR은 단순히 최고 성능을 추구하는 것이 아닌, <span class="font-bold text-blue-600">&#34;비용 효율성&#34;</span>과 <span class="font-bold text-blue-600">&#34;문맥 압축&#34;</span>에 초점을 맞춤<i class="fas fa-quote-right text-blue-300 ml-2"></i></p>
+</div>
+<div class="mt-auto">
+<div class="w-full h-32" id="strategy-comparison"></div>
+</div>
+</div>
+<!-- Right Side: Context Optical Compression -->
+<div class="content-box p-6 flex flex-col">
+<div class="flex items-center mb-5">
+<div class="icon-circle bg-green-100 text-green-500 mr-4">
+<i class="fas fa-compress-alt text-2xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-gray-700">컨텍스트 광학 압축 기술</h2>
+</div>
+<div class="space-y-4 text-lg">
+<p><span class="font-bold text-green-500">핵심 기술:</span> &#34;컨텍스트 광학 압축(Contexts Optical Compression)&#34;</p>
+<ul class="list-disc ml-6 space-y-2">
+<li>긴 텍스트 문서를 <span class="font-bold text-green-500">이미지로 인코딩</span>한 후 시각 모델로 처리</li>
+<li>패치로 분할된 이미지를 <span class="font-bold text-green-500">비전 토큰</span>으로 변환</li>
+<li>비전 토큰을 사용하여 <span class="font-bold text-green-500">10배 더 우수한 압축률</span> 달성</li>
+</ul>
+</div>
+<div class="mt-4 p-4 bg-green-50 rounded-lg">
+<p class="text-lg"><i class="fas fa-lightbulb text-green-300 mr-2"></i>이론적으로 <span class="font-bold text-green-600">10,000단어 텍스트</span>(약 15,000 텍스트 토큰)를 단 <span class="font-bold text-green-600">1,500개의 &#39;특별한 압축된 시각적 토큰&#39;</span>으로 저장 가능</p>
+</div>
+<div class="mt-4">
+<div class="w-full h-32" id="compression-visual"></div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-4 right-10 text-sm text-gray-500" style="visibility: hidden;">
+<p>Page 9 of 10</p>
+</div>
+</div>
+<script>
+        // Strategy Comparison Visualization
+        const strategyComparison = d3.select("#strategy-comparison")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 500 120");
+            
+        // Traditional approach
+        strategyComparison.append("rect")
+            .attr("x", 20)
+            .attr("y", 20)
+            .attr("width", 180)
+            .attr("height", 30)
+            .attr("fill", "#E0F7FA");
+            
+        strategyComparison.append("text")
+            .attr("x", 110)
+            .attr("y", 40)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "14px")
+            .text("전통적 성능 경쟁");
+            
+        // DeepSeek strategy
+        strategyComparison.append("rect")
+            .attr("x", 300)
+            .attr("y", 20)
+            .attr("width", 180)
+            .attr("height", 30)
+            .attr("fill", "#FFE0B2");
+            
+        strategyComparison.append("text")
+            .attr("x", 390)
+            .attr("y", 40)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "14px")
+            .text("DeepSeek 가성비 전략");
+            
+        // Arrow
+        strategyComparison.append("line")
+            .attr("x1", 210)
+            .attr("y1", 35)
+            .attr("x2", 290)
+            .attr("y2", 35)
+            .attr("stroke", "#333")
+            .attr("stroke-width", 2)
+            .attr("marker-end", "url(#arrow)");
+            
+        // Arrow marker
+        strategyComparison.append("defs").append("marker")
+            .attr("id", "arrow")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 8)
+            .attr("refY", 0)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5")
+            .attr("fill", "#333");
+            
+        // Cost-Efficiency indicators
+        strategyComparison.append("text")
+            .attr("x", 110)
+            .attr("y", 80)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("fill", "#666")
+            .text("높은 성능, 높은 비용");
+            
+        strategyComparison.append("text")
+            .attr("x", 390)
+            .attr("y", 80)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("fill", "#666")
+            .text("높은 성능, 적은 비용");
+            
+        // Compression Visualization
+        const compressionVisual = d3.select("#compression-visual")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 500 120");
+            
+        // Text tokens (left)
+        compressionVisual.append("rect")
+            .attr("x", 20)
+            .attr("y", 20)
+            .attr("width", 150)
+            .attr("height", 30)
+            .attr("fill", "#E0F7FA");
+            
+        compressionVisual.append("text")
+            .attr("x", 95)
+            .attr("y", 40)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "14px")
+            .text("텍스트 토큰 (15,000개)");
+            
+        // Visual tokens (right)
+        compressionVisual.append("rect")
+            .attr("x", 330)
+            .attr("y", 20)
+            .attr("width", 150)
+            .attr("height", 30)
+            .attr("fill", "#FFE0B2");
+            
+        compressionVisual.append("text")
+            .attr("x", 405)
+            .attr("y", 40)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "14px")
+            .text("비전 토큰 (1,500개)");
+            
+        // Compression arrow
+        compressionVisual.append("line")
+            .attr("x1", 170)
+            .attr("y1", 35)
+            .attr("x2", 330)
+            .attr("y2", 35)
+            .attr("stroke", "#333")
+            .attr("stroke-width", 2)
+            .attr("marker-end", "url(#compression-arrow)");
+            
+        // Arrow marker
+        compressionVisual.append("defs").append("marker")
+            .attr("id", "compression-arrow")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 8)
+            .attr("refY", 0)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5")
+            .attr("fill", "#333");
+            
+        // Compression ratio text
+        compressionVisual.append("text")
+            .attr("x", 250)
+            .attr("y", 80)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "16px")
+            .attr("font-weight", "bold")
+            .attr("fill", "#00BCD4")
+            .text("10:1 압축률");
+            
+        // Precision indicator
+        compressionVisual.append("text")
+            .attr("x", 405)
+            .attr("y", 80)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "14px")
+            .attr("fill", "#666")
+            .text("97% 디코딩 정밀도");
+    </script>
+
+</body></html>

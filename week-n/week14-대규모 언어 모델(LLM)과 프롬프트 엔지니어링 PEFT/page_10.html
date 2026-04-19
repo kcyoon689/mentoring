@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PEFT의 주요 방법론: LoRA</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 768px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 768px;
+            
+            position: relative;
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .highlight {
+            color: #FFA500;
+        }
+        .accent {
+            color: #00CED1;
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 4px solid #006400;
+        }
+        .matrix {
+            font-family: monospace;
+            font-size: 14px;
+            text-align: center;
+        }
+        .matrix-cell {
+            width: 30px;
+            height: 30px;
+            margin: 2px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<header class="mb-6">
+<h1 class="title text-4xl font-bold">PEFT의 주요 방법론: LoRA</h1>
+<div class="w-24 h-1 bg-green-800 mt-2"></div>
+</header>
+<!-- Main content -->
+<div class="flex flex-1">
+<!-- Left column - Visual representation -->
+<div class="w-1/2 pr-6 flex flex-col items-center justify-center">
+<div class="w-full h-96 relative" id="lora-visualization">
+<!-- D3.js visualization will be inserted here -->
+</div>
+<div class="text-center mt-4">
+<p class="text-lg font-semibold">
+<span class="highlight">W = W<sub>0</sub> + BA</span> 형태로 업데이트
+                    </p>
+<p class="text-sm mt-2">학습 시: <span class="highlight">A</span>와 <span class="highlight">B</span> 행렬의 파라미터만 최적화</p>
+<p class="text-sm mt-1">추론 시: BA를 W<sub>0</sub>에 합쳐 원래 속도 유지</p>
+</div>
+</div>
+<!-- Right column - Key points -->
+<div class="w-1/2 pl-6">
+<div class="card p-5 mb-6 rounded-lg shadow-md">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-cogs text-green-800 mr-3"></i>
+<span>LoRA: Low-Rank Adaptation</span>
+</h2>
+<p class="mb-3">모델의 선형 계층에 대한 업데이트를 저랭크 행렬로 근사화하는 기술</p>
+<ul class="list-disc pl-10 space-y-2">
+<li>기존 가중치 행렬 <span class="highlight font-semibold">W<sub>0</sub></span>를 고정</li>
+<li>두 개의 작은 저랭크 행렬 <span class="highlight font-semibold">A</span>와 <span class="highlight font-semibold">B</span>의 곱을 추가</li>
+<li>학습 가능한 파라미터 수를 크게 줄이면서도 성능 저하 최소화</li>
+</ul>
+</div>
+<div class="card p-5 rounded-lg shadow-md">
+<h2 class="text-2xl font-semibold mb-3 flex items-center">
+<i class="fas fa-star text-green-800 mr-3"></i>
+<span>LoRA의 주요 장점</span>
+</h2>
+<ul class="list-disc pl-10 space-y-2">
+<li>파라미터 수의 극대적 감소로 GPU 메모리 사용량과 클라우드 컴퓨팅 비용 절감</li>
+<li>적은 수의 파라미터만 학습하므로 모델 업데이트 시간 단축</li>
+<li>재앙적 망각(Catastrophic Forgetting) 방지: 초기 파라미터 대부분 유지</li>
+<li>과적합 위험 감소: 전체 모델을 수정하지 않으므로 소규모 데이터셋에서도 효과적</li>
+<li>배포 용이성: 튜닝된 모델의 크기가 원본 모델보다 훨씬 작아(수십 MB 수준)</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Footer with slide number -->
+<footer class="mt-6 text-right">
+<span class="text-gray-600">10 / 10</span>
+</footer>
+</div>
+<script>
+        // D3.js visualization for LoRA concept
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = d3.select("#lora-visualization");
+            const width = container.node().getBoundingClientRect().width;
+            const height = container.node().getBoundingClientRect().height;
+            
+            // Create SVG
+            const svg = container.append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .attr("style", "max-width: 100%; height: auto;");
+            
+            // Define matrix data
+            const w0 = [
+                [0.8, 0.1, 0.2],
+                [0.3, 0.7, 0.1],
+                [0.2, 0.1, 0.9]
+            ];
+            
+            const a = [
+                [0.5, 0.2],
+                [0.1, 0.3],
+                [0.4, 0.1]
+            ];
+            
+            const b = [
+                [0.2, 0.3, 0.1],
+                [0.1, 0.2, 0.3]
+            ];
+            
+            // Function to create matrix HTML
+            function createMatrixHtml(matrix, id, highlight = false) {
+                let html = `<div class="matrix" id="${id}">`;
+                matrix.forEach(row => {
+                    html += `<div class="flex">`;
+                    row.forEach(cell => {
+                        const isZero = cell === 0;
+                        html += `<div class="matrix-cell ${isZero ? 'bg-gray-200' : highlight ? 'bg-green-100' : 'bg-blue-50'} ${isZero ? 'text-gray-400' : highlight ? 'text-green-700' : 'text-blue-700'} border border-gray-300 rounded">${cell === 0 ? '0' : cell.toFixed(1)}</div>`;
+                    });
+                    html += `</div>`;
+                });
+                html += `</div>`;
+                return html;
+            }
+            
+            // Create HTML for the visualization
+            const html = `
+                <div class="flex flex-col items-center">
+                    <div class="text-center mb-2">
+                        <span class="text-lg font-semibold">가중치 행렬 업데이트 방식</span>
+                    </div>
+                    <div class="flex items-center justify-center space-x-4 my-4">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-green-700 rounded-lg flex items-center justify-center text-white text-2xl font-bold">W<sub>0</sub></div>
+                            <div class="mt-1 text-sm">원본 가중치</div>
+                        </div>
+                        <div class="text-4xl text-gray-500 flex items-center">+</div>
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-orange-500 rounded-lg flex items-center justify-center text-white text-2xl font-bold">B</div>
+                            <div class="mt-1 text-sm">저랭크 행렬</div>
+</div>
+<div class="text-4xl text-gray-500 flex items-center">·</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-teal-500 rounded-lg flex items-center justify-center text-white text-2xl font-bold">A</div>
+<div class="mt-1 text-sm">저랭크 행렬</div>
+</div>
+</div>
+<div class="flex justify-center space-x-10 mt-6">
+<div class="text-center">
+<div class="matrix" id="w0-matrix">${w0.map(r => r.join(' ')).join('\n')}</div>
+<div class="mt-1 text-sm">W<sub>0</sub> (3×3)</div>
+</div>
+<div class="text-center">
+<div class="matrix" id="a-matrix">${a.map(r => r.join(' ')).join('\n')}</div>
+<div class="mt-1 text-sm">A (3×2)</div>
+</div>
+<div class="text-center">
+<div class="matrix" id="b-matrix">${b.map(r => r.join(' ')).join('\n')}</div>
+<div class="mt-1 text-sm">B (2×3)</div>
+</div>
+</div>
+</div>
+            `;
+            
+            // Insert HTML
+            container.html(html);
+            
+            // Style the matrices
+            function styleMatrix(id, highlight = false) {
+                const matrix = document.getElementById(id);
+                matrix.style.border = "1px solid #ccc";
+                matrix.style.borderRadius = "4px";
+                matrix.style.backgroundColor = "white";
+                matrix.style.boxShadow = highlight ? "0 0 10px rgba(0, 200, 209, 0.3)" : "none";
+            }
+            
+            styleMatrix("w0-matrix");
+            styleMatrix("a-matrix", true);
+            styleMatrix("b-matrix", true);
+        });
+    </script>
+
+</body></html>

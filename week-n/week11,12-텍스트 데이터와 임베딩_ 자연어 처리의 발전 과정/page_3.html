@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>초기 연구와 규칙 기반 시스템</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .example-card {
+            transition: all 0.3s ease;
+        }
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">초기 연구와 규칙 기반 시스템</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-col flex-grow p-8">
+<!-- Time period visualization -->
+<div class="w-full h-20 mb-4" id="time-period">
+<!-- D3.js will render time period here -->
+</div>
+<!-- Introduction to rule-based systems -->
+<div class="bg-white p-5 rounded-lg shadow-md mb-6">
+<h2 class="text-xl font-bold text-green-700 mb-2">규칙 기반 NLP 시스템의 특성</h2>
+<p class="text-gray-700">1950-1980년대 NLP의 주요 특성은 다음과 같습니다:</p>
+<ul class="mt-2 text-gray-700 grid grid-cols-2 gap-x-6 gap-y-2">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>언어의 문법 구조와 규칙을 <strong>수동으로 프로그래밍</strong>하여 텍스트를 처리</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>특정 환경 내에서는 <strong>효율적</strong>이지만, 유연성이 부족</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>인간 언어의 <strong>복잡한 맥락</strong>을 이해하는 데 한계가 있음</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>컴퓨팅 파워의 한계로 인해 <strong>대규모 프로젝트</strong>의 어려움</span>
+</li>
+</ul>
+</div>
+<!-- Three key examples -->
+<div class="grid grid-cols-3 gap-6">
+<!-- Georgetown-IBM -->
+<div class="example-card bg-white p-5 rounded-lg shadow-md">
+<div class="flex items-center mb-3">
+<div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-white">
+<i class="fas fa-language text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-green-700 ml-3">Georgetown-IBM 번역 실험</h3>
+</div>
+<p class="text-sm text-gray-500 mb-2">1954년</p>
+<p class="text-gray-700 text-sm">러시아어 문장 60개를 영어로 번역한 세계 최초의 기계 번역 실험. 언어 처리의 시작점으로 알려짐.</p>
+<div class="mt-3 text-xs text-gray-500 italic">
+<i class="fas fa-quote-left mr-1 text-green-600"></i>
+                        NLP의 역사적 시작점으로, 언어 번역의 가능성을 입증
+                    </div>
+</div>
+<!-- SHRDLU -->
+<div class="example-card bg-white p-5 rounded-lg shadow-md">
+<div class="flex items-center mb-3">
+<div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-white">
+<i class="fas fa-cube text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-green-700 ml-3">SHRDLU 시스템</h3>
+</div>
+<p class="text-sm text-gray-500 mb-2">1960년대 후반</p>
+<p class="text-gray-700 text-sm">Terry Winograd가 개발한 제한된 영역에서 자연어 명령을 이해하고 응답하는 능력을 보여주는 시스템.</p>
+<div class="mt-3 text-xs text-gray-500 italic">
+<i class="fas fa-quote-left mr-1 text-green-600"></i>
+                        자연어 명령 처리의 개념 증명
+                    </div>
+</div>
+<!-- ELIZA -->
+<div class="example-card bg-white p-5 rounded-lg shadow-md">
+<div class="flex items-center mb-3">
+<div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-white">
+<i class="fas fa-comments text-2xl"></i>
+</div>
+<h3 class="text-lg font-bold text-green-700 ml-3">ELIZA</h3>
+</div>
+<p class="text-sm text-gray-500 mb-2">1966년</p>
+<p class="text-gray-700 text-sm">Joseph Weizenbaum이 개발한 로저리안 심리 치료사를 시뮬레이션하여 사용자와 기본적인 대화를 수행하는 시스템.</p>
+<div class="mt-3 text-xs text-gray-500 italic">
+<i class="fas fa-quote-left mr-1 text-green-600"></i>
+                        대화형 인공지능의 초기 모델로, 사용자 참여 가능
+                    </div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">3/10</div>
+</div>
+</div>
+<script>
+        // D3.js time period visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#time-period")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 1200 80");
+            
+            // Draw the timeline
+            svg.append("line")
+                .attr("x1", 100)
+                .attr("y1", 40)
+                .attr("x2", 1100)
+                .attr("y2", 40)
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 4);
+            
+            // Add year markers
+            const years = [1950, 1960, 1970, 1980];
+            const xScale = d3.scaleLinear()
+                .domain([1950, 1980])
+                .range([100, 1100]);
+            
+            // Draw year markers
+            svg.selectAll(".year-marker")
+                .data(years)
+                .enter()
+                .append("line")
+                .attr("x1", d => xScale(d))
+                .attr("y1", 30)
+                .attr("x2", d => xScale(d))
+                .attr("y2", 50)
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 2);
+            
+            // Add year labels
+            svg.selectAll(".year-label")
+                .data(years)
+                .enter()
+                .append("text")
+                .attr("x", d => xScale(d))
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "#333333")
+                .text(d => d);
+            
+            // Add title
+            svg.append("text")
+                .attr("x", 600)
+                .attr("y", 75)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("font-style", "italic")
+                .attr("fill", "#666666")
+                .text("규칙 기반 NLP 시대 (1950-1980s)");
+        });
+    </script>
+
+</body></html>

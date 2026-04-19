@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GPT 모델의 핵심 구조와 발전 과정</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        body {width: 1280px; min-height: 906px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F0F0F0;
+            color: #333333;}
+        .slide {
+            width: 1280px;
+            min-height: 906px;
+            
+            position: relative;
+        }
+        .title {
+            background-color: #A0D995;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 0 0 30px 0;
+        }
+        .content-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            color: #FFA500;
+            font-weight: 600;
+        }
+        .icon-box {
+            background-color: #A0D995;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gpt-model {
+            border-left: 4px solid #A0D995;
+            transition: all 0.3s ease;
+        }
+        .gpt-model:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .model-icon {
+            color: #A0D995;
+        }
+        .parameter-icon {
+            color: #FFA500;
+        }
+        .feature-icon {
+            color: #7719AA;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gray-100 p-8 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title mb-6 w-2/3 flex items-center">
+<h1 class="text-3xl font-bold">GPT 모델의 핵심 구조와 발전 과정</h1>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col">
+<!-- Top Section: Core Structure -->
+<div class="mb-4">
+<div class="content-box p-5">
+<h2 class="text-2xl font-bold mb-3 flex items-center">
+<span class="icon-box mr-3">
+<i class="fas fa-cogs"></i>
+</span>
+                        GPT의 핵심 구조
+                    </h2>
+<div class="flex">
+<div class="w-1/2 pr-4">
+<ul class="list-disc pl-6 space-y-2 text-lg">
+<li>트랜스포머의 <span class="highlight">디코더(Decoder)</span> 구조만을 사용</li>
+<li><span class="highlight">단방향(unidirectional)</span> 학습 방식: 텍스트를 왼쪽에서 오른쪽으로만 처리</li>
+<li><span class="highlight">자기회귀(Autoregressive)</span> 모델: 현재 단어의 이전 단어들만을 고려하여 다음 단어를 예측</li>
+<li>이 구조는 텍스트 생성 작업에 강력한 능력을 부여</li>
+</ul>
+</div>
+<div class="w-1/2 pl-4 flex items-center justify-center">
+<div class="flex items-center space-x-3">
+<div class="flex flex-col items-center">
+<i class="fas fa-code text-4xl model-icon"></i>
+<span class="text-sm mt-1">트랜스포머 디코더</span>
+</div>
+<i class="fas fa-long-arrow-alt-right text-2xl text-gray-400"></i>
+<div class="flex flex-col items-center">
+<i class="fas fa-comment text-4xl parameter-icon"></i>
+<span class="text-sm mt-1">단방향 처리</span>
+</div>
+<i class="fas fa-long-arrow-alt-right text-2xl text-gray-400"></i>
+<div class="flex flex-col items-center">
+<i class="fas fa-magic text-4xl feature-icon"></i>
+<span class="text-sm mt-1">텍스트 생성</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Evolution -->
+<div class="flex-1">
+<div class="content-box p-5 h-full">
+<h2 class="text-2xl font-bold mb-3 flex items-center">
+<span class="icon-box mr-3">
+<i class="fas fa-history"></i>
+</span>
+                        GPT 모델의 발전 과정
+                    </h2>
+<div class="flex flex-col space-y-3 mt-2">
+<!-- GPT-1 -->
+<div class="gpt-model bg-gray-50 p-3 pl-4 rounded flex items-center">
+<div class="w-1/4 flex flex-col items-center">
+<span class="text-xl font-bold text-green-600">GPT-1</span>
+<span class="text-sm text-gray-500">2018년</span>
+</div>
+<div class="w-1/4 text-center">
+<i class="fas fa-database parameter-icon mr-1"></i>
+<span class="font-semibold">1.17억 개</span>
+</div>
+<div class="w-2/4">
+<span class="text-sm">대규모 언어 모델의 초석, 자연스러운 문장 생성 능력, 전이 학습 가능성 제시</span>
+</div>
+</div>
+<!-- GPT-2 -->
+<div class="gpt-model bg-gray-50 p-3 pl-4 rounded flex items-center">
+<div class="w-1/4 flex flex-col items-center">
+<span class="text-xl font-bold text-green-600">GPT-2</span>
+<span class="text-sm text-gray-500">2019년</span>
+</div>
+<div class="w-1/4 text-center">
+<i class="fas fa-database parameter-icon mr-1"></i>
+<span class="font-semibold">15억 개</span>
+</div>
+<div class="w-2/4">
+<span class="text-sm">파라미터 및 학습 데이터 증가, 향상된 텍스트 질과 다양성, Zero-shot 학습 능력 강조</span>
+</div>
+</div>
+<!-- GPT-3 -->
+<div class="gpt-model bg-gray-50 p-3 pl-4 rounded flex items-center">
+<div class="w-1/4 flex flex-col items-center">
+<span class="text-xl font-bold text-green-600">GPT-3</span>
+<span class="text-sm text-gray-500">2020년</span>
+</div>
+<div class="w-1/4 text-center">
+<i class="fas fa-database parameter-icon mr-1"></i>
+<span class="font-semibold">1,750억 개</span>
+</div>
+<div class="w-2/4">
+<span class="text-sm">GPT-2 대비 100배 이상 규모, 복잡한 언어 이해 및 생성 능력 강화, Few-shot 및 Zero-shot 학습 능력 대폭 향상</span>
+</div>
+</div>
+<!-- GPT-4 -->
+<div class="gpt-model bg-gray-50 p-3 pl-4 rounded flex items-center">
+<div class="w-1/4 flex flex-col items-center">
+<span class="text-xl font-bold text-green-600">GPT-4</span>
+<span class="text-sm text-gray-500">2023년</span>
+</div>
+<div class="w-1/4 text-center">
+<i class="fas fa-database parameter-icon mr-1"></i>
+<span class="font-semibold">1~10조 개 (추정)</span>
+</div>
+<div class="w-2/4">
+<span class="text-sm">멀티모달 데이터 학습, self-attention 기반 트랜스포머 아키텍처, 사전 학습 후 파인튜닝 방식 채택</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-4 text-right text-sm text-gray-500">
+<p>자연어 사전학습모델: BERT와 GPT | 6/10</p>
+</div>
+</div>
+
+</body></html>

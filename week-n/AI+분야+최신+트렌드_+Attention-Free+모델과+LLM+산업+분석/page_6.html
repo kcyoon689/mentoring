@@ -1,0 +1,204 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mamba 모델 심층 분석</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        
+        .title {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+        }
+        
+        .content-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="w-[1280px] h-[720px] mx-auto bg-gray-50 p-10 relative">
+<!-- Title -->
+<div class="mb-6">
+<h1 class="title text-4xl text-gray-800 mb-2">Mamba 모델 심층 분석</h1>
+<div class="w-32 h-1 bg-blue-500"></div>
+</div>
+<!-- Introduction Section -->
+<div class="content-box p-5 mb-6">
+<div class="flex items-center">
+<div class="icon-circle bg-blue-100 text-blue-600 mr-4">
+<i class="fas fa-microchip text-2xl"></i>
+</div>
+<div>
+<h2 class="text-2xl font-bold text-gray-700">State Space Model 기반의 효율적 아키텍처</h2>
+<p class="text-lg text-gray-600">Mamba는 LSTM과 유사하게 정보를 기억하고 잊을지 선택적으로 결정하는 메커니즘을 가진 Attention-free 모델</p>
+</div>
+</div>
+</div>
+<!-- Main Features Grid -->
+<div class="grid grid-cols-2 gap-6 mb-6">
+<!-- Linear Scaling -->
+<div class="content-box p-5 feature-card">
+<div class="flex items-center mb-3">
+<div class="icon-circle bg-green-100 text-green-600 mr-3">
+<i class="fas fa-chart-line text-xl"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-700">선형적 확장성</h3>
+</div>
+<ul class="list-disc ml-12 space-y-2">
+<li>입력 시퀀스 길이에 따라 <span class="font-bold text-green-600">연산 비용이 제곱이 아닌 선형적으로</span> 증가</li>
+<li>Transformer: 입력 길이 10배 → 컴퓨팅 요구 100배 증가</li>
+<li>Mamba: 입력 길이 10배 → 컴퓨팅 요구 10배 증가</li>
+</ul>
+<div class="mt-3 h-16" id="scaling-visual" data-sk-source-type="web_search" data-sk-source-container="chart" data-sk-source-id="1993594155339227139"></div>
+</div>
+<!-- Fast Inference -->
+<div class="content-box p-5 feature-card">
+<div class="flex items-center mb-3">
+<div class="icon-circle bg-purple-100 text-purple-600 mr-3">
+<i class="fas fa-bolt text-xl"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-700">빠른 추론 속도</h3>
+</div>
+<ul class="list-disc ml-12 space-y-2">
+<li>Transformer보다 <span class="font-bold text-purple-600">최대 5배 빠른 추론 속도</span>를 제공</li>
+<li>병렬 스캔 알고리즘을 통해 재귀적 계산의 병렬화 가능</li>
+<li>하드웨어 친화적인 알고리즘으로 GPU 메모리 효율성 극대화</li>
+</ul>
+<div class="mt-3 h-16" id="speed-visual" data-sk-source-container="chart" data-sk-source-id="1993594155339227139" data-sk-source-type="web_search"></div>
+</div>
+</div>
+<!-- Additional Features -->
+<div class="grid grid-cols-2 gap-6">
+<!-- Memory Efficiency -->
+<div class="content-box p-5 feature-card">
+<div class="flex items-center mb-3">
+<div class="icon-circle bg-yellow-100 text-yellow-600 mr-3">
+<i class="fas fa-memory text-xl"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-700">메모리 사용량 절감</h3>
+</div>
+<ul class="list-disc ml-12 space-y-2">
+<li>Transformer의 Attention 메커니즘만큼 큰 메모리를 필요로 하지 않음</li>
+<li>상태 공간 모델을 컨볼루션으로 처리하여 CNN과 유사한 메모리 패턴</li>
+<li>동적 파라미터 변경(B, C 행렬 및 스텝 크기 Δ) 통해 중요 정보 선택적 집중</li>
+</ul>
+</div>
+<!-- Hardware Optimization -->
+<div class="content-box p-5 feature-card">
+<div class="flex items-center mb-3">
+<div class="icon-circle bg-red-100 text-red-600 mr-3">
+<i class="fas fa-server text-xl"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-700">하드웨어 최적화</h3>
+</div>
+<ul class="list-disc ml-12 space-y-2">
+<li>병렬 학습 가능: CNN과 유사하게 병렬 학습이 가능하여 학습 시간 단축</li>
+<li>멀티모달 데이터 처리를 위한 MoM(Mixture-of-Mamba) 기법 개발</li>
+<li>적은 메모리 사용량으로도 빠른 속도로 처리 가능</li>
+</ul>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-4 right-10 text-sm text-gray-500" style="visibility: hidden;">
+<p>Page 6 of 10</p>
+</div>
+</div>
+<script>
+        // Linear Scaling Visualization
+        const scalingVisual = d3.select("#scaling-visual")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%");
+            
+        // Quadratic growth (Transformer)
+        scalingVisual.append("path")
+            .attr("d", "M20,15 L180,15 L180,80 L20,80 Z")
+            .attr("fill", "rgba(239, 68, 68, 0.2)")
+            .attr("stroke", "#ef4444")
+            .attr("stroke-width", 2);
+            
+        // Linear growth (Mamba)
+        scalingVisual.append("path")
+            .attr("d", "M20,80 L180,30 L180,40 L20,80 Z")
+            .attr("fill", "rgba(16, 185, 129, 0.2)")
+            .attr("stroke", "#10b981")
+            .attr("stroke-width", 2);
+            
+        scalingVisual.append("text")
+            .attr("x", 40)
+            .attr("y", 10)
+            .attr("fill", "#ef4444")
+            .attr("font-size", "12px")
+            .text("Transformer O(n²)");
+            
+        scalingVisual.append("text")
+            .attr("x", 40)
+            .attr("y", 75)
+            .attr("fill", "#10b981")
+            .attr("font-size", "12px")
+            .text("Mamba O(n)");
+            
+        // Speed Comparison Visualization
+        const speedVisual = d3.select("#speed-visual")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%");
+            
+        // Transformer speed bar
+        speedVisual.append("rect")
+            .attr("x", 20)
+            .attr("y", 20)
+            .attr("width", 100)
+            .attr("height", 20)
+            .attr("fill", "#93c5fd");
+            
+        // Mamba speed bar (5x faster)
+        speedVisual.append("rect")
+            .attr("x", 20)
+            .attr("y", 50)
+            .attr("width", 500)
+            .attr("height", 20)
+            .attr("fill", "#3b82f6");
+            
+        speedVisual.append("text")
+            .attr("x", 130)
+            .attr("y", 35)
+            .attr("fill", "#1e3a8a")
+            .attr("font-size", "12px")
+            .text("Transformer (1x)");
+            
+        speedVisual.append("text")
+            .attr("x", 530)
+            .attr("y", 65)
+            .attr("fill", "#1e3a8a")
+            .attr("font-size", "12px")
+            .text("Mamba (5x faster)");
+    </script>
+
+</body></html>

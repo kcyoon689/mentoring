@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>고급 RAG 기법</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .card {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .process-card {
+            background-color: white;
+            border-left: 4px solid #00CED1;
+        }
+        .icon-circle {
+            background-color: #F5F5F5;
+            color: #006400;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .arrow-connector {
+            color: #FFA500;
+            font-size: 24px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<h1 class="title text-4xl font-bold mb-6">고급 RAG 기법</h1>
+<!-- Introduction -->
+<div class="bg-white rounded-lg p-5 shadow-md mb-6">
+<p class="text-lg">
+                기본적인 RAG는 검색된 문서를 단순히 LLM에 전달하는 방식이지만, 고급 RAG 기법들은 검색 및 생성 과정을 더욱 정교하게 제어하고 개선하여 성능을 극대화합니다.
+            </p>
+</div>
+<!-- Self-Corrective RAG -->
+<div class="card rounded-lg p-6 mb-4">
+<div class="flex items-center mb-4">
+<div class="icon-circle mr-4">
+<i class="fas fa-sync-alt text-xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-green-800">Self-Corrective RAG (자가 교정 RAG)</h2>
+</div>
+<p class="mb-4">
+                이 기법은 LLM이 생성한 답변의 품질을 스스로 평가하고, 필요한 경우 검색 쿼리를 수정하거나 추가 정보를 검색하여 답변을 개선하는 방식입니다.
+            </p>
+<!-- Process Visualization -->
+<div class="flex justify-between items-center mt-6">
+<div class="process-card p-3 rounded-lg w-1/4">
+<div class="flex items-center">
+<i class="fas fa-question-circle text-orange-500 mr-2"></i>
+<p class="font-medium">초기 답변 생성</p>
+</div>
+</div>
+<i class="fas fa-arrow-right arrow-connector"></i>
+<div class="process-card p-3 rounded-lg w-1/4">
+<div class="flex items-center">
+<i class="fas fa-search text-orange-500 mr-2"></i>
+<p class="font-medium">오류 감지</p>
+</div>
+</div>
+<i class="fas fa-arrow-right arrow-connector"></i>
+<div class="process-card p-3 rounded-lg w-1/4">
+<div class="flex items-center">
+<i class="fas fa-cogs text-orange-500 mr-2"></i>
+<p class="font-medium">검색 재조정</p>
+</div>
+</div>
+<i class="fas fa-arrow-right arrow-connector"></i>
+<div class="process-card p-3 rounded-lg w-1/4">
+<div class="flex items-center">
+<i class="fas fa-check-circle text-teal-500 mr-2"></i>
+<p class="font-medium">최종 답변 생성</p>
+</div>
+</div>
+</div>
+<!-- Features -->
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="bg-gray-100 p-4 rounded-lg flex items-start">
+<i class="fas fa-lightbulb text-teal-500 mr-3 mt-1"></i>
+<div>
+<h3 class="font-bold mb-1">LLM의 추론 능력 활용</h3>
+<p class="text-sm">LLM의 추론 능력을 활용하여 검색 과정을 제어하고, 답변의 품질을 스스로 평가합니다.</p>
+</div>
+</div>
+<div class="bg-gray-100 p-4 rounded-lg flex items-start">
+<i class="fas fa-bullseye text-teal-500 mr-3 mt-1"></i>
+<div>
+<h3 class="font-bold mb-1">정확성 향상</h3>
+<p class="text-sm">초기 답변의 오류나 불충분한 정보를 감지하면, 내부적으로 새로운 검색 전략을 수립하고 재검색을 수행하여 최종 답변의 정확성을 높입니다.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Additional Info -->
+<div class="bg-white rounded-lg p-4 shadow-md">
+<div class="flex items-center">
+<i class="fas fa-info-circle text-2xl text-orange-500 mr-3"></i>
+<p>
+<span class="font-bold">특징:</span>
+                    Self-Corrective RAG은 LLM의 자기 평가 및 자기 개선 능력을 활용하여, 검색 및 생성 과정을 반복적으로 최적화합니다. 이는 특히 복잡한 질문이나 도메인 특화된 쿼리에서 유용합니다.
+                </p>
+</div>
+</div>
+</div>
+<script>
+        // D3.js can be used here for more complex visualizations if needed
+    </script>
+
+</body></html>

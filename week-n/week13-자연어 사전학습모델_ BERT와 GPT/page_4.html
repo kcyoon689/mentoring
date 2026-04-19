@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BERT의 입력 표현 방식</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F0F0F0;
+            color: #333333;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            background-color: #A0D995;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 0 0 30px 0;
+        }
+        .content-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight {
+            color: #FFA500;
+            font-weight: 600;
+        }
+        .embedding-box {
+            border-left: 4px solid #A0D995;
+        }
+        .icon-circle {
+            background-color: #A0D995;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .word-piece {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        .freq-piece {
+            background-color: #A0D995;
+            color: white;
+        }
+        .rare-piece {
+            background-color: #FFA500;
+            color: white;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gray-100 p-8 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title mb-6 w-1/2 flex items-center">
+<h1 class="text-3xl font-bold">BERT의 입력 표현 방식</h1>
+</div>
+<!-- Main Content -->
+<div class="flex-1 flex flex-col">
+<!-- Embedding Types Section -->
+<div class="flex mb-4 space-x-4">
+<!-- Token Embedding -->
+<div class="content-box p-4 w-1/3">
+<div class="flex items-center mb-3">
+<div class="icon-circle mr-3">
+<i class="fas fa-cube"></i>
+</div>
+<h2 class="text-xl font-bold">토큰 임베딩</h2>
+</div>
+<ul class="list-disc pl-6 text-sm space-y-2">
+<li>WordPiece 임베딩 방식 사용</li>
+<li>자주 등장하는 긴 길이의 서브워드를 하나의 단위로 만듦</li>
+<li>자주 등장하지 않는 단어는 더 작은 서브워드로 쪼개어 처리</li>
+<li>특수 토큰: <span class="highlight">[CLS]</span> (분류), <span class="highlight">[SEP]</span> (구분)</li>
+</ul>
+</div>
+<!-- Segment Embedding -->
+<div class="content-box p-4 w-1/3">
+<div class="flex items-center mb-3">
+<div class="icon-circle mr-3">
+<i class="fas fa-object-group"></i>
+</div>
+<h2 class="text-xl font-bold">세그먼트 임베딩</h2>
+</div>
+<ul class="list-disc pl-6 text-sm space-y-2">
+<li>두 문장을 입력으로 받을 때 각 문장을 구분하는 역할</li>
+<li>첫 번째 [SEP] 토큰까지는 0, 그 이후는 1로 마스크 생성</li>
+<li>두 문장 간의 관계를 학습하는 데 필수적</li>
+<li>예: &#34;이 문장은 첫 번째 문장입니다&#34; [SEP] &#34;이 문장은 두 번째 문장입니다&#34;</li>
+</ul>
+</div>
+<!-- Position Embedding -->
+<div class="content-box p-4 w-1/3">
+<div class="flex items-center mb-3">
+<div class="icon-circle mr-3">
+<i class="fas fa-map-pin"></i>
+</div>
+<h2 class="text-xl font-bold">포지션 임베딩</h2>
+</div>
+<ul class="list-disc pl-6 text-sm space-y-2">
+<li>트랜스포머의 셀프 어텐션은 입력의 위치를 고려하지 못함</li>
+<li>토큰의 순서 정보를 제공</li>
+<li>학습 가능한 파라미터를 도입하여 각 단어의 위치에 따른 정보를 유연하게 적용</li>
+<li>문장의 시작, 중간, 끝 등 위치에 따라 다른 값을 가짐</li>
+</ul>
+</div>
+</div>
+<!-- WordPiece Example -->
+<div class="content-box p-5 flex-1">
+<h2 class="text-xl font-bold mb-3 flex items-center">
+<i class="fas fa-puzzle-piece text-green-500 mr-2"></i>
+                    WordPiece 임베딩 방식 예시
+                </h2>
+<div class="flex items-center">
+<!-- Example -->
+<div class="w-2/3">
+<p class="text-sm mb-3">BERT는 입력으로 <span class="highlight">세 가지 임베딩 값의 합</span>을 사용합니다. 모든 임베딩은 동일한 차원을 가지며, 각 토큰별로 합산되어 BERT의 최종 입력 벡터로 사용됩니다.</p>
+<div class="flex flex-wrap justify-center mt-4">
+<div class="word-piece freq-piece">자주 등장하는 긴 서브워드</div>
+<div class="word-piece rare-piece">희귀 서브워드1</div>
+<div class="word-piece rare-piece">희귀 서브워드2</div>
+<div class="word-piece freq-piece">다시 자주 등장하는 서브워드</div>
+</div>
+</div>
+<!-- Visualization -->
+<div class="w-1/3 flex flex-col items-center justify-center">
+<div class="w-full h-32" id="embedding-visualization"></div>
+<p class="text-sm text-center mt-2">임베딩 벡터의 시각적 표현</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-4 text-right text-sm text-gray-500">
+<p>자연어 사전학습모델: BERT와 GPT | 4/10</p>
+</div>
+</div>
+<script>
+        // Simple D3.js visualization for embedding vectors
+        document.addEventListener('DOMContentLoaded', function() {
+            const width = document.getElementById('embedding-visualization').clientWidth;
+            const height = document.getElementById('embedding-visualization').clientHeight;
+            
+            const svg = d3.select('#embedding-visualization')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            // Create a simple vector representation
+            const embeddingSize = 150;
+            const embeddingData = Array(embeddingSize).fill(0).map((_, i) => ({
+                x: (i % 10) * (width / 10) + (width / 20),
+                y: Math.sin(i / 5) * 30 + (height / 2),
+                value: Math.random()
+            }));
+            
+            // Draw embedding vector points
+            svg.selectAll('circle')
+                .data(embeddingData)
+                .enter()
+                .append('circle')
+                .attr('cx', d => d.x)
+                .attr('cy', d => d.y)
+                .attr('r', d => d.value * 5 + 2)
+                .attr('fill', d => d.value > 0.5 ? '#A0D995' : '#FFA500')
+                .attr('opacity', d => d.value * 0.8 + 0.2);
+        });
+    </script>
+
+</body></html>

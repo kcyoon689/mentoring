@@ -1,0 +1,325 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BERT와 GPT: 트랜스포머 기반 모델의 양대 산맥</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 850px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 850px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">BERT와 GPT: 트랜스포머 기반 모델의 양대 산맥</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-col flex-grow p-6">
+<!-- Architecture visualization -->
+<div class="w-full h-48 my-4" id="architecture-comparison">
+<!-- D3.js will render architecture comparison here -->
+</div>
+<!-- Comparison table -->
+<div class="grid grid-cols-2 gap-6 mt-4">
+<!-- BERT -->
+<div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-500">
+<div class="flex items-center mb-4">
+<i class="fas fa-code-branch text-3xl text-blue-500 mr-3"></i>
+<h2 class="text-2xl font-bold text-gray-800">BERT</h2>
+</div>
+<h3 class="text-lg font-semibold text-gray-700 mb-2">주요 특징</h3>
+<ul class="space-y-2 mb-4">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span><span class="font-medium">기반 아키텍처:</span> 트랜스포머 인코더 (Encoder-Only)</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span><span class="font-medium">학습 방향:</span> 양방향 (Bidirectional)</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span><span class="font-medium">학습 방식:</span> Masked Language Model (MLM), Next Sentence Prediction (NSP)</span>
+</li>
+</ul>
+<h3 class="text-lg font-semibold text-gray-700 mb-2">강점 및 활용</h3>
+<ul class="space-y-2">
+<li class="flex items-start">
+<i class="fas fa-star text-yellow-500 mt-1 mr-2"></i>
+<span>문맥에 민감한 특성 파악, 정교한 언어 이해</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-tasks text-blue-500 mt-1 mr-2"></i>
+<span>자연어 이해(NLU): 텍스트 분류, 질의응답, 감성 분석, 문장 유사도 계산</span>
+</li>
+</ul>
+</div>
+<!-- GPT -->
+<div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-orange-500">
+<div class="flex items-center mb-4">
+<i class="fas fa-terminal text-3xl text-orange-500 mr-3"></i>
+<h2 class="text-2xl font-bold text-gray-800">GPT</h2>
+</div>
+<h3 class="text-lg font-semibold text-gray-700 mb-2">주요 특징</h3>
+<ul class="space-y-2 mb-4">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span><span class="font-medium">기반 아키텍처:</span> 트랜스포머 디코더 (Decoder-Only)</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span><span class="font-medium">학습 방향:</span> 단방향 (Unidirectional/Autoregressive)</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-500 mt-1 mr-2"></i>
+<span><span class="font-medium">학습 방식:</span> 언어 모델링 (다음 단어 예측)</span>
+</li>
+</ul>
+<h3 class="text-lg font-semibold text-gray-700 mb-2">강점 및 활용</h3>
+<ul class="space-y-2">
+<li class="flex items-start">
+<i class="fas fa-star text-yellow-500 mt-1 mr-2"></i>
+<span>자연스러운 텍스트 생성, 다양한 스타일 적응</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-tasks text-orange-500 mt-1 mr-2"></i>
+<span>자연어 생성(NLG): 텍스트 생성, 요약, 번역, 대화형 AI</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Complementary nature -->
+<div class="bg-gray-100 p-4 rounded-lg mt-4 border border-gray-200">
+<div class="flex items-center">
+<i class="fas fa-lightbulb text-2xl text-yellow-500 mr-3"></i>
+<p class="text-gray-700"><span class="font-bold">보완적 특성:</span> BERT와 GPT는 서로의 단점을 보완하는 특성을 가지고 있어, BERT는 생성 작업에 직접 적용하기 어려움이 있지만 GPT는 언어 이해 작업에 적합하지 않다는 점에서 서로 보완적이다.</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">9/10</div>
+</div>
+</div>
+<script>
+        // D3.js architecture comparison visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#architecture-comparison")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 1200 180");
+            
+            // BERT Architecture (Encoder Only)
+            const bertGroup = svg.append("g").attr("transform", "translate(50, 0)");
+            
+            // BERT title
+            bertGroup.append("text")
+                .attr("x", 250)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333333")
+                .text("BERT (Encoder-Only)");
+            
+            // Draw BERT encoder stack
+            const encoderWidth = 100;
+            const encoderHeight = 120;
+            const encoderX = 200 - encoderWidth/2;
+            const encoderY = 40;
+            
+            // Encoder block
+            bertGroup.append("rect")
+                .attr("x", encoderX)
+                .attr("y", encoderY)
+                .attr("width", encoderWidth)
+                .attr("height", encoderHeight)
+                .attr("rx", 5)
+                .attr("fill", "#2E8B57")
+                .attr("opacity", 0.8);
+            
+            // Encoder label
+            bertGroup.append("text")
+                .attr("x", 200)
+                .attr("y", encoderY + encoderHeight/2)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "white")
+                .text("인코더");
+            
+            // Input arrow
+            bertGroup.append("path")
+                .attr("d", `M${encoderX - 10},${encoderY + encoderHeight/2} L${encoderX - 50},${encoderY + encoderHeight/2}`)
+                .attr("stroke", "#333333")
+                .attr("stroke-width", 2)
+                .attr("marker-end", "url(#arrow)");
+            
+            // Input text
+            bertGroup.append("text")
+                .attr("x", encoderX - 30)
+                .attr("y", encoderY + encoderHeight/2 - 15)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#333333")
+                .text("입력 텍스트");
+            
+            // Output arrows
+            bertGroup.append("path")
+                .attr("d", `M${encoderX + encoderWidth + 10},${encoderY} L${encoderX + encoderWidth + 50},${encoderY}`)
+                .attr("stroke", "#333333")
+                .attr("stroke-width", 2)
+                .attr("marker-end", "url(#arrow)");
+            
+            bertGroup.append("path")
+                .attr("d", `M${encoderX + encoderWidth + 10},${encoderY + encoderHeight} L${encoderX + encoderWidth + 50},${encoderY + encoderHeight}`)
+                .attr("stroke", "#333333")
+                .attr("stroke-width", 2)
+                .attr("marker-end", "url(#arrow)");
+            
+            // Output texts
+            bertGroup.append("text")
+                .attr("x", encoderX + encoderWidth + 30)
+                .attr("y", encoderY - 10)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#333333")
+                .text("MLM");
+            
+            bertGroup.append("text")
+                .attr("x", encoderX + encoderWidth + 30)
+                .attr("y", encoderY + encoderHeight + 15)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#333333")
+                .text("NSP");
+            
+            // GPT Architecture (Decoder Only)
+            const gptGroup = svg.append("g").attr("transform", "translate(600, 0)");
+            
+            // GPT title
+            gptGroup.append("text")
+                .attr("x", 250)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333333")
+                .text("GPT (Decoder-Only)");
+            
+            // Draw GPT decoder stack
+            const decoderWidth = 100;
+            const decoderHeight = 120;
+            const decoderX = 200 - decoderWidth/2;
+            const decoderY = 40;
+            
+            // Decoder block
+            gptGroup.append("rect")
+                .attr("x", decoderX)
+                .attr("y", decoderY)
+                .attr("width", decoderWidth)
+                .attr("height", decoderHeight)
+                .attr("rx", 5)
+                .attr("fill", "#FFA500")
+                .attr("opacity", 0.8);
+            
+            // Decoder label
+            gptGroup.append("text")
+                .attr("x", 200)
+                .attr("y", decoderY + decoderHeight/2)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", "14px")
+                .attr("fill", "white")
+                .text("디코더");
+            
+            // Input arrow (from top)
+            gptGroup.append("path")
+                .attr("d", `M${decoderX + decoderWidth/2},${decoderY - 10} L${decoderX + decoderWidth/2},${decoderY - 50}`)
+                .attr("stroke", "#333333")
+                .attr("stroke-width", 2)
+                .attr("marker-end", "url(#arrow)");
+            
+            // Input text
+            gptGroup.append("text")
+                .attr("x", decoderX + decoderWidth/2)
+                .attr("y", decoderY - 30)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#333333")
+                .text("이전 토큰");
+            
+            // Output arrow
+            gptGroup.append("path")
+                .attr("d", `M${decoderX + decoderWidth + 10},${decoderY + decoderHeight/2} L${decoderX + decoderWidth + 50},${decoderY + decoderHeight/2}`)
+                .attr("stroke", "#333333")
+                .attr("stroke-width", 2)
+                .attr("marker-end", "url(#arrow)");
+            
+            // Output text
+            gptGroup.append("text")
+                .attr("x", decoderX + decoderWidth + 30)
+                .attr("y", decoderY + decoderHeight/2 - 10)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#333333")
+                .text("다음 토큰 예측");
+            
+            // Add bidirectional and unidirectional labels
+            bertGroup.append("text")
+                .attr("x", 200)
+                .attr("y", encoderY + encoderHeight + 35)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#2E8B57")
+                .text("양방향 (Bidirectional)");
+            
+            gptGroup.append("text")
+                .attr("x", 200)
+                .attr("y", decoderY + decoderHeight + 35)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#FFA500")
+                .text("단방향 (Unidirectional)");
+            
+            // Add arrow marker definition
+            svg.append("defs").append("marker")
+                .attr("id", "arrow")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 8)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", "#333333");
+        });
+    </script>
+
+</body></html>

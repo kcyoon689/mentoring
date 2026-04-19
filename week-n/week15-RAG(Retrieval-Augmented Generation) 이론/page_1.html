@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RAG 이론</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&family=Nanum+Square:wght@400;700&display=swap');
+        
+        body {width: 1280px; height: 720px; overflow: hidden; font-family: 'Nanum Gothic', sans-serif;
+            margin: 0;
+            padding: 0;}
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            
+            position: relative;
+            background: linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 100%);
+        }
+        
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        
+        .subtitle {
+            color: #333333;
+        }
+        
+        .geometric-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 206, 209, 0.1);
+            border: 2px solid #00CED1;
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: #FFA500;
+            height: 3px;
+            transform-origin: left center;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container flex flex-col items-center justify-center" style=" overflow: hidden;">
+<!-- Geometric elements representing RAG concept -->
+<div class="geometric-shape w-32 h-32 top-20 left-32 animate-pulse"></div>
+<div class="geometric-shape w-40 h-40 bottom-24 right-40"></div>
+<div class="geometric-shape w-24 h-24 top-40 right-64"></div>
+<div class="connection-line w-96 top-32 left-40 rotate-45"></div>
+<div class="connection-line w-64 bottom-40 right-64 -rotate-30"></div>
+<!-- Main content -->
+<div class="z-10 text-center px-12 py-16 bg-white bg-opacity-80 rounded-lg shadow-xl border-l-4 border-orange-400 max-w-3xl">
+<h1 class="title text-5xl font-bold mb-6">RAG(Retrieval-Augmented Generation) 이론</h1>
+<p class="subtitle text-xl mb-8">검색 기반 증강 생성 기술의 이해</p>
+<div class="flex items-center justify-center space-x-4 text-gray-600">
+<div class="flex items-center">
+<i class="fas fa-search text-teal-600 mr-2"></i>
+<span>검색</span>
+</div>
+<span class="text-orange-500">+</span>
+<div class="flex items-center">
+<i class="fas fa-brain text-teal-600 mr-2"></i>
+<span>생성</span>
+</div>
+<span class="text-orange-500">=</span>
+<div class="flex items-center">
+<i class="fas fa-lightbulb text-teal-600 mr-2"></i>
+<span>혁신적인 AI</span>
+</div>
+</div>
+</div>
+<!-- Footer with date -->
+<div class="absolute bottom-8 right-8 text-gray-600 flex items-center">
+<i class="far fa-calendar-alt mr-2"></i>
+<span>2025-09-23</span>
+</div>
+</div>
+
+</body></html>

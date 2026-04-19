@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LLM and Prompt Engineering, PEFT</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&amp;family=Noto+Serif+KR:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
+            
+        }
+        .title {
+            font-family: 'Noto Serif KR', serif;
+            color: #006400;
+        }
+        .subtitle {
+            color: #333333;
+        }
+        .decoration-circle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            background: #00CED1;
+        }
+        .decoration-line {
+            position: absolute;
+            background: #FFA500;
+            transform-origin: left center;
+        }
+        .node {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #006400;
+        }
+        .connection {
+            position: absolute;
+            height: 2px;
+            background: #006400;
+            opacity: 0.5;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col items-center justify-center relative" style=" overflow: hidden;">
+<!-- Decorative elements -->
+<div class="decoration-circle" style="width: 400px; height: 400px; top: -100px; left: -100px;"></div>
+<div class="decoration-circle" style="width: 300px; height: 300px; bottom: -50px; right: -50px;"></div>
+<!-- AI network visualization -->
+<div class="absolute inset-0 overflow-hidden opacity-20">
+<!-- Nodes -->
+<div class="node" style="top: 15%; left: 25%;"></div>
+<div class="node" style="top: 35%; left: 15%;"></div>
+<div class="node" style="top: 55%; left: 28%;"></div>
+<div class="node" style="top: 75%; left: 18%;"></div>
+<div class="node" style="top: 20%; left: 75%;"></div>
+<div class="node" style="top: 40%; left: 85%;"></div>
+<div class="node" style="top: 60%; left: 72%;"></div>
+<div class="node" style="top: 80%; left: 88%;"></div>
+<!-- Connections -->
+<div class="connection" style="width: 200px; top: 15%; left: 25%; transform: rotate(15deg);"></div>
+<div class="connection" style="width: 150px; top: 35%; left: 15%; transform: rotate(25deg);"></div>
+<div class="connection" style="width: 180px; top: 55%; left: 28%; transform: rotate(-15deg);"></div>
+<div class="connection" style="width: 220px; top: 20%; left: 75%; transform: rotate(10deg);"></div>
+<div class="connection" style="width: 180px; top: 40%; left: 85%; transform: rotate(-20deg);"></div>
+<div class="connection" style="width: 200px; top: 60%; left: 72%; transform: rotate(15deg);"></div>
+</div>
+<!-- Main content -->
+<div class="z-10 text-center px-16">
+<h1 class="title text-6xl font-bold mb-6">대규모 언어 모델(LLM)과 프롬프트 엔지니어링, PEFT</h1>
+<p class="subtitle text-2xl mb-10">인공지능의 새로운 시대: 뛰어난 언어 능력을 최대한으로 활용하는 기술</p>
+<div class="flex items-center justify-center space-x-8 mt-16">
+<div class="flex flex-col items-center">
+<i class="fas fa-brain text-4xl text-orange-500 mb-3"></i>
+<span class="text-lg font-medium text-gray-700">LLM</span>
+</div>
+<div class="flex flex-col items-center">
+<i class="fas fa-keyboard text-4xl text-teal-500 mb-3"></i>
+<span class="text-lg font-medium text-gray-700">프롬프트 엔지니어링</span>
+</div>
+<div class="flex flex-col items-center">
+<i class="fas fa-cogs text-4xl text-green-700 mb-3"></i>
+<span class="text-lg font-medium text-gray-700">PEFT</span>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-8 w-full text-center text-gray-600">
+<p>2025-09-23</p>
+</div>
+</div>
+
+</body></html>

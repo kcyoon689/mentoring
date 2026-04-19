@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RAG의 핵심 원리</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 732px; overflow: hidden; font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 732px;
+            position: relative;
+            
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .component-card {
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .retriever-card {
+            border-left: 4px solid #FFA500;
+        }
+        .generator-card {
+            border-left: 4px solid #00CED1;
+        }
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .retriever-icon {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: #FFA500;
+        }
+        .generator-icon {
+            background-color: rgba(0, 206, 209, 0.2);
+            color: #00CED1;
+        }
+        .flow-arrow {
+            color: #006400;
+            font-size: 24px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<h1 class="title text-4xl font-bold mb-6">RAG의 핵심 원리</h1>
+<!-- RAG Architecture Visualization -->
+<div class="flex justify-center mb-8">
+<div class="flex items-center">
+<!-- User Input -->
+<div class="bg-white px-4 py-3 rounded-lg shadow-sm flex items-center">
+<i class="fas fa-user-circle text-gray-600 mr-2"></i>
+<span>사용자 질문</span>
+</div>
+<!-- Flow Arrow -->
+<div class="mx-3 flow-arrow">
+<i class="fas fa-arrow-right"></i>
+</div>
+<!-- Retriever -->
+<div class="bg-white px-4 py-3 rounded-lg shadow-sm flex items-center border-b-2 border-orange-400">
+<i class="fas fa-search text-orange-500 mr-2"></i>
+<span class="font-bold">검색기</span>
+</div>
+<!-- Flow Arrow -->
+<div class="mx-3 flow-arrow">
+<i class="fas fa-arrow-right"></i>
+</div>
+<!-- External Data -->
+<div class="bg-white px-4 py-3 rounded-lg shadow-sm flex items-center">
+<i class="fas fa-database text-gray-600 mr-2"></i>
+<span>외부 데이터</span>
+</div>
+<!-- Flow Arrow -->
+<div class="mx-3 flow-arrow">
+<i class="fas fa-arrow-right"></i>
+</div>
+<!-- Generator -->
+<div class="bg-white px-4 py-3 rounded-lg shadow-sm flex items-center border-b-2 border-teal-400">
+<i class="fas fa-brain text-teal-500 mr-2"></i>
+<span class="font-bold">생성기</span>
+</div>
+<!-- Flow Arrow -->
+<div class="mx-3 flow-arrow">
+<i class="fas fa-arrow-right"></i>
+</div>
+<!-- Final Answer -->
+<div class="bg-white px-4 py-3 rounded-lg shadow-sm flex items-center">
+<i class="fas fa-lightbulb text-green-600 mr-2"></i>
+<span>최종 답변</span>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="grid grid-cols-2 gap-6">
+<!-- Retriever Component -->
+<div class="component-card retriever-card rounded-lg p-5">
+<div class="flex items-center mb-4">
+<div class="icon-circle retriever-icon mr-3">
+<i class="fas fa-search text-xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-gray-800">검색기 (Retriever)</h2>
+</div>
+<ul class="space-y-3">
+<li class="flex items-start">
+<i class="fas fa-circle text-orange-500 text-xs mt-2 mr-3"></i>
+<span><span class="font-semibold">질문 벡터 변환:</span> 사용자 질문을 고차원 벡터 공간의 임베딩으로 변환</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-circle text-orange-500 text-xs mt-2 mr-3"></i>
+<span><span class="font-semibold">벡터 데이터베이스:</span> 외부 문서를 작은 단위로 분할하고 각 청크를 벡터로 변환</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-circle text-orange-500 text-xs mt-2 mr-3"></i>
+<span><span class="font-semibold">유사도 검색:</span> 질문 벡터와 문서 청크 벡터 간의 유사도 계산 (코사인 유사도)</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-circle text-orange-500 text-xs mt-2 mr-3"></i>
+<span><span class="font-semibold">관련 문서 추출:</span> 유사도 점수가 가장 높은 상위 N개의 문서 청크 추출</span>
+</li>
+</ul>
+<div class="mt-4 bg-orange-50 p-3 rounded-lg">
+<p class="text-sm"><i class="fas fa-info-circle text-orange-500 mr-2"></i>DPR(Dense Passage Retrieval) 기술은 질문과 문서의 임베딩을 학습하여 관련성 높은 문서를 효율적으로 검색하도록 최적화된 모델입니다.</p>
+</div>
+</div>
+<!-- Generator Component -->
+<div class="component-card generator-card rounded-lg p-5">
+<div class="flex items-center mb-4">
+<div class="icon-circle generator-icon mr-3">
+<i class="fas fa-brain text-xl"></i>
+</div>
+<h2 class="text-2xl font-bold text-gray-800">생성기 (Generator)</h2>
+</div>
+<ul class="space-y-3">
+<li class="flex items-start">
+<i class="fas fa-circle text-teal-500 text-xs mt-2 mr-3"></i>
+<span><span class="font-semibold">컨텍스트 구성:</span> 검색된 문서 청크와 사용자 질문을 LLM 입력 프롬프트에 추가</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-circle text-teal-500 text-xs mt-2 mr-3"></i>
+<span><span class="font-semibold">답변 생성:</span> 확장된 프롬프트(질문 + 관련 문서)를 기반으로 답변 생성</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-circle text-teal-500 text-xs mt-2 mr-3"></i>
+<span><span class="font-semibold">환각 감소:</span> 외부 지식을 참조함으로써 LLM이 사실과 다른 정보 생성을 줄임</span>
+</li>
+</ul>
+<div class="mt-4 bg-teal-50 p-3 rounded-lg">
+<p class="text-sm"><i class="fas fa-info-circle text-teal-500 mr-2"></i>생성기는 주로 대규모 언어 모델(LLM)이 역할을 하며, 제공된 컨텍스트 내의 정보를 활용하여 답변의 정확성과 사실성을 높입니다.</p>
+</div>
+</div>
+</div>
+<!-- Overall Architecture Summary -->
+<div class="mt-6 bg-white p-4 rounded-lg shadow-sm">
+<h3 class="text-xl font-bold mb-2 text-gray-700">전체 아키텍처</h3>
+<p>RAG 아키텍처는 사용자 입력부터 최종 답변 생성까지의 데이터 흐름과 각 구성 요소의 상호작용을 통해 LLM이 최신 정보를 반영하고, 특정 도메인 지식을 활용하며, 환각 현상을 줄여 더욱 신뢰할 수 있는 답변을 제공할 수 있도록 합니다.</p>
+</div>
+</div>
+
+</body></html>

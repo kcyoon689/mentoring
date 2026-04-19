@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>텍스트 표현과 임베딩의 진화</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 748px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 748px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">텍스트 표현과 임베딩의 진화</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-col flex-grow p-8">
+<!-- Introduction to embedding -->
+<div class="bg-white rounded-lg shadow-md p-5 mb-6">
+<div class="flex items-center mb-3">
+<i class="fas fa-cube text-3xl text-green-600 mr-3"></i>
+<h2 class="text-2xl font-bold text-green-700">임베딩의 중요성</h2>
+</div>
+<p class="text-gray-700">컴퓨터가 인간의 언어를 이해하고 처리하기 위해서는 텍스트 데이터를 숫자의 형태로 변환하는 과정이 필수적입니다. 이러한 변환 과정을 &#39;임베딩(Embedding)&#39;이라고 하며, 이는 자연어 처리(NLP) 기술 발전의 핵심 동력이 되어왔습니다. 임베딩 기술은 텍스트의 의미적, 문법적 관계를 수치적으로 표현하여 컴퓨터가 언어를 효율적으로 분석하고 활용할 수 있도록 돕습니다.</p>
+</div>
+<div class="grid grid-cols-2 gap-6">
+<!-- One-hot encoding section -->
+<div class="bg-white rounded-lg shadow-md p-5 card">
+<div class="flex items-center mb-3">
+<i class="fas fa-binary text-2xl text-green-600 mr-3"></i>
+<h3 class="text-xl font-bold text-green-700">원-핫 인코딩 (One-hot Encoding)</h3>
+</div>
+<div class="flex mb-4">
+<div class="w-1/2">
+<p class="text-gray-700 mb-2">각 단어를 고유한 벡터로 변환하는 방식. 단어집 내의 특정 단어 위치에만 1을 부여하고 나머지는 0으로 채웁니다.</p>
+<ul class="list-disc list-inside text-gray-700 text-sm mt-3">
+<li>직관적인 표현 방식</li>
+<li>단어의 존재 여부만 표현 가능</li>
+</ul>
+</div>
+<div class="w-1/2" id="one-hot-visualization"></div>
+</div>
+<div class="bg-red-50 p-3 rounded-md">
+<h4 class="text-red-700 font-bold mb-1">한계점</h4>
+<ul class="list-disc list-inside text-gray-700 text-sm">
+<li>고차원 벡터: 단어 수가 많아질수록 저장 및 연산 효율성 감소</li>
+<li>희소 벡터: 대부분의 값이 0으로 채워져 있어 비효율적</li>
+<li>의미 관계 부재: &#39;고양이&#39;와 &#39;강아지&#39;는 의미적으로 가깝지만, 벡터 상에서는 동일한 거리</li>
+</ul>
+</div>
+</div>
+<!-- LSA section -->
+<div class="bg-white rounded-lg shadow-md p-5 card">
+<div class="flex items-center mb-3">
+<i class="fas fa-project-diagram text-2xl text-green-600 mr-3"></i>
+<h3 class="text-xl font-bold text-green-700">잠재 의미 분석 (LSA: Latent Semantic Analysis)</h3>
+</div>
+<div class="flex mb-4">
+<div class="w-1/2">
+<p class="text-gray-700 mb-2">문서-단어 행렬과 같이 각 문서에서 단어의 빈도수를 카운트한 통계 정보를 입력으로 받아 차원 축소(Truncated SVD)를 통해 잠재된 의미를 추출하는 방법론.</p>
+<ul class="list-disc list-inside text-gray-700 text-sm mt-3">
+<li>코퍼스 전체의 통계 정보 활용</li>
+<li>문장 간의 의미적 유사성을 반영</li>
+</ul>
+</div>
+<div class="w-1/2" id="lsa-visualization"></div>
+</div>
+<div class="bg-red-50 p-3 rounded-md">
+<h4 class="text-red-700 font-bold mb-1">한계점</h4>
+<ul class="list-disc list-inside text-gray-700 text-sm">
+<li>단어 간의 의미 유추 작업에는 성능이 떨어짐</li>
+<li>특정 단어의 동시 등장 정보만 반영</li>
+<li>문맥 정보를 전혀 고려하지 않음</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">5/10</div>
+</div>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // One-hot encoding visualization
+            const oneHotSvg = d3.select("#one-hot-visualization")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "120")
+                .attr("viewBox", "0 0 180 120");
+            
+            // Create word vector representation
+            const words = ["사과", "배", "오렌지", "포도"];
+            const vectorSize = 4;
+            
+            // Draw word vectors
+            words.forEach((word, i) => {
+                // Draw vector representation
+                const x = 30 + i * 45;
+                const y = 60;
+                const size = 20;
+                
+                // Draw vector box
+                oneHotSvg.append("rect")
+                    .attr("x", x - size/2)
+                    .attr("y", y - size/2)
+                    .attr("width", size)
+                    .attr("height", size)
+                    .attr("fill", "white")
+                    .attr("stroke", "#2E8B57")
+                    .attr("stroke-width", 1);
+                
+                // Add word label
+                oneHotSvg.append("text")
+                    .attr("x", x)
+                    .attr("y", y + size/2 + 15)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "10px")
+                    .attr("fill", "#333333")
+                    .text(word);
+                
+                // Add 1 in the ith position
+                oneHotSvg.append("text")
+                    .attr("x", x)
+                    .attr("y", y)
+                    .attr("text-anchor", "middle")
+                    .attr("dominant-baseline", "central")
+                    .attr("font-size", "14px")
+                    .attr("font-weight", "bold")
+                    .attr("fill", "#FFA500")
+                    .text(i === 0 ? "1" : "");
+            });
+            
+            // LSA visualization
+            const lsaSvg = d3.select("#lsa-visualization")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "120")
+                .attr("viewBox", "0 0 180 120");
+            
+            // Create a simple LSA-like visualization
+            const concepts = ["과일", "색", "맛"];
+            const conceptPositions = [
+                {x: 45, y: 40},
+                {x: 90, y: 50},
+                {x: 135, y: 35}
+            ];
+            
+            // Draw concept nodes
+            concepts.forEach((concept, i) => {
+                const {x, y} = conceptPositions[i];
+                
+                // Draw node
+                lsaSvg.append("circle")
+                    .attr("cx", x)
+                    .attr("cy", y)
+                    .attr("r", 15)
+                    .attr("fill", "#E0F0E3")
+                    .attr("stroke", "#2E8B57")
+                    .attr("stroke-width", 1);
+                
+                // Add concept label
+                lsaSvg.append("text")
+                    .attr("x", x)
+                    .attr("y", y + 25)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "10px")
+                    .attr("fill", "#333333")
+                    .text(concept);
+            });
+            
+            // Draw connections between concepts
+            lsaSvg.append("line")
+                .attr("x1", conceptPositions[0].x)
+                .attr("y1", conceptPositions[0].y)
+                .attr("x2", conceptPositions[1].x)
+                .attr("y2", conceptPositions[1].y)
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 1)
+                .attr("stroke-dasharray", "3,3");
+                
+            lsaSvg.append("line")
+                .attr("x1", conceptPositions[1].x)
+                .attr("y1", conceptPositions[1].y)
+                .attr("x2", conceptPositions[2].x)
+                .attr("y2", conceptPositions[2].y)
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 1)
+                .attr("stroke-dasharray", "3,3");
+                
+            lsaSvg.append("line")
+                .attr("x1", conceptPositions[0].x)
+                .attr("y1", conceptPositions[0].y)
+                .attr("x2", conceptPositions[2].x)
+                .attr("y2", conceptPositions[2].y)
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 1)
+                .attr("stroke-dasharray", "3,3");
+        });
+    </script>
+
+</body></html>

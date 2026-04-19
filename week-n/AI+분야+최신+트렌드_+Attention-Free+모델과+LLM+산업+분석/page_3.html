@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BERT vs GPT: 이해와 생성의 차이</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        
+        body {width: 1280px; min-height: 720px; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        
+        .title {
+            font-family: 'Roboto', 'Noto Sans KR', sans-serif;
+            font-weight: 700;
+        }
+        
+        .content-box {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .bert-gradient {
+            background: linear-gradient(135deg, #E0F7FA 0%, #00BCD4 100%);
+        }
+        
+        .gpt-gradient {
+            background: linear-gradient(135deg, #FFE0B2 0%, #FF9800 100%);
+        }
+        
+        .feature-item {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="w-[1280px] h-[720px] mx-auto bg-gray-50 p-10 relative">
+<!-- Title -->
+<div class="mb-8">
+<h1 class="title text-4xl text-gray-800 mb-2">BERT vs GPT: 이해와 생성의 차이</h1>
+<div class="w-32 h-1 bg-blue-500"></div>
+</div>
+<!-- Main Content -->
+<div class="grid grid-cols-2 gap-8 min-h-[520px]">
+<!-- BERT Section -->
+<div class="content-box p-6 flex flex-col">
+<div class="flex items-center mb-5">
+<div class="w-12 h-12 rounded-full bert-gradient flex items-center justify-center mr-4">
+<i class="fas fa-brain text-white text-2xl"></i>
+</div>
+<h2 class="text-3xl font-bold text-gray-800">BERT</h2>
+</div>
+<div class="mb-5">
+<div class="flex items-center mb-2">
+<i class="fas fa-layer-group text-blue-500 mr-2"></i>
+<h3 class="text-xl font-semibold">Encoder-only 구조</h3>
+</div>
+<div class="ml-6 mb-3">
+<p class="text-gray-700">양방향 Attention 메커니즘을 사용</p>
+</div>
+<!-- Attention Visualization -->
+<div class="bg-gray-100 p-3 rounded-lg mb-3">
+<div class="flex justify-center items-center space-x-1">
+<div class="w-8 h-8 rounded bg-blue-200 flex items-center justify-center">h</div>
+<div class="w-8 h-8 rounded bg-blue-300 flex items-center justify-center">e</div>
+<div class="w-8 h-8 rounded bg-blue-400 flex items-center justify-center">l</div>
+<div class="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white">l</div>
+<div class="w-8 h-8 rounded bg-blue-300 flex items-center justify-center">o</div>
+</div>
+<div class="flex justify-center mt-1">
+<i class="fas fa-arrows-alt-h text-blue-500"></i>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="feature-item bg-blue-50 p-3 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-check-circle text-blue-500 mr-2"></i>
+<p><span class="font-semibold">NLU 작업</span>에 최적화 (문장 이해 중심)</p>
+</div>
+</div>
+<div class="feature-item bg-blue-50 p-3 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-cogs text-blue-500 mr-2"></i>
+<p>MLM(Masked Language Model), NSP(Next Sentence Prediction)로 사전학습</p>
+</div>
+</div>
+<div class="feature-item bg-blue-50 p-3 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-tasks text-blue-500 mr-2"></i>
+<p>텍스트 분류, 감정 분석, 개체명 인식, 자연어 추론, 문서 검색 등</p>
+</div>
+</div>
+</div>
+</div>
+<!-- GPT Section -->
+<div class="content-box p-6 flex flex-col">
+<div class="flex items-center mb-5">
+<div class="w-12 h-12 rounded-full gpt-gradient flex items-center justify-center mr-4">
+<i class="fas fa-robot text-white text-2xl"></i>
+</div>
+<h2 class="text-3xl font-bold text-gray-800">GPT</h2>
+</div>
+<div class="mb-5">
+<div class="flex items-center mb-2">
+<i class="fas fa-layer-group text-orange-500 mr-2"></i>
+<h3 class="text-xl font-semibold">Decoder-only 구조</h3>
+</div>
+<div class="ml-6 mb-3">
+<p class="text-gray-700">단방향 Attention (왼쪽 → 오른쪽) 메커니즘을 사용</p>
+</div>
+<!-- Attention Visualization -->
+<div class="bg-gray-100 p-3 rounded-lg mb-3">
+<div class="flex justify-center items-center space-x-1">
+<div class="w-8 h-8 rounded bg-orange-200 flex items-center justify-center">h</div>
+<div class="w-8 h-8 rounded bg-orange-300 flex items-center justify-center">e</div>
+<div class="w-8 h-8 rounded bg-orange-400 flex items-center justify-center">l</div>
+<div class="w-8 h-8 rounded bg-orange-500 flex items-center justify-center text-white">l</div>
+<div class="w-8 h-8 rounded bg-orange-300 flex items-center justify-center">o</div>
+</div>
+<div class="flex justify-end mt-1">
+<i class="fas fa-arrow-right text-orange-500"></i>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<div class="feature-item bg-orange-50 p-3 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-check-circle text-orange-500 mr-2"></i>
+<p><span class="font-semibold">NLG 작업</span>에 강함 (텍스트 생성 중심)</p>
+</div>
+</div>
+<div class="feature-item bg-orange-50 p-3 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-cogs text-orange-500 mr-2"></i>
+<p>다음 토큰 예측을 통해 자연스럽게 텍스트를 생성</p>
+</div>
+</div>
+<div class="feature-item bg-orange-50 p-3 rounded-lg">
+<div class="flex items-center">
+<i class="fas fa-tasks text-orange-500 mr-2"></i>
+<p>문장 생성, 요약, 번역, 스토리텔링 등에 강함</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Summary -->
+<div class="mt-4 text-center">
+<div class="bg-gray-100 inline-block px-8 py-3 rounded-full">
+<p class="text-xl font-bold">
+<i class="fas fa-quote-left text-gray-400 mr-2"></i>
+                    BERT는 이해를 잘하고, GPT는 생성을 잘한다
+                    <i class="fas fa-quote-right text-gray-400 ml-2"></i>
+</p>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-4 right-10 text-sm text-gray-500" style="visibility: hidden;">
+<p>Page 3 of 10</p>
+</div>
+</div>
+
+</body></html>

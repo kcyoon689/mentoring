@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>문맥을 고려한 동적 임베딩: ELMo</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 816px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 816px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(224, 240, 227, 0.5) 0%, rgba(46, 139, 87, 0.5) 100%);
+            border-left: 4px solid #2E8B57;
+        }
+        .word-example {
+            transition: all 0.3s ease;
+        }
+        .word-example:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">문맥을 고려한 동적 임베딩: ELMo</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-col flex-grow p-8">
+<!-- Introduction to polysemy problem -->
+<div class="highlight-box p-4 rounded-lg mb-6">
+<div class="flex items-start">
+<i class="fas fa-exclamation-circle text-2xl text-orange-500 mt-1 mr-3"></i>
+<div>
+<h3 class="text-xl font-bold text-green-800 mb-1">다의어(polysemy) 문제</h3>
+<p class="text-gray-700">자연어에는 &#39;은행(bank)&#39;처럼 문맥에 따라 의미가 달라지는 단어가 많습니다. 고정된 벡터 표현은 이러한 문맥 의존적 의미를 표현할 수 없습니다.</p>
+</div>
+</div>
+</div>
+<!-- ELMo approach -->
+<div class="grid grid-cols-2 gap-6 mb-4">
+<!-- Left column: ELMo explanation -->
+<div class="bg-white rounded-lg shadow-md p-5">
+<h3 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+<i class="fas fa-cogs text-orange-500 mr-2"></i>
+                        ELMo의 접근 방식
+                    </h3>
+<ul class="space-y-3 text-gray-700">
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>양방향 LSTM(Long Short-Term Memory)을 기반으로 하는 언어 모델</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>단어 자체의 의미뿐만 아니라 문장 내에서 해당 단어가 사용된 문맥을 고려</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>양방향 LSTM을 통해 문장의 앞뒤 정보를 모두 학습</span>
+</li>
+<li class="flex items-start">
+<i class="fas fa-check-circle text-green-600 mt-1 mr-2"></i>
+<span>각 계층의 출력을 결합하여 최종 임베딩 생성</span>
+</li>
+</ul>
+</div>
+<!-- Right column: Visualization -->
+<div class="bg-white rounded-lg shadow-md p-5">
+<h3 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+<i class="fas fa-project-diagram text-orange-500 mr-2"></i>
+                        양방향 LSTM 동작 방식
+                    </h3>
+<div class="w-full h-48 mt-2" id="lstm-visualization"></div>
+</div>
+</div>
+<!-- Example and advantages -->
+<div class="grid grid-cols-2 gap-6">
+<!-- Left column: Example -->
+<div class="bg-white rounded-lg shadow-md p-5">
+<h3 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+<i class="fas fa-lightbulb text-orange-500 mr-2"></i>
+                        예제
+                    </h3>
+<div class="flex space-x-4 mt-4">
+<div class="word-example bg-green-50 p-3 rounded-lg flex-1 border border-green-200">
+<p class="font-bold text-green-700 mb-1">은행(bank)</p>
+<p class="text-sm text-gray-600 mb-2">문맥에 따른 다의어 예</p>
+<div class="border-t border-green-200 pt-2">
+<p class="text-sm"><i class="fas fa-arrow-right text-orange-500 mr-1"></i> <span class="font-semibold">은행에 가서</span>: 금융 기관</p>
+<p class="text-sm mt-1"><i class="fas fa-arrow-right text-orange-500 mr-1"></i> <span class="font-semibold">강은행</span>: 강의 이름</p>
+</div>
+</div>
+<div class="word-example bg-green-50 p-3 rounded-lg flex-1 border border-green-200">
+<p class="font-bold text-green-700 mb-1">추가하다(add)</p>
+<p class="text-sm text-gray-600 mb-2">문맥에 따른 다의어 예</p>
+<div class="border-t border-green-200 pt-2">
+<p class="text-sm"><i class="fas fa-arrow-right text-orange-500 mr-1"></i> <span class="font-semibold">숫자 추가</span>: 덧셈</p>
+<p class="text-sm mt-1"><i class="fas fa-arrow-right text-orange-500 mr-1"></i> <span class="font-semibold">친구 추가</span>: 등록</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right column: Advantages -->
+<div class="bg-white rounded-lg shadow-md p-5">
+<h3 class="text-xl font-bold text-green-700 mb-3 flex items-center">
+<i class="fas fa-star text-orange-500 mr-2"></i>
+                        ELMo의 주요 장점
+                    </h3>
+<div class="space-y-3 text-gray-700">
+<div class="flex items-start">
+<div class="bg-orange-100 p-2 rounded-full mr-3">
+<i class="fas fa-exchange-alt text-orange-500"></i>
+</div>
+<div>
+<p class="font-semibold">동적 임베딩</p>
+<p class="text-sm">고정된 단어 임베딩이 아닌, 문맥에 따라 동적으로 변화하는 임베딩 제공</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="bg-orange-100 p-2 rounded-full mr-3">
+<i class="fas fa-puzzle-piece text-orange-500"></i>
+</div>
+<div>
+<p class="font-semibold">문맥 이해</p>
+<p class="text-sm">단어의 문맥적 의미를 정확히 파악하여 더 풍부한 표현 가능</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="bg-orange-100 p-2 rounded-full mr-3">
+<i class="fas fa-chart-line text-orange-500"></i>
+</div>
+<div>
+<p class="font-semibold">성능 향상</p>
+<p class="text-sm">NLP 모델의 성능을 크게 향상시키며, 특히 복잡한 언어 이해 작업에서 효과적</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">7/10</div>
+</div>
+</div>
+<script>
+        // D3.js visualization for bidirectional LSTM
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#lstm-visualization")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 500 180");
+            
+            // Define data for visualization
+            const sentence = "은행에 가서 입금을 했습니다";
+            const words = sentence.split(" ");
+            
+            // Draw the sentence
+            svg.append("text")
+                .attr("x", 250)
+                .attr("y", 30)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333333")
+                .text(sentence);
+            
+            // Draw bidirectional arrows
+            // Forward path (left to right)
+            svg.append("path")
+                .attr("d", "M50,50 C100,70 150,70 200,50 C250,30 300,30 350,50 C400,70 450,70 500,50")
+                .attr("fill", "none")
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 3)
+                .attr("marker-end", "url(#arrowhead)");
+            
+            // Backward path (right to left)
+            svg.append("path")
+                .attr("d", "M500,100 C450,120 400,120 350,100 C300,80 250,80 200,100 C150,120 100,120 50,100")
+                .attr("fill", "none")
+                .attr("stroke", "#FFA500")
+                .attr("stroke-width", 3)
+                .attr("marker-end", "url(#arrowhead)");
+            
+            // Add arrowhead marker definition
+            svg.append("defs").append("marker")
+                .attr("id", "arrowhead")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 8)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", "#333333");
+            
+            // Add words at positions
+            const wordPositions = [70, 160, 250, 340, 430];
+            words.forEach((word, i) => {
+                // Forward LSTM
+                svg.append("circle")
+                    .attr("cx", wordPositions[i])
+                    .attr("cy", 50)
+                    .attr("r", 8)
+                    .attr("fill", "#2E8B57");
+                
+                // Backward LSTM
+                svg.append("circle")
+                    .attr("cx", wordPositions[i])
+                    .attr("cy", 100)
+                    .attr("r", 8)
+                    .attr("fill", "#FFA500");
+                
+                // Word text
+                svg.append("text")
+                    .attr("x", wordPositions[i])
+                    .attr("y", 150)
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "14px")
+                    .attr("fill", "#333333")
+                    .text(word);
+            });
+            
+            // Add labels for forward and backward
+            svg.append("text")
+                .attr("x", 50)
+                .attr("y", 40)
+                .attr("text-anchor", "start")
+                .attr("font-size", "12px")
+                .attr("fill", "#2E8B57")
+                .text("앞방향 LSTM");
+            
+            svg.append("text")
+                .attr("x", 50)
+                .attr("y", 110)
+                .attr("text-anchor", "start")
+                .attr("font-size", "12px")
+                .attr("fill", "#FFA500")
+                .text("뒤방향 LSTM");
+        });
+    </script>
+
+</body></html>

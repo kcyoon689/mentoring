@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>자연어 사전학습모델: BERT와 GPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --teal:   #00897B;
+  --teal2:  #26A69A;
+  --coral:  #E64A19;
+  --coral2: #FF7043;
+  --gold:   #F9A825;
+  --navy:   #0D1B2A;
+  --navy2:  #1B2A3B;
+  --white:  #FFFFFF;
+  --gray1:  #F0F4F8;
+  --gray2:  #E8ECEF;
+  --gray3:  #8FA3B1;
+  --dark:   #1A2B3C;
+  --body:   #2C3E50;
+  --mono:   'JetBrains Mono', monospace;
+  --sans:   'Noto Sans KR', sans-serif;
+}
+
+html,body{height:100%;overflow:hidden;background:#000;font-family:var(--sans)}
+
+/* ── DECK SHELL ── */
+.deck{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+}
+
+/* ── SLIDES ── */
+.slides{
+  flex:1;position:relative;overflow:hidden;
+}
+.slide{
+  position:absolute;inset:0;
+  opacity:0;transform:translateX(60px);
+  transition:opacity .45s cubic-bezier(.4,0,.2,1),
+              transform .45s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+  overflow:hidden;
+}
+.slide.active{
+  opacity:1;transform:translateX(0);pointer-events:auto;
+}
+.slide.exit{
+  opacity:0;transform:translateX(-60px);
+}
+
+/* ── NAV BAR ── */
+.nav{
+  height:44px;background:var(--navy);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;flex-shrink:0;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.nav-dots{display:flex;gap:6px;align-items:center;}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.2);cursor:pointer;
+  transition:all .25s;border:none;padding:0;
+}
+.dot.on{background:var(--teal);transform:scale(1.3);}
+.nav-btns{display:flex;gap:10px;}
+.nav-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:#fff;padding:5px 18px;border-radius:6px;cursor:pointer;
+  font-family:var(--sans);font-size:13px;transition:all .2s;
+}
+.nav-btn:hover{background:var(--teal);border-color:var(--teal);}
+.nav-count{color:var(--gray3);font-size:12px;font-family:var(--mono);}
+
+/* ══════════════════════════════════
+   SLIDE COMPONENTS
+══════════════════════════════════ */
+
+/* LIGHT SLIDE BASE */
+.light{background:var(--gray1);}
+
+/* SIDE ACCENT */
+.accent-bar{
+  position:absolute;left:0;top:0;width:6px;height:100%;
+  background:var(--teal);
+}
+
+/* SLIDE HEADER */
+.slide-header{
+  padding:18px 28px 0 24px;
+  border-bottom:1px solid var(--gray2);
+  padding-bottom:12px;
+  position:relative;
+}
+.slide-header h1{
+  font-size:22px;font-weight:700;color:var(--dark);
+  margin-left:14px;
+}
+
+/* GRID HELPERS */
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.cols3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* CARD */
+.card{
+  background:#fff;border-radius:10px;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+  border:1px solid var(--gray2);
+  overflow:hidden;
+}
+.card-head{
+  padding:10px 14px;font-size:13px;font-weight:700;color:#fff;
+}
+.card-body{padding:14px;font-size:12px;color:var(--body);line-height:1.65;}
+
+/* TAG CHIP */
+.chip{
+  display:inline-block;padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;font-family:var(--mono);
+  margin:2px 3px;
+}
+.chip-teal{background:#e0f2f1;color:var(--teal);}
+.chip-coral{background:#fbe9e7;color:var(--coral);}
+.chip-gold{background:#fff8e1;color:#e65100;}
+.chip-gray{background:#eceff1;color:#546e7a;}
+
+/* TOKEN BOXES */
+.tokens{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+.tok{
+  padding:6px 10px;border-radius:6px;font-size:11.5px;
+  font-weight:700;color:#fff;font-family:var(--mono);
+  text-align:center;min-width:52px;
+}
+
+/* STEP BOX */
+.step{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:8px 10px;border-radius:8px;margin-bottom:8px;
+}
+.step-num{
+  min-width:26px;height:26px;border-radius:50%;
+  background:var(--teal);color:#fff;font-weight:700;
+  font-size:12px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.step-body{font-size:11.5px;color:var(--body);line-height:1.6;}
+.step-body strong{color:var(--dark);}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px;}
+.tbl th{
+  background:var(--teal);color:#fff;padding:8px 10px;
+  text-align:center;font-weight:700;
+}
+.tbl td{
+  padding:7px 10px;border-bottom:1px solid var(--gray2);
+  color:var(--body);
+}
+.tbl tr:nth-child(even) td{background:#f8fffe;}
+.tbl .label{font-weight:700;color:var(--dark);background:#f5f7fa!important;}
+
+/* BIG STAT */
+.stat{
+  text-align:center;padding:16px 10px;
+}
+.stat .num{font-size:32px;font-weight:900;line-height:1;}
+.stat .lbl{font-size:11px;color:var(--gray3);margin-top:4px;}
+
+/* PILL ROW */
+.pill-row{display:flex;gap:8px;align-items:center;margin:6px 0;}
+.pill{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  white-space:nowrap;
+}
+
+/* BULLET LIST */
+.blist{list-style:none;padding:0;}
+.blist li{
+  display:flex;gap:8px;align-items:flex-start;
+  font-size:11.5px;color:var(--body);line-height:1.6;
+  padding:4px 0;
+}
+.blist li::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--teal);flex-shrink:0;margin-top:6px;
+}
+.blist.coral li::before{background:var(--coral);}
+
+/* COMPARISON HEADER */
+.cmp-hd{
+  display:grid;grid-template-columns:130px 1fr 1fr;
+  gap:0;border-radius:8px 8px 0 0;overflow:hidden;
+}
+.cmp-row{
+  display:grid;grid-template-columns:130px 1fr 1fr;
+  border-bottom:1px solid var(--gray2);
+}
+.cmp-row:last-child{border-bottom:none;}
+.cmp-cell{padding:9px 12px;font-size:11.5px;color:var(--body);line-height:1.5;}
+.cmp-label{font-weight:700;color:var(--dark);background:#f5f7fa;}
+.cmp-teal{background:#f0faf9;}
+.cmp-coral{background:#fff5f2;}
+
+/* TIMELINE */
+.timeline{display:flex;align-items:center;gap:0;margin:12px 0;}
+.tl-item{flex:1;text-align:center;position:relative;}
+.tl-item::after{
+  content:'';position:absolute;top:10px;right:-50%;width:100%;
+  height:2px;background:var(--gray2);z-index:0;
+}
+.tl-item:last-child::after{display:none;}
+.tl-dot{
+  width:22px;height:22px;border-radius:50%;background:var(--teal);
+  margin:0 auto 6px;position:relative;z-index:1;
+}
+.tl-year{font-size:10px;font-weight:700;color:var(--teal);}
+.tl-lbl{font-size:9.5px;color:var(--gray3);line-height:1.4;}
+
+/* MATRIX (masked attention) */
+.matrix{display:grid;gap:3px;width:fit-content;}
+.mx-cell{
+  width:34px;height:30px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:#fff;
+}
+
+/* FLOW ARROW */
+.flow{display:flex;align-items:center;gap:8px;margin:6px 0;}
+.flow-box{
+  padding:7px 12px;border-radius:6px;font-size:11px;font-weight:700;
+  text-align:center;flex:1;
+}
+.flow-arrow{font-size:18px;color:var(--gray3);}
+
+/* GPT EVOLUTION TABLE */
+.evo-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.evo-tbl th{background:var(--coral);color:#fff;padding:8px;text-align:center;}
+.evo-tbl td{padding:9px 10px;border-bottom:1px solid var(--gray2);color:var(--body);vertical-align:middle;}
+.evo-tbl tr:nth-child(odd) td{background:#fff8f5;}
+.evo-tbl .model-name{font-weight:700;color:var(--coral);font-family:var(--mono);}
+
+/* ══════════════════════════════════
+   SLIDE 1 — TITLE (DARK)
+══════════════════════════════════ */
+#s1{
+  background:var(--navy);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.s1-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:80px 80px;
+}
+.s1-circle1{
+  position:absolute;top:-80px;left:-80px;
+  width:300px;height:300px;border-radius:50%;
+  background:var(--teal);opacity:.12;
+}
+.s1-circle2{
+  position:absolute;bottom:-60px;right:-60px;
+  width:260px;height:260px;border-radius:50%;
+  background:var(--coral);opacity:.12;
+}
+.s1-card{
+  background:var(--navy2);border:1px solid var(--teal);
+  border-radius:16px;padding:42px 56px;text-align:center;
+  position:relative;z-index:1;max-width:700px;width:90%;
+  box-shadow:0 0 60px rgba(0,137,123,.15);
+}
+.s1-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--teal),var(--coral));
+  border-radius:16px 16px 0 0;
+}
+.s1-names{display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:16px;}
+.s1-bert{font-size:60px;font-weight:900;color:var(--teal);letter-spacing:-2px;line-height:1;}
+.s1-gpt {font-size:60px;font-weight:900;color:var(--coral2);letter-spacing:-2px;line-height:1;}
+.s1-sep{width:1px;height:60px;background:rgba(255,255,255,.2);}
+.s1-sub{font-size:10px;color:var(--gray3);margin-top:4px;line-height:1.5;}
+.s1-title{font-size:26px;font-weight:700;color:#fff;margin:16px 0 8px;}
+.s1-desc{font-size:13px;color:var(--gray3);}
+.s1-date{font-size:11px;color:rgba(255,255,255,.3);margin-top:20px;font-family:var(--mono);}
+
+/* ══════════════════════════════════
+   CONTENT AREA PADDING
+══════════════════════════════════ */
+.content{
+  padding:14px 20px 14px 26px;
+  height:calc(100% - 58px);/* header */
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+.content::-webkit-scrollbar{width:4px;}
+.content::-webkit-scrollbar-thumb{background:var(--gray2);border-radius:2px;}
+
+/* ── SLIDE 10 (dark) ── */
+#s10{background:var(--navy);color:#fff;}
+#s10 .slide-header h1{color:#fff;margin-left:14px;}
+#s10 .slide-header{border-color:rgba(255,255,255,.08);}
+#s10 .accent-bar{background:var(--teal);}
+#s10 .card{background:var(--navy2);border-color:rgba(255,255,255,.1);}
+#s10 .card-body{color:#cdd8e3;}
+#s10 .blist li{color:#cdd8e3;}
+#s10 .summary-box{
+  background:var(--navy2);border:1px solid var(--teal);
+  border-radius:10px;padding:16px 20px;margin-top:14px;
+}
+#s10 .summary-box h3{color:var(--teal);font-size:13px;margin-bottom:10px;}
+#s10 .summary-box .blist li::before{background:var(--gold);}
+#s10 .summary-box .blist li{color:#cdd8e3;}
+#s10 .tl-dot{background:var(--teal);}
+#s10 .tl-year{color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="slides">
+
+    <!-- ══ SLIDE 1: TITLE ══ -->
+    <div class="slide active" id="s1">
+      <div class="s1-grid"></div>
+      <div class="s1-circle1"></div>
+      <div class="s1-circle2"></div>
+      <div class="s1-card">
+        <div class="s1-names">
+          <div>
+            <div class="s1-bert">BERT</div>
+            <div class="s1-sub">Bidirectional Encoder<br>Representations from Transformers</div>
+          </div>
+          <div class="s1-sep"></div>
+          <div>
+            <div class="s1-gpt">GPT</div>
+            <div class="s1-sub">Generative<br>Pre-trained Transformer</div>
+          </div>
+        </div>
+        <div class="s1-title">자연어 사전학습모델의 이해</div>
+        <div class="s1-desc">원리 · 구조 · 학습 방식의 심층적 분석</div>
+        <div class="s1-date">2025-09-23</div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 2: 서론 ══ -->
+    <div class="slide light" id="s2">
+      <div class="accent-bar"></div>
+      <div class="slide-header"><h1>서론: 자연어 사전학습모델의 개요</h1></div>
+      <div class="content">
+        <div class="cols2" style="height:calc(100% - 10px);">
+
+          <!-- LEFT -->
+          <div class="card">
+            <div class="card-head" style="background:var(--teal)">자연어 사전학습 모델이란?</div>
+            <div class="card-body">
+              <ul class="blist">
+                <li><strong>대규모 텍스트 데이터를 미리 학습</strong> — 언어의 복잡한 패턴, 문법, 의미, 맥락을 내재화하는 AI 모델</li>
+                <li><strong>전이 학습(Transfer Learning)</strong> — 사전 학습된 지식을 소량의 레이블 데이터로 다양한 NLP 태스크에 적용</li>
+                <li><strong>NLP 분야의 혁신</strong> — 기존 지도학습 방식 대비 성능을 비약적으로 향상시킨 패러다임 전환</li>
+                <li><strong>LLM 시대의 시작</strong> — BERT·GPT는 ChatGPT, Gemini 등 현재 LLM 시대의 근간</li>
+              </ul>
+
+              <div style="margin-top:16px;">
+                <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">주요 발전 타임라인</div>
+                <div class="timeline">
+                  <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2017</div><div class="tl-lbl">Transformer<br>논문 발표</div></div>
+                  <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2018</div><div class="tl-lbl">BERT &amp; GPT-1<br>출시</div></div>
+                  <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2019</div><div class="tl-lbl">GPT-2<br>(15억 파라미터)</div></div>
+                  <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2020</div><div class="tl-lbl">GPT-3<br>(1,750억)</div></div>
+                  <div class="tl-item"><div class="tl-dot"></div><div class="tl-year">2023+</div><div class="tl-lbl">GPT-4·Gemini<br>·Claude 등</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT -->
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="card" style="flex:1">
+              <div class="card-head" style="background:#00796B">BERT</div>
+              <div class="card-body">
+                <ul class="blist">
+                  <li>자연어 <strong>이해(NLU)</strong> 영역의 혁신</li>
+                  <li><strong>양방향</strong> 문맥을 동시에 이해</li>
+                  <li>Transformer 인코더(Encoder-only) 구조</li>
+                  <li>Google, 2018년 발표</li>
+                </ul>
+              </div>
+            </div>
+            <div class="card" style="flex:1">
+              <div class="card-head" style="background:var(--coral)">GPT</div>
+              <div class="card-body">
+                <ul class="blist coral">
+                  <li>자연어 <strong>생성(NLG)</strong> 분야의 혁신</li>
+                  <li><strong>단방향</strong> 자기회귀(Autoregressive) 방식</li>
+                  <li>Transformer 디코더(Decoder-only) 구조</li>
+                  <li>OpenAI, 2018년~</li>
+                </ul>
+              </div>
+            </div>
+            <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:10px 14px;font-size:11.5px;color:var(--body);">
+              <strong style="color:var(--teal);">공통점</strong> &nbsp;Transformer 기반 · 대규모 비지도 사전학습 · 파인튜닝으로 다양한 태스크 적용
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 3: Transformer 토대 ══ -->
+    <div class="slide light" id="s3">
+      <div class="accent-bar"></div>
+      <div class="slide-header"><h1>Transformer 기반 구조 이해 — BERT와 GPT의 공통 토대</h1></div>
+      <div class="content">
+        <p style="font-size:11.5px;color:var(--body);margin-bottom:12px;">BERT와 GPT 모두 Google이 2017년 발표한 Transformer 아키텍처를 기반으로 하며, 각각 <strong>인코더(BERT)</strong>와 <strong>디코더(GPT)</strong> 부분만 채택합니다.</p>
+        <div class="cols3" style="height:calc(100% - 52px);">
+
+          <div class="card">
+            <div class="card-head" style="background:var(--teal)">① 셀프 어텐션 (Self-Attention)</div>
+            <div class="card-body">
+              <div class="step"><div class="step-num">Q</div><div class="step-body"><strong>Query · Key · Value</strong><br>각 단어를 Q·K·V 벡터로 변환, Q×Kᵀ 내적 후 Softmax로 어텐션 가중치 산출</div></div>
+              <div class="step"><div class="step-num" style="background:#f57c00;">∥</div><div class="step-body"><strong>병렬 처리</strong><br>RNN의 순차 처리 한계를 극복. GPU 병렬 연산으로 학습 속도 대폭 향상</div></div>
+              <div class="step"><div class="step-num" style="background:#6a1b9a;">↔</div><div class="step-body"><strong>장거리 의존성 포착</strong><br>문장 내 임의 거리의 단어 간 관계를 O(1) 연산으로 직접 모델링</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="background:#00796B">② 포지셔널 인코딩</div>
+            <div class="card-body">
+              <div class="step"><div class="step-num">P</div><div class="step-body"><strong>위치 정보 보완</strong><br>어텐션은 순서를 무시 → sin/cos 함수 기반 위치 벡터를 임베딩에 추가</div></div>
+              <div class="step"><div class="step-num" style="font-size:9px;">고정</div><div class="step-body"><strong>Transformer: 고정 공식</strong><br><code style="font-family:var(--mono);font-size:10px;">PE(pos,2i) = sin(pos / 10000^(2i/d))</code></div></div>
+              <div class="step"><div class="step-num" style="background:var(--teal);font-size:9px;">B</div><div class="step-body"><strong>BERT:</strong> 학습 가능, 최대 512 토큰</div></div>
+              <div class="step"><div class="step-num" style="background:var(--coral);font-size:9px;">G</div><div class="step-body"><strong>GPT:</strong> 학습 가능, GPT-3는 최대 2,048 컨텍스트</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="background:#37474F">③ 멀티헤드 어텐션 &amp; FFN</div>
+            <div class="card-body">
+              <div class="step"><div class="step-num">h</div><div class="step-body"><strong>복수의 어텐션 헤드</strong><br>동일 입력에 대해 h개 헤드가 서로 다른 부분 공간에서 어텐션 계산 후 병합</div></div>
+              <div style="margin:10px 0 6px;font-size:11.5px;font-weight:700;color:var(--dark);">모델별 헤드 구성</div>
+              <table class="tbl" style="font-size:10.5px;">
+                <thead><tr><th>모델</th><th>헤드</th><th>히든 차원</th></tr></thead>
+                <tbody>
+                  <tr><td class="label">BERT-base</td><td>12</td><td>768</td></tr>
+                  <tr><td class="label">BERT-large</td><td>16</td><td>1,024</td></tr>
+                  <tr><td class="label">GPT-3</td><td>96</td><td>12,288</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:10px;font-size:10.5px;color:var(--body);">각 어텐션 블록 뒤 <strong>2-layer FFN</strong> (4× 확장) + LayerNorm + Residual 연결</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--navy);color:#fff;border-radius:8px;padding:8px 16px;font-size:11px;text-align:center;margin-top:10px;font-family:var(--mono);">
+          BERT = Transformer <span style="color:var(--teal)">Encoder</span> Stack &nbsp;|&nbsp; GPT = Transformer <span style="color:var(--coral2)">Decoder</span> Stack (masked self-attention)
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 4: BERT 핵심 구조 ══ -->
+    <div class="slide light" id="s4">
+      <div class="accent-bar"></div>
+      <div class="slide-header"><h1>BERT 모델의 핵심 구조</h1></div>
+      <div class="content">
+        <p style="font-size:11.5px;color:var(--body);margin-bottom:12px;">BERT는 Google이 2018년 발표. Transformer의 <strong>인코더만</strong> 사용하여 양방향 문맥을 학습합니다.</p>
+        <div style="display:grid;grid-template-columns:1.1fr .75fr 1fr;gap:14px;height:calc(100% - 52px);">
+
+          <div class="card">
+            <div class="card-head" style="background:var(--teal)">인코더 기반 아키텍처</div>
+            <div class="card-body">
+              <div class="step"><div class="step-num">E</div><div class="step-body"><strong>Encoder-only 구조</strong><br>디코더 없이 인코더만으로 언어 표현 학습. 모든 토큰이 서로를 동시에 참조 가능</div></div>
+              <div class="step"><div class="step-num">A</div><div class="step-body"><strong>셀프 어텐션</strong><br>RNN·CNN 없이 순수 어텐션으로 단어 간 관계를 병렬 포착</div></div>
+              <div class="step"><div class="step-num">↔</div><div class="step-body"><strong>양방향성</strong><br>GPT의 단방향(left-to-right)과 달리 입력 시퀀스 전체를 동시에 봄</div></div>
+              <div class="step"><div class="step-num">N</div><div class="step-body"><strong>12/24 Encoder Layers</strong><br>각 레이어: Multi-Head Attention → Add&amp;Norm → FFN → Add&amp;Norm</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="background:#37474F">레이어 구성 흐름</div>
+            <div class="card-body" style="padding:10px 8px;">
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div class="flow-box" style="background:var(--teal);color:#fff;">입력 임베딩</div>
+                <div style="text-align:center;color:var(--gray3);font-size:16px;">↓</div>
+                <div class="flow-box" style="background:var(--teal2);color:#fff;">Multi-Head Self-Attention</div>
+                <div style="text-align:center;color:var(--gray3);font-size:16px;">↓</div>
+                <div class="flow-box" style="background:#78909C;color:#fff;">Add &amp; LayerNorm</div>
+                <div style="text-align:center;color:var(--gray3);font-size:16px;">↓</div>
+                <div class="flow-box" style="background:var(--teal2);color:#fff;">Feed-Forward Network</div>
+                <div style="text-align:center;color:var(--gray3);font-size:16px;">↓</div>
+                <div class="flow-box" style="background:#78909C;color:#fff;">Add &amp; LayerNorm</div>
+                <div style="text-align:center;color:var(--gold);font-size:12px;font-weight:700;">× N 반복 (12/24)</div>
+                <div class="flow-box" style="background:var(--coral);color:#fff;">출력 표현 벡터</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="background:var(--teal)">모델 규모 비교</div>
+            <div class="card-body">
+              <table class="tbl">
+                <thead><tr><th>항목</th><th>base</th><th>large</th></tr></thead>
+                <tbody>
+                  <tr><td class="label">레이어 수</td><td>12</td><td>24</td></tr>
+                  <tr><td class="label">히든 차원</td><td>768</td><td>1,024</td></tr>
+                  <tr><td class="label">어텐션 헤드</td><td>12</td><td>16</td></tr>
+                  <tr><td class="label">파라미터</td><td>1.1억</td><td>3.4억</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:12px;">
+                <div style="font-size:11px;font-weight:700;color:var(--dark);margin-bottom:6px;">학습 데이터</div>
+                <div class="chip chip-teal">BooksCorpus</div>
+                <div class="chip chip-teal">English Wikipedia</div>
+                <div class="chip chip-gray">총 3.3B 단어</div>
+              </div>
+              <div style="margin-top:10px;font-size:11px;color:var(--body);">
+                <strong>입력 표현 = 세 임베딩의 합</strong><br>
+                <span class="chip chip-teal">토큰 임베딩</span>+<span class="chip chip-coral">세그먼트 임베딩</span>+<span class="chip chip-gold">포지션 임베딩</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 5: BERT MLM ══ -->
+    <div class="slide light" id="s5">
+      <div class="accent-bar"></div>
+      <div class="slide-header"><h1>BERT 사전학습 ① — 마스크 언어 모델 (MLM)</h1></div>
+      <div class="content">
+        <p style="font-size:11.5px;color:var(--body);margin-bottom:12px;">BERT 학습의 핵심. 문장의 일부 토큰을 숨긴 후 좌·우 전체 문맥으로 예측 → <strong>진정한 양방향 언어 표현</strong> 학습.</p>
+        <div class="cols2" style="height:calc(100% - 52px);">
+
+          <div class="card">
+            <div class="card-head" style="background:var(--teal)">MLM 동작 메커니즘</div>
+            <div class="card-body">
+              <div class="step"><div class="step-num">1</div><div class="step-body"><strong>15% 토큰 무작위 선택</strong><br>학습 문장에서 전체 토큰의 약 15%를 무작위로 선택합니다.</div></div>
+              <div class="step"><div class="step-num">2</div><div class="step-body">
+                <strong>세 가지 방식으로 처리</strong>
+                <ul style="margin-top:4px;padding-left:14px;font-size:11px;color:var(--body);">
+                  <li><strong>80%</strong> → <code style="font-family:var(--mono);">[MASK]</code> 토큰으로 대체 (모델이 예측하도록)</li>
+                  <li><strong>10%</strong> → 임의 다른 단어로 대체 (노이즈 주입)</li>
+                  <li><strong>10%</strong> → 원본 그대로 유지 (모델이 교란에 민감하지 않도록)</li>
+                </ul>
+              </div></div>
+              <div class="step"><div class="step-num">3</div><div class="step-body"><strong>양방향 문맥으로 예측</strong><br>마스킹된 위치를 예측할 때 해당 위치의 <strong>좌·우 문맥 모두</strong> 활용. 이것이 단방향 LM과의 근본적인 차이점입니다.</div></div>
+              <div style="background:#f5f5f5;border-radius:6px;padding:8px 12px;font-size:11px;color:var(--body);margin-top:4px;">
+                <strong>손실 함수:</strong> 마스킹된 토큰에 대해서만 Cross-Entropy Loss 계산. 나머지 토큰은 손실에 기여하지 않습니다.
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="background:#37474F">MLM 예시 &amp; 기존 모델과의 비교</div>
+            <div class="card-body">
+              <div style="font-size:11.5px;font-weight:700;color:var(--dark);margin-bottom:6px;">입력 문장: "나는 어제 점심을 먹었다"</div>
+              <div class="tokens">
+                <div class="tok" style="background:var(--teal)">나는</div>
+                <div class="tok" style="background:var(--coral)">[MASK]</div>
+                <div class="tok" style="background:var(--teal)">점심을</div>
+                <div class="tok" style="background:var(--coral)">[MASK]</div>
+                <div class="tok" style="background:var(--teal)">먹었다</div>
+              </div>
+              <div style="display:flex;gap:20px;font-size:11px;color:var(--coral);font-weight:700;margin-bottom:14px;">
+                <span>↑ 예측: "어제"</span>
+                <span style="margin-left:100px;">↑ 예측: "을"</span>
+              </div>
+
+              <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;border-top:1px solid var(--gray2);padding-top:10px;">기존 언어 모델과의 방향성 차이</div>
+              <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                <tbody>
+                  <tr>
+                    <td style="padding:6px 8px;"><span class="chip chip-gray">기존 LM</span></td>
+                    <td style="padding:6px;font-weight:700;color:#78909C;">→ 단방향</td>
+                    <td style="padding:6px;color:var(--body);">P(w_t | w₁…w_{t-1}) — 이전 토큰만 참조</td>
+                  </tr>
+                  <tr style="background:#fffde7;">
+                    <td style="padding:6px 8px;"><span class="chip chip-gold">ELMo</span></td>
+                    <td style="padding:6px;font-weight:700;color:var(--gold);">→ ← 각각</td>
+                    <td style="padding:6px;color:var(--body);">좌→우, 우→좌 독립 학습 후 결합. 진정한 양방향 아님</td>
+                  </tr>
+                  <tr style="background:#e0f2f1;">
+                    <td style="padding:6px 8px;"><span class="chip chip-teal">BERT MLM</span></td>
+                    <td style="padding:6px;font-weight:700;color:var(--teal);">← → 동시</td>
+                    <td style="padding:6px;color:var(--body);">마스킹 위치의 좌·우 컨텍스트를 한 번에 통합하여 예측</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 6: BERT NSP + Fine-tuning ══ -->
+    <div class="slide light" id="s6">
+      <div class="accent-bar"></div>
+      <div class="slide-header"><h1>BERT 사전학습 ② — 다음 문장 예측 (NSP) &amp; 파인튜닝 전략</h1></div>
+      <div class="content">
+        <div class="cols2" style="margin-bottom:12px;">
+
+          <div class="card">
+            <div class="card-head" style="background:var(--teal)">다음 문장 예측 (NSP)</div>
+            <div class="card-body">
+              <div class="step"><div class="step-num">①</div><div class="step-body"><strong>문장 쌍 이진 분류</strong><br>50% IsNext(실제 연속 문장) + 50% NotNext(무작위 문장)로 구성된 쌍을 [CLS] 토큰으로 예측</div></div>
+              <div class="step"><div class="step-num">[C]</div><div class="step-body"><strong>[CLS] 토큰의 역할</strong><br>최종 [CLS] 표현 벡터에 Binary Classifier 추가 → 문장 간 관계 이해 학습</div></div>
+              <div style="background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:8px 12px;font-size:11px;color:var(--body);">
+                ⚠️ <strong>NSP 논쟁:</strong> RoBERTa(2019)에서 NSP가 오히려 성능 저하 유발 가능성 제시. 이후 XLNet·RoBERTa 등은 NSP 제거 추세
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="background:#37474F">파인튜닝(Fine-tuning) 전략</div>
+            <div class="card-body">
+              <table class="tbl" style="font-size:11px;">
+                <thead><tr><th>태스크</th><th>파인튜닝 방식</th></tr></thead>
+                <tbody>
+                  <tr><td class="label">텍스트 분류</td><td>[CLS] 벡터 → Softmax 분류기. 감정분석·스팸 탐지</td></tr>
+                  <tr><td class="label">개체명 인식</td><td>각 토큰 출력 벡터 → 개체 레이블 예측 (BIO 태깅)</td></tr>
+                  <tr><td class="label">질의응답(QA)</td><td>[문맥]+[질문] 입력 → 정답 시작·끝 위치 예측</td></tr>
+                  <tr><td class="label">문장 유사도</td><td>두 문장 [CLS] 벡터 비교 또는 Siamese 구조</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head" style="background:var(--navy2)">사전학습 데이터 &amp; 하이퍼파라미터</div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;font-size:11.5px;">
+              <div><strong style="color:var(--teal);">학습 데이터</strong><br>BooksCorpus(800M) + Wikipedia(2,500M) = <strong>총 3.3B 단어</strong></div>
+              <div><strong style="color:var(--teal);">학습 시간</strong><br>BERT-base: 4 TPU × 4일 / BERT-large: 16 TPU × 4일</div>
+              <div><strong style="color:var(--teal);">배치 크기</strong><br>256 시퀀스 × 최대 512 토큰 = 131,072 토큰/배치</div>
+              <div><strong style="color:var(--teal);">학습 스텝</strong><br>100만 스텝 · Adam (lr=1e-4, β₁=0.9, β₂=0.999)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 7: GPT 자기회귀 학습 ══ -->
+    <div class="slide light" id="s7">
+      <div class="accent-bar" style="background:var(--coral)"></div>
+      <div class="slide-header"><h1>GPT의 자기회귀(Autoregressive) 학습 방식 상세</h1></div>
+      <div class="content">
+        <div class="cols2" style="height:calc(100% - 10px);">
+
+          <div class="card">
+            <div class="card-head" style="background:var(--coral)">자기회귀 언어 모델 구조</div>
+            <div class="card-body">
+              <div class="step"><div class="step-num" style="background:var(--coral)">D</div><div class="step-body"><strong>Decoder-only 아키텍처</strong><br>Transformer 디코더 블록만 적층. 인코더와의 Cross-Attention 레이어를 제거한 순수 디코더 구조</div></div>
+              <div class="step"><div class="step-num" style="background:var(--coral)">M</div><div class="step-body"><strong>Masked Self-Attention</strong><br>각 토큰은 자신보다 이전(왼쪽) 토큰들만 참조 가능. 미래 토큰은 어텐션 마스크로 차단</div></div>
+              <div class="step"><div class="step-num" style="background:var(--coral)">L</div><div class="step-body">
+                <strong>학습 목표: 다음 단어 예측</strong><br>
+                <code style="font-family:var(--mono);font-size:10.5px;">P(xₜ | x₁, x₂, …, xₜ₋₁)</code> 최대화<br>
+                각 위치에서 바로 다음 토큰의 확률 분포를 예측 → Cross-Entropy Loss 합산
+              </div></div>
+              <div class="step"><div class="step-num" style="background:var(--coral)">G</div><div class="step-body"><strong>추론 시: 자기회귀 생성</strong><br>첫 토큰부터 하나씩 생성. 생성된 토큰을 다시 입력에 추가하여 다음 토큰 예측 반복.<br>Top-k sampling, Temperature, Beam Search 등 디코딩 전략 적용</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head" style="background:#37474F">자기회귀 생성 과정 &amp; 마스킹 행렬</div>
+            <div class="card-body">
+              <div style="font-size:11.5px;font-weight:700;color:var(--dark);margin-bottom:8px;">토큰 생성 단계 ("나는 밥을" 프롬프트)</div>
+              <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
+                <div class="step" style="background:#fbe9e7;border-radius:8px;">
+                  <div class="step-num" style="background:var(--coral)">1</div>
+                  <div class="step-body">입력: <code style="font-family:var(--mono);">"나는 밥을"</code><br><strong style="color:var(--coral);">→ 출력: "먹었다" (다음 토큰 예측)</strong></div>
+                </div>
+                <div class="step" style="background:#fbe9e7;border-radius:8px;">
+                  <div class="step-num" style="background:var(--coral)">2</div>
+                  <div class="step-body">입력: <code style="font-family:var(--mono);">"나는 밥을 먹었다"</code><br><strong style="color:var(--coral);">→ 출력: "." (이전 출력 포함하여 재입력)</strong></div>
+                </div>
+                <div class="step" style="background:#fbe9e7;border-radius:8px;">
+                  <div class="step-num" style="background:var(--coral)">3</div>
+                  <div class="step-body">입력: <code style="font-family:var(--mono);">"나는 밥을 먹었다 ."</code><br><strong style="color:var(--coral);">→ 출력: [EOS] (종료 토큰 → 생성 완료)</strong></div>
+                </div>
+              </div>
+
+              <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:8px;">Masked Self-Attention 행렬</div>
+              <div style="display:flex;gap:16px;align-items:center;">
+                <div>
+                  <div style="display:flex;gap:4px;margin-left:52px;margin-bottom:3px;">
+                    <div style="width:34px;font-size:9px;text-align:center;color:var(--body);font-weight:700;">나는</div>
+                    <div style="width:34px;font-size:9px;text-align:center;color:var(--body);font-weight:700;">밥을</div>
+                    <div style="width:34px;font-size:9px;text-align:center;color:var(--body);font-weight:700;">먹었다</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:3px;">
+                    <div style="display:flex;gap:4px;align-items:center;">
+                      <div style="width:48px;font-size:9px;font-weight:700;color:var(--body);text-align:right;padding-right:4px;">나는</div>
+                      <div class="mx-cell" style="background:var(--teal)">✓</div>
+                      <div class="mx-cell" style="background:#b0bec5">✗</div>
+                      <div class="mx-cell" style="background:#b0bec5">✗</div>
+                    </div>
+                    <div style="display:flex;gap:4px;align-items:center;">
+                      <div style="width:48px;font-size:9px;font-weight:700;color:var(--body);text-align:right;padding-right:4px;">밥을</div>
+                      <div class="mx-cell" style="background:var(--teal)">✓</div>
+                      <div class="mx-cell" style="background:var(--teal)">✓</div>
+                      <div class="mx-cell" style="background:#b0bec5">✗</div>
+                    </div>
+                    <div style="display:flex;gap:4px;align-items:center;">
+                      <div style="width:48px;font-size:9px;font-weight:700;color:var(--body);text-align:right;padding-right:4px;">먹었다</div>
+                      <div class="mx-cell" style="background:var(--teal)">✓</div>
+                      <div class="mx-cell" style="background:var(--teal)">✓</div>
+                      <div class="mx-cell" style="background:var(--teal)">✓</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="font-size:10px;color:var(--body);">
+                  <div><span style="color:var(--teal);font-weight:700;">✓</span> 참조 가능</div>
+                  <div style="margin-top:4px;"><span style="color:#b0bec5;font-weight:700;">✗</span> 마스크 (참조 불가)</div>
+                  <div style="margin-top:8px;font-size:9.5px;color:var(--gray3);">하삼각 구조로<br>미래 토큰 차단</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 8: GPT 발전 과정 ══ -->
+    <div class="slide light" id="s8">
+      <div class="accent-bar" style="background:var(--coral)"></div>
+      <div class="slide-header"><h1>GPT 시리즈의 발전 과정 — 규모 확장과 학습 전략 변화</h1></div>
+      <div class="content">
+        <div style="background:#fff3e0;border-left:4px solid var(--coral);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:11.5px;color:var(--body);">
+          <strong style="color:var(--coral);">Scaling Law:</strong> 단순한 다음 단어 예측(Next Token Prediction)을 초대규모 데이터로 반복하면 언어 이해·추론·생성 능력이 <strong>창발(Emergence)</strong>한다. 파라미터 수·데이터량·연산량을 함께 늘릴수록 성능이 예측 가능하게 향상 (Kaplan et al., 2020)
+        </div>
+        <div class="card">
+          <div class="card-body" style="padding:0;">
+            <table class="evo-tbl">
+              <thead>
+                <tr><th style="width:72px;">모델</th><th style="width:52px;">연도</th><th style="width:90px;">파라미터</th><th style="width:80px;">컨텍스트</th><th>핵심 학습 전략 혁신</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="model-name">GPT-1</td><td>2018</td><td>1.17억</td><td>512 tok</td>
+                  <td>Transformer 디코더 최초 사용. 비지도 사전학습 + 지도 파인튜닝(미니멀 수정) 패러다임 정립. 8개 언어 이해 벤치마크 SOTA 달성</td>
+                </tr>
+                <tr>
+                  <td class="model-name">GPT-2</td><td>2019</td><td>15억</td><td>1,024 tok</td>
+                  <td>데이터 10배 확장(WebText 40GB). <strong>Zero-shot</strong> 학습 능력 발견. Task-specific 파인튜닝 없이도 다양한 태스크 수행 가능성 제시. 악용 우려로 초기 공개 제한</td>
+                </tr>
+                <tr>
+                  <td class="model-name">GPT-3</td><td>2020</td><td>1,750억</td><td>2,048 tok</td>
+                  <td><strong>In-context Learning:</strong> 몇 가지 예시만 프롬프트에 제공(Few-shot)하면 추가 학습 없이 새 태스크 수행. 파라미터 동결 상태에서도 광범위한 NLP 태스크 수행</td>
+                </tr>
+                <tr>
+                  <td class="model-name">GPT-4</td><td>2023</td><td>~1조 추정</td><td>128K tok</td>
+                  <td><strong>RLHF</strong>(인간 피드백 강화학습) 고도화. 멀티모달(텍스트+이미지) 입력. 전문 시험(BAR, SAT 등) 인간 상위권 수준 달성. Constitutional AI 안전성 강화</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;">
+          <div class="stat" style="background:#fff3e0;border-radius:8px;border:1px solid #ffe0b2;">
+            <div class="num" style="color:var(--coral);">1.17억</div><div class="lbl">GPT-1 파라미터</div>
+          </div>
+          <div class="stat" style="background:#fff3e0;border-radius:8px;border:1px solid #ffe0b2;">
+            <div class="num" style="color:var(--coral);">15억</div><div class="lbl">GPT-2 (13×↑)</div>
+          </div>
+          <div class="stat" style="background:#fff3e0;border-radius:8px;border:1px solid #ffe0b2;">
+            <div class="num" style="color:var(--coral);">1,750억</div><div class="lbl">GPT-3 (116×↑)</div>
+          </div>
+          <div class="stat" style="background:#fff3e0;border-radius:8px;border:1px solid #ffe0b2;">
+            <div class="num" style="color:var(--coral);">~1조</div><div class="lbl">GPT-4 추정</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 9: 학습 방식 심층 비교 ══ -->
+    <div class="slide light" id="s9">
+      <div class="accent-bar"></div>
+      <div class="slide-header"><h1>BERT vs GPT — 학습 방식 심층 비교</h1></div>
+      <div class="content">
+
+        <!-- Direction visual -->
+        <div class="cols2" style="margin-bottom:12px;">
+          <div style="background:#e0f2f1;border:1px solid #80cbc4;border-radius:10px;padding:12px 16px;">
+            <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px;">BERT — 양방향 (Bidirectional)</div>
+            <div class="tokens">
+              <div class="tok" style="background:var(--teal)">나는</div>
+              <div class="tok" style="background:var(--coral)">[MASK]</div>
+              <div class="tok" style="background:var(--teal)">점심을</div>
+              <div class="tok" style="background:var(--coral)">[MASK]</div>
+              <div class="tok" style="background:var(--teal)">먹었다</div>
+            </div>
+            <div style="font-size:11px;color:var(--teal);font-weight:700;text-align:center;margin-top:4px;">← 좌우 전체 문맥 동시 참조 →</div>
+          </div>
+          <div style="background:#fbe9e7;border:1px solid #ffab91;border-radius:10px;padding:12px 16px;">
+            <div style="font-size:12px;font-weight:700;color:var(--coral);margin-bottom:8px;">GPT — 단방향 자기회귀 (Autoregressive)</div>
+            <div class="tokens">
+              <div class="tok" style="background:var(--coral)">나는</div>
+              <div class="tok" style="background:var(--coral)">밥을</div>
+              <div class="tok" style="background:var(--coral)">먹었다</div>
+              <div class="tok" style="background:var(--gold)">→ ?</div>
+            </div>
+            <div style="font-size:11px;color:var(--coral);font-weight:700;text-align:center;margin-top:4px;">이전 토큰들만 참조 → 다음 토큰 예측</div>
+          </div>
+        </div>
+
+        <!-- Comparison table -->
+        <div class="card">
+          <div class="cmp-hd">
+            <div style="background:var(--navy);color:#fff;padding:9px 12px;font-size:11px;font-weight:700;">비교 항목</div>
+            <div style="background:var(--teal);color:#fff;padding:9px 12px;font-size:11px;font-weight:700;text-align:center;">BERT (인코더 / 양방향)</div>
+            <div style="background:var(--coral);color:#fff;padding:9px 12px;font-size:11px;font-weight:700;text-align:center;">GPT (디코더 / 단방향)</div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-cell cmp-label">학습 목표</div>
+            <div class="cmp-cell cmp-teal">마스킹된 토큰 복원 (MLM)<br>+ 문장 연속성 판별 (NSP)</div>
+            <div class="cmp-cell cmp-coral">다음 토큰 예측 (Causal LM)<br>P(xₜ | x₁…xₜ₋₁) 최대화</div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-cell cmp-label">어텐션 마스크</div>
+            <div class="cmp-cell cmp-teal">Full Attention — 모든 토큰이 상호 참조 (마스킹 없음)</div>
+            <div class="cmp-cell cmp-coral">Causal Mask — 미래 토큰 차단. 하삼각 어텐션 행렬</div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-cell cmp-label">사전학습 데이터</div>
+            <div class="cmp-cell cmp-teal">BooksCorpus + Wikipedia (3.3B 단어, 레이블 불필요)</div>
+            <div class="cmp-cell cmp-coral">WebText, CommonCrawl 등 (수백~수천억 토큰, 더 다양)</div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-cell cmp-label">파인튜닝 방식</div>
+            <div class="cmp-cell cmp-teal">태스크별 헤드 추가 후 전체 파라미터 업데이트</div>
+            <div class="cmp-cell cmp-coral">프롬프트 엔지니어링, Few-shot, RLHF 등</div>
+          </div>
+          <div class="cmp-row" style="border-bottom:none;">
+            <div class="cmp-cell cmp-label">창발 능력<br>(Emergence)</div>
+            <div class="cmp-cell cmp-teal">파인튜닝 없이는 제한적. 이해·분류 태스크에 강점</div>
+            <div class="cmp-cell cmp-coral">규모 확장 시 Zero/Few-shot In-context Learning 창발</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SLIDE 10: 응용 분야 & 결론 ══ -->
+    <div class="slide" id="s10">
+      <div class="accent-bar"></div>
+      <div class="slide-header"><h1>주요 응용 분야 비교 &amp; 결론</h1></div>
+      <div class="content">
+        <div class="cols2" style="margin-bottom:12px;">
+          <div class="card">
+            <div class="card-head" style="background:var(--teal)">BERT 응용 (NLU)</div>
+            <div class="card-body">
+              <ul class="blist">
+                <li>텍스트 분류 — 감정분석·스팸 탐지·토픽 분류</li>
+                <li>개체명 인식 (NER) — 인명·지명·기관명 식별</li>
+                <li>질의응답 — SQuAD, KorQuAD 등 독해 QA</li>
+                <li>문장 유사도·관계 분류</li>
+                <li>Google 검색 랭킹 (2019년~)</li>
+                <li>의료·법률 특화 모델 (BioBERT, LegalBERT 등)</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head" style="background:var(--coral)">GPT 응용 (NLG)</div>
+            <div class="card-body">
+              <ul class="blist coral">
+                <li>대화형 AI 챗봇 — ChatGPT, Claude 등</li>
+                <li>코드 생성 — GitHub Copilot (Codex 기반)</li>
+                <li>창의적 글쓰기·기사·광고 카피 작성</li>
+                <li>텍스트 요약·기계 번역</li>
+                <li>멀티모달 생성 — GPT-4V (이미지 이해 + 텍스트)</li>
+                <li>In-context Learning / Few-shot 추론</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <h3>핵심 요약</h3>
+          <ul class="blist">
+            <li>BERT는 <strong>양방향 MLM</strong> 학습으로 깊은 문맥 이해 획득 → 분류·추출·이해 태스크에 최적</li>
+            <li>GPT는 <strong>단방향 자기회귀</strong> 학습으로 자연스러운 텍스트 생성 능력 확보 → 대화·창작·생성 태스크에 최적</li>
+            <li>두 모델은 학습 방향(양방향 vs 단방향)과 목적(이해 vs 생성)이 다르며, 서로 <strong>상호 보완적인</strong> NLP의 두 축</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /slides -->
+
+  <!-- ── NAVIGATION ── -->
+  <div class="nav">
+    <div class="nav-dots" id="dots"></div>
+    <div class="nav-count" id="count">1 / 10</div>
+    <div class="nav-btns">
+      <button class="nav-btn" id="prev">← 이전</button>
+      <button class="nav-btn" id="next">다음 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+const countEl = document.getElementById('count');
+let cur = 0;
+
+// Build dots
+slides.forEach((_, i) => {
+  const d = document.createElement('button');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.title = `슬라이드 ${i+1}`;
+  d.addEventListener('click', () => go(i));
+  dotsEl.appendChild(d);
+});
+
+function go(n) {
+  if (n < 0 || n >= slides.length) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('exit');
+  setTimeout(() => slides[cur].classList.remove('exit'), 450);
+  cur = n;
+  slides[cur].classList.add('active');
+  dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur));
+  countEl.textContent = `${cur + 1} / ${slides.length}`;
+}
+
+document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+document.getElementById('next').addEventListener('click', () => go(cur + 1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(cur + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(cur - 1);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>트랜스포머와 어텐션 메커니즘</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+            background-color: #F0F0F0;
+        }
+        .highlight-box {
+            background-color: rgba(46, 139, 87, 0.1);
+            border-left: 4px solid #2E8B57;
+        }
+        .attention-line {
+            stroke: #FFA500;
+            stroke-width: 2;
+            stroke-opacity: 0.7;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col" style=" overflow: hidden;">
+<!-- Header with title -->
+<div class="w-full bg-gradient-to-r from-green-700 to-green-600 py-5 px-10 text-white">
+<h1 class="text-3xl font-bold">트랜스포머와 어텐션 메커니즘</h1>
+</div>
+<!-- Main content -->
+<div class="flex flex-col flex-grow p-8">
+<!-- Introduction -->
+<div class="mb-6">
+<p class="text-lg text-gray-700"><span class="font-bold text-green-700">트랜스포머(Transformer)</span> 아키텍처는 2017년 Google이 발표한 논문 &#34;Attention Is All You Need&#34;에서 처음 제안되었습니다. 이 모델은 &#39;어텐션 메커니즘(Attention Mechanism)&#39;의 핵심 개념으로, 특히 &#39;셀프 어텐션(Self-Attention)&#39;을 통해 문장 내 모든 단어 간의 관계를 동시에 파악합니다.</p>
+</div>
+<!-- Two column layout -->
+<div class="flex flex-grow">
+<!-- Left column: Self-attention visualization -->
+<div class="w-1/2 pr-6">
+<h3 class="text-xl font-bold text-green-700 mb-3">셀프 어텐션 메커니즘</h3>
+<div class="w-full h-64 bg-white rounded-lg shadow-md p-4" id="attention-visualization">
+<!-- D3.js will render here -->
+</div>
+<div class="highlight-box p-4 mt-4 rounded">
+<p class="text-gray-700"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i>셀프 어텐션은 입력 시퀀스 내의 각 단어가 다른 모든 단어와 얼마나 관련이 있는지를 계산하여, 문맥을 정확하게 이해하고 단어의 의미를 더욱 풍부하게 표현할 수 있도록 합니다.</p>
+</div>
+</div>
+<!-- Right column: Advantages -->
+<div class="w-1/2 pl-6">
+<h3 class="text-xl font-bold text-green-700 mb-3">RNN 기반 모델의 한계 극복</h3>
+<div class="bg-white rounded-lg shadow-md p-5">
+<div class="flex items-start mb-4">
+<div class="bg-green-600 rounded-full p-2 mr-3 mt-1">
+<i class="fas fa-exchange-alt text-white"></i>
+</div>
+<div>
+<h4 class="font-bold text-green-700">병렬 처리의 가능</h4>
+<p class="text-gray-600">순차적 처리 방식에서 벗어나 모든 단어를 동시에 처리할 수 있는 병렬 처리 능력을 갖추어 학습 속도와 성능을 크게 향상시켰습니다.</p>
+</div>
+</div>
+<div class="flex items-start mb-4">
+<div class="bg-green-600 rounded-full p-2 mr-3 mt-1">
+<i class="fas fa-link text-white"></i>
+</div>
+<div>
+<h4 class="font-bold text-green-700">장기 의존성 문제 해결</h4>
+<p class="text-gray-600">기존 RNN 모델들의 &#39;장기 의존성 문제&#39;와 병렬 처리의 어려움으로 인한 학습 속도 저하 문제를 해결하였습니다.</p>
+</div>
+</div>
+<div class="flex items-start">
+<div class="bg-green-600 rounded-full p-2 mr-3 mt-1">
+<i class="fas fa-brain text-white"></i>
+</div>
+<div>
+<h4 class="font-bold text-green-700">트랜스포머의 혁신적 영향</h4>
+<p class="text-gray-600">트랜스포머는 NLP 패러다임의 전환점이 되었으며, 이후 BERT와 GPT와 같은 트랜스포머 기반 모델들은 자연어 이해(NLU)와 자연어 생성(NLG) 분야에서 혁신적인 성능을 보여주며 LLM 시대를 열었습니다.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="w-full bg-green-700 py-2 px-10 text-white flex justify-between items-center">
+<div>텍스트 데이터와 임베딩: 자연어 처리의 발전 과정</div>
+<div style="visibility: hidden;">8/10</div>
+</div>
+</div>
+<script>
+        // D3.js self-attention visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            const svg = d3.select("#attention-visualization")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 500 250");
+            
+            // Define arrowhead marker
+            svg.append("defs").append("marker")
+                .attr("id", "arrowhead")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 8)
+                .attr("refY", 0)
+                .attr("markerWidth", 6)
+                .attr("markerHeight", 6)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", "#FFA500");
+            
+            // Word nodes data
+            const words = [
+                { text: "이것은", x: 70, y: 125 },
+                { text: "한", x: 150, y: 125 },
+                { text: "예쁜", x: 230, y: 125 },
+                { text: "강아지", x: 310, y: 125 },
+                { text: "입니다", x: 390, y: 125 }
+            ];
+            
+            // Draw word nodes
+            const wordGroups = svg.selectAll(".word-node")
+                .data(words)
+                .enter()
+                .append("g")
+                .attr("class", "word-node");
+            
+            wordGroups.append("circle")
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y)
+                .attr("r", 30)
+                .attr("fill", "#E0F0E3")
+                .attr("stroke", "#2E8B57")
+                .attr("stroke-width", 2);
+            
+            wordGroups.append("text")
+                .attr("x", d => d.x)
+                .attr("y", d => d.y)
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "central")
+                .attr("font-size", "12px")
+                .attr("fill", "#333333")
+                .text(d => d.text);
+            
+            // Draw self-attention lines with varying opacity to show attention weights
+            const attentionWeights = [
+                [0.8, 0.1, 0.05, 0.03, 0.02],
+                [0.1, 0.75, 0.05, 0.05, 0.05],
+                [0.05, 0.05, 0.8, 0.1, 0.05],
+                [0.03, 0.05, 0.1, 0.75, 0.05],
+                [0.02, 0.05, 0.05, 0.1, 0.8]
+            ];
+            
+            for (let i = 0; i < words.length; i++) {
+                for (let j = 0; j < words.length; j++) {
+                    if (i !== j) {
+                        const weight = attentionWeights[i][j];
+                        svg.append("path")
+                            .attr("class", "attention-line")
+                            .attr("d", `M${words[i].x},${words[i].y-30} Q${(words[i].x+words[j].x)/2},${(words[i].y+words[j].y)/2-40} ${words[j].x},${words[j].y-30}`)
+                            .attr("stroke-opacity", weight)
+                            .attr("stroke-width", weight * 4);
+                    }
+                }
+            }
+            
+            // Add title
+            svg.append("text")
+                .attr("x", 250)
+                .attr("y", 30)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#333333")
+                .text("셀프 어텐션 메커니즘 시각화");
+        });
+    </script>
+
+</body></html>

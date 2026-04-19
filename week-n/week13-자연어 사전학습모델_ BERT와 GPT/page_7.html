@@ -1,0 +1,176 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BERT와 GPT의 구조 및 학습 방식 비교</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F0F0F0;
+            color: #333333;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            
+            position: relative;
+        }
+        .title {
+            background-color: #A0D995;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 0 0 30px 0;
+        }
+        .content-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .highlight-bert {
+            color: #A0D995;
+        }
+        .highlight-gpt {
+            color: #FFA500;
+        }
+        .comparison-row:nth-child(odd) {
+            background-color: rgba(160, 217, 149, 0.1);
+        }
+        .comparison-row:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        .model-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .bert-icon {
+            background-color: #A0D995;
+        }
+        .gpt-icon {
+            background-color: #FFA500;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide bg-gray-100 p-8 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title mb-6 w-2/3 flex items-center">
+<h1 class="text-3xl font-bold">BERT와 GPT의 구조 및 학습 방식 비교</h1>
+</div>
+<!-- Main Content -->
+<div class="flex-1 content-box p-6">
+<!-- Model Icons -->
+<div class="flex justify-between mb-4">
+<div class="flex items-center">
+<div class="model-icon bert-icon mr-2">
+<i class="fas fa-brain text-xl"></i>
+</div>
+<h2 class="text-2xl font-bold">BERT</h2>
+</div>
+<div class="flex items-center">
+<h2 class="text-2xl font-bold mr-2">GPT</h2>
+<div class="model-icon gpt-icon">
+<i class="fas fa-comment-dots text-xl"></i>
+</div>
+</div>
+</div>
+<!-- Comparison Table -->
+<div class="overflow-hidden rounded-lg">
+<!-- Table Header -->
+<div class="grid grid-cols-5 gap-0 bg-gray-200 font-bold text-gray-700">
+<div class="p-3 flex items-center justify-center">
+<i class="fas fa-cogs mr-2"></i>
+<span>특징</span>
+</div>
+<div class="p-3 flex items-center justify-center col-span-2">
+<span class="highlight-bert font-bold">BERT (Bidirectional Encoder)</span>
+</div>
+<div class="p-3 flex items-center justify-center col-span-2">
+<span class="highlight-gpt font-bold">GPT (Generative Pre-trained)</span>
+</div>
+</div>
+<!-- Table Rows -->
+<div class="comparison-row grid grid-cols-5 gap-0 border-b border-gray-200">
+<div class="p-3 flex items-center justify-center bg-gray-100">
+<i class="fas fa-sitemap mr-2 text-gray-600"></i>
+<span class="font-semibold">기반 아키텍처</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span>트랜스포머의 인코더 (Encoder-only)</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span>트랜스포머의 디코더 (Decoder-only)</span>
+</div>
+</div>
+<div class="comparison-row grid grid-cols-5 gap-0 border-b border-gray-200">
+<div class="p-3 flex items-center justify-center bg-gray-100">
+<i class="fas fa-exchange-alt mr-2 text-gray-600"></i>
+<span class="font-semibold">학습 방향</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span><span class="highlight-bert font-bold">양방향</span> (Bidirectional)</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span><span class="highlight-gpt font-bold">단방향</span> (Unidirectional/Autoregressive)</span>
+</div>
+</div>
+<div class="comparison-row grid grid-cols-5 gap-0 border-b border-gray-200">
+<div class="p-3 flex items-center justify-center bg-gray-100">
+<i class="fas fa-bullseye mr-2 text-gray-600"></i>
+<span class="font-semibold">주요 학습 목표</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span>마스크 언어 모델(MLM), 다음 문장 예측(NSP)</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span>다음 단어 예측 (Next Word Prediction)</span>
+</div>
+</div>
+<div class="comparison-row grid grid-cols-5 gap-0 border-b border-gray-200">
+<div class="p-3 flex items-center justify-center bg-gray-100">
+<i class="fas fa-brain mr-2 text-gray-600"></i>
+<span class="font-semibold">문맥 이해</span>
+</div>
+<div class="p-3 col-span-2 flex items-start">
+<span>문장 내 모든 단어의 양방향 문맥을 동시에 고려하여 이해</span>
+</div>
+<div class="p-3 col-span-2 flex items-start">
+<span>현재 단어의 이전 단어들만을 고려하여 문맥 이해</span>
+</div>
+</div>
+<div class="comparison-row grid grid-cols-5 gap-0">
+<div class="p-3 flex items-center justify-center bg-gray-100">
+<i class="fas fa-award mr-2 text-gray-600"></i>
+<span class="font-semibold">강점</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span><span class="highlight-bert font-bold">NLU</span> (Natural Language Understanding) 작업에 특화</span>
+</div>
+<div class="p-3 col-span-2 flex items-center">
+<span><span class="highlight-gpt font-bold">NLG</span> (Natural Language Generation) 작업에 특화</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary -->
+<div class="mt-4 content-box p-4">
+<p class="text-center text-gray-700">
+<i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+<span class="font-semibold">요약:</span> BERT는 문맥을 양방향으로 깊이 이해하는 능력에 강점이 있어 정보 추출 및 분석에 탁월하고, GPT는 자기회귀 방식으로 자연스러운 텍스트 생성에 특화되어 있습니다.
+            </p>
+</div>
+<!-- Footer -->
+<div class="mt-4 text-right text-sm text-gray-500">
+<p>자연어 사전학습모델: BERT와 GPT | 7/10</p>
+</div>
+</div>
+
+</body></html>

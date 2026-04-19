@@ -1,0 +1,173 @@
+<!DOCTYPE html><html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RAG 구현 기법 - 임베딩 모델</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; font-family: 'Nanum Gothic', sans-serif;
+            background-color: #F5F5F5;
+            color: #333333;}
+        .slide-container {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            
+        }
+        .title {
+            font-family: 'Nanum Square', sans-serif;
+            color: #006400;
+        }
+        .model-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .general-model {
+            border-left: 4px solid #FFA500;
+        }
+        .korean-model {
+            border-left: 4px solid #00CED1;
+        }
+        .icon-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .general-icon {
+            background-color: rgba(255, 165, 0, 0.2);
+            color: #FFA500;
+        }
+        .korean-icon {
+            background-color: rgba(0, 206, 209, 0.2);
+            color: #00CED1;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container p-10 flex flex-col" style=" overflow: hidden;">
+<!-- Title -->
+<h1 class="title text-4xl font-bold mb-4">RAG 구현 기법 - 임베딩 모델</h1>
+<!-- Introduction -->
+<div class="bg-white rounded-lg p-4 shadow-md mb-6">
+<p class="text-lg">
+                임베딩 모델은 텍스트를 고차원 벡터 공간의 수치형 표현으로 변환하는 역할을 합니다. 이 벡터는 텍스트의 의미를 함축하고 있어, 벡터 간의 유사도 계산을 통해 관련성 높은 문서를 효율적으로 검색할 수 있습니다.
+            </p>
+</div>
+<!-- Model Comparison -->
+<div class="flex flex-col flex-grow">
+<!-- Model Categories -->
+<div class="flex justify-between mb-4">
+<div class="flex items-center">
+<div class="icon-circle general-icon mr-2">
+<i class="fas fa-globe"></i>
+</div>
+<h2 class="text-xl font-bold">일반적인 임베딩 모델</h2>
+</div>
+<div class="flex items-center">
+<div class="icon-circle korean-icon mr-2">
+<i class="fas fa-language"></i>
+</div>
+<h2 class="text-xl font-bold">한국어 특화 임베딩 모델</h2>
+</div>
+</div>
+<!-- Models Grid -->
+<div class="grid grid-cols-2 gap-6 flex-grow">
+<!-- General Embedding Models -->
+<div class="space-y-4">
+<div class="model-card general-model p-4">
+<div class="flex items-start">
+<div class="icon-circle general-icon mr-3 flex-shrink-0">
+<i class="fas fa-code-branch"></i>
+</div>
+<div>
+<h3 class="font-bold text-lg text-orange-600">BERT</h3>
+<p class="text-sm mb-2">구글에서 개발한 모델로, 양방향 문맥을 학습하여 단어의 의미를 정확하게 파악합니다.</p>
+<p class="text-xs text-gray-500">파생 모델: RoBERTa, ALBERT</p>
+</div>
+</div>
+</div>
+<div class="model-card general-model p-4">
+<div class="flex items-start">
+<div class="icon-circle general-icon mr-3 flex-shrink-0">
+<i class="fas fa-align-left"></i>
+</div>
+<div>
+<h3 class="font-bold text-lg text-orange-600">Sentence-BERT (SBERT)</h3>
+<p class="text-sm">BERT를 문장 임베딩에 최적화한 모델로, 문장 간의 유사도 계산에 특히 효과적입니다.</p>
+</div>
+</div>
+</div>
+<div class="model-card general-model p-4">
+<div class="flex items-start">
+<div class="icon-circle general-icon mr-3 flex-shrink-0">
+<i class="fas fa-globe-asia"></i>
+</div>
+<div>
+<h3 class="font-bold text-lg text-orange-600">BGE (BAAI General Embedding)</h3>
+<p class="text-sm">중국 BAAI에서 개발한 모델로, 다양한 언어와 도메인에서 높은 성능을 보이는 범용 임베딩 모델입니다.</p>
+<p class="text-xs text-gray-500">특히 영어와 중국어에서 강점을 보입니다.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Korean Embedding Models -->
+<div class="space-y-4">
+<div class="model-card korean-model p-4">
+<div class="flex items-start">
+<div class="icon-circle korean-icon mr-3 flex-shrink-0">
+<i class="fas fa-comment-dots"></i>
+</div>
+<div>
+<h3 class="font-bold text-lg text-teal-600">Ko-SimCSE</h3>
+<p class="text-sm mb-2">한국어 문장 임베딩에 특화된 모델로, 비지도 학습 방식으로 문장 임베딩의 품질을 향상시킵니다.</p>
+<p class="text-xs text-gray-500">한국어의 특성을 잘 반영하여 높은 성능을 보여줍니다.</p>
+</div>
+</div>
+</div>
+<div class="model-card korean-model p-4">
+<div class="flex items-start">
+<div class="icon-circle korean-icon mr-3 flex-shrink-0">
+<i class="fas fa-database"></i>
+</div>
+<div>
+<h3 class="font-bold text-lg text-teal-600">KLUE-RoBERTa</h3>
+<p class="text-sm">한국어 대규모 말뭉치로 사전 학습된 RoBERTa 기반 모델로, 한국어 자연어 처리 태스크에서 우수한 성능을 발휘합니다.</p>
+</div>
+</div>
+</div>
+<div class="model-card korean-model p-4">
+<div class="flex items-start">
+<div class="icon-circle korean-icon mr-3 flex-shrink-0">
+<i class="fas fa-cogs"></i>
+</div>
+<div>
+<h3 class="font-bold text-lg text-teal-600">Upstage-Embedding</h3>
+<p class="text-sm mb-2">업스테이지에서 개발한 한국어 임베딩 모델로, 다양한 벤치마크에서 좋은 성능을 기록합니다.</p>
+<p class="text-xs text-gray-500">한국어 RAG 시스템 구축에 활용됩니다.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Note -->
+<div class="mt-4 text-sm text-gray-600 flex items-center">
+<i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+<p>도메인 특화 모델 선택 및 미세 조정은 RAG 시스템의 검색 정확도를 크게 향상시킬 수 있습니다.</p>
+</div>
+</div>
+
+</body></html>
