@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko" style="--viewport-height: 12.92px;"><head>
+<meta charset="utf-8">
+<meta content="width=1280, height=720" name="viewport">
+<title>LLM 파인 튜닝 기술 가이드</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" rel="stylesheet"><style>@import url(https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css);
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+    }
+body {width: 1280px; height: 720px; overflow: hidden; background-color: #F4F7F6;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    color: #2C3E50}
+.slide-root-container {
+    width: 1280px;
+    height: 720px;
+    display: flex;
+    flex-direction: column;
+    position: relative
+    }
+/* Title Section based on <DESIGN> */
+.title-section-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 60px 20px 60px
+    }
+.title-accent-line-group {
+    display: flex;
+    align-items: center;
+    gap: 12px
+    }
+.title-vertical-bar-element {
+    width: 4px;
+    height: 48px;
+    background-color: #10B981;
+    border-radius: 2px
+    }
+.title-text-content-stack {
+    display: flex;
+    flex-direction: column
+    }
+.title-main-heading-text {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2C3E50;
+    line-height: 1.2
+    }
+.title-sub-heading-caption {
+    margin: 4px 0 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #10B981;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    }
+/* Content Layout */
+.main-content-area-layout {
+    flex: 1;
+    padding: 20px 60px 60px 60px;
+    display: flex;
+    flex-direction: column
+    }
+.learning-method-grid-container {
+    display: flex;
+    align-items: stretch;
+    gap: 24px;
+    flex: 1
+    }
+.method-card-item-container {
+    flex: 1;
+    background-color: #FFF;
+    border-radius: 16px;
+    padding: 40px 30px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(16, 185, 129, 0.1)
+    }
+.method-card-header-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px
+    }
+.method-card-icon-box {
+    width: 64px;
+    height: 64px;
+    background-color: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px
+    }
+.method-card-icon-box i {
+    font-size: 28px;
+    color: #10B981
+    }
+.method-card-title-label {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2C3E50;
+    text-align: center
+    }
+.method-card-divider-line {
+    width: 40px;
+    height: 2px;
+    background-color: #10B981;
+    margin: 12px auto 0 auto;
+    opacity: 0.3
+    }
+.method-card-body-text-block {
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+    }
+.method-detail-list-wrapper {
+    margin: 0;
+    padding: 0;
+    list-style: none
+    }
+.method-detail-list-item {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 1.6
+    }
+.method-detail-bullet-point {
+    color: #10B981;
+    font-size: 12px;
+    margin-top: 6px
+    }
+.method-detail-text-content {
+    flex: 1
+    }
+.method-highlight-tag-box {
+    display: inline-block;
+    background-color: #F4F7F6;
+    color: #2C3E50;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px
+    }
+.alignment-sub-grid-box {
+    margin-top: 10px;
+    padding-top: 15px;
+    border-top: 1px dashed #E5E7EB
+    }
+.alignment-comparison-item {
+    margin-bottom: 12px
+    }
+.alignment-comparison-item b {
+    color: #10B981
+    }
+html { overflow: hidden; }
+</style>
+</head>
+<body class="">
+<div class="slide-root-container" style="overflow: hidden;">
+<!-- Title Region -->
+<div class="title-section-wrapper">
+<div class="title-accent-line-group">
+<div class="title-vertical-bar-element"></div>
+<div class="title-text-content-stack">
+<h1 class="title-main-heading-text">6. 학습 방식 및 목적에 따른 분류</h1>
+<p class="title-sub-heading-caption">Classification by Learning Method &amp; Purpose</p>
+</div>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="main-content-area-layout">
+<div class="learning-method-grid-container">
+<!-- SFT Card -->
+<div class="method-card-item-container">
+<div class="method-card-header-group">
+<div class="method-card-icon-box">
+<i class="fas fa-chalkboard-user"></i>
+</div>
+<div class="method-card-title-label">지도 학습 파인 튜닝 (SFT)</div>
+<div class="method-card-divider-line"></div>
+</div>
+<div class="method-card-body-text-block">
+<ul class="method-detail-list-wrapper">
+<li class="method-detail-list-item">
+<i class="fa-solid fa-circle-check method-detail-bullet-point"></i>
+<div class="method-detail-text-content">
+<span class="method-highlight-tag-box">데이터셋</span><br>
+                                    레이블링된 '지시-응답' 쌍 데이터 활용
+                                </div>
+</li>
+<li class="method-detail-list-item">
+<i class="fa-solid fa-check method-detail-bullet-point"></i>
+<div class="method-detail-text-content">
+<span class="method-highlight-tag-box">주요 목적</span><br>
+                                    모델의 응답 형식 교정 및 특정 지식 체계 학습
+                                </div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Unsupervised Card -->
+<div class="method-card-item-container">
+<div class="method-card-header-group">
+<div class="method-card-icon-box">
+<i class="fas fa-book-open"></i>
+</div>
+<div class="method-card-title-label">비지도 학습 파인 튜닝</div>
+<div class="method-card-divider-line"></div>
+</div>
+<div class="method-card-body-text-block">
+<ul class="method-detail-list-wrapper">
+<li class="method-detail-list-item">
+<i class="fa-solid fa-heart-circle-check method-detail-bullet-point"></i>
+<div class="method-detail-text-content">
+<span class="method-highlight-tag-box">데이터셋</span><br>
+                                    레이블 없는 일반 텍스트 데이터 (Raw Text)
+                                </div>
+</li>
+<li class="method-detail-list-item">
+<i class="fa-solid fa-house-circle-check method-detail-bullet-point"></i>
+<div class="method-detail-text-content">
+<span class="method-highlight-tag-box">주요 목적</span><br>
+                                    의료, 법률 등 도메인 특화 지식 자체를 습득
+                                </div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Alignment Card -->
+<div class="method-card-item-container">
+<div class="method-card-header-group">
+<div class="method-card-icon-box">
+<i class="fas fa-scale-balanced"></i>
+</div>
+<div class="method-card-title-label">정렬(Alignment) 튜닝</div>
+<div class="method-card-divider-line"></div>
+</div>
+<div class="method-card-body-text-block">
+<div class="method-detail-text-content" style="font-size: 15px; margin-bottom: 10px;">
+                            인간의 가치관과 선호도에 맞춰 모델의 답변 품질을 최적화하는 과정
+                        </div>
+<div class="alignment-sub-grid-box">
+<div class="alignment-comparison-item">
+<b>RLHF:</b> 인간 피드백 기반 보상 모델 학습 및 강화학습 수행
+                            </div>
+<div class="alignment-comparison-item">
+<b>DPO:</b> 보상 모델 없이 선호도 데이터를 직접 최적화 (효율적)
+                            </div>
+<div style="font-size: 14px; color: #6B7280; font-style: italic;">
+                                * DPO는 RLHF 대비 선호 점수 150% 향상 사례 존재
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+</body></html>

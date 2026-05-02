@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko" style="--viewport-height: 12.92px;"><head>
+<meta charset="utf-8">
+<meta content="width=1280, height=720" name="viewport">
+<title>LLM 파인 튜닝 하드웨어 및 선택 가이드</title>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" rel="stylesheet"><style>* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+    }
+body {width: 1280px; height: 720px; overflow: hidden; background-color: #F4F7F6;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    color: #2C3E50}
+.slide-root-container {
+    width: 1280px;
+    height: 720px;
+    display: flex;
+    flex-direction: column;
+    position: relative
+    }
+/* Title Section based on DESIGN */
+.title-header-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 60px 16px 60px
+    }
+.title-accent-box {
+    display: flex;
+    align-items: center;
+    gap: 10px 12px
+    }
+.title-vertical-bar {
+    width: 4px;
+    align-self: stretch;
+    background-color: #10B981;
+    border-radius: 2px
+    }
+.title-text-group {
+    display: flex;
+    flex-direction: column
+    }
+.title-main-heading {
+    margin: 0 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2C3E50;
+    line-height: 1.2
+    }
+.title-sub-heading {
+    margin: 3px 0 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #10B981;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    }
+/* Main Layout */
+.content-main-layout {
+    display: flex;
+    flex: 1;
+    padding: 16px 60px 32px 60px;
+    gap: 32px 40px;
+    align-items: stretch
+    }
+.layout-left-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    gap: 19px 24px
+    }
+.layout-right-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    gap: 19px 24px
+    }
+/* Component Styles */
+.hardware-info-card {
+    background-color: #FFF;
+    border-radius: 16px;
+    padding: 22px 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 13px 16px;
+    flex: 1
+    }
+.card-header-group {
+    display: flex;
+    align-items: center;
+    gap: 10px 12px;
+    border-bottom: 2px solid #F4F7F6;
+    padding-bottom: 10px
+    }
+.card-icon-box {
+    width: 40px;
+    height: 40px;
+    background-color: #ECFDF5;
+    color: #10B981;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px
+    }
+.card-title-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2C3E50
+    }
+.vram-list-container {
+    padding: 0 0;
+    margin: 0 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px 12px
+    }
+.vram-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #F8FAFC;
+    padding: 11px 18px;
+    border-radius: 10px
+    }
+.vram-label-text {
+    font-weight: 600;
+    font-size: 15px;
+    color: #475569
+    }
+.vram-value-badge {
+    background-color: #10B981;
+    color: #FFF;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700
+    }
+.hardware-spec-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px 10px
+    }
+.spec-item-wrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #475569
+    }
+.spec-bullet-icon {
+    color: #10B981;
+    margin-top: 3px;
+    font-size: 11px
+    }
+.selection-image-box {
+    height: 216px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1)
+    }
+.selection-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover
+    }
+.guide-step-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px 12px
+    }
+.guide-step-item {
+    display: flex;
+    align-items: center;
+    gap: 11px 14px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: background-color 0.3s
+    }
+.guide-step-item:hover {
+    background-color: #F8FAFC
+    }
+.guide-arrow-icon {
+    color: #10B981;
+    font-size: 17px
+    }
+.guide-content-text {
+    display: flex;
+    flex-direction: column
+    }
+.guide-condition-label {
+    font-size: 12px;
+    color: #94A3B8;
+    font-weight: 500
+    }
+.guide-result-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2C3E50
+    }
+.highlight-accent {
+    color: #10B981;
+    font-weight: 700
+    }
+html { overflow: hidden; }
+</style><link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet">
+</head>
+<body class="">
+<div class="slide-root-container" style="overflow: hidden;">
+<!-- Header -->
+<div class="title-header-wrapper">
+<div class="title-accent-box">
+<div class="title-vertical-bar"></div>
+<div class="title-text-group">
+<h1 class="title-main-heading">8. 하드웨어 요구사항 및 실무 선택 가이드</h1>
+<p class="title-sub-heading">Hardware Requirements &amp; Practical Selection Guide</p>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="content-main-layout">
+<!-- Left Column: Hardware Spec -->
+<div class="layout-left-column">
+<div class="hardware-info-card">
+<div class="card-header-group">
+<div class="card-icon-box">
+<i class="fas fa-memory"></i>
+</div>
+<span class="card-title-text">GPU VRAM 요구사항</span>
+</div>
+<ul class="vram-list-container">
+<li class="vram-item-row">
+<span class="vram-label-text">7B 모델 (양자화 기준)</span>
+<span class="vram-value-badge">12 ~ 24GB</span>
+</li>
+<li class="vram-item-row">
+<span class="vram-label-text">30B 이상 대형 모델</span>
+<span class="vram-value-badge">24GB 이상 권장</span>
+</li>
+</ul>
+<div class="hardware-spec-details">
+<div class="spec-item-wrapper">
+<i class="fas fa-microchip spec-bullet-icon"></i>
+<span>NVIDIA A100 / H100 (고대역폭 메모리) 활용 권장</span>
+</div>
+<div class="spec-item-wrapper">
+<i class="fas fa-bolt spec-bullet-icon"></i>
+<span>최적화 성능을 위한 텐서 코어(Tensor Core) 지원 필수</span>
+</div>
+</div>
+</div>
+<div class="hardware-info-card">
+<div class="card-header-group">
+<div class="card-icon-box">
+<i class="fas fa-lightbulb"></i>
+</div>
+<span class="card-title-text">실무 적용 핵심 팁</span>
+</div>
+<div class="hardware-spec-details">
+<div class="spec-item-wrapper">
+<i class="fa-solid fa-circle-check spec-bullet-icon"></i>
+<span>데이터셋 크기가 작을수록 PEFT 기법의 효율이 극대화됩니다.</span>
+</div>
+<div class="spec-item-wrapper">
+<i class="fa-solid fa-check spec-bullet-icon"></i>
+<span>멀티 GPU 환경에서는 분산 학습 전략(DeepSpeed 등)을 병행하십시오.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Selection Guide & Image -->
+<div class="layout-right-column">
+<div class="selection-image-box">
+<img alt="AI Training GPU Server" src="https://agents-download.skywork.ai/image/rt/fa7ebdbede3f4f84d9fc14436d25b587.jpg">
+</div>
+<div class="hardware-info-card">
+<div class="card-header-group">
+<div class="card-icon-box">
+<i class="fas fa-route"></i>
+</div>
+<span class="card-title-text">프로젝트별 최적 전략 선택</span>
+</div>
+<div class="guide-step-container">
+<div class="guide-step-item">
+<i class="fas fa-chevron-right guide-arrow-icon"></i>
+<div class="guide-content-text">
+<span class="guide-condition-label">최고 수준의 성능 및 도메인 적응 필요 시</span>
+<span class="guide-result-value"><span class="highlight-accent">Full Fine-tuning</span> 전략 채택</span>
+</div>
+</div>
+<div class="guide-step-item">
+<i class="fas fa-chevron-right guide-arrow-icon"></i>
+<div class="guide-content-text">
+<span class="guide-condition-label">자원 제한 및 빠른 실험/배포가 필요 시</span>
+<span class="guide-result-value"><span class="highlight-accent">LoRA / QLoRA</span> 기법 활용</span>
+</div>
+</div>
+<div class="guide-step-item">
+<i class="fas fa-chevron-right guide-arrow-icon"></i>
+<div class="guide-content-text">
+<span class="guide-condition-label">스타일 교정 및 인간 선호도 반영 필요 시</span>
+<span class="guide-result-value"><span class="highlight-accent">SFT + DPO / RLHF</span> 병행</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+</body></html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko" style="--viewport-height: 12.92px;"><head>
+<meta charset="utf-8">
+<title>LLM 파인 튜닝의 개요 및 필요성</title>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" rel="stylesheet"><style>@import url(https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css);
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+    }
+body {width: 1280px; height: 720px; overflow: hidden; background-color: #F4F7F6;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    color: #2C3E50}
+.slide-root-container {
+    width: 1280px;
+    height: 720px;
+    background-color: #F4F7F6;
+    display: flex;
+    flex-direction: column;
+    position: relative
+    }
+/* Title Area */
+.title-section-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 60px 20px 60px
+    }
+.title-accent-group {
+    display: flex;
+    align-items: center;
+    gap: 12px
+    }
+.title-vertical-bar {
+    width: 4px;
+    height: 48px;
+    background-color: #10B981;
+    border-radius: 2px
+    }
+.title-text-content {
+    display: flex;
+    flex-direction: column
+    }
+.title-main-heading {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2C3E50;
+    line-height: 1.2
+    }
+.title-sub-heading {
+    margin: 4px 0 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #10B981;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    }
+/* Main Content Layout */
+.content-main-layout {
+    padding: 0 60px 40px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px
+    }
+/* Definition Block */
+.definition-highlight-block {
+    background-color: #FFF;
+    border-radius: 12px;
+    padding: 24px 30px;
+    border-left: 6px solid #10B981;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05)
+    }
+.definition-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #10B981;
+    margin-bottom: 8px;
+    display: block
+    }
+.definition-text {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0
+    }
+/* Two Column Layout */
+.bottom-grid-wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: stretch
+    }
+.left-column-necessity {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px
+    }
+.right-column-impact {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px
+    }
+/* Cards and Items */
+.necessity-card-item {
+    background-color: #FFF;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    list-style: none
+    }
+.card-inner-flex {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px
+    }
+.icon-circle-wrapper {
+    width: 44px;
+    height: 44px;
+    background-color: #F0FAF7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0
+    }
+.icon-circle-wrapper i {
+    color: #10B981;
+    font-size: 18px
+    }
+.card-text-group {
+    display: flex;
+    flex-direction: column
+    }
+.card-item-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #2C3E50;
+    margin-bottom: 4px
+    }
+.card-item-desc {
+    font-size: 14px;
+    color: #576574;
+    line-height: 1.4
+    }
+/* Impact Box */
+.impact-summary-box {
+    background-color: #2C3E50;
+    border-radius: 12px;
+    padding: 24px;
+    color: #FFF;
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+    }
+.impact-header {
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px
+    }
+.impact-list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 14px
+    }
+.impact-list-row {
+    display: flex;
+    align-items: center;
+    gap: 12px
+    }
+.impact-bullet {
+    width: 6px;
+    height: 6px;
+    background-color: #10B981;
+    border-radius: 50%
+    }
+.impact-row-text {
+    font-size: 15px;
+    line-height: 1.4
+    }
+.case-study-badge {
+    background-color: rgba(16, 185, 129, 0.15);
+    border: 1px solid #10B981;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+    }
+.badge-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #10B981;
+    text-transform: uppercase
+    }
+.badge-content {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2C3E50
+    }
+.highlight-green {
+    color: #10B981;
+    font-weight: 800
+    }
+html { overflow: hidden; }
+</style>
+</head>
+<body class="">
+<div class="slide-root-container" style="overflow: hidden;">
+<!-- Header -->
+<div class="title-section-wrapper">
+<div class="title-accent-group">
+<div class="title-vertical-bar"></div>
+<div class="title-text-content">
+<h1 class="title-main-heading">LLM 파인 튜닝의 개요 및 필요성</h1>
+<p class="title-sub-heading">Overview and Necessity of LLM Fine-tuning</p>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="content-main-layout">
+<!-- Definition Section -->
+<div class="definition-highlight-block">
+<span class="definition-label">DEFINITION</span>
+<p class="definition-text">
+                    사전 학습된(Pre-trained) 대규모 언어 모델을 <span class="highlight-green">특정 도메인이나 목적</span>에 맞춰 가중치를 조정하여 최적화하는 기술적 과정
+                </p>
+</div>
+<!-- Two Column Section -->
+<div class="bottom-grid-wrapper">
+<!-- Left: Necessity -->
+<div class="left-column-necessity">
+<div class="necessity-card-item">
+<div class="card-inner-flex">
+<div class="icon-circle-wrapper"><i class="fas fa-microscope"></i></div>
+<div class="card-text-group">
+<div class="card-item-title">전문성 결여 해결</div>
+<div class="card-item-desc">법률, 의료 등 일반 모델이 학습하지 못한 도메인 특화 지식 주입</div>
+</div>
+</div>
+</div>
+<div class="necessity-card-item">
+<div class="card-inner-flex">
+<div class="icon-circle-wrapper"><i class="fas fa-shield-halved"></i></div>
+<div class="card-text-group">
+<div class="card-item-title">정확도 및 신뢰도 향상</div>
+<div class="card-item-desc">환각(Hallucination) 현상을 억제하고 답변의 신뢰 수준 확보</div>
+</div>
+</div>
+</div>
+<div class="necessity-card-item">
+<div class="card-inner-flex">
+<div class="icon-circle-wrapper"><i class="fas fa-user-pen"></i></div>
+<div class="card-text-group">
+<div class="card-item-title">사용자 의도 및 스타일 반영</div>
+<div class="card-item-desc">기업 고유의 말투, 페르소나, 특정한 출력 형식을 정교하게 제어</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Impact & Case -->
+<div class="right-column-impact">
+<div class="impact-summary-box">
+<div class="impact-header">
+<i class="fas fa-chart-line"></i> 기대 효과 (Expected Effects)
+                        </div>
+<div class="impact-list-wrapper">
+<div class="impact-list-row">
+<div class="impact-bullet"></div>
+<div class="impact-row-text">바닥부터 학습(From-scratch) 대비 비용/시간 획기적 절감</div>
+</div>
+<div class="impact-list-row">
+<div class="impact-bullet"></div>
+<div class="impact-row-text">특정 태스크에서 범용 모델 대비 압도적인 벤치마크 달성</div>
+</div>
+</div>
+</div>
+<div class="case-study-badge">
+<div class="badge-title">실무 사례 (Success Case)</div>
+<div class="badge-content">
+                            법률 도메인 특화 데이터 학습 시,<br>
+                            기존 대비 답변 정확도 <span class="highlight-green">20% 이상 향상</span> 확인
+                        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+</body></html>

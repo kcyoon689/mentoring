@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko" style="--viewport-height: 12.92px;"><head>
+<meta charset="utf-8">
+<title>LLM 파인 튜닝 기술 가이드</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" rel="stylesheet"><style>@import url(https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css);
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+    }
+body {width: 1280px; height: 720px; overflow: hidden; background-color: #F4F7F6;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    color: #2C3E50}
+.slide-root-container {
+    width: 1280px;
+    height: 720px;
+    background-color: #F4F7F6;
+    display: flex;
+    flex-direction: column;
+    position: relative
+    }
+/* Title Section */
+.title-section-container {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 60px 16px 60px
+    }
+.title-header-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px 12px
+    }
+.title-accent-line {
+    width: 4px;
+    align-self: stretch;
+    background-color: #10B981;
+    border-radius: 2px
+    }
+.title-text-group {
+    display: flex;
+    flex-direction: column
+    }
+.title-main-heading {
+    margin: 0 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2C3E50;
+    line-height: 1.2
+    }
+.title-sub-heading {
+    margin: 3px 0 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #10B981;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    }
+/* Content Layout */
+.main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 0 60px 32px 60px;
+    gap: 24px 30px
+    }
+.technique-cards-row {
+    display: flex;
+    gap: 19px 24px;
+    align-items: stretch
+    }
+.technique-card-item {
+    flex: 1;
+    background-color: #FFF;
+    border-radius: 12px;
+    padding: 19px 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column
+    }
+.card-header-box {
+    display: flex;
+    align-items: center;
+    gap: 10px 12px;
+    margin-bottom: 16px
+    }
+.card-icon-circle {
+    width: 44px;
+    height: 44px;
+    background-color: #ECFDF5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #10B981;
+    font-size: 20px
+    }
+.card-title-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2C3E50
+    }
+.card-content-list {
+    margin: 0 0;
+    padding: 0 0;
+    list-style: none
+    }
+.card-list-element {
+    font-size: 17px;
+    line-height: 1.6;
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+    color: #4A5568
+    }
+.card-list-element::before {
+    content: "•";
+    color: #10B981;
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em
+    }
+.comparison-visual-section {
+    display: flex;
+    gap: 19px 24px;
+    align-items: stretch
+    }
+.chart-block-container {
+    flex: 3;
+    background-color: #FFF;
+    border-radius: 12px;
+    padding: 19px 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column
+    }
+.chart-display-area {
+    width: 100%;
+    height: 209px
+    }
+.insight-block-container {
+    flex: 2;
+    background-color: #2C3E50;
+    border-radius: 12px;
+    padding: 19px 24px;
+    color: #FFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+    }
+.insight-label-text {
+    font-size: 14px;
+    color: #10B981;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 6px
+    }
+.insight-main-value {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 10px
+    }
+.insight-description-text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #CBD5E0
+    }
+.highlight-accent {
+    color: #10B981;
+    font-weight: 700
+    }
+html { overflow: hidden; }
+</style>
+</head>
+<body class="">
+<div class="slide-root-container" style="overflow: hidden;">
+<!-- Header -->
+<div class="title-section-container">
+<div class="title-header-wrapper">
+<div class="title-accent-line"></div>
+<div class="title-text-group">
+<h1 class="title-main-heading">4. 핵심 PEFT 기법: LoRA 및 QLoRA</h1>
+<p class="title-sub-heading">Core PEFT Techniques: LoRA &amp; QLoRA</p>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="main-content-wrapper">
+<!-- Technique Cards -->
+<div class="technique-cards-row">
+<div class="technique-card-item">
+<div class="card-header-box">
+<div class="card-icon-circle">
+<i class="fas fa-layer-group"></i>
+</div>
+<div class="card-title-text">LoRA (Low-Rank Adaptation)</div>
+</div>
+<ul class="card-content-list">
+<li class="card-list-element">기존 가중치를 고정하고 저차원 행렬(어댑터)만 학습</li>
+<li class="card-list-element">학습 파라미터 수를 획기적으로 줄여 속도 향상</li>
+<li class="card-list-element">성능 손실을 최소화하면서 낮은 GPU 비용으로 튜닝</li>
+</ul>
+</div>
+<div class="technique-card-item">
+<div class="card-header-box">
+<div class="card-icon-circle">
+<i class="fa-solid fa-compress"></i>
+</div>
+<div class="card-title-text">QLoRA (Quantized LoRA)</div>
+</div>
+<ul class="card-content-list">
+<li class="card-list-element">모델을 4비트로 양자화한 후 LoRA 기법을 적용</li>
+<li class="card-list-element">VRAM 사용량을 최대 <span class="highlight-accent">80% 절감</span> 가능</li>
+<li class="card-list-element">소비자용 GPU에서도 대형 언어 모델 학습 지원</li>
+</ul>
+</div>
+</div>
+<!-- Visualization Row -->
+<div class="comparison-visual-section">
+<div class="chart-block-container">
+<div style="font-size: 16px;font-weight: 700;color: #4A5568;margin-bottom: 8px;">VRAM 사용량 비교 (Full vs PEFT)</div>
+<div class="chart-display-area" id="vram-comparison-chart" _echarts_instance_="ec_1777723566477" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 624px; height: 209px;"><div style="position: relative; width: 624px; height: 209px; padding: 0px; margin: 0px; border-width: 0px;"><canvas data-zr-dom-id="zr_0" width="624" height="209" style="position: absolute; left: 0px; top: 0px; width: 624px; height: 209px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div></div>
+</div>
+<div class="insight-block-container">
+<div class="insight-label-text">Key Efficiency Metric</div>
+<div class="insight-main-value">10,000배 감소</div>
+<div class="insight-description-text">
+                        GPT-3 175B 모델 기준, 학습 파라미터 수를 만 배 이상 줄여 <span class="highlight-accent">자원 효율성</span>을 극대화합니다.
+                    </div>
+</div>
+</div>
+</div>
+</div>
+<script>
+        const chartDom = document.getElementById('vram-comparison-chart');
+        const myChart = echarts.init(chartDom);
+        const option = {
+            backgroundColor: 'transparent',
+            grid: {
+                top: 20,
+                right: 30,
+                bottom: 40,
+                left: 60,
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                data: ['Full FT', 'LoRA', 'QLoRA'],
+                axisLine: { lineStyle: { color: '#CBD5E0' } },
+                axisLabel: { color: '#4A5568', fontSize: 12, fontWeight: 600 }
+            },
+            yAxis: {
+                type: 'value',
+                max: 100,
+                name: 'VRAM Usage (%)',
+                nameTextStyle: { color: '#718096', fontSize: 10 },
+                axisLine: { show: false },
+                splitLine: { lineStyle: { type: 'dashed', color: '#EDF2F7' } },
+                axisLabel: { color: '#718096', fontSize: 10 }
+            },
+            series: [
+                {
+                    data: [
+                        { value: 100, itemStyle: { color: '#2C3E50' } },
+                        { value: 33, itemStyle: { color: '#10B981' } },
+                        { value: 20, itemStyle: { color: '#34D399' } }
+                    ],
+                    type: 'bar',
+                    barWidth: '45%',
+                    label: {
+                        show: true,
+                        position: 'top',
+                        formatter: '{c}%',
+                        color: '#2C3E50',
+                        fontSize: 12,
+                        fontWeight: 700
+                    },
+                    itemStyle: {
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }
+            ]
+        };
+        myChart.setOption(option);
+    </script>
+
+
+
+</body></html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko" style="--viewport-height: 12.92px;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LLM 파인 튜닝 기술 가이드</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" rel="stylesheet"><style>@import url(https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css);
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+    }
+body {width: 1280px; height: 720px; overflow: hidden; background-color: #F4F7F6;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    color: #2C3E50}
+.slide-root-container {
+    width: 1280px;
+    height: 720px;
+    margin: 0 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #F4F7F6;
+    position: relative
+    }
+/* Header Section */
+.title-section-wrapper {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 60px 16px 60px
+    }
+.title-main-container {
+    display: flex;
+    align-items: center;
+    gap: 10px 12px
+    }
+.title-accent-bar {
+    width: 4px;
+    align-self: stretch;
+    background-color: #10B981;
+    border-radius: 2px
+    }
+.title-text-group {
+    display: flex;
+    flex-direction: column
+    }
+.title-primary-heading {
+    margin: 0 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2C3E50;
+    line-height: 1.2
+    }
+.title-secondary-subheading {
+    margin: 3px 0 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #10B981;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    }
+/* Description Section */
+.page-intro-description {
+    padding: 0 64px 16px 64px;
+    font-size: 18px;
+    color: #5D6D7E;
+    line-height: 1.6
+    }
+/* Main Content Layout */
+.content-main-layout {
+    flex: 1;
+    display: flex;
+    padding: 0 60px 48px 60px;
+    gap: 19px 24px;
+    align-items: stretch
+    }
+/* Card Modules */
+.peft-method-card {
+    flex: 1;
+    background-color: #FFF;
+    border-radius: 16px;
+    padding: 32px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    justify-content: center
+    }
+.method-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background-color: rgba(16, 185, 129, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 19px
+    }
+.method-icon-wrapper i {
+    font-size: 32px;
+    color: #10B981
+    }
+.method-card-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2C3E50;
+    margin: 0 0 13px 0;
+    text-align: center
+    }
+.method-card-divider {
+    width: 40px;
+    height: 2px;
+    background-color: #10B981;
+    margin-bottom: 16px
+    }
+.method-card-list {
+    list-style: none;
+    padding: 0 0;
+    margin: 0 0;
+    width: 100%
+    }
+.method-list-item {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #5D6D7E;
+    text-align: center;
+    margin-bottom: 10px;
+    word-break: keep-all
+    }
+.method-list-item b {
+    color: #2C3E50
+    }
+/* Rhetorical Question Footer */
+.rhetorical-question-box {
+    margin: 0 60px 32px 60px;
+    padding: 16px 20px;
+    background-color: rgba(44, 62, 80, 0.03);
+    border-radius: 12px;
+    border-left: 4px solid #10B981;
+    display: flex;
+    align-items: center;
+    gap: 12px 15px
+    }
+.question-icon {
+    font-size: 20px;
+    color: #10B981
+    }
+.question-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2C3E50;
+    font-style: italic
+    }
+html { overflow: hidden; }
+</style>
+</head>
+<body class="">
+<div class="slide-root-container" style="overflow: hidden;">
+<!-- Header Section -->
+<div class="title-section-wrapper">
+<div class="title-main-container">
+<div class="title-accent-bar"></div>
+<div class="title-text-group">
+<h1 class="title-primary-heading">5. 기타 PEFT 및 입력 기반 기법</h1>
+<p class="title-secondary-subheading">Other PEFT &amp; Input-Based Techniques</p>
+</div>
+</div>
+</div>
+<!-- Description Section -->
+<div class="page-intro-description">
+            소프트 프롬프트를 추가하는 프롬프트 튜닝부터 어댑터 모듈 삽입까지, 모델 파라미터 수정을 최소화하는 다양한 효율적 튜닝 방식을 소개합니다.
+        </div>
+<!-- Main Content Layout -->
+<div class="content-main-layout">
+<!-- Prompt Tuning Card -->
+<div class="peft-method-card">
+<div class="method-icon-wrapper">
+<i class="fas fa-keyboard"></i>
+</div>
+<h2 class="method-card-title">Prompt Tuning</h2>
+<div class="method-card-divider"></div>
+<div class="method-card-list">
+<div class="method-list-item">입력 임베딩 단계에 학습 가능한 <b>'소프트 프롬프트'</b>를 추가합니다.</div>
+<div class="method-list-item">기존 모델의 모든 파라미터는 <b>완전히 고정(Freeze)</b>됩니다.</div>
+<div class="method-list-item">프롬프트 토큰만 학습하므로 자원 소모가 극도로 적습니다.</div>
+</div>
+</div>
+<!-- Prefix Tuning Card -->
+<div class="peft-method-card">
+<div class="method-icon-wrapper">
+<i class="fas fa-indent"></i>
+</div>
+<h2 class="method-card-title">Prefix Tuning</h2>
+<div class="method-card-divider"></div>
+<div class="method-card-list">
+<div class="method-list-item">입력 시퀀스 앞에 학습 가능한 <b>프리픽스 토큰</b>을 추가합니다.</div>
+<div class="method-list-item">모든 레이어의 어텐션 메커니즘에 <b>가상 토큰</b>을 주입하여 동작을 유도합니다.</div>
+<div class="method-list-item">연속적인 벡터를 통해 모델의 맥락 파악 능력을 미세 조정합니다.</div>
+</div>
+</div>
+<!-- Adapter Card -->
+<div class="peft-method-card">
+<div class="method-icon-wrapper">
+<i class="fas fa-plug"></i>
+</div>
+<h2 class="method-card-title">Adapter</h2>
+<div class="method-card-divider"></div>
+<div class="method-card-list">
+<div class="method-list-item">트랜스포머 블록 사이에 <b>작은 병목(Bottleneck) 모듈</b>을 삽입합니다.</div>
+<div class="method-list-item">기존 가중치는 고정하고 <b>어댑터 내부의 파라미터</b>만 학습합니다.</div>
+<div class="method-list-item">태스크별 어댑터 교체가 용이하여 <b>모듈화 관리</b>에 최적입니다.</div>
+</div>
+</div>
+</div>
+<!-- Rhetorical Question Footer -->
+<div class="rhetorical-question-box">
+<i class="fas fa-lightbulb question-icon"></i>
+<div class="question-text">"수많은 태스크를 하나의 거대 모델로 서빙할 때, 태스크별로 어댑터만 교체하는 것이 더 효율적이지 않을까요?"</div>
+</div>
+</div>
+
+
+
+</body></html>

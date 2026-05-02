@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI 활용 기술의 진화 — 프롬프트에서 하네스까지</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #080d18;
+  --bg2:      #0f1624;
+  --bg3:      #141e30;
+  --gold:     #e8a020;
+  --teal:     #22d3ee;
+  --purple:   #a78bfa;
+  --blue:     #3b82f6;
+  --green:    #34d399;
+  --red:      #f87171;
+  --white:    #ffffff;
+  --off:      #cbd5e1;
+  --muted:    #64748b;
+  --border:   #1e3050;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── NAV ─────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem;
+  height: 52px;
+  background: rgba(8,13,24,.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+nav .logo { font-family:'Bebas Neue'; font-size:1.2rem; letter-spacing:.15em; color:var(--teal); }
+.nav-dots { display:flex; gap:.5rem; }
+.nav-dot {
+  width:8px; height:8px; border-radius:50%;
+  background: var(--border); border:none; cursor:pointer; transition:.2s;
+}
+.nav-dot.active { background:var(--teal); transform:scale(1.4); }
+.nav-arrows { display:flex; gap:.5rem; }
+.nav-arrow {
+  background:none; border:1px solid var(--border); color:var(--off);
+  width:32px; height:32px; border-radius:6px; cursor:pointer;
+  font-size:1rem; display:flex; align-items:center; justify-content:center;
+  transition:.2s;
+}
+.nav-arrow:hover { border-color:var(--teal); color:var(--teal); }
+.slide-counter { font-size:.8rem; color:var(--muted); font-family:'Space Mono',monospace; }
+
+/* ── SLIDES ──────────────────────────── */
+.slideshow { width:100%; }
+
+.slide {
+  display: none;
+  min-height: 100vh;
+  padding: 80px 5vw 3rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn .4s ease;
+}
+.slide.active { display: flex; flex-direction: column; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* grid dots bg */
+.slide::before {
+  content:'';
+  position:absolute; inset:0;
+  background-image: radial-gradient(circle, #1e3050 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity:.3;
+  pointer-events:none;
+}
+
+/* ── SLIDE TAG / TITLE ───────────────── */
+.slide-tag {
+  font-family:'Space Mono',monospace;
+  font-size:.7rem; letter-spacing:.2em;
+  color:var(--teal); margin-bottom:.4rem;
+}
+.slide-title {
+  font-family:'Bebas Neue'; font-size:clamp(2rem,5vw,3.4rem);
+  letter-spacing:.04em; line-height:1.05;
+  margin-bottom:.4rem;
+}
+.slide-subtitle { font-size:.95rem; color:var(--off); margin-bottom:1.5rem; }
+.title-rule { width:60px; height:3px; background:var(--teal); margin-bottom:1.8rem; border-radius:2px; }
+
+/* ── CARD ────────────────────────────── */
+.card {
+  background:var(--bg2);
+  border: 1px solid var(--border);
+  border-radius:10px;
+  padding:1.2rem 1.4rem;
+}
+.card-accent-left {
+  border-left-width: 3px;
+}
+
+/* ── BADGE ───────────────────────────── */
+.badge {
+  display:inline-block;
+  padding:.2rem .8rem;
+  border-radius:20px; font-size:.75rem; font-weight:700;
+  border:1px solid currentColor;
+}
+
+/* ── GRID UTIL ───────────────────────── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+
+/* ═══════════════════════════════════════
+   SLIDE 1 — TITLE
+═══════════════════════════════════════ */
+#s1 { justify-content:center; }
+.s1-badge {
+  display:inline-flex; align-items:center; gap:.5rem;
+  border:1px solid var(--teal); border-radius:20px;
+  padding:.3rem 1rem; font-size:.75rem; color:var(--teal);
+  margin-bottom:1.5rem; width:fit-content;
+}
+.s1-main { margin-bottom:1rem; }
+.s1-main h1 {
+  font-family:'Bebas Neue'; font-size:clamp(3.5rem,9vw,7rem);
+  letter-spacing:.02em; line-height:1;
+}
+.s1-main .line1 { color:var(--white); }
+.s1-main .line2 { color:var(--teal); }
+.s1-sub { font-size:1.1rem; color:var(--off); margin-bottom:2.5rem; }
+.s1-pills { display:flex; gap:1rem; flex-wrap:wrap; }
+.s1-pill {
+  padding:.5rem 1.5rem; border-radius:8px; font-size:.85rem; font-weight:700;
+  border:1.5px solid currentColor; background:rgba(255,255,255,.03);
+  letter-spacing:.04em;
+}
+.s1-deco {
+  position:absolute; right:4vw; top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:.8rem; opacity:.4;
+}
+.s1-deco span {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--teal); display:block;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 2 — PARADIGM
+═══════════════════════════════════════ */
+.stage-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; flex:1; }
+.stage-card {
+  border:1.5px solid; border-radius:12px;
+  background:var(--bg3);
+  padding:1.4rem;
+  position:relative; overflow:hidden;
+  display:flex; flex-direction:column; gap:.8rem;
+}
+.stage-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:currentColor;
+}
+.stage-badge {
+  display:inline-flex; align-items:center; gap:.4rem;
+  border:1px solid currentColor; border-radius:14px;
+  padding:.18rem .7rem; font-size:.72rem; font-weight:700;
+  width:fit-content;
+}
+.stage-title { font-size:1.5rem; font-weight:900; line-height:1.2; }
+.stage-quote { font-size:.9rem; font-style:italic; line-height:1.5; }
+.stage-sub { font-size:.78rem; color:var(--muted); margin-top:auto; }
+.paradigm-banner {
+  margin-top:1rem;
+  background:#0d1829; border:1px solid var(--blue);
+  border-radius:10px; padding:.9rem 1.4rem;
+  font-size:.95rem; line-height:1.6; text-align:center;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 3 — PROMPT ENG
+═══════════════════════════════════════ */
+.def-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-left:3px solid var(--gold); border-radius:10px;
+  padding:1.1rem 1.4rem; margin-bottom:1.2rem;
+}
+.def-label { font-size:.78rem; color:var(--gold); font-weight:700; margin-bottom:.3rem; }
+.def-text { font-size:1.05rem; font-weight:700; margin-bottom:.25rem; }
+.def-desc { font-size:.85rem; color:var(--off); }
+.prompt-compare { display:grid; grid-template-columns:1fr auto 1fr; gap:.8rem; align-items:center; margin-bottom:1.2rem; }
+.prompt-bad, .prompt-good {
+  border-radius:10px; padding:1.1rem 1.2rem;
+  display:flex; flex-direction:column; gap:.5rem;
+}
+.prompt-bad { background:#1a1010; border:1.5px solid #5c2020; }
+.prompt-good { background:#0d1a1a; border:1.5px solid var(--teal); }
+.prompt-label { font-size:.8rem; font-weight:700; }
+.prompt-ex { font-size:.95rem; font-style:italic; color:var(--white); }
+.prompt-note { font-size:.75rem; color:var(--muted); font-style:italic; margin-top:auto; }
+.prompt-arrow { font-size:2rem; color:var(--gold); font-weight:900; text-align:center; }
+.limit-banner {
+  background:#1a0808; border:1.5px solid var(--red);
+  border-left:3px solid var(--red); border-radius:10px;
+  padding:.9rem 1.2rem;
+}
+.limit-label { font-size:.78rem; color:var(--red); font-weight:700; margin-bottom:.3rem; }
+.limit-text { font-size:.92rem; color:var(--off); line-height:1.6; }
+
+/* ═══════════════════════════════════════
+   SLIDE 4 — CONTEXT COMPONENTS
+═══════════════════════════════════════ */
+.context-layout { display:grid; grid-template-columns:260px 1fr; gap:2rem; flex:1; align-items:center; }
+.orbit-wrap { position:relative; width:240px; height:240px; }
+.orbit {
+  position:absolute; border-radius:50%; border:1.5px solid;
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+.orbit-center {
+  position:absolute; width:52px; height:52px; border-radius:50%;
+  background:var(--blue); display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:.85rem; top:50%; left:50%; transform:translate(-50%,-50%);
+  box-shadow: 0 0 20px rgba(59,130,246,.5);
+}
+.comp-grid { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+.comp-item {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:8px; padding:.75rem 1rem;
+  display:flex; align-items:flex-start; gap:.6rem;
+}
+.comp-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:.25rem; }
+.comp-label { font-size:.9rem; font-weight:700; margin-bottom:.15rem; }
+.comp-desc { font-size:.75rem; color:var(--off); line-height:1.4; }
+.context-footer {
+  margin-top:1rem;
+  background:#0d1829; border:1px solid var(--blue); border-radius:8px;
+  padding:.7rem 1.2rem; font-size:.88rem; color:var(--off);
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 5 — 3 PRINCIPLES
+═══════════════════════════════════════ */
+.principle-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem; flex:1; }
+.principle-card {
+  border:1.5px solid; border-radius:12px; background:var(--bg3);
+  padding:1.4rem; display:flex; flex-direction:column; gap:.9rem;
+  position:relative; overflow:hidden;
+}
+.principle-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px; background:currentColor;
+}
+.principle-icon {
+  width:60px; height:60px; border-radius:50%;
+  background:var(--bg2); border:1.5px solid currentColor;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem;
+}
+.principle-num { font-family:'Bebas Neue'; font-size:2.8rem; letter-spacing:.03em; line-height:1; }
+.principle-title { font-size:1.15rem; font-weight:900; }
+.principle-desc { font-size:.83rem; color:var(--off); line-height:1.7; margin-top:auto; }
+
+/* ═══════════════════════════════════════
+   SLIDE 6 — HARNESS DEF
+═══════════════════════════════════════ */
+.harness-layout { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; align-items:start; }
+.harness-def-card {
+  background:var(--bg2); border:1.5px solid var(--purple);
+  border-left:3px solid var(--purple); border-radius:10px;
+  padding:1.2rem 1.4rem; margin-bottom:1rem;
+}
+.harness-keywords { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:1rem; }
+.harness-kw {
+  padding:.25rem .8rem; border:1px solid var(--purple); border-radius:14px;
+  font-size:.78rem; font-weight:700; color:var(--purple);
+  background:rgba(167,139,250,.08);
+}
+.harness-visual {
+  background:var(--bg3); border:1px solid var(--border); border-radius:12px;
+  padding:1.2rem;
+  display:flex; gap:1rem; align-items:center; justify-content:center;
+}
+.robot-box {
+  flex:1; border-radius:10px; padding:1rem;
+  display:flex; flex-direction:column; align-items:center; gap:.5rem;
+}
+.robot-emoji { font-size:2.2rem; }
+.robot-label { font-size:.78rem; text-align:center; color:var(--muted); }
+.robot-arrow { font-size:1.6rem; color:var(--purple); }
+.harness-analogy {
+  grid-column:1/-1;
+  background:#101a10; border:1.5px solid var(--green); border-radius:10px;
+  padding:.85rem 1.2rem; font-size:.9rem;
+}
+.harness-quote-card {
+  background:var(--bg2); border:1px solid var(--border); border-radius:10px;
+  padding:1.1rem 1.4rem; margin-top:1rem;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 7 — OPENAI
+═══════════════════════════════════════ */
+.openai-quote {
+  background:#0d1829; border:1.5px solid var(--blue);
+  border-left:4px solid var(--blue); border-radius:10px;
+  padding:1.2rem 1.6rem; margin-bottom:1.5rem;
+}
+.openai-quote blockquote {
+  font-family:'Bebas Neue'; font-size:clamp(1.5rem,4vw,2.6rem);
+  letter-spacing:.04em; color:var(--white); line-height:1.1;
+}
+.openai-quote cite { font-size:.78rem; color:var(--muted); font-style:italic; display:block; margin-top:.5rem; }
+.openai-points { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; flex:1; }
+.openai-point {
+  background:var(--bg2); border:1px solid var(--border); border-radius:12px;
+  padding:1.3rem; display:flex; flex-direction:column; gap:.7rem; align-items:center; text-align:center;
+}
+.openai-icon {
+  width:56px; height:56px; border-radius:50%;
+  background:#162035; display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; border:1.5px solid;
+}
+.openai-point-title { font-size:1rem; font-weight:700; }
+.openai-point-desc { font-size:.8rem; color:var(--off); line-height:1.5; }
+
+/* ═══════════════════════════════════════
+   SLIDE 8 — ANTHROPIC
+═══════════════════════════════════════ */
+.anthropic-layout { display:grid; grid-template-columns:1.6fr 1fr; gap:1.2rem; flex:1; }
+.anthropic-cards { display:flex; flex-direction:column; gap:.8rem; }
+.anthropic-card {
+  background:var(--bg2); border-radius:10px;
+  padding:1rem 1.2rem;
+  border-left:3px solid;
+}
+.anthropic-card-label { font-size:.75rem; font-weight:700; margin-bottom:.35rem; }
+.anthropic-card-text { font-size:.87rem; color:var(--off); line-height:1.65; }
+.anthropic-card-sub { font-size:.8rem; color:var(--off); margin-top:.4rem; line-height:1.6; }
+.compare-box {
+  background:var(--bg3); border:1px solid var(--border); border-radius:12px;
+  padding:1rem;
+  display:flex; flex-direction:column; gap:.8rem;
+}
+.compare-item {
+  border-radius:10px; padding:1rem;
+  display:flex; flex-direction:column; gap:.4rem;
+}
+.compare-name { font-size:.95rem; font-weight:700; text-align:center; }
+.compare-desc { font-size:.8rem; color:var(--off); line-height:1.5; text-align:center; }
+.foot-labels {
+  display:flex; justify-content:space-between;
+  margin-top:.5rem; font-size:.75rem; color:var(--muted); font-style:italic;
+}
+
+/* ═══════════════════════════════════════
+   SLIDE 9 — COMPARISON
+═══════════════════════════════════════ */
+.compare-cols { display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; flex:1; }
+.compare-col {
+  border-radius:12px; background:var(--bg2); border:1.5px solid;
+  padding:1.2rem; display:flex; flex-direction:column; gap:.7rem;
+  position:relative; overflow:hidden;
+}
+.compare-col::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:currentColor; }
+.compare-col-num { font-family:'Bebas Neue'; font-size:2.2rem; letter-spacing:.03em; line-height:1; }
+.compare-col-title { font-size:1.1rem; font-weight:900; border-bottom:1px solid var(--border); padding-bottom:.6rem; }
+.compare-row { display:flex; flex-direction:column; gap:.1rem; }
+.compare-row-label { font-size:.72rem; font-weight:700; }
+.compare-row-val { font-size:.83rem; color:var(--off); line-height:1.4; }
+.compare-period {
+  margin-top:auto;
+  display:inline-block; padding:.2rem .7rem;
+  border:1px solid currentColor; border-radius:14px; font-size:.78rem; font-weight:700;
+  text-align:center; width:fit-content; align-self:center;
+}
+.timeline {
+  display:flex; align-items:center; justify-content:center;
+  gap:0; margin-top:.8rem;
+  font-size:.78rem; color:var(--muted);
+}
+.tl-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+.tl-line { flex:1; height:1.5px; background:var(--border); max-width:80px; }
+.tl-label { padding:0 .6rem; }
+
+/* ═══════════════════════════════════════
+   SLIDE 10 — CONCLUSION
+═══════════════════════════════════════ */
+.conclusion-quote {
+  background:#0d1829; border:1.5px solid var(--blue);
+  border-left:4px solid var(--blue); border-radius:10px;
+  padding:1.4rem 1.8rem; margin-bottom:1.5rem;
+  position:relative;
+}
+.conclusion-quote blockquote {
+  font-size:clamp(1.1rem,3vw,1.6rem); font-weight:900; line-height:1.5;
+}
+.conclusion-quote p { font-size:.88rem; color:var(--off); margin-top:.6rem; line-height:1.6; }
+.conclusion-deco {
+  position:absolute; right:1.5rem; top:50%; transform:translateY(-50%);
+  opacity:.5;
+}
+.conclusion-deco .ring {
+  width:60px; height:60px; border-radius:50%; border:2px solid var(--teal);
+  position:absolute; top:0; left:0;
+  box-shadow: 0 0 20px rgba(34,211,238,.3);
+}
+.conclusion-deco .inner {
+  width:38px; height:38px; border-radius:50%; border:2px solid var(--blue);
+  position:absolute; top:11px; left:11px;
+  background:rgba(59,130,246,.15);
+}
+.flow-boxes { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; }
+.flow-box {
+  border-radius:12px; border:1.5px solid; padding:1.4rem 1.2rem;
+  display:flex; flex-direction:column; gap:.7rem;
+  position:relative;
+}
+.flow-icon {
+  width:34px; height:34px; border-radius:50%; border:1.5px solid currentColor;
+  opacity:.7;
+}
+.flow-label { font-size:.72rem; font-weight:700; letter-spacing:.15em; }
+.flow-title { font-size:1.3rem; font-weight:900; line-height:1.25; }
+.flow-arrow {
+  position:absolute; right:-1.5rem; top:50%; transform:translateY(-50%);
+  font-size:1.2rem; color:var(--muted); z-index:1;
+}
+.conclusion-footer {
+  text-align:center; font-size:.78rem; color:var(--muted); margin-top:1.2rem;
+  font-style:italic;
+}
+
+/* ── KEYBOARD HINT ───────────────────── */
+.key-hint {
+  position:fixed; bottom:1.2rem; right:1.5rem;
+  font-size:.7rem; color:var(--muted); font-family:'Space Mono',monospace;
+  display:flex; gap:.5rem; align-items:center;
+  opacity:.6;
+}
+.key { border:1px solid var(--border); border-radius:4px; padding:.15rem .4rem; }
+
+/* ── PROGRESS BAR ────────────────────── */
+.progress {
+  position:fixed; bottom:0; left:0; height:2px;
+  background:linear-gradient(90deg, var(--teal), var(--purple));
+  transition: width .35s ease;
+  z-index:200;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">AI ENGINEERING</div>
+  <div class="nav-dots" id="navDots"></div>
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <span class="slide-counter" id="counter">1 / 10</span>
+    <div class="nav-arrows">
+      <button class="nav-arrow" onclick="go(-1)">&#8592;</button>
+      <button class="nav-arrow" onclick="go(1)">&#8594;</button>
+    </div>
+  </div>
+</nav>
+
+<div class="progress" id="progress"></div>
+
+<div class="slideshow">
+
+<!-- ═══ SLIDE 1 ═══ -->
+<div class="slide active" id="s1">
+  <div class="s1-badge">
+    <span style="width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block;"></span>
+    AI 활용 기술의 진화
+  </div>
+  <div class="s1-main">
+    <h1><span class="line1">프롬프트에서</span><br><span class="line2">하네스까지</span></h1>
+  </div>
+  <p class="s1-sub">AI를 제대로 활용하기 위한 3단계 기술의 진화</p>
+  <div class="s1-pills">
+    <span class="s1-pill" style="color:var(--gold);">01 프롬프트 엔지니어링</span>
+    <span class="s1-pill" style="color:var(--teal);">02 콘텍스트 엔지니어링</span>
+    <span class="s1-pill" style="color:var(--purple);">03 하네스 엔지니어링</span>
+  </div>
+  <div style="position:absolute;bottom:2rem;right:5vw;font-family:'Space Mono',monospace;font-size:.75rem;color:var(--muted);">2026.04.19</div>
+  <div class="s1-deco">
+    <span></span><span style="opacity:.7;"></span><span style="opacity:.5;"></span><span style="opacity:.3;"></span><span style="opacity:.15;"></span>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 2 ═══ -->
+<div class="slide" id="s2">
+  <span class="slide-tag">PARADIGM SHIFT</span>
+  <h2 class="slide-title">AI 활용 패러다임의 진화 과정</h2>
+  <div class="title-rule"></div>
+
+  <div class="stage-cards">
+    <div class="stage-card" style="color:var(--gold);border-color:var(--gold);">
+      <span class="stage-badge">1단계 · 2022–2024</span>
+      <div class="stage-title">프롬프트<br>엔지니어링</div>
+      <div class="stage-quote" style="color:var(--gold);">"어떻게 질문을<br>잘 써야 할까?"</div>
+      <div class="stage-sub">질문을 다듬는 기술</div>
+    </div>
+    <div class="stage-card" style="color:var(--teal);border-color:var(--teal);">
+      <span class="stage-badge">2단계 · 2025</span>
+      <div class="stage-title">콘텍스트<br>엔지니어링</div>
+      <div class="stage-quote" style="color:var(--teal);">"어떤 정보와 도구를<br>제공해야 할까?"</div>
+      <div class="stage-sub">맥락을 설계하는 기술</div>
+    </div>
+    <div class="stage-card" style="color:var(--purple);border-color:var(--purple);">
+      <span class="stage-badge">3단계 · 2026~</span>
+      <div class="stage-title">하네스<br>엔지니어링</div>
+      <div class="stage-quote" style="color:var(--purple);">"어떤 작업 환경과<br>구조를 마련해야 할까?"</div>
+      <div class="stage-sub">실행 환경을 설계하는 기술</div>
+    </div>
+  </div>
+
+  <div class="paradigm-banner">
+    핵심 변화: <strong style="color:var(--gold);">'무엇을 시킬 것인가'</strong>에서 <strong style="color:var(--teal);">'어떻게 일하게 할 것인가'</strong>로
+  </div>
+</div>
+
+<!-- ═══ SLIDE 3 ═══ -->
+<div class="slide" id="s3">
+  <span class="slide-tag">▶ 프롬프트 엔지니어링</span>
+  <h2 class="slide-title">프롬프트 엔지니어링의 정의와 한계</h2>
+  <div class="title-rule" style="background:var(--gold);"></div>
+
+  <div class="def-card">
+    <div class="def-label">정의</div>
+    <div class="def-text">모델로부터 원하는 답변을 얻기 위해 <span style="color:var(--gold);">질문을 구체적으로 설계하는 기술</span></div>
+    <div class="def-desc">더 구체적인 질문일수록, 더 유용한 답변을 이끌어낼 수 있습니다.</div>
+  </div>
+
+  <div class="prompt-compare">
+    <div class="prompt-bad">
+      <div class="prompt-label" style="color:var(--red);">✕ 일반 프롬프트</div>
+      <div class="prompt-ex">"좋은 마케팅 전략 알려줘"</div>
+      <div class="prompt-note">모호하고 단편적인 답변 유도</div>
+    </div>
+    <div class="prompt-arrow">›</div>
+    <div class="prompt-good">
+      <div class="prompt-label" style="color:var(--teal);">✓ 구체적 프롬프트</div>
+      <div class="prompt-ex">"대학생 대상 스타트업, 예산 월 100만 원, 온라인 홍보만 가능. 마케팅 전략을 짜줘"</div>
+      <div class="prompt-note">상황을 반영한 실질적 답변 유도</div>
+    </div>
+  </div>
+
+  <div class="limit-banner">
+    <div class="limit-label">⚠ 한계</div>
+    <div class="limit-text">모델은 <strong style="color:var(--white);">질문 안의 정보에만</strong> 의존하여 판단합니다. 질문에 포함되지 않은 배경 지식이나 도구는 활용할 수 없습니다.</div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 4 ═══ -->
+<div class="slide" id="s4">
+  <span class="slide-tag">02 / 콘텍스트 엔지니어링</span>
+  <h2 class="slide-title">콘텍스트 엔지니어링의 개념과 구성 요소</h2>
+  <p class="slide-subtitle">모델이 답을 생성하기 전, 참고하는 모든 배경 정보와 도구의 총체</p>
+  <div class="title-rule"></div>
+
+  <div class="context-layout" style="flex:1;">
+    <div style="display:flex;align-items:center;justify-content:center;">
+      <div class="orbit-wrap">
+        <div class="orbit" style="width:220px;height:220px;border-color:rgba(167,139,250,.35);"></div>
+        <div class="orbit" style="width:170px;height:170px;border-color:rgba(34,211,238,.4);"></div>
+        <div class="orbit" style="width:120px;height:120px;border-color:rgba(232,160,32,.45);"></div>
+        <div class="orbit" style="width:70px;height:70px;border-color:rgba(59,130,246,.5);"></div>
+        <div class="orbit-center">AI</div>
+      </div>
+    </div>
+
+    <div class="comp-grid">
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--gold);"></div>
+        <div><div class="comp-label" style="color:var(--gold);">지침</div><div class="comp-desc">모델의 역할, 말투, 준수 규칙</div></div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--teal);"></div>
+        <div><div class="comp-label" style="color:var(--teal);">사용자 요청</div><div class="comp-desc">지금 이 순간의 질문과 요청</div></div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--green);"></div>
+        <div><div class="comp-label" style="color:var(--green);">대화 히스토리</div><div class="comp-desc">현재 대화의 맥락과 흐름</div></div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--purple);"></div>
+        <div><div class="comp-label" style="color:var(--purple);">장기 메모리</div><div class="comp-desc">사용자 선호도, 과거 프로젝트 기록</div></div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--green);"></div>
+        <div><div class="comp-label" style="color:var(--green);">검색된 정보</div><div class="comp-desc">문서·데이터베이스·웹의 최신 지식</div></div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--teal);"></div>
+        <div><div class="comp-label" style="color:var(--teal);">도구</div><div class="comp-desc">일정 확인, 메일 발송 등 실행 기능</div></div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--gold);"></div>
+        <div><div class="comp-label" style="color:var(--gold);">도구 정의</div><div class="comp-desc">입력·출력 형식의 명확한 정의</div></div>
+      </div>
+      <div class="comp-item">
+        <div class="comp-dot" style="background:var(--purple);"></div>
+        <div><div class="comp-label" style="color:var(--purple);">출력 형식</div><div class="comp-desc">JSON, 표, 요약문 등 결과 형태 지정</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="context-footer">
+    💡 콘텍스트는 단순한 질문이 아니라, <strong style="color:var(--white);">AI가 문제를 풀 수 있도록 마련된 작업 환경 전체</strong>입니다.
+  </div>
+</div>
+
+<!-- ═══ SLIDE 5 ═══ -->
+<div class="slide" id="s5">
+  <span class="slide-tag">CONTEXT ENGINEERING</span>
+  <h2 class="slide-title">콘텍스트 엔지니어링의 3원칙</h2>
+  <div class="title-rule"></div>
+
+  <div class="principle-cards">
+    <div class="principle-card" style="color:var(--gold);border-color:var(--gold);">
+      <div class="principle-icon" style="border-color:var(--gold);">⬇</div>
+      <div class="principle-num" style="color:var(--gold);">01</div>
+      <div class="principle-title">시스템적으로<br>접근하기</div>
+      <div class="principle-desc">질문을 잘 쓰는 법이 아니라, 정보를 준비하고 다듬는 공정 전체를 설계하는 일. 의도 파악 → 데이터 수집 → 요약 → 순서 배열의 흐름으로 모델이 추측 없이 답할 수 있게 만든다.</div>
+    </div>
+    <div class="principle-card" style="color:var(--teal);border-color:var(--teal);">
+      <div class="principle-icon" style="border-color:var(--teal);">⇄</div>
+      <div class="principle-num" style="color:var(--teal);">02</div>
+      <div class="principle-title">동적으로<br>만들기</div>
+      <div class="principle-desc">모든 요청에 같은 정보를 넣지 않는다. 일정 확인엔 캘린더, 기술 질문엔 문서, 고객 응대엔 대화 기록. 필요한 순간에 필요한 맥락만 선택적으로 제공해 효율과 정확성을 높인다.</div>
+    </div>
+    <div class="principle-card" style="color:var(--purple);border-color:var(--purple);">
+      <div class="principle-icon" style="border-color:var(--purple);">{ }</div>
+      <div class="principle-num" style="color:var(--purple);">03</div>
+      <div class="principle-title">적절한 형식<br>선택하기</div>
+      <div class="principle-desc">무엇을 주느냐 못지않게 어떻게 주느냐가 성능을 좌우한다. 긴 원문보다 핵심 요약, '자유롭게'보다 JSON 형식 요청, 에러 로그도 원인 중심으로 간결히 — 형식이 모델의 이해 속도를 결정한다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 6 ═══ -->
+<div class="slide" id="s6">
+  <span class="slide-tag">03 · 하네스 엔지니어링</span>
+  <h2 class="slide-title">하네스 엔지니어링의 정의와 비유</h2>
+  <div class="title-rule" style="background:var(--purple);"></div>
+
+  <div class="harness-layout">
+    <div>
+      <div class="harness-def-card">
+        <div class="def-label" style="color:var(--purple);">정의</div>
+        <div style="font-size:.97rem;line-height:1.7;color:var(--off);">하네스 엔지니어링은 AI 모델 자체를 만드는 것이 아니라, 모델이 실제 업무를 효과적으로 수행하도록 돕는 <strong style="color:var(--white);">작업 환경을 설계</strong>하는 포괄적인 개념입니다.</div>
+        <div class="harness-keywords">
+          <span class="harness-kw">실행 규칙</span>
+          <span class="harness-kw">작업 흐름</span>
+          <span class="harness-kw">환경 설계</span>
+        </div>
+      </div>
+      <div class="harness-quote-card">
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:.4rem;">OpenAI &amp; Anthropic 공통 입장</div>
+        <div style="font-size:.92rem;color:var(--off);font-style:italic;line-height:1.6;">"좋은 결과는 모델의 능력과 그 모델이 일하는 구조가 함께 만들어낸다."</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:.9rem;">
+      <div class="harness-visual">
+        <div class="robot-box" style="background:#1a1a2e;border:1px solid var(--muted);border-radius:10px;">
+          <div class="robot-emoji">🤖</div>
+          <div style="font-size:.7rem;color:var(--muted);">?&nbsp;&nbsp;?&nbsp;&nbsp;?</div>
+          <div class="robot-label">도구 없음<br>지침 없음</div>
+        </div>
+        <div class="robot-arrow">→</div>
+        <div class="robot-box" style="background:#13052a;border:1.5px solid var(--purple);border-radius:10px;">
+          <div class="robot-emoji">🤖</div>
+          <div style="font-size:.7rem;color:var(--purple);">✦&nbsp;✦&nbsp;✦</div>
+          <div class="robot-label" style="color:var(--purple);">하네스 적용<br>자율 실행</div>
+        </div>
+      </div>
+
+      <div class="harness-analogy">
+        🐾 <strong style="color:var(--green);">똑똑한 신입사원 (AI 모델) → 체계적인 업무 환경 (하네스)</strong><br>
+        <span style="font-size:.8rem;color:var(--muted);">"아무리 똑똑해도, 환경이 없으면 일할 수 없다"</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 7 ═══ -->
+<div class="slide" id="s7">
+  <span class="slide-tag">07 / 10 · 하네스 엔지니어링 — OpenAI</span>
+  <h2 class="slide-title">OpenAI의 하네스 엔지니어링 관점</h2>
+  <div class="title-rule" style="background:var(--blue);"></div>
+
+  <div class="openai-quote">
+    <blockquote>"Humans steer. Agents execute."</blockquote>
+    <cite>— OpenAI 하네스 엔지니어링 핵심 철학</cite>
+  </div>
+
+  <div class="openai-points">
+    <div class="openai-point">
+      <div class="openai-icon" style="border-color:var(--blue);color:var(--blue);">◉</div>
+      <div class="openai-point-title">역할의 분리</div>
+      <div class="openai-point-desc">사람은 방향을 설정하고 에이전트는 실행을 담당. AI가 더 많은 일을 자율적으로 처리한다.</div>
+    </div>
+    <div class="openai-point">
+      <div class="openai-icon" style="border-color:var(--teal);color:var(--teal);">☰</div>
+      <div class="openai-point-title">개발 환경 설계</div>
+      <div class="openai-point-desc">저장소 구조, 문서 체계, 테스트 자동화, 리뷰 흐름까지 실제 개발 환경 전반을 정비한다.</div>
+    </div>
+    <div class="openai-point">
+      <div class="openai-icon" style="border-color:var(--green);color:var(--green);">✓</div>
+      <div class="openai-point-title">실전 적용 원칙</div>
+      <div class="openai-point-desc">하나의 큰 파일보다 짧은 안내 문서 + 구조화된 docs/ 디렉터리가 더 효과적이었다.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 8 ═══ -->
+<div class="slide" id="s8">
+  <span class="slide-tag">08 / 10</span>
+  <h2 class="slide-title">Anthropic의 하네스 엔지니어링 관점</h2>
+  <p class="slide-subtitle">긴 작업을 끝까지 해내는 실행 구조 설계</p>
+  <div class="title-rule" style="background:var(--purple);"></div>
+
+  <div class="anthropic-layout">
+    <div class="anthropic-cards">
+      <div class="anthropic-card" style="border-left-color:var(--purple);">
+        <div class="anthropic-card-label" style="color:var(--purple);">핵심 정의</div>
+        <div class="anthropic-card-text" style="font-style:italic;">'Agent harness는 모델이 에이전트로 행동할 수 있도록 입력을 처리하고, 도구 호출을 조율하고, 결과를 반환하는 시스템' — Anthropic</div>
+      </div>
+      <div class="anthropic-card" style="border-left-color:var(--teal);">
+        <div class="anthropic-card-label" style="color:var(--teal);">긴 작업의 구조화</div>
+        <div class="anthropic-card-text">작업이 길어질수록 모델은 맥락을 잃거나, 일을 과도하게 묶거나, 조기 완료를 선언하기 쉽습니다.</div>
+        <div class="anthropic-card-sub">
+          · 초기화 에이전트 → 기능 목록 및 진행 기록 정리<br>
+          · 코딩 에이전트 → 한 번에 한 기능씩 순차 구현
+        </div>
+      </div>
+      <div class="anthropic-card" style="border-left-color:var(--blue);">
+        <div class="anthropic-card-label" style="color:var(--blue);">운영 설계의 철학</div>
+        <div class="anthropic-card-text">하네스는 고정된 정답이 아닙니다. 모델이 발전하면 기존 구조는 낡을 수 있습니다.</div>
+        <div class="anthropic-card-sub" style="color:var(--teal);font-weight:700;">모델의 변화에 맞춰 지속적으로 조정하는 운영 설계</div>
+      </div>
+    </div>
+
+    <div class="compare-box">
+      <div style="font-size:.78rem;color:var(--muted);font-weight:700;text-align:center;">OpenAI vs Anthropic</div>
+      <div class="compare-item" style="background:#0d1829;border:1px solid var(--blue);">
+        <div class="compare-name" style="color:var(--blue);">OpenAI</div>
+        <div class="compare-desc">AI가 <strong>더 많은 일</strong>을 하게 만드는<br><span style="color:var(--blue);font-weight:700;">작업 환경 설계</span></div>
+      </div>
+      <div class="compare-item" style="background:#130d29;border:1px solid var(--purple);">
+        <div class="compare-name" style="color:var(--purple);">Anthropic</div>
+        <div class="compare-desc">AI가 <strong>긴 일을 끝까지</strong> 해내게 만드는<br><span style="color:var(--purple);font-weight:700;">작업 구조 설계</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-labels">
+    <span>AI 활용 기술의 진화</span>
+    <span>Anthropic 관점</span>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 9 ═══ -->
+<div class="slide" id="s9">
+  <span class="slide-tag">PAGE 09 · 핵심 비교</span>
+  <h2 class="slide-title">3가지 엔지니어링 핵심 비교</h2>
+  <p class="slide-subtitle">무엇을 시킬까 → 무엇을 보여줄까 → 어떻게 일하게 할까</p>
+  <div class="title-rule"></div>
+
+  <div class="compare-cols">
+    <div class="compare-col" style="color:var(--gold);border-color:var(--gold);">
+      <div class="compare-col-num" style="color:var(--gold);">01</div>
+      <div class="compare-col-title">프롬프트 엔지니어링</div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--gold);">핵심 질문</span>
+        <span class="compare-row-val">"어떻게 질문을 잘 써야 원하는 답을 얻을까?"</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--gold);">주요 목표</span>
+        <span class="compare-row-val">모델로부터 원하는 답변 유도</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--gold);">접근 방식</span>
+        <span class="compare-row-val">질문의 문장 구조, 키워드, 구체성 개선</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--gold);">비유</span>
+        <span class="compare-row-val">말을 잘하는 기술</span>
+      </div>
+      <div class="compare-period" style="color:var(--gold);border-color:var(--gold);">2022–2024</div>
+    </div>
+
+    <div class="compare-col" style="color:var(--teal);border-color:var(--teal);">
+      <div class="compare-col-num" style="color:var(--teal);">02</div>
+      <div class="compare-col-title">콘텍스트 엔지니어링</div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--teal);">핵심 질문</span>
+        <span class="compare-row-val">"이 시스템에 어떤 정보나 도구를 제공해야 할까?"</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--teal);">주요 목표</span>
+        <span class="compare-row-val">모델이 정확하고 풍부한 정보 기반으로 답을 생성하도록 지원</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--teal);">접근 방식</span>
+        <span class="compare-row-val">배경 정보, 도구, 지침 등을 시스템적으로 전달</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--teal);">비유</span>
+        <span class="compare-row-val">AI가 문제를 풀 수 있도록 마련된 작업 환경 전체</span>
+      </div>
+      <div class="compare-period" style="color:var(--teal);border-color:var(--teal);">2025</div>
+    </div>
+
+    <div class="compare-col" style="color:var(--purple);border-color:var(--purple);">
+      <div class="compare-col-num" style="color:var(--purple);">03</div>
+      <div class="compare-col-title">하네스 엔지니어링</div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--purple);">핵심 질문</span>
+        <span class="compare-row-val">"AI가 일을 해낼 수 있도록 어떤 작업 환경과 구조를 마련할까?"</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--purple);">주요 목표</span>
+        <span class="compare-row-val">AI가 자율적·안정적으로 장기 작업을 수행하도록 설계</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--purple);">접근 방식</span>
+        <span class="compare-row-val">실행 규칙, 작업 흐름, 피드백 루프 등 전체 시스템 설계</span>
+      </div>
+      <div class="compare-row">
+        <span class="compare-row-label" style="color:var(--purple);">비유</span>
+        <span class="compare-row-val">AI 모델(CPU)이 일하는 운영체제(OS)와 업무 환경</span>
+      </div>
+      <div class="compare-period" style="color:var(--purple);border-color:var(--purple);">2026~</div>
+    </div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-dot" style="background:var(--gold);"></div>
+    <div class="tl-line"></div>
+    <div class="tl-label">질문 기술</div>
+    <div class="tl-line"></div>
+    <div class="tl-dot" style="background:var(--teal);"></div>
+    <div class="tl-line"></div>
+    <div class="tl-label">시스템 설계</div>
+    <div class="tl-line"></div>
+    <div class="tl-dot" style="background:var(--purple);"></div>
+    <div class="tl-line"></div>
+    <div class="tl-label">실행 환경 구축</div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 10 ═══ -->
+<div class="slide" id="s10">
+  <span class="slide-tag">CONCLUSION</span>
+  <h2 class="slide-title">환경과 구조 설계의 중요성</h2>
+  <div class="title-rule"></div>
+
+  <div class="conclusion-quote">
+    <blockquote>
+      "AI의 잠재력을 이끌어내는 핵심은 <span style="color:var(--teal);">모델</span>이 아닌, <span style="color:var(--gold);">시스템</span>에 있다."
+    </blockquote>
+    <p>더 똑똑한 모델을 찾는 것이 아니라, 그 모델이 제대로 일할 수 있는 환경과 구조를 함께 설계하는 것이 중요합니다.</p>
+    <div class="conclusion-deco" style="position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);">
+      <div style="width:64px;height:64px;border-radius:50%;border:2px solid var(--teal);box-shadow:0 0 20px rgba(34,211,238,.3);"></div>
+      <div style="width:40px;height:40px;border-radius:50%;border:2px solid var(--blue);background:rgba(59,130,246,.15);position:absolute;top:12px;left:12px;"></div>
+    </div>
+  </div>
+
+  <div class="flow-boxes">
+    <div class="flow-box" style="color:var(--gold);border-color:var(--gold);background:#1a1205;position:relative;">
+      <div class="flow-icon" style="border-color:var(--gold);"></div>
+      <div class="flow-label" style="color:var(--gold);">PROMPT ENGINEERING</div>
+      <div class="flow-title">무엇을<br>시킬 것인가</div>
+      <div class="flow-arrow">→</div>
+    </div>
+    <div class="flow-box" style="color:var(--teal);border-color:var(--teal);background:#051a1a;position:relative;">
+      <div class="flow-icon" style="border-color:var(--teal);"></div>
+      <div class="flow-label" style="color:var(--teal);">CONTEXT ENGINEERING</div>
+      <div class="flow-title">무엇을<br>보여줄 것인가</div>
+      <div class="flow-arrow">→</div>
+    </div>
+    <div class="flow-box" style="color:var(--purple);border-color:var(--purple);background:#12051a;">
+      <div class="flow-icon" style="border-color:var(--purple);"></div>
+      <div class="flow-label" style="color:var(--purple);">HARNESS ENGINEERING</div>
+      <div class="flow-title">어떤 환경과 구조를<br>마련할 것인가</div>
+    </div>
+  </div>
+
+  <div class="conclusion-footer">
+    프롬프트 엔지니어링 · 콘텍스트 엔지니어링 · 하네스 엔지니어링 | 2026.04.19
+  </div>
+</div>
+
+</div><!-- /slideshow -->
+
+<div class="key-hint">
+  <span class="key">←</span><span class="key">→</span> 또는 클릭으로 이동
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let cur = 0;
+
+// Build nav dots
+const dotsEl = document.getElementById('navDots');
+slides.forEach((_,i) => {
+  const d = document.createElement('button');
+  d.className = 'nav-dot' + (i===0?' active':'');
+  d.title = `슬라이드 ${i+1}`;
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('active');
+  cur = (n + total) % total;
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('active');
+  document.getElementById('counter').textContent = `${cur+1} / ${total}`;
+  document.getElementById('progress').style.width = `${(cur+1)/total*100}%`;
+}
+
+function go(dir) { goTo(cur + dir); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(-1);
+});
+
+// Init progress
+document.getElementById('progress').style.width = `${1/total*100}%`;
+</script>
+</body>
+</html>

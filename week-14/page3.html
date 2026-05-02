@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko" style="--viewport-height: 12.92px;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LLM 파인 튜닝 기술 가이드</title>
+<!-- Font Awesome -->
+<!-- Pretendard Font -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script><script src="https://picture-search.skywork.ai/aippt/static/tailwindcss.com"></script><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" rel="stylesheet"><style>* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+    }
+body {width: 1280px; height: 720px; overflow: hidden; background-color: #F4F7F6;
+    font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    color: #2C3E50}
+.slide-root-container {
+    width: 1280px;
+    height: 720px;
+    background-color: #F4F7F6;
+    display: flex;
+    flex-direction: column
+    }
+/* Title Section */
+.title-section-container {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 60px 20px 60px
+    }
+.title-accent-line {
+    display: flex;
+    align-items: center;
+    gap: 12px
+    }
+.title-vertical-bar {
+    width: 4px;
+    height: 48px;
+    background-color: #10B981;
+    border-radius: 2px
+    }
+.title-text-group {
+    display: flex;
+    flex-direction: column
+    }
+.title-main-heading {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #2C3E50;
+    line-height: 1.2
+    }
+.title-sub-heading {
+    margin: 4px 0 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #10B981;
+    letter-spacing: 1px;
+    text-transform: uppercase
+    }
+/* Main Content Area */
+.content-body-wrapper {
+    flex: 1;
+    padding: 0 60px 40px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px
+    }
+.comparison-grid-layout {
+    display: flex;
+    gap: 24px;
+    align-items: stretch;
+    flex: 1
+    }
+.tuning-method-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+    }
+.tuning-method-card {
+    background-color: #FFF;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1
+    }
+.card-header-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid #F4F7F6;
+    padding-bottom: 12px
+    }
+.card-header-icon {
+    font-size: 24px;
+    color: #10B981
+    }
+.card-header-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2C3E50
+    }
+.tuning-feature-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+    }
+.feature-item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 16px;
+    line-height: 1.5
+    }
+.feature-item-bullet {
+    margin-top: 6px;
+    width: 6px;
+    height: 6px;
+    background-color: #10B981;
+    border-radius: 50%;
+    flex-shrink: 0
+    }
+.feature-item-text {
+    color: #2C3E50
+    }
+.feature-item-highlight {
+    font-weight: 600;
+    color: #10B981
+    }
+/* Efficiency Visualization Area */
+.efficiency-chart-container {
+    background-color: #FFF;
+    border-radius: 12px;
+    padding: 20px;
+    height: 200px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px
+    }
+.chart-label-header {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2C3E50;
+    display: flex;
+    align-items: center;
+    gap: 8px
+    }
+.chart-render-box {
+    width: 100%;
+    height: 140px
+    }
+html { overflow: hidden; }
+</style><link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<!-- ECharts -->
+</head>
+<body class="">
+<div class="slide-root-container" style="overflow: hidden;">
+<!-- Title Section -->
+<div class="title-section-container">
+<div class="title-accent-line">
+<div class="title-vertical-bar"></div>
+<div class="title-text-group">
+<h1 class="title-main-heading">업데이트 범위에 따른 분류: Full vs. PEFT</h1>
+<p class="title-sub-heading">Classification by Update Scope: Full Fine-tuning vs. Parameter-Efficient Fine-Tuning</p>
+</div>
+</div>
+</div>
+<!-- Content Body -->
+<div class="content-body-wrapper">
+<div class="comparison-grid-layout">
+<!-- Left: Full Fine-tuning -->
+<div class="tuning-method-column">
+<div class="tuning-method-card">
+<div class="card-header-group">
+<i class="fas fa-database card-header-icon"></i>
+<span class="card-header-title">전체 파인 튜닝 (Full)</span>
+</div>
+<ul class="tuning-feature-list">
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">정의:</span> 사전 학습된 모델의 모든 가중치를 새로운 데이터셋으로 재학습</div>
+</li>
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">장점:</span> 특정 태스크에서 최고 수준의 성능 및 완벽한 도메인 적응성 달성</div>
+</li>
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">단점:</span> 막대한 GPU VRAM 자원과 학습 시간이 소요되며 고비용 발생</div>
+</li>
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">위험:</span> 기존 지식을 잃어버리는 '재앙적 망각' 현상이 발생할 가능성 존재</div>
+</li>
+</ul>
+</div>
+</div>
+<!-- Right: PEFT -->
+<div class="tuning-method-column">
+<div class="tuning-method-card">
+<div class="card-header-group">
+<i class="fas fa-microchip card-header-icon"></i>
+<span class="card-header-title">파라미터 효율적 튜닝 (PEFT)</span>
+</div>
+<ul class="tuning-feature-list">
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">정의:</span> 대부분의 파라미터는 고정(Freeze)하고 극히 일부만 추가/학습</div>
+</li>
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">장점:</span> GPU 메모리 사용량을 대폭 절감하여 일반 소비자용 GPU로도 가능</div>
+</li>
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">효율:</span> GPT-3 175B 기준, 학습 파라미터 약 10,000배 감소 효과</div>
+</li>
+<li class="feature-item-row">
+<div class="feature-item-bullet"></div>
+<div class="feature-item-text"><span class="feature-item-highlight">기법:</span> LoRA, QLoRA, Prompt Tuning 등 다양한 하위 기법 존재</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Bottom: Efficiency Chart -->
+<div class="efficiency-chart-container">
+<div class="chart-label-header">
+<i class="fas fa-chart-bar"></i>
+<span>자원 효율성 비교 (GPT-3 175B Benchmark)</span>
+</div>
+<div class="chart-render-box" id="efficiency-chart-render" _echarts_instance_="ec_1777723563130" style="user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); width: 1120px; height: 126px;"><div style="position: relative; width: 1120px; height: 126px; padding: 0px; margin: 0px; border-width: 0px; cursor: default;"><canvas data-zr-dom-id="zr_0" width="1120" height="126" style="position: absolute; left: 0px; top: 0px; width: 1120px; height: 126px; user-select: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); padding: 0px; margin: 0px; border-width: 0px;"></canvas></div></div>
+</div>
+</div>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartDom = document.getElementById('efficiency-chart-render');
+            const myChart = echarts.init(chartDom);
+            const option = {
+                grid: {
+                    top: 10,
+                    bottom: 30,
+                    left: 150,
+                    right: 60
+                },
+                xAxis: {
+                    type: 'value',
+                    max: 100,
+                    axisLabel: {
+                        formatter: '{value}%',
+                        color: '#2C3E50',
+                        fontSize: 10
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#E0E0E0'
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: ['GPU VRAM 사용량', '학습 파라미터 수'],
+                    axisLabel: {
+                        color: '#2C3E50',
+                        fontWeight: 'bold',
+                        fontSize: 12
+                    },
+                    axisLine: { show: false },
+                    axisTick: { show: false }
+                },
+                series: [
+                    {
+                        name: 'Full Fine-tuning',
+                        type: 'bar',
+                        data: [100, 100],
+                        itemStyle: { color: '#BDC3C7' },
+                        label: {
+                            show: true,
+                            position: 'insideRight',
+                            formatter: 'Full: 100%',
+                            fontSize: 10,
+                            color: '#FFF'
+                        },
+                        barWidth: 25
+                    },
+                    {
+                        name: 'PEFT (LoRA)',
+                        type: 'bar',
+                        data: [33, 0.01],
+                        itemStyle: { color: '#10B981' },
+                        label: {
+                            show: true,
+                            position: 'right',
+                            formatter: function(params) {
+                                return params.value === 33 ? 'PEFT: ~33%' : 'PEFT: <0.01%';
+                            },
+                            fontSize: 11,
+                            fontWeight: 'bold',
+                            color: '#10B981'
+                        },
+                        barWidth: 25
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        });
+    </script>
+
+
+
+</body></html>
