@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>LLM 파인 튜닝 가이드</title>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+:root{
+  --g:#10B981;--gl:#34D399;--gp:#ECFDF5;
+  --dk:#2C3E50;--md:#5D6D7E;--lt:#94A3B8;
+  --bg:#F4F7F6;--wh:#FFFFFF;
+  --sh:0 4px 20px rgba(0,0,0,.06);
+}
+body{font-family:"Noto Sans KR",sans-serif;background:#111827;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.shell{display:flex;flex-direction:column;align-items:center;gap:16px;width:1280px}
+.vp{width:1280px;height:720px;position:relative;border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.slide{width:1280px;height:720px;background:var(--bg);position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.slide.on{display:flex}
+
+/* controls */
+.ctrl{display:flex;align-items:center;gap:18px}
+.nb{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff;width:42px;height:42px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.nb:hover{background:rgba(16,185,129,.25);border-color:var(--g)}
+.nb:disabled{opacity:.22;cursor:default}
+.cnt{color:rgba(255,255,255,.5);font-size:13px;font-weight:500;min-width:58px;text-align:center;letter-spacing:1px}
+.dots{display:flex;gap:6px;flex-wrap:wrap;max-width:500px;justify-content:center}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:all .2s}
+.dot.on{background:var(--g);width:20px;border-radius:3px}
+
+/* shared title */
+.stitle{padding:28px 64px 12px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.tbar{width:4px;height:48px;background:var(--g);border-radius:2px;flex-shrink:0}
+.ttx h1{font-size:26px;font-weight:700;color:var(--dk);line-height:1.25}
+.ttx p{font-size:12px;color:var(--g);font-weight:500;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px}
+
+/* shared components */
+.card{background:var(--wh);border-radius:12px;box-shadow:var(--sh)}
+.ibox{width:36px;height:36px;background:var(--gp);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--g);font-size:15px;flex-shrink:0}
+.bl{list-style:none;display:flex;flex-direction:column;gap:7px}
+.bl li{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.55;color:#4A5568}
+.bl li::before{content:"▸";color:var(--g);font-size:11px;margin-top:3px;flex-shrink:0}
+.bl li strong{color:var(--dk)}
+.ch{display:flex;align-items:center;gap:10px;border-bottom:1.5px solid var(--bg);padding-bottom:10px;margin-bottom:11px}
+.ch h3{font-size:15px;font-weight:700;color:var(--dk)}
+.tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase}
+.tag.g{background:var(--gp);color:var(--g)}
+.tag.dk{background:var(--dk);color:#fff}
+.alert{border-radius:8px;padding:9px 12px;display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45}
+.alert.w{background:#FEF2F2;border:1px solid #FECACA;color:#7F1D1D}
+.alert.g{background:var(--gp);border:1px solid rgba(16,185,129,.25);color:#064E3B}
+.alert.b{background:#EFF6FF;border:1px solid #BFDBFE;color:#1E3A5F}
+.alert i{font-size:12px;margin-top:1px;flex-shrink:0}
+.alert.w i{color:#EF4444}.alert.g i{color:var(--g)}.alert.b i{color:#3B82F6}
+
+/* DARK CARD */
+.dcard{background:var(--dk);border-radius:12px;padding:18px 20px;color:#fff}
+.dcard .dn{font-size:42px;font-weight:900;color:var(--g);line-height:1}
+.dcard .dt{font-size:13px;font-weight:700;color:#fff;margin-top:3px}
+.dcard .dd{font-size:12px;color:rgba(255,255,255,.55);margin-top:5px;line-height:1.45}
+
+/* STEP FLOW */
+.sflow{display:flex;flex-direction:column;gap:7px}
+.sstep{display:flex;align-items:center;gap:9px}
+.snum{width:22px;height:22px;background:var(--g);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stxt{font-size:12px;color:var(--dk);font-weight:500}
+.sarr{font-size:10px;color:var(--g);margin-left:31px}
+
+/* BAR CHART */
+.brow{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.blbl{font-size:12px;font-weight:600;color:var(--dk);width:68px;flex-shrink:0}
+.btrk{flex:1;height:19px;background:var(--bg);border-radius:9px;overflow:hidden;display:flex;align-items:center}
+.bfil{height:100%;border-radius:9px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff;white-space:nowrap}
+
+/* ═══════════════════════════════
+   S1 — COVER
+═══════════════════════════════ */
+#s1{background:linear-gradient(135deg,#0d1b2a 0%,#1a3040 60%,#0d2137 100%);flex-direction:row}
+.cov-l{flex:1.15;display:flex;flex-direction:column;justify-content:center;padding:60px 52px 60px 72px;border-right:1px solid rgba(255,255,255,.07)}
+.cov-eye{font-size:11px;font-weight:700;color:var(--g);letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.cov-eye::before{content:"";width:26px;height:2px;background:var(--g);display:block}
+.cov-h{font-size:54px;font-weight:900;line-height:1.1;color:#fff;margin-bottom:14px;word-break:keep-all}
+.cov-h em{color:var(--g);font-style:normal}
+.cov-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:40px;word-break:keep-all}
+.cov-meta{display:flex;gap:32px}
+.cov-ml{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;display:block;margin-bottom:3px}
+.cov-mv{font-size:14px;color:rgba(255,255,255,.75);font-weight:600}
+.cov-r{flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 52px;gap:8px}
+.toc-item{display:flex;align-items:center;gap:15px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.toc-num{font-size:22px;font-weight:900;color:var(--g);width:32px;line-height:1;flex-shrink:0}
+.toc-tx strong{display:block;font-size:13px;color:#fff;margin-bottom:2px}
+.toc-tx span{font-size:11px;color:rgba(255,255,255,.38)}
+
+/* ═══════════════════════════════
+   S2 — LLM 기초
+═══════════════════════════════ */
+#s2 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s2l{flex:1.1;display:flex;flex-direction:column;gap:13px}
+.s2r{flex:1;display:flex;flex-direction:column;gap:13px}
+.defb{background:var(--wh);border-left:5px solid var(--g);border-radius:0 12px 12px 0;padding:15px 20px;box-shadow:var(--sh)}
+.defb .dlbl{font-size:10px;font-weight:700;color:var(--g);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.defb p{font-size:15px;color:var(--dk);font-weight:500;line-height:1.5}
+.defb p strong{color:var(--g)}
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding:10px 0}
+.tl-item+.tl-item{border-top:1px solid var(--bg)}
+.tl-yr{font-size:12px;font-weight:700;color:var(--g);width:44px;flex-shrink:0;margin-top:2px}
+.tl-tx strong{display:block;font-size:13px;color:var(--dk)}
+.tl-tx span{font-size:12px;color:var(--md)}
+.arch-card{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.arch-row{display:flex;gap:8px}
+.arch-box{flex:1;border-radius:8px;padding:10px 12px;text-align:center}
+.arch-box.gb{background:var(--gp);border:1px solid rgba(16,185,129,.2)}
+.arch-box.dk{background:var(--dk)}
+.arch-box strong{display:block;font-size:12px;font-weight:700}
+.arch-box.gb strong{color:var(--g)}.arch-box.dk strong{color:var(--gl)}
+.arch-box span{font-size:11px}
+.arch-box.gb span{color:var(--md)}.arch-box.dk span{color:rgba(255,255,255,.5)}
+.arch-arr{text-align:center;font-size:11px;color:var(--g);font-weight:700;padding:2px 0}
+
+/* ═══════════════════════════════
+   S3 — Pre-training vs Fine-tuning
+═══════════════════════════════ */
+#s3 .body{flex:1;display:flex;flex-direction:column;padding:0 64px 28px;gap:14px}
+.pt-row{display:flex;gap:14px;flex:1}
+.pt-card{flex:1;padding:20px 22px;display:flex;flex-direction:column;gap:11px;position:relative}
+.pt-badge{position:absolute;top:16px;right:16px;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px}
+.pt-badge.blue{background:#EFF6FF;color:#1D4ED8}
+.pt-badge.grn{background:var(--gp);color:var(--g)}
+.pt-hd{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.pt-hd h3{font-size:17px;font-weight:700;color:var(--dk)}
+.pt-stat{display:flex;gap:8px;margin-top:auto}
+.pt-s{flex:1;background:var(--bg);border-radius:8px;padding:9px 10px;text-align:center}
+.pt-s .n{font-size:17px;font-weight:900;color:var(--g);line-height:1}
+.pt-s .l{font-size:11px;color:var(--md);margin-top:2px;line-height:1.3}
+.bridge-card{background:var(--dk);border-radius:12px;padding:16px 22px;display:flex;align-items:center;gap:24px}
+.br-item{flex:1;display:flex;align-items:flex-start;gap:10px}
+.br-ic{width:32px;height:32px;background:rgba(16,185,129,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--g);font-size:14px;flex-shrink:0}
+.br-tx strong{display:block;font-size:13px;color:#fff;margin-bottom:2px}
+.br-tx span{font-size:12px;color:rgba(255,255,255,.5);line-height:1.35}
+.br-div{width:1px;background:rgba(255,255,255,.1);align-self:stretch}
+
+/* ═══════════════════════════════
+   S4 — 왜 파인 튜닝이 필요한가
+═══════════════════════════════ */
+#s4 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s4l{flex:1;display:flex;flex-direction:column;gap:13px}
+.s4r{flex:1;display:flex;flex-direction:column;gap:13px}
+.prob-card{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:9px}
+.prob-head{display:flex;align-items:center;gap:9px}
+.prob-head h3{font-size:14px;font-weight:700;color:var(--dk)}
+.prob-desc{font-size:13px;color:var(--md);line-height:1.5}
+.compare-card{background:var(--dk);border-radius:12px;padding:18px 20px;flex:1;display:flex;flex-direction:column;gap:10px}
+.compare-card h4{font-size:12px;font-weight:700;color:var(--g);letter-spacing:1px;text-transform:uppercase}
+.cmp-row{display:flex;align-items:flex-start;gap:10px}
+.cmp-lbl{font-size:11px;font-weight:700;background:rgba(255,255,255,.1);padding:2px 8px;border-radius:4px;color:#fff;flex-shrink:0;margin-top:1px}
+.cmp-lbl.g{background:rgba(16,185,129,.2);color:var(--gl)}
+.cmp-txt{font-size:12px;color:rgba(255,255,255,.65);line-height:1.5}
+.result-card{background:var(--g);border-radius:12px;padding:16px 18px;color:#fff}
+.result-card .r-num{font-size:36px;font-weight:900;line-height:1}
+.result-card .r-tx{font-size:13px;opacity:.85;margin-top:4px;line-height:1.4}
+
+/* ═══════════════════════════════
+   S5 — 파인 튜닝 방법론 지도
+═══════════════════════════════ */
+#s5 .body{flex:1;display:flex;flex-direction:column;padding:0 64px 28px;gap:14px}
+.map-intro{padding:12px 18px;background:var(--wh);border-radius:12px;box-shadow:var(--sh);font-size:14px;color:var(--md);line-height:1.5}
+.map-intro strong{color:var(--dk)}
+.map-grid{display:flex;gap:13px;flex:1}
+.map-col{flex:1;display:flex;flex-direction:column;gap:10px}
+.map-col-hd{font-size:11px;font-weight:700;color:var(--g);letter-spacing:2px;text-transform:uppercase;padding-bottom:6px;border-bottom:2px solid var(--g)}
+.map-item{background:var(--wh);border-radius:10px;padding:12px 15px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:5px}
+.map-item-hd{display:flex;align-items:center;gap:8px}
+.map-item-hd strong{font-size:13px;color:var(--dk)}
+.map-item p{font-size:12px;color:var(--md);line-height:1.4}
+.map-item.hl{border:1.5px solid rgba(16,185,129,.35);background:linear-gradient(135deg,#fff 0%,#f0fdf9 100%)}
+.slide-lbl{font-size:10px;font-weight:700;color:var(--lt);background:var(--bg);padding:2px 7px;border-radius:4px;margin-left:auto}
+.map-note{background:var(--dk);border-radius:10px;padding:13px 16px;color:#fff;font-size:12px;line-height:1.5}
+.map-note strong{color:var(--gl)}
+
+/* ═══════════════════════════════
+   S6 — SFT
+═══════════════════════════════ */
+#s6 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s6l{flex:1.1;display:flex;flex-direction:column;gap:13px}
+.s6r{flex:1;display:flex;flex-direction:column;gap:13px}
+.sft-def{background:var(--wh);border-left:5px solid var(--g);border-radius:0 12px 12px 0;padding:14px 20px;box-shadow:var(--sh)}
+.sft-def .dlbl{font-size:10px;font-weight:700;color:var(--g);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.sft-def p{font-size:14px;color:var(--dk);font-weight:500;line-height:1.5}
+.data-ex{padding:14px 17px;display:flex;flex-direction:column;gap:10px}
+.data-ex h4{font-size:12px;font-weight:700;color:var(--dk)}
+.ex-box{background:var(--bg);border-radius:8px;padding:10px 13px}
+.ex-box .elbl{font-size:10px;font-weight:700;color:var(--g);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}
+.ex-box .ep{font-size:12px;color:var(--dk);line-height:1.5}
+.ex-box .ea{font-size:12px;color:var(--md);line-height:1.5;margin-top:4px;padding-top:4px;border-top:1px dashed var(--lt)}
+.qual-card{padding:14px 17px;display:flex;flex-direction:column;gap:9px}
+.qual-card h4{font-size:12px;font-weight:700;color:var(--dk)}
+.qual-item{display:flex;align-items:flex-start;gap:8px}
+.qual-num{width:20px;height:20px;background:var(--g);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.qual-item p{font-size:12px;color:#4A5568;line-height:1.5}
+.qual-item p strong{color:var(--dk)}
+.stat-bar{background:var(--dk);border-radius:10px;padding:13px 16px;display:flex;gap:0}
+.si{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.si+.si{border-left:1px solid rgba(255,255,255,.1)}
+.si .n{font-size:20px;font-weight:900;color:var(--g);line-height:1}
+.si .l{font-size:11px;color:rgba(255,255,255,.5);text-align:center;line-height:1.3}
+
+/* ═══════════════════════════════
+   S7 — Full Fine-Tuning & 한계
+═══════════════════════════════ */
+#s7 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s7l{flex:1.05;display:flex;flex-direction:column;gap:13px}
+.s7r{flex:1;display:flex;flex-direction:column;gap:13px}
+.full-def{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.full-def h3{font-size:15px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:9px}
+.limit-card{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:10px}
+.limit-card h3{font-size:14px;font-weight:700;color:#DC2626;display:flex;align-items:center;gap:8px}
+.limit-item{display:flex;align-items:flex-start;gap:9px;background:#FEF2F2;border-radius:8px;padding:10px 12px}
+.limit-item i{color:#EF4444;font-size:13px;margin-top:2px;flex-shrink:0}
+.limit-item strong{display:block;font-size:13px;color:#7F1D1D}
+.limit-item p{font-size:12px;color:#991B1B;margin-top:2px;line-height:1.4}
+.cat-card{padding:14px 17px}
+.cat-card h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:11px}
+.cat-vis{display:flex;align-items:center;justify-content:center;gap:0;background:var(--bg);border-radius:10px;padding:14px 10px}
+.cat-brain{font-size:32px;text-align:center}
+.cat-arrow{font-size:18px;color:var(--md);padding:0 10px}
+.cat-box{background:var(--wh);border-radius:8px;padding:10px 14px;text-align:center;border:2px solid transparent}
+.cat-box.before{border-color:var(--g)}
+.cat-box.after{border-color:#EF4444}
+.cat-box strong{display:block;font-size:12px;font-weight:700;margin-bottom:3px}
+.cat-box.before strong{color:var(--g)}.cat-box.after strong{color:#EF4444}
+.cat-box span{font-size:11px;color:var(--md)}
+.cost-grid{display:flex;gap:8px}
+.cost-item{flex:1;background:var(--dk);border-radius:8px;padding:11px 12px;text-align:center}
+.cost-item .n{font-size:20px;font-weight:900;color:var(--g);line-height:1}
+.cost-item .l{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px;line-height:1.3}
+
+/* ═══════════════════════════════
+   S8 — PEFT 등장
+═══════════════════════════════ */
+#s8 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s8l{flex:1.1;display:flex;flex-direction:column;gap:13px}
+.s8r{flex:1;display:flex;flex-direction:column;gap:13px}
+.peft-core{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:10px}
+.peft-core h3{font-size:15px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:9px}
+.param-cmp{padding:15px 17px}
+.param-cmp h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:11px}
+.pcmp-row{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.pcmp-lbl{font-size:12px;font-weight:600;color:var(--dk);width:70px;flex-shrink:0;text-align:right}
+.pcmp-tr{flex:1;height:19px;background:var(--bg);border-radius:9px;overflow:hidden;display:flex;align-items:center}
+.pcmp-fi{height:100%;border-radius:9px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:700;color:#fff}
+.peft-types-grid{padding:14px 16px}
+.peft-types-grid h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:10px}
+.ptg{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.pt-gi{background:var(--bg);border-radius:8px;padding:9px 11px}
+.pt-gi strong{font-size:13px;color:var(--dk);display:block;margin-bottom:2px}
+.pt-gi span{font-size:11px;color:var(--md)}
+.big-peft{display:flex;gap:10px}
+.bp{flex:1;background:var(--dk);border-radius:12px;padding:16px 18px;color:#fff}
+.bp .n{font-size:36px;font-weight:900;color:var(--g);line-height:1}
+.bp .t{font-size:13px;font-weight:700;color:#fff;margin-top:3px}
+.bp .d{font-size:11px;color:rgba(255,255,255,.5);margin-top:5px;line-height:1.4}
+.bene-list{padding:14px 17px;flex:1}
+.bene-list h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:10px}
+.bene-i{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px}
+.bene-ic{width:26px;height:26px;background:var(--gp);border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--g);font-size:11px;flex-shrink:0}
+.bene-i strong{display:block;font-size:13px;color:var(--dk)}
+.bene-i span{font-size:11px;color:var(--md);line-height:1.35}
+
+/* ═══════════════════════════════
+   S9 — LoRA 원리
+═══════════════════════════════ */
+#s9 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s9l{flex:1.05;display:flex;flex-direction:column;gap:13px}
+.s9r{flex:1;display:flex;flex-direction:column;gap:13px}
+.lora-how{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:10px}
+.lora-how h3{font-size:15px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:9px}
+.math-card{background:var(--dk);border-radius:12px;padding:17px 20px}
+.math-card .mlbl{font-size:10px;font-weight:700;color:var(--g);letter-spacing:2px;text-transform:uppercase;margin-bottom:11px}
+.formula{font-size:22px;font-weight:700;color:#fff;text-align:center;padding:8px 0;letter-spacing:2px}
+.formula em{color:var(--g);font-style:normal}
+.fdesc{font-size:12px;color:rgba(255,255,255,.5);margin-top:9px;line-height:1.55}
+.fdesc strong{color:rgba(255,255,255,.8)}
+.rank-tbl{padding:14px 17px}
+.rank-tbl h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:9px}
+.rtable{width:100%;border-collapse:collapse;font-size:12px}
+.rtable th{padding:6px 9px;background:var(--bg);color:var(--md);font-weight:600;text-align:left}
+.rtable td{padding:6px 9px;color:#4A5568;border-bottom:1px solid var(--bg)}
+.rtable td strong{color:var(--dk)}
+.green{color:var(--g);font-weight:700}
+.red{color:#EF4444;font-weight:700}
+.yel{color:#F59E0B;font-weight:700}
+.adv-wrap{padding:14px 17px;flex:1;display:flex;flex-direction:column;gap:8px}
+.adv-wrap h4{font-size:12px;font-weight:700;color:var(--dk)}
+.adv-i{display:flex;align-items:flex-start;gap:8px}
+.adv-num{width:19px;height:19px;background:var(--g);color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.adv-i p{font-size:12px;color:#4A5568;line-height:1.5}
+.adv-i p strong{color:var(--dk)}
+.mini-row{display:flex;gap:8px}
+.mini{flex:1;background:var(--wh);border-radius:10px;padding:11px 13px;box-shadow:var(--sh);text-align:center}
+.mini .n{font-size:19px;font-weight:900;color:var(--g);line-height:1}
+.mini .l{font-size:11px;color:var(--md);margin-top:3px;line-height:1.3}
+
+/* ═══════════════════════════════
+   S10 — LoRA 심화 (하이퍼파라미터)
+═══════════════════════════════ */
+#s10 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s10l{flex:1.05;display:flex;flex-direction:column;gap:13px}
+.s10r{flex:1;display:flex;flex-direction:column;gap:13px}
+.hp-card{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:11px}
+.hp-card h3{font-size:15px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:9px}
+.hp-item{background:var(--bg);border-radius:9px;padding:11px 13px}
+.hp-item .hn{font-size:13px;font-weight:700;color:var(--dk);font-family:monospace;margin-bottom:4px}
+.hp-item .hv{font-size:13px;color:var(--g);font-weight:700;font-family:monospace;margin-bottom:4px}
+.hp-item .hd{font-size:12px;color:var(--md);line-height:1.45}
+.deploy-card{padding:15px 17px;display:flex;flex-direction:column;gap:10px}
+.deploy-card h3{font-size:14px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:8px}
+.dp-opt{background:var(--bg);border-radius:9px;padding:11px 13px}
+.dp-opt strong{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--dk);margin-bottom:4px}
+.dp-opt strong i{color:var(--g);font-size:12px}
+.dp-opt p{font-size:12px;color:var(--md);line-height:1.4}
+.target-card{padding:14px 17px}
+.target-card h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:10px}
+.tm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.tm-item{background:var(--bg);border-radius:8px;padding:9px 11px;text-align:center}
+.tm-item strong{display:block;font-size:12px;color:var(--dk);font-family:monospace;margin-bottom:2px}
+.tm-item.hl strong{color:var(--g)}
+.tm-item span{font-size:11px;color:var(--md)}
+.tm-item.hl{background:var(--gp);border:1px solid rgba(16,185,129,.2)}
+
+/* ═══════════════════════════════
+   S11 — QLoRA
+═══════════════════════════════ */
+#s11 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s11l{flex:1.05;display:flex;flex-direction:column;gap:13px}
+.s11r{flex:1;display:flex;flex-direction:column;gap:13px}
+.ql-def{padding:16px 18px;flex:1;display:flex;flex-direction:column;gap:10px}
+.ql-def h3{font-size:15px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:9px}
+.ql-flow{padding:14px 17px}
+.ql-flow h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:10px}
+.ql-tech{padding:14px 17px}
+.ql-tech h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:9px}
+.qt-i{background:var(--bg);border-radius:8px;padding:9px 12px;margin-bottom:7px}
+.qt-i:last-child{margin-bottom:0}
+.qt-i strong{font-size:13px;color:var(--dk)}
+.qt-i p{font-size:12px;color:var(--md);margin-top:2px;line-height:1.4}
+.vram-vis{padding:14px 17px}
+.vram-vis h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:12px}
+.big-pair{display:flex;gap:9px}
+.bs{flex:1;background:var(--dk);border-radius:12px;padding:14px 16px;color:#fff}
+.bs .n{font-size:30px;font-weight:900;color:var(--g);line-height:1}
+.bs .t{font-size:12px;font-weight:700;color:#fff;margin-top:3px}
+.bs .d{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;line-height:1.4}
+.cmp-tip{padding:14px 17px;flex:1}
+.cmp-tip h4{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:9px}
+
+/* ═══════════════════════════════
+   S12 — 기타 PEFT 기법
+═══════════════════════════════ */
+#s12 .body{flex:1;display:flex;flex-direction:column;padding:0 64px 28px;gap:13px}
+.other-intro{font-size:14px;color:var(--md);padding:0 2px;line-height:1.5}
+.other-intro strong{color:var(--dk)}
+.other-grid{display:flex;gap:13px;flex:1}
+.other-card{flex:1;padding:17px 18px;display:flex;flex-direction:column;gap:10px}
+.oc-head{display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:11px;border-bottom:1.5px solid var(--bg)}
+.oc-icon{width:44px;height:44px;background:var(--gp);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--g);font-size:20px}
+.oc-head h3{font-size:15px;font-weight:700;color:var(--dk);text-align:center}
+.oc-tag{font-size:10px;font-weight:700;color:var(--md);letter-spacing:1px;text-transform:uppercase}
+.when-best{background:var(--gp);border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:9px 12px;font-size:12px;color:#064E3B;margin-top:auto}
+.when-best strong{color:var(--g)}
+.peft-sum{background:var(--dk);border-radius:12px;padding:14px 20px;display:flex;gap:20px;align-items:center}
+.psum-item{flex:1;text-align:center}
+.psum-item strong{display:block;font-size:13px;color:var(--gl);margin-bottom:3px}
+.psum-item span{font-size:11px;color:rgba(255,255,255,.5);line-height:1.3}
+.psum-div{width:1px;background:rgba(255,255,255,.1);align-self:stretch}
+
+/* ═══════════════════════════════
+   S13 — 정렬 튜닝 RLHF & DPO
+═══════════════════════════════ */
+#s13 .body{flex:1;display:flex;padding:0 64px 28px;gap:14px}
+.s13l{flex:1.05;display:flex;flex-direction:column;gap:13px}
+.s13r{flex:1;display:flex;flex-direction:column;gap:13px}
+.align-def{background:var(--wh);border-left:5px solid var(--g);border-radius:0 12px 12px 0;padding:13px 18px;box-shadow:var(--sh)}
+.align-def .dlbl{font-size:10px;font-weight:700;color:var(--g);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.align-def p{font-size:14px;color:var(--dk);font-weight:500;line-height:1.5}
+.rlhf-card{padding:15px 17px;flex:1;display:flex;flex-direction:column;gap:9px}
+.rlhf-card h3{font-size:14px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:8px}
+.rlhf-flow{display:flex;align-items:center;gap:4px;background:var(--bg);border-radius:9px;padding:11px 13px;flex-wrap:wrap}
+.rf-step{background:var(--wh);border-radius:7px;padding:8px 11px;text-align:center;flex:1}
+.rf-step strong{display:block;font-size:11px;color:var(--dk);margin-bottom:2px}
+.rf-step span{font-size:10px;color:var(--md)}
+.rf-arr{color:var(--g);font-size:14px;flex-shrink:0}
+.dpo-card{padding:15px 17px;flex:1;display:flex;flex-direction:column;gap:9px}
+.dpo-card h3{font-size:14px;font-weight:700;color:var(--dk);display:flex;align-items:center;gap:8px}
+.dpo-vs{display:flex;gap:9px}
+.dpo-v{flex:1;border-radius:9px;padding:10px 13px}
+.dpo-v.r{background:#FEF2F2;border:1px solid #FECACA}
+.dpo-v.g{background:var(--gp);border:1px solid rgba(16,185,129,.2)}
+.dpo-v strong{display:block;font-size:12px;margin-bottom:4px}
+.dpo-v.r strong{color:#7F1D1D}.dpo-v.g strong{color:#064E3B}
+.dpo-v p{font-size:12px;line-height:1.4}
+.dpo-v.r p{color:#991B1B}.dpo-v.g p{color:#065F46}
+.score-card{background:var(--dk);border-radius:12px;padding:14px 17px;color:#fff}
+.score-card h4{font-size:12px;font-weight:700;color:var(--g);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.sc-bar-row{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.sc-lbl{font-size:12px;font-weight:600;color:#fff;width:44px;flex-shrink:0}
+.sc-tr{flex:1;height:20px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden}
+.sc-fi{height:100%;border-radius:10px;display:flex;align-items:center;padding-left:9px;font-size:11px;font-weight:700;color:#fff}
+.sc-fi.rl{width:67%;background:rgba(255,255,255,.25)}
+.sc-fi.dp{width:100%;background:var(--g)}
+
+/* ═══════════════════════════════
+   S14 — 비교 테이블
+═══════════════════════════════ */
+#s14 .body{flex:1;display:flex;flex-direction:column;padding:0 64px 28px;gap:13px}
+.ctable{background:var(--wh);border-radius:12px;box-shadow:var(--sh);overflow:hidden;flex:1}
+.ctable table{width:100%;border-collapse:collapse;height:100%}
+.ctable thead tr{background:var(--dk)}
+.ctable thead th{padding:12px 15px;font-size:13px;font-weight:700;color:#fff;text-align:left}
+.ctable thead th:first-child{color:rgba(255,255,255,.4)}
+.ctable thead th.acc{color:var(--g)}
+.ctable tbody tr{border-bottom:1px solid var(--bg)}
+.ctable tbody tr:last-child{border-bottom:none}
+.ctable tbody td{padding:10px 15px;font-size:12px;color:var(--md);vertical-align:middle;line-height:1.4}
+.ctable tbody td:first-child{font-weight:700;color:var(--dk);font-size:13px}
+.gv{color:var(--g);font-weight:700}
+.rv{color:#EF4444;font-weight:700}
+.yv{color:#F59E0B;font-weight:700}
+.csum{display:flex;gap:11px}
+.csi{flex:1;border-radius:10px;padding:12px 14px;display:flex;align-items:flex-start;gap:9px}
+.csi.gb{background:var(--gp);border:1px solid rgba(16,185,129,.25)}
+.csi.db{background:var(--dk)}
+.csi.yb{background:#FFFBEB;border:1px solid #FDE68A}
+.csi i{font-size:14px;margin-top:2px;flex-shrink:0}
+.csi.gb i,.csi.db i{color:var(--g)}.csi.yb i{color:#D97706}
+.csi strong{display:block;font-size:13px;color:var(--dk);margin-bottom:2px}
+.csi.db strong{color:#fff}
+.csi p{font-size:11px;color:var(--md);line-height:1.4}
+.csi.db p{color:rgba(255,255,255,.5)}
+
+/* ═══════════════════════════════
+   S15 — 선택 가이드
+═══════════════════════════════ */
+#s15 .body{flex:1;display:flex;padding:0 64px 28px;gap:13px}
+.s15c{flex:1;display:flex;flex-direction:column;gap:10px}
+.wcard{padding:14px 16px;display:flex;flex-direction:column;gap:7px;flex:1}
+.wcard .wnum{font-size:10px;font-weight:700;color:var(--g);letter-spacing:1.5px}
+.wcard .wh{display:flex;align-items:center;gap:7px}
+.wcard .wh h3{font-size:14px;font-weight:700;color:var(--dk)}
+.wcard .wd{font-size:12px;color:var(--md);line-height:1.5}
+.wcard .wcase{display:flex;flex-wrap:wrap;gap:5px}
+.wcase span{background:var(--bg);color:var(--dk);border-radius:5px;padding:3px 8px;font-size:11px;font-weight:600}
+.wcard.hl{background:linear-gradient(145deg,#fff 0%,#f0fdf9 100%);border:1.5px solid rgba(16,185,129,.3)}
+.walert{border-radius:7px;padding:7px 10px;font-size:11px;display:flex;align-items:flex-start;gap:6px;margin-top:auto}
+.walert.w{background:#FEF2F2;border:1px solid #FECACA;color:#7F1D1D}
+.walert.g{background:var(--gp);border:1px solid rgba(16,185,129,.25);color:#064E3B}
+.walert i{font-size:11px;margin-top:1px;flex-shrink:0}
+.walert.w i{color:#EF4444}.walert.g i{color:var(--g)}
+.dec-wrap{display:flex;flex-direction:column;gap:9px}
+.dec-card{background:var(--dk);border-radius:12px;padding:16px 18px;color:#fff;display:flex;flex-direction:column;gap:8px}
+.dec-card h4{font-size:11px;font-weight:700;color:var(--g);letter-spacing:1px;text-transform:uppercase}
+.dc-row{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:rgba(255,255,255,.7);line-height:1.45}
+.dc-arr{color:var(--g);font-size:11px;margin-top:2px;flex-shrink:0}
+.dc-row strong{color:#fff}
+.dc-row em{color:var(--g);font-style:normal;font-weight:700}
+.golden-card{background:var(--g);border-radius:12px;padding:15px 18px;color:#fff;flex:1;display:flex;flex-direction:column;gap:7px}
+.golden-card h4{font-size:11px;font-weight:700;opacity:.85;letter-spacing:1px;text-transform:uppercase}
+.golden-card .gl-list{display:flex;flex-direction:column;gap:6px}
+.gl-i{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:rgba(255,255,255,.9);line-height:1.45}
+.gl-i::before{content:"★";font-size:10px;margin-top:2px;flex-shrink:0;opacity:.7}
+
+/* ═══ OVERFLOW FIXES: S2, S11, S13 ═══ */
+
+/* S2 — LLM 기초 */
+#s2 .stitle{padding:18px 64px 8px}
+#s2 .stitle .tbar{height:38px}
+#s2 .body{padding:0 64px 16px;gap:9px}
+#s2 .s2l,#s2 .s2r{gap:8px}
+#s2 .defb{padding:10px 18px}
+#s2 .defb p{font-size:13px}
+#s2 .card[style*="14px 17px"]{padding:11px 15px !important;gap:7px !important}
+#s2 .ch{padding-bottom:7px;margin-bottom:7px}
+#s2 .bl{gap:5px}
+#s2 .bl li{font-size:12px;line-height:1.45}
+#s2 .timeline .tl-item{padding:6px 0}
+#s2 .tl-tx strong{font-size:12px}
+#s2 .tl-tx span{font-size:11px}
+#s2 .card[style*="13px 17px"]{padding:11px 15px !important}
+#s2 .arch-card{padding:12px 15px;gap:5px}
+#s2 .arch-arr{padding:1px 0;font-size:10px}
+#s2 .arch-box{padding:7px 10px}
+#s2 .arch-box strong{font-size:11px}
+#s2 .arch-box span{font-size:10px}
+#s2 .dcard{padding:13px 17px}
+#s2 .dcard .dn{font-size:32px}
+#s2 .dcard .dt{font-size:12px}
+#s2 .dcard .dd{font-size:11px;margin-top:4px}
+
+/* S11 — QLoRA */
+#s11 .stitle{padding:18px 64px 8px}
+#s11 .stitle .tbar{height:38px}
+#s11 .body{padding:0 64px 14px;gap:9px}
+#s11 .s11l,#s11 .s11r{gap:8px}
+#s11 .ql-def{padding:11px 15px;gap:7px}
+#s11 .ql-def .ch{padding-bottom:7px;margin-bottom:6px}
+#s11 .ql-def .bl{gap:5px}
+#s11 .ql-def .bl li{font-size:12px;line-height:1.4}
+#s11 .ql-flow{padding:10px 14px}
+#s11 .ql-flow h4{font-size:11px;margin-bottom:7px}
+#s11 .sflow{gap:4px}
+#s11 .sstep{gap:7px}
+#s11 .snum{width:19px;height:19px;font-size:9px}
+#s11 .stxt{font-size:11px}
+#s11 .sarr{font-size:9px;margin-left:26px}
+#s11 .ql-tech{padding:10px 14px}
+#s11 .ql-tech h4{font-size:11px;margin-bottom:7px}
+#s11 .qt-i{padding:7px 10px;margin-bottom:5px}
+#s11 .qt-i strong{font-size:12px}
+#s11 .qt-i p{font-size:11px;margin-top:2px}
+#s11 .vram-vis{padding:10px 14px}
+#s11 .vram-vis h4{font-size:11px;margin-bottom:9px}
+#s11 .brow{margin-bottom:7px}
+#s11 .btrk{height:17px}
+#s11 .big-pair{gap:8px}
+#s11 .bs{padding:11px 14px}
+#s11 .bs .n{font-size:26px}
+#s11 .bs .t{font-size:11px}
+#s11 .bs .d{font-size:10px;margin-top:3px}
+#s11 .cmp-tip{padding:10px 14px}
+#s11 .cmp-tip h4{font-size:11px;margin-bottom:7px}
+#s11 .cmp-tip .bl{gap:5px}
+#s11 .cmp-tip .bl li{font-size:12px;line-height:1.4}
+#s11 .alert{padding:7px 10px;font-size:11px}
+
+/* S13 — RLHF & DPO */
+#s13 .stitle{padding:18px 64px 8px}
+#s13 .stitle .tbar{height:38px}
+#s13 .body{padding:0 64px 14px;gap:9px}
+#s13 .s13l,#s13 .s13r{gap:8px}
+#s13 .align-def{padding:10px 16px}
+#s13 .align-def .dlbl{margin-bottom:4px}
+#s13 .align-def p{font-size:13px;line-height:1.45}
+#s13 .rlhf-card{padding:10px 14px;gap:7px}
+#s13 .rlhf-card .ch{padding-bottom:6px;margin-bottom:5px}
+#s13 .rlhf-card h3{font-size:13px}
+#s13 .rlhf-flow{padding:8px 10px;gap:3px}
+#s13 .rf-step{padding:5px 8px}
+#s13 .rf-step strong{font-size:10px;margin-bottom:1px}
+#s13 .rf-step span{font-size:9px}
+#s13 .rf-arr{font-size:11px}
+#s13 .rlhf-card .bl{gap:4px;margin-top:6px}
+#s13 .rlhf-card .bl li{font-size:11px;line-height:1.4}
+#s13 .dpo-card{padding:10px 14px;gap:6px}
+#s13 .dpo-card .ch{padding-bottom:6px;margin-bottom:5px}
+#s13 .dpo-card h3{font-size:13px}
+#s13 .dpo-vs{gap:7px}
+#s13 .dpo-v{padding:8px 10px}
+#s13 .dpo-v strong{font-size:11px;margin-bottom:3px}
+#s13 .dpo-v p{font-size:11px;line-height:1.35}
+#s13 .dpo-card .bl{gap:4px;margin-top:6px}
+#s13 .dpo-card .bl li{font-size:11px;line-height:1.4}
+#s13 .score-card{padding:11px 15px}
+#s13 .score-card h4{font-size:11px;margin-bottom:9px}
+#s13 .sc-bar-row{margin-bottom:7px}
+#s13 .sc-tr{height:18px}
+#s13 .card[style*="14px 17px"]{padding:11px 14px !important}
+#s13 .card table th,#s13 .card table td{padding:6px 9px !important;font-size:11px !important}
+#s13 .alert{padding:7px 10px;font-size:11px}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="vp">
+
+<!-- ═══ S1: COVER ═══ -->
+<div class="slide on" id="s1">
+  <div class="cov-l">
+    <div class="cov-eye">LLM Fine-Tuning Complete Guide</div>
+    <h1 class="cov-h">LLM 파인 튜닝<br><em>완전 가이드</em></h1>
+    <p class="cov-sub">모델 최적화 전략</p>
+    
+  </div>
+  <div class="cov-r">
+    <div class="toc-item"><div class="toc-num">01</div><div class="toc-tx"><strong>LLM 기초 — 대규모 언어 모델이란?</strong><span>Transformer · 사전 학습 · 토큰</span></div></div>
+    <div class="toc-item"><div class="toc-num">02</div><div class="toc-tx"><strong>사전 학습 vs 파인 튜닝</strong><span>두 단계의 차이와 역할</span></div></div>
+    <div class="toc-item"><div class="toc-num">03</div><div class="toc-tx"><strong>왜 파인 튜닝이 필요한가?</strong><span>베이스 모델의 한계 · 실무 필요성</span></div></div>
+    <div class="toc-item"><div class="toc-num">04</div><div class="toc-tx"><strong>파인 튜닝 방법론 전체 지도</strong><span>SFT · Full FT · PEFT · Alignment</span></div></div>
+    <div class="toc-item"><div class="toc-num">05–10</div><div class="toc-tx"><strong>각 기법 심층 분석</strong><span>SFT · Full FT · PEFT · LoRA · QLoRA · 기타 PEFT</span></div></div>
+    <div class="toc-item"><div class="toc-num">11–14</div><div class="toc-tx"><strong>심화 — RLHF · DPO · 비교</strong><span>정렬 튜닝 · 전체 비교</span></div></div>
+  </div>
+</div>
+
+<!-- ═══ S2: LLM 기초 ═══ -->
+<div class="slide" id="s2">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>1. LLM 기초 — 대규모 언어 모델이란?</h1><p>What is a Large Language Model?</p></div></div>
+  <div class="body">
+    <div class="s2l">
+      <div class="defb">
+        <div class="dlbl">Definition</div>
+        <p>수십억 개의 파라미터를 가진 <strong>Transformer 기반</strong> 신경망으로, 방대한 텍스트 데이터로 <strong>다음 토큰을 예측</strong>하는 방식으로 사전 학습된 언어 모델</p>
+      </div>
+      <div class="card" style="padding:14px 17px;flex:1;display:flex;flex-direction:column;gap:10px">
+        <div class="ch"><div class="ibox"><i class="fas fa-brain"></i></div><h3>핵심 구성 요소</h3></div>
+        <ul class="bl">
+          <li><strong>Tokenizer:</strong> 텍스트를 숫자(토큰) 시퀀스로 변환. 단어·형태소·바이트 단위 분할</li>
+          <li><strong>Embedding Layer:</strong> 각 토큰을 고차원 벡터 공간에 매핑하여 의미를 수치화</li>
+          <li><strong>Transformer Blocks:</strong> Self-Attention + Feed-Forward 네트워크가 반복 적층</li>
+          <li><strong>Self-Attention:</strong> 시퀀스 내 모든 토큰 간의 관계를 병렬로 계산하는 핵심 메커니즘</li>
+          <li><strong>Output Head:</strong> 마지막 레이어가 다음 토큰의 확률 분포(Logits)를 출력</li>
+        </ul>
+      </div>
+      <div class="card" style="padding:13px 17px">
+        <div style="font-size:12px;font-weight:700;color:var(--dk);margin-bottom:10px">주요 베이스 모델 계보</div>
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-yr">2017</div><div class="tl-tx"><strong>Transformer 원논문</strong><span>"Attention Is All You Need" — 현대 LLM의 시초</span></div></div>
+          <div class="tl-item"><div class="tl-yr">2020</div><div class="tl-tx"><strong>GPT-3 (175B)</strong><span>Few-shot 학습 능력 입증. LLM 시대의 본격 개막</span></div></div>
+          <div class="tl-item"><div class="tl-yr">2023</div><div class="tl-tx"><strong>Llama · Mistral</strong><span>오픈 소스 공개. 파인 튜닝 생태계 폭발적 성장</span></div></div>
+          <div class="tl-item"><div class="tl-yr">2024</div><div class="tl-tx"><strong>Llama 3 · Phi-3 · Gemma</strong><span>소형·고성능 오픈 모델. 파인 튜닝이 더욱 현실화</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="s2r">
+      <div class="card arch-card">
+        <div class="ch"><div class="ibox"><i class="fas fa-diagram-project"></i></div><h3>Transformer 처리 흐름</h3></div>
+        <div class="arch-row">
+          <div class="arch-box gb"><strong>입력 텍스트</strong><span>"파이썬 코드 작성해줘"</span></div>
+        </div>
+        <div class="arch-arr">↓ Tokenization</div>
+        <div class="arch-row">
+          <div class="arch-box dk"><strong>토큰 임베딩</strong><span>[1024, 512, 99, ...]</span></div>
+        </div>
+        <div class="arch-arr">↓ ×N Transformer Blocks</div>
+        <div class="arch-row" style="gap:6px">
+          <div class="arch-box dk" style="flex:1"><strong>Self-Attention</strong><span>토큰 간 관계 계산</span></div>
+          <div class="arch-box dk" style="flex:1"><strong>FFN Layer</strong><span>특징 변환·저장</span></div>
+        </div>
+        <div class="arch-arr">↓ Output Head</div>
+        <div class="arch-row">
+          <div class="arch-box gb"><strong>다음 토큰 예측</strong><span>확률 분포 → 생성</span></div>
+        </div>
+      </div>
+      <div class="dcard">
+        <div class="dn">175B</div>
+        <div class="dt">GPT-3 파라미터 수</div>
+        <div class="dd">현재 Llama 3 70B, Mistral 7B 등 다양한 크기의 오픈 소스 베이스 모델이 파인 튜닝의 출발점으로 사용됨</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S3: Pre-training vs Fine-tuning ═══ -->
+<div class="slide" id="s3">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>2. 사전 학습 vs 파인 튜닝</h1><p>Pre-training vs Fine-Tuning — Two Distinct Stages</p></div></div>
+  <div class="body">
+    <div class="pt-row">
+      <div class="card pt-card">
+        <div class="pt-badge blue">Stage 1</div>
+        <div class="pt-hd"><div class="ibox" style="background:#EFF6FF"><i class="fas fa-globe" style="color:#3B82F6"></i></div><h3>사전 학습 (Pre-Training)</h3></div>
+        <ul class="bl">
+          <li>인터넷, 책, 논문 등 <strong>수조 개의 토큰</strong>으로 자기 지도 학습</li>
+          <li>목표: 다음 토큰 예측 — 언어 구조·세계 지식을 <strong>파라미터에 내재화</strong></li>
+          <li>수천~수만 GPU를 수 개월간 가동하는 <strong>천문학적 비용</strong> 소요</li>
+          <li>결과물: 언어를 이해하지만 <strong>지시를 따르지 못하는</strong> "베이스 모델"</li>
+          <li>OpenAI·Meta·Google 등 대형 조직만 현실적으로 수행 가능</li>
+        </ul>
+        <div class="pt-stat">
+          <div class="pt-s"><div class="n">수조</div><div class="l">학습 토큰 수</div></div>
+          <div class="pt-s"><div class="n">수개월</div><div class="l">학습 소요 기간</div></div>
+          <div class="pt-s"><div class="n">$수백만</div><div class="l">추정 학습 비용</div></div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;font-size:28px;color:var(--g);padding:0 4px">→</div>
+      <div class="card pt-card">
+        <div class="pt-badge grn">Stage 2</div>
+        <div class="pt-hd"><div class="ibox"><i class="fas fa-sliders"></i></div><h3>파인 튜닝 (Fine-Tuning)</h3></div>
+        <ul class="bl">
+          <li>사전 학습된 베이스 모델에 <strong>소규모 특화 데이터</strong>로 추가 학습</li>
+          <li>목표: 특정 태스크·도메인·스타일에 맞게 <strong>행동을 교정·특화</strong></li>
+          <li>사전 학습 대비 <strong>수백~수천 배 저렴</strong>한 비용과 시간</li>
+          <li>결과물: 지시를 잘 따르고 도메인 지식을 갖춘 <strong>전문화된 모델</strong></li>
+          <li>개인 연구자·스타트업도 소비자 GPU로 수행 가능 (PEFT 사용 시)</li>
+        </ul>
+        <div class="pt-stat">
+          <div class="pt-s"><div class="n">수백~수만</div><div class="l">학습 데이터 건수</div></div>
+          <div class="pt-s"><div class="n">수시간</div><div class="l">학습 소요 기간</div></div>
+          <div class="pt-s"><div class="n">$수십~수백</div><div class="l">클라우드 비용</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="bridge-card">
+      <div class="br-item"><div class="br-ic"><i class="fas fa-lightbulb"></i></div><div class="br-tx"><strong>핵심 비유</strong><span>사전 학습 = 대학원까지 교육받은 범용 전문가<br>파인 튜닝 = 특정 회사·업무에 맞게 재교육</span></div></div>
+      <div class="br-div"></div>
+      <div class="br-item"><div class="br-ic"><i class="fas fa-lock"></i></div><div class="br-tx"><strong>지식 보존</strong><span>파인 튜닝은 사전 학습 지식 위에<br>새로운 지식을 덮어쓰거나 추가하는 과정</span></div></div>
+      <div class="br-div"></div>
+      <div class="br-item"><div class="br-ic"><i class="fas fa-recycle"></i></div><div class="br-tx"><strong>전이 학습</strong><span>하나의 베이스 모델로 수많은 특화 모델을<br>낮은 비용으로 파생 생성 가능</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S4: 왜 파인 튜닝이 필요한가 ═══ -->
+<div class="slide" id="s4">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>3. 왜 파인 튜닝이 필요한가?</h1><p>Why Fine-Tuning? — Limitations of Base Models</p></div></div>
+  <div class="body">
+    <div class="s4l">
+      <div class="defb">
+        <div class="dlbl">핵심 문제</div>
+        <p>베이스 모델은 언어를 <strong>이해하지만</strong> 우리가 원하는 방식으로 <strong>행동하지 않는다.</strong> 지시를 따르거나, 도메인 전문성을 발휘하거나, 특정 형식으로 응답하는 능력이 부족하다.</p>
+      </div>
+      <div class="card prob-card">
+        <div class="prob-head"><div class="ibox" style="background:#FEF2F2"><i class="fas fa-triangle-exclamation" style="color:#EF4444"></i></div><h3>베이스 모델의 3대 한계</h3></div>
+        <div class="limit-item" style="background:var(--bg);border:none"><i class="fas fa-circle-xmark" style="color:#EF4444;font-size:13px;margin-top:2px;flex-shrink:0"></i><div><strong style="color:var(--dk);font-size:13px">지시 무시 (No Instruction Following)</strong><p style="font-size:12px;color:var(--md);margin-top:2px;line-height:1.4">"계약서를 요약해줘"라고 해도 지시를 따르지 않고 텍스트를 계속 이어쓰거나 엉뚱한 응답 생성</p></div></div>
+        <div class="limit-item" style="background:var(--bg);border:none"><i class="fas fa-circle-xmark" style="color:#EF4444;font-size:13px;margin-top:2px;flex-shrink:0"></i><div><strong style="color:var(--dk);font-size:13px">도메인 전문성 부족</strong><p style="font-size:12px;color:var(--md);margin-top:2px;line-height:1.4">의료·법률·금융 등 특화 지식이 부족하거나, 있어도 환각(Hallucination)이 잦아 신뢰 불가</p></div></div>
+        <div class="limit-item" style="background:var(--bg);border:none"><i class="fas fa-circle-xmark" style="color:#EF4444;font-size:13px;margin-top:2px;flex-shrink:0"></i><div><strong style="color:var(--dk);font-size:13px">기업 고유 스타일 미반영</strong><p style="font-size:12px;color:var(--md);margin-top:2px;line-height:1.4">특정 브랜드 어투, JSON 출력 형식, 사내 용어 체계를 프롬프트만으로 완벽히 제어하기 어려움</p></div></div>
+      </div>
+    </div>
+    <div class="s4r">
+      <div class="compare-card">
+        <h4>파인 튜닝 vs 다른 접근법</h4>
+        <div class="cmp-row"><div class="cmp-lbl">프롬프트</div><div class="cmp-txt">입력 최적화만. 간단한 형식 교정에는 유효하나 근본 행동 변경 불가. 비용 가장 낮음</div></div>
+        <div class="cmp-row"><div class="cmp-lbl">RAG</div><div class="cmp-txt">외부 지식 접근을 추가. 최신 정보·사내 문서에 강하나 모델 행동 자체는 변경 불가</div></div>
+        <div class="cmp-row"><div class="cmp-lbl g">파인 튜닝</div><div class="cmp-txt">행동·지식·스타일을 <strong style="color:var(--gl)">가중치에 직접 주입</strong>. 추론 지연 없이 근본 변화 가능</div></div>
+        <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:10px;font-size:12px;color:rgba(255,255,255,.55);line-height:1.5">
+          ★ 세 방법의 <strong style="color:var(--gl)">조합</strong>이 실무 최강 전략.<br>프롬프트→RAG→파인 튜닝 순으로 단계 상향
+        </div>
+      </div>
+      <div class="result-card">
+        <div class="r-num">20%+</div>
+        <div class="r-tx">법률 도메인 특화 파인 튜닝 시 답변 정확도 향상 사례.<br>범용 모델 대비 압도적인 벤치마크 달성</div>
+      </div>
+      <div class="card" style="padding:14px 17px">
+        <div style="font-size:12px;font-weight:700;color:var(--dk);margin-bottom:9px">파인 튜닝이 유일한 해법인 시나리오</div>
+        <ul class="bl">
+          <li>특정 회사 <strong>브랜드 어투·페르소나</strong>를 일관되게 유지해야 할 때</li>
+          <li>기밀 데이터로 학습해야 해 RAG의 <strong>외부 API 호출이 불가</strong>할 때</li>
+          <li>추론 속도가 중요해 <strong>검색 지연을 허용할 수 없을</strong> 때</li>
+          <li>모델이 특정 형식(JSON, XML)만 <strong>완벽히 출력</strong>해야 할 때</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S5: 방법론 전체 지도 ═══ -->
+<div class="slide" id="s5">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>4. 파인 튜닝 방법론 전체 지도</h1><p>The Fine-Tuning Landscape — Overview Map</p></div></div>
+  <div class="body">
+    <p class="map-intro">파인 튜닝은 단일 기법이 아닌 <strong>목적과 자원에 따라 선택하는 방법론 집합</strong>입니다. 아래 지도는 이 가이드에서 다룰 모든 기법의 위치와 관계를 보여줍니다.</p>
+    <div class="map-grid">
+      <div class="map-col">
+        <div class="map-col-hd">학습 방식 기준</div>
+        <div class="map-item"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-chalkboard-user"></i></div><strong>SFT (지도 학습)</strong><span class="slide-lbl">S6</span></div><p>레이블링된 지시-응답 쌍으로 학습. 모델이 지시를 따르게 만드는 기본 단계</p></div>
+        <div class="map-item"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-book-open"></i></div><strong>비지도 학습</strong></div><p>레이블 없는 원시 텍스트로 도메인 지식 자체를 흡수. 의료·법률 특화에 활용</p></div>
+        <div class="map-item"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-scale-balanced"></i></div><strong>정렬 튜닝</strong><span class="slide-lbl">S13</span></div><p>RLHF·DPO로 인간 선호도에 맞게 응답 품질 최적화. ChatGPT 방식의 핵심</p></div>
+      </div>
+      <div class="map-col">
+        <div class="map-col-hd">파라미터 업데이트 범위 기준</div>
+        <div class="map-item"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-database"></i></div><strong>Full Fine-Tuning</strong><span class="slide-lbl">S7</span></div><p>전체 파라미터 업데이트. 최고 성능 가능하나 막대한 자원 필요. 재앙적 망각 위험</p></div>
+        <div class="map-item hl"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-microchip"></i></div><strong>PEFT (효율적 튜닝)</strong><span class="slide-lbl">S8</span></div><p>대부분 파라미터 고정, 일부만 학습. 낮은 비용으로 Full FT 근접 성능. 현재 주류</p></div>
+        <div class="map-note">★ 대부분의 실무는 <strong>SFT + PEFT</strong>의 조합으로 시작</div>
+      </div>
+      <div class="map-col">
+        <div class="map-col-hd">PEFT 세부 기법</div>
+        <div class="map-item hl"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-layer-group"></i></div><strong>LoRA</strong><span class="slide-lbl">S9–10</span></div><p>저차원 행렬 분해로 어댑터 삽입. 현재 가장 인기 있는 PEFT 기법</p></div>
+        <div class="map-item hl"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-compress"></i></div><strong>QLoRA</strong><span class="slide-lbl">S11</span></div><p>4비트 양자화 + LoRA. VRAM 80% 절감. 소비자 GPU로 70B+ 학습 가능</p></div>
+        <div class="map-item"><div class="map-item-hd"><div class="ibox" style="width:28px;height:28px;font-size:12px"><i class="fas fa-plug"></i></div><strong>Prefix·Prompt·Adapter</strong><span class="slide-lbl">S12</span></div><p>소프트 프롬프트·어댑터 모듈 삽입 등 경량 기법. 자원이 극히 제한될 때</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S6: SFT ═══ -->
+<div class="slide" id="s6">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>5. 지도 학습 파인 튜닝 (SFT)</h1><p>Supervised Fine-Tuning — Teaching the Model to Follow Instructions</p></div></div>
+  <div class="body">
+    <div class="s6l">
+      <div class="sft-def"><div class="dlbl">Definition</div><p>레이블링된 <strong>지시-응답(Instruction-Response) 쌍</strong> 데이터를 사용해 베이스 모델이 <strong>사람의 지시를 이해하고 따르도록</strong> 학습시키는 기법. 파인 튜닝의 가장 기본이 되는 단계.</p></div>
+      <div class="card data-ex">
+        <h4>학습 데이터 형식 예시</h4>
+        <div class="ex-box">
+          <div class="elbl">Instruction (지시)</div>
+          <div class="ep">아래 의료 기록을 환자가 이해할 수 있는 쉬운 언어로 요약해 주세요: "환자는 좌심실 비대를 동반한 고혈압 3기로 진단됨..."</div>
+          <div class="ea">→ <strong>Response:</strong> "혈압이 매우 높아서 심장 좌측 벽이 두꺼워진 상태입니다. 혈압약과 생활 습관 개선이 필요합니다."</div>
+        </div>
+        <div class="ex-box">
+          <div class="elbl">Instruction (지시)</div>
+          <div class="ep">다음 계약서 조항의 법적 위험을 분석해 주세요: "을은 계약 종료 후 2년간 경쟁사에 취업할 수 없다."</div>
+          <div class="ea">→ <strong>Response:</strong> "해당 조항은 경업금지 조항으로, 기간 2년과 업종 제한 범위에 따라 무효 판결 가능성이 있습니다..."</div>
+        </div>
+      </div>
+      <div class="stat-bar">
+        <div class="si"><div class="n">수백~수천</div><div class="l">최소 학습 데이터 수<br>(고품질 기준)</div></div>
+        <div class="si"><div class="n">1–5 Epoch</div><div class="l">과적합 방지를 위한<br>권장 학습 횟수</div></div>
+        <div class="si"><div class="n">20%+</div><div class="l">도메인 특화 시<br>정확도 향상 사례</div></div>
+      </div>
+    </div>
+    <div class="s6r">
+      <div class="card qual-card">
+        <h4>SFT 고품질 데이터의 조건</h4>
+        <div class="qual-item"><div class="qual-num">1</div><p><strong>정확성:</strong> 응답이 사실에 기반하고 오류가 없어야 함. 잘못된 데이터는 모델을 오히려 망침</p></div>
+        <div class="qual-item"><div class="qual-num">2</div><p><strong>다양성:</strong> 같은 유형의 질문만 반복되면 범용성이 떨어짐. 다양한 표현·상황 포함 필요</p></div>
+        <div class="qual-item"><div class="qual-num">3</div><p><strong>일관성:</strong> 응답 형식·길이·어투가 일관되어야 모델이 패턴을 학습함</p></div>
+        <div class="qual-item"><div class="qual-num">4</div><p><strong>커버리지:</strong> 실제 서비스에서 만날 엣지케이스도 데이터에 포함되어야 함</p></div>
+      </div>
+      <div class="card" style="padding:14px 17px;flex:1">
+        <div class="ch"><div class="ibox"><i class="fas fa-route"></i></div><h3>SFT 프로세스</h3></div>
+        <div class="sflow">
+          <div class="sstep"><div class="snum">1</div><div class="stxt">도메인 태스크 정의 및 데이터 수집·정제</div></div>
+          <div class="sarr">↓</div>
+          <div class="sstep"><div class="snum">2</div><div class="stxt">Instruction 형식으로 데이터 포맷팅 (시스템 프롬프트 포함)</div></div>
+          <div class="sarr">↓</div>
+          <div class="sstep"><div class="snum">3</div><div class="stxt">베이스 모델 위에 SFT 실행 (Full FT 또는 PEFT 선택)</div></div>
+          <div class="sarr">↓</div>
+          <div class="sstep"><div class="snum">4</div><div class="stxt">벤치마크로 성능 검증 → 필요 시 데이터 보강 후 반복</div></div>
+          <div class="sarr">↓</div>
+          <div class="sstep"><div class="snum">5</div><div class="stxt">(선택) RLHF/DPO로 인간 선호도 추가 정렬</div></div>
+        </div>
+      </div>
+      <div class="alert g"><i class="fas fa-check-circle"></i><span><strong>품질 > 양:</strong> 수십만 건의 저품질 데이터보다 수천 건의 고품질 데이터가 훨씬 효과적. GPT-3.5의 Instruct 버전도 초기엔 수천 건 수준의 RLHF 데이터로 출발</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S7: Full Fine-Tuning ═══ -->
+<div class="slide" id="s7">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>6. Full Fine-Tuning과 그 한계</h1><p>Full Fine-Tuning — When It Works & Why It's Often Overkill</p></div></div>
+  <div class="body">
+    <div class="s7l">
+      <div class="card full-def">
+        <div class="ch"><div class="ibox"><i class="fas fa-database"></i></div><h3>Full Fine-Tuning이란?</h3></div>
+        <ul class="bl">
+          <li>사전 학습된 모델의 <strong>모든 파라미터(수십억 개)</strong>를 새 데이터로 전부 업데이트</li>
+          <li>이론적으로 특정 태스크에서 <strong>최고 수준의 성능</strong> 달성 가능</li>
+          <li>데이터가 충분하고 컴퓨팅 예산이 무제한일 때만 정당화됨</li>
+          <li>학습 완료 후 <strong>전체 모델을 저장</strong>해야 해 수십~수백 GB 필요</li>
+        </ul>
+      </div>
+      <div class="card limit-card">
+        <h3><i class="fas fa-circle-exclamation"></i> 3가지 치명적 한계</h3>
+        <div class="limit-item">
+          <i class="fas fa-fire"></i>
+          <div><strong>재앙적 망각 (Catastrophic Forgetting)</strong><p>새 데이터를 학습하면 기존 지식이 덮어씌워짐. 의료 데이터로 튜닝하면 수학 능력이 저하되는 현상</p></div>
+        </div>
+        <div class="limit-item">
+          <i class="fas fa-money-bill"></i>
+          <div><strong>막대한 비용과 시간</strong><p>7B 모델 Full FT에도 A100 수 장이 수 시간~수일 필요. 70B 모델은 현실적으로 불가</p></div>
+        </div>
+        <div class="limit-item">
+          <i class="fas fa-hdd"></i>
+          <div><strong>스토리지·배포 부담</strong><p>태스크마다 전체 모델을 저장해야 함. 10개 태스크 = 10×(수십 GB). 관리 불가</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="s7r">
+      <div class="card cat-card">
+        <h4>재앙적 망각 시각화</h4>
+        <div class="cat-vis">
+          <div class="cat-box before"><strong>Before FT</strong><span>일반 지식 ✓<br>수학 ✓<br>코딩 ✓<br>언어이해 ✓</span></div>
+          <div class="cat-arrow">→<br><small style="font-size:10px;color:var(--md)">의료 데이터로<br>Full FT</small></div>
+          <div class="cat-box after"><strong>After FT</strong><span>의료 지식 ✓✓<br>수학 △<br>코딩 ✗<br>언어이해 △</span></div>
+        </div>
+        <div class="alert w" style="margin-top:8px"><i class="fas fa-exclamation-triangle"></i><span>학습률·에폭 설정이 잘못되면 원래 능력의 상당 부분을 잃을 수 있음</span></div>
+      </div>
+      <div class="cost-grid">
+        <div class="cost-item"><div class="n">A100×8</div><div class="l">7B 모델 Full FT<br>최소 권장 환경</div></div>
+        <div class="cost-item"><div class="n">수십 GB</div><div class="l">태스크당<br>모델 저장 용량</div></div>
+        <div class="cost-item"><div class="n">불가</div><div class="l">70B+ 모델<br>소비자 GPU로</div></div>
+      </div>
+      <div class="card" style="padding:14px 17px;flex:1">
+        <div style="font-size:12px;font-weight:700;color:var(--dk);margin-bottom:9px">Full FT를 선택해야 하는 유일한 상황</div>
+        <ul class="bl">
+          <li>완전히 새로운 언어·도메인으로 <strong>근본적 지식 재편</strong>이 필요할 때</li>
+          <li>데이터가 수백만 건 이상으로 <strong>충분히 방대</strong>하고 품질이 검증됐을 때</li>
+          <li>컴퓨팅 비용·시간에 <strong>제약이 전혀 없는</strong> 대형 조직</li>
+          <li>LoRA/QLoRA로 시도한 후 <strong>성능 격차가 실제로 확인</strong>됐을 때</li>
+        </ul>
+      </div>
+      <div class="alert b"><i class="fas fa-lightbulb"></i><span><strong>결론:</strong> Full FT는 "최후의 선택지". 항상 PEFT 기법을 먼저 시도하고, 성능이 부족할 때만 고려하는 것이 좋음</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S8: PEFT 등장 ═══ -->
+<div class="slide" id="s8">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>7. PEFT — 파라미터 효율적 파인 튜닝의 등장</h1><p>Parameter-Efficient Fine-Tuning — The Solution to Full FT's Problems</p></div></div>
+  <div class="body">
+    <div class="s8l">
+      <div class="card peft-core">
+        <div class="ch"><div class="ibox"><i class="fas fa-microchip"></i></div><h3>PEFT의 핵심 아이디어</h3></div>
+        <ul class="bl">
+          <li>베이스 모델 가중치 대부분을 <strong>완전 고정(Freeze)</strong>한 채로 학습 진행</li>
+          <li>극히 일부 파라미터만 <strong>새로 추가하거나</strong> 선택적으로 업데이트</li>
+          <li>학습 가능 파라미터가 전체의 <strong>0.01~1% 수준</strong>에 불과</li>
+          <li>그럼에도 불구하고 Full FT에 <strong>근접하는 성능</strong>을 대부분 달성</li>
+          <li>재앙적 망각 위험 대폭 감소 — 베이스 지식이 그대로 보존됨</li>
+        </ul>
+      </div>
+      <div class="card param-cmp">
+        <h4>학습 파라미터 비율 비교 (GPT-3 175B 기준)</h4>
+        <div class="pcmp-row"><div class="pcmp-lbl">Full FT</div><div class="pcmp-tr"><div class="pcmp-fi" style="width:100%;background:#2C3E50">100%</div></div></div>
+        <div class="pcmp-row"><div class="pcmp-lbl">LoRA</div><div class="pcmp-tr"><div class="pcmp-fi" style="width:33%;background:var(--g)">~0.1%</div></div></div>
+        <div class="pcmp-row"><div class="pcmp-lbl">Prompt T.</div><div class="pcmp-tr"><div class="pcmp-fi" style="width:4%;background:var(--gl);min-width:5px"></div><span style="font-size:11px;font-weight:700;color:var(--g);margin-left:7px">&lt;0.01%</span></div></div>
+        <div style="font-size:10px;color:var(--lt);margin-top:4px">* 막대 길이는 상대적 시각화. 성능은 Full FT에 근접</div>
+      </div>
+      <div class="card peft-types-grid">
+        <h4>PEFT 기법 4가지</h4>
+        <div class="ptg">
+          <div class="pt-gi"><strong>LoRA</strong><span>저차원 행렬 분해. 현재 가장 인기</span></div>
+          <div class="pt-gi"><strong>QLoRA</strong><span>4bit 양자화 + LoRA. VRAM 극절감</span></div>
+          <div class="pt-gi"><strong>Prefix Tuning</strong><span>입력 앞에 학습 가능 토큰 추가</span></div>
+          <div class="pt-gi"><strong>Prompt Tuning</strong><span>소프트 프롬프트만 학습. 최경량</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="s8r">
+      <div class="big-peft">
+        <div class="bp"><div class="n">10,000×</div><div class="t">파라미터 감소</div><div class="d">GPT-3 175B 기준. 학습 파라미터를 만 배 이상 줄여도 성능 저하 최소화</div></div>
+        <div class="bp"><div class="n">~33%</div><div class="t">VRAM 사용량 (LoRA)</div><div class="d">Full FT 대비. 소비자 GPU로 7B~13B 모델 튜닝이 현실적으로 가능해짐</div></div>
+      </div>
+      <div class="card bene-list">
+        <h4>PEFT의 4대 이점</h4>
+        <div class="bene-i"><div class="bene-ic"><i class="fas fa-bolt"></i></div><div><strong>낮은 연산 비용</strong><span>소비자용 GPU(RTX 3090/4090)로 7B~13B 모델 튜닝 가능. 클라우드 비용 수십 배 절감</span></div></div>
+        <div class="bene-i"><div class="bene-ic"><i class="fas fa-hdd"></i></div><div><strong>최소화된 저장 용량</strong><span>어댑터 가중치만 저장 — 수십 GB 대신 10~100MB. 태스크별 교체·관리 용이</span></div></div>
+        <div class="bene-i"><div class="bene-ic"><i class="fas fa-shield-halved"></i></div><div><strong>재앙적 망각 방지</strong><span>베이스 모델 가중치를 건드리지 않으므로 기존 범용 지식이 그대로 보존</span></div></div>
+        <div class="bene-i"><div class="bene-ic"><i class="fas fa-plug"></i></div><div><strong>모듈화 및 Hot-swap</strong><span>하나의 베이스 모델 위에 태스크별 어댑터를 교체 가능. 서비스 운용 효율 극대화</span></div></div>
+      </div>
+      <div class="alert g"><i class="fas fa-check-circle"></i><span><strong>핵심 메시지:</strong> PEFT는 Full FT의 단점을 해결하면서도 성능을 거의 보존. 특별한 이유가 없다면 항상 PEFT로 시작하는 것이 현재의 업계 표준</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S9: LoRA 원리 ═══ -->
+<div class="slide" id="s9">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>8. LoRA — 저차원 적응의 원리</h1><p>Low-Rank Adaptation — How It Works</p></div></div>
+  <div class="body">
+    <div class="s9l">
+      <div class="card lora-how">
+        <div class="ch"><div class="ibox"><i class="fas fa-layer-group"></i></div><h3>LoRA의 동작 원리</h3></div>
+        <ul class="bl">
+          <li>원본 가중치 행렬 W(d×k)는 <strong>완전 고정(Frozen)</strong> 상태 유지</li>
+          <li>어텐션 레이어(Q, V projection)에 작은 행렬 <strong>A(r×k), B(d×r)를 삽입</strong></li>
+          <li>순전파 시 출력 = Wx + <strong>BAx</strong> — 두 경로의 결과를 합산</li>
+          <li>B는 초기값 0으로 시작 → 학습 초기에 원본 출력 그대로 유지</li>
+          <li>학습 완료 후 W에 BA를 더해 <strong>병합(Merge)</strong> → 추론 지연 Zero</li>
+          <li>병합 없이 보관 시 <strong>태스크별 Hot-swap</strong> 운용 가능</li>
+        </ul>
+      </div>
+      <div class="math-card">
+        <div class="mlbl">핵심 수식</div>
+        <div class="formula">W' = W + <em>B · A</em></div>
+        <div class="fdesc">
+          W(d×k) 대신 <strong>A(r×k)</strong>와 <strong>B(d×r)</strong> 두 행렬만 학습.<br>
+          r은 Rank — 보통 <strong>4~64</strong>의 작은 정수. 행렬 크기 비교: W = d×k개 파라미터, BA = r×(d+k)개.<br>
+          r≪d,k 이면 파라미터 수가 획기적으로 줄어듦.
+        </div>
+      </div>
+    </div>
+    <div class="s9r">
+      <div class="mini-row">
+        <div class="mini"><div class="n">&lt;1%</div><div class="l">학습 파라미터<br>비율</div></div>
+        <div class="mini"><div class="n">0ms</div><div class="l">병합 후<br>추론 지연</div></div>
+        <div class="mini"><div class="n">~10MB</div><div class="l">어댑터<br>저장 크기</div></div>
+      </div>
+      <div class="card rank-tbl">
+        <h4>Rank(r) 값에 따른 트레이드오프</h4>
+        <table class="rtable">
+          <thead><tr><th>Rank</th><th>파라미터 수</th><th>VRAM</th><th>권장 상황</th></tr></thead>
+          <tbody>
+            <tr><td><strong>r = 4~8</strong></td><td class="green">최소</td><td class="green">최소</td><td>스타일 교정, 자원 극히 제한</td></tr>
+            <tr><td><strong>r = 16~32</strong></td><td class="yel">적음</td><td class="yel">낮음</td><td>일반적 도메인 적응 — 권장 기본값</td></tr>
+            <tr><td><strong>r = 64+</strong></td><td class="red">증가</td><td class="red">높아짐</td><td>복잡한 태스크, Full FT 근접 목표</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card adv-wrap">
+        <h4>LoRA의 핵심 강점</h4>
+        <div class="adv-i"><div class="adv-num">1</div><p><strong>메모리 효율:</strong> A, B 저차원 행렬만 VRAM에 올림. 7B/13B 모델을 단일 소비자 GPU로 튜닝 현실화</p></div>
+        <div class="adv-i"><div class="adv-num">2</div><p><strong>빠른 학습:</strong> 역전파 시 A, B만 업데이트. 전체 파라미터 대비 학습 속도 현저히 향상</p></div>
+        <div class="adv-i"><div class="adv-num">3</div><p><strong>유연한 배포:</strong> 병합 옵션으로 지연 제로, 또는 분리 보관으로 멀티태스크 Hot-swap</p></div>
+        <div class="adv-i"><div class="adv-num">4</div><p><strong>범용 호환:</strong> Llama, Mistral, Phi, Gemma 등 Transformer 기반 모델 전반에 적용 가능</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S10: LoRA 심화 ═══ -->
+<div class="slide" id="s10">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>9. LoRA 심화 — 하이퍼파라미터와 배포 전략</h1><p>LoRA Deep Dive — Hyperparameters &amp; Deployment Options</p></div></div>
+  <div class="body">
+    <div class="s10l">
+      <div class="card hp-card">
+        <div class="ch"><div class="ibox"><i class="fas fa-sliders"></i></div><h3>핵심 하이퍼파라미터</h3></div>
+        <div class="hp-item">
+          <div class="hn">lora_r <span style="font-family:sans-serif;font-size:11px;color:var(--md)">(Rank)</span></div>
+          <div class="hv">권장값: 16~32</div>
+          <div class="hd">저차원 행렬의 차원 수. 작을수록 파라미터·VRAM↓, 클수록 표현력↑. 대부분 16이 최적 시작점</div>
+        </div>
+        <div class="hp-item">
+          <div class="hn">lora_alpha <span style="font-family:sans-serif;font-size:11px;color:var(--md)">(Scaling)</span></div>
+          <div class="hv">권장값: rank의 2배</div>
+          <div class="hd">어댑터 출력의 스케일 조정 계수. α/r 값이 실제 스케일. alpha=2×rank로 설정하면 스케일=2 고정</div>
+        </div>
+        <div class="hp-item">
+          <div class="hn">lora_dropout</div>
+          <div class="hv">권장값: 0.05~0.1</div>
+          <div class="hd">학습 시 어댑터에 적용하는 드롭아웃 비율. 과적합 방지 역할. 데이터가 적을수록 높게 설정</div>
+        </div>
+        <div class="hp-item">
+          <div class="hn">learning_rate</div>
+          <div class="hv">권장값: 1e-4 ~ 3e-4</div>
+          <div class="hd">Full FT(1e-5 수준)보다 높게 설정 가능. 학습 대상이 어댑터뿐이므로 더 큰 스텝 허용</div>
+        </div>
+      </div>
+    </div>
+    <div class="s10r">
+      <div class="card target-card">
+        <h4>target_modules — 어느 레이어에 LoRA를 적용할까?</h4>
+        <div class="tm-grid">
+          <div class="tm-item hl"><strong>q_proj</strong><span>Query 행렬 — 우선 적용</span></div>
+          <div class="tm-item hl"><strong>v_proj</strong><span>Value 행렬 — 우선 적용</span></div>
+          <div class="tm-item"><strong>k_proj</strong><span>Key 행렬</span></div>
+          <div class="tm-item"><strong>o_proj</strong><span>Output 행렬</span></div>
+          <div class="tm-item"><strong>gate_proj</strong><span>FFN Gate</span></div>
+          <div class="tm-item"><strong>up_proj</strong><span>FFN Up</span></div>
+        </div>
+        <div class="alert b" style="margin-top:9px"><i class="fas fa-info-circle"></i><span>일반적으로 q_proj, v_proj만 적용해도 충분. 성능 부족 시 k_proj, o_proj 추가</span></div>
+      </div>
+      <div class="card deploy-card">
+        <div class="ch"><div class="ibox"><i class="fas fa-rocket"></i></div><h3>배포 전략 2가지</h3></div>
+        <div class="dp-opt">
+          <strong><i class="fas fa-merge"></i> 병합(Merge) 후 배포</strong>
+          <p>W' = W + BA를 계산해 단일 모델로 합침. 추론 지연 Zero, 구조 변화 없음. 단일 태스크 서비스에 적합</p>
+        </div>
+        <div class="dp-opt">
+          <strong><i class="fas fa-plug"></i> 분리 보관 (Hot-swap)</strong>
+          <p>베이스 모델 1개 + 태스크별 어댑터(10MB). 런타임에 어댑터만 교체. 멀티태스크 서비스에 최적</p>
+        </div>
+      </div>
+      <div class="alert g"><i class="fas fa-lightbulb"></i><span><strong>실무 팁:</strong> 처음엔 r=16, alpha=32, dropout=0.05, q_proj+v_proj 타겟으로 시작. 검증 손실이 수렴하면 r을 낮춰 경량화, 성능 미달 시 r을 높이거나 타겟 레이어를 확장하라</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S11: QLoRA ═══ -->
+<div class="slide" id="s11">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>10. QLoRA — 양자화된 LoRA</h1><p>Quantized LoRA — 70B+ Models on Consumer Hardware</p></div></div>
+  <div class="body">
+    <div class="s11l">
+      <div class="card ql-def">
+        <div class="ch"><div class="ibox"><i class="fas fa-compress"></i></div><h3>QLoRA란?</h3></div>
+        <ul class="bl">
+          <li>베이스 모델을 <strong>4비트 정밀도(NF4)</strong>로 양자화한 뒤 LoRA를 적용하는 기법</li>
+          <li>VRAM 사용량을 Full FT 대비 최대 <strong>80% 절감</strong></li>
+          <li>70B+ 초대형 모델을 단일 <strong>48GB GPU</strong>로 파인 튜닝 가능</li>
+          <li>Full FT에 <strong>근접하는 성능</strong>을 유지하면서 비용을 혁신</li>
+          <li>Dettmers et al. (2023) 논문 공개 후 빠르게 업계 표준으로 정착</li>
+        </ul>
+      </div>
+      <div class="card ql-flow">
+        <h4>QLoRA 적용 단계</h4>
+        <div class="sflow">
+          <div class="sstep"><div class="snum">1</div><div class="stxt">베이스 모델을 <strong>4-bit NF4</strong>로 양자화하여 메모리 적재</div></div>
+          <div class="sarr">↓</div>
+          <div class="sstep"><div class="snum">2</div><div class="stxt">순전파 시 연산을 위해 <strong>BF16으로 역양자화</strong> (Double Quantization 적용)</div></div>
+          <div class="sarr">↓</div>
+          <div class="sstep"><div class="snum">3</div><div class="stxt">LoRA 어댑터(A, B 행렬)만 <strong>BF16 정밀도로 학습</strong></div></div>
+          <div class="sarr">↓</div>
+          <div class="sstep"><div class="snum">4</div><div class="stxt">학습 완료 후 어댑터 가중치만 저장하여 배포</div></div>
+        </div>
+      </div>
+      <div class="card ql-tech">
+        <h4>핵심 양자화 기법</h4>
+        <div class="qt-i"><strong>NF4 (4-bit NormalFloat)</strong><p>가중치 분포를 정규화하여 4비트로 저장. 일반 INT4보다 표현력이 높아 성능 저하 최소화. QLoRA의 핵심 혁신</p></div>
+        <div class="qt-i"><strong>Double Quantization</strong><p>양자화 상수 자체를 다시 양자화. 파라미터당 추가로 약 0.37bit 절감하여 VRAM 사용량을 추가로 줄임</p></div>
+      </div>
+    </div>
+    <div class="s11r">
+      <div class="vram-vis card">
+        <h4>VRAM 사용량 비교 (상대적 %)</h4>
+        <div class="brow"><div class="blbl">Full FT</div><div class="btrk"><div class="bfil" style="width:100%;background:#2C3E50">100%</div></div></div>
+        <div class="brow"><div class="blbl">LoRA</div><div class="btrk"><div class="bfil" style="width:33%;background:var(--g)">~33%</div></div></div>
+        <div class="brow"><div class="blbl">QLoRA</div><div class="btrk"><div class="bfil" style="width:20%;background:var(--gl)">~20%</div></div></div>
+        <div style="font-size:10px;color:var(--lt);margin-top:5px">* 70B Full FT ≈ A100 8장, QLoRA ≈ A100 1~2장</div>
+      </div>
+      <div class="big-pair">
+        <div class="bs"><div class="n">80%</div><div class="t">VRAM 절감</div><div class="d">Full FT 대비. 같은 예산으로 더 큰 모델 학습 가능</div></div>
+        <div class="bs"><div class="n">48GB</div><div class="t">70B 모델 학습</div><div class="d">A100 단일 GPU로 Llama 3 70B QLoRA 가능</div></div>
+      </div>
+      <div class="card cmp-tip">
+        <h4>LoRA vs QLoRA 선택 기준</h4>
+        <ul class="bl">
+          <li><strong>VRAM ≥ 24GB:</strong> LoRA로 시작 — 구현 단순, 성능 우수, 학습 빠름</li>
+          <li><strong>VRAM &lt; 24GB 또는 30B+ 모델:</strong> QLoRA 필수 선택</li>
+          <li><strong>성능 차이:</strong> QLoRA는 LoRA 대비 약간 낮지만 실용적으로 무시 가능한 수준</li>
+          <li><strong>학습 속도:</strong> QLoRA는 역양자화 오버헤드로 LoRA보다 10~20% 느림</li>
+          <li><strong>권장 조합:</strong> QLoRA + Unsloth로 속도·메모리를 동시에 최적화</li>
+        </ul>
+      </div>
+      <div class="alert g"><i class="fas fa-check-circle"></i><span><strong>실무 황금률:</strong> "QLoRA로 시작하고, 성능 격차가 있을 때만 LoRA → Full FT를 고려하라"</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S12: 기타 PEFT 기법 ═══ -->
+<div class="slide" id="s12">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>11. 기타 PEFT 기법 — Prefix · Prompt · Adapter</h1><p>Other PEFT Techniques — Beyond LoRA</p></div></div>
+  <div class="body">
+    <p class="other-intro">LoRA와 QLoRA가 현재 주류이지만, 자원이 극히 제한되거나 <strong>여러 태스크를 모듈식으로 관리</strong>해야 할 때 유용한 경량 PEFT 기법들</p>
+    <div class="other-grid">
+      <div class="card other-card">
+        <div class="oc-head"><div class="oc-icon"><i class="fas fa-keyboard"></i></div><h3>Prompt Tuning</h3><div class="oc-tag">가장 가벼운 기법</div></div>
+        <ul class="bl">
+          <li>입력 임베딩 앞에 <strong>학습 가능한 '소프트 프롬프트'</strong> 벡터 추가</li>
+          <li>베이스 모델 파라미터는 <strong>완전 고정</strong> — 프롬프트 토큰만 학습</li>
+          <li>학습 파라미터가 극도로 적어 <strong>자원 소모 최소</strong></li>
+          <li>모델 크기가 클수록 효과 증가 (10B+ 에서 Full FT 수준 가능)</li>
+          <li>소형 모델(1~3B)에서는 성능 저하 폭이 큼</li>
+        </ul>
+        <div class="when-best"><strong>최적 시나리오:</strong> 하나의 거대 모델로 수십 개 태스크를 소프트 프롬프트만 교체해 운용할 때</div>
+      </div>
+      <div class="card other-card">
+        <div class="oc-head"><div class="oc-icon"><i class="fas fa-indent"></i></div><h3>Prefix Tuning</h3><div class="oc-tag">레이어별 제어</div></div>
+        <ul class="bl">
+          <li>입력 시퀀스 앞에 학습 가능한 <strong>프리픽스 토큰</strong> 추가</li>
+          <li>Prompt Tuning과 달리 <strong>모든 레이어의 어텐션 KV</strong>에 주입</li>
+          <li>각 레이어가 독립적으로 컨텍스트를 제어 — <strong>더 세밀한 조정</strong> 가능</li>
+          <li>연속적인 벡터로 모델의 <strong>맥락 파악 능력</strong>을 미세 조정</li>
+          <li>Prompt Tuning보다 표현력이 높으나 파라미터가 더 많음</li>
+        </ul>
+        <div class="when-best"><strong>최적 시나리오:</strong> 자연어 생성 품질을 섬세하게 조정하면서 베이스 모델을 완전 공유해야 할 때</div>
+      </div>
+      <div class="card other-card">
+        <div class="oc-head"><div class="oc-icon"><i class="fas fa-plug"></i></div><h3>Adapter</h3><div class="oc-tag">모듈식 관리</div></div>
+        <ul class="bl">
+          <li>트랜스포머 블록 사이에 <strong>작은 병목(Bottleneck) 모듈</strong> 삽입</li>
+          <li>기존 가중치는 고정, <strong>어댑터 내부 파라미터</strong>만 학습</li>
+          <li>다운 프로젝션 → 비선형 활성 → 업 프로젝션 구조</li>
+          <li>태스크별 어댑터 교체가 용이해 <strong>모듈화 관리에 최적</strong></li>
+          <li>단점: 추론 시 어댑터를 통과해야 해 <strong>약간의 지연 발생</strong></li>
+        </ul>
+        <div class="when-best"><strong>최적 시나리오:</strong> 수십 개의 태스크를 하나의 모델로 서빙하면서 각 태스크 어댑터를 독립적으로 학습·교체할 때</div>
+      </div>
+    </div>
+    <div class="peft-sum">
+      <div class="psum-item"><strong>Prompt Tuning</strong><span>파라미터 &lt;0.01%<br>소형 모델엔 성능 제한</span></div>
+      <div class="psum-div"></div>
+      <div class="psum-item"><strong>Prefix Tuning</strong><span>레이어별 KV 주입<br>생성 품질 세밀 조정</span></div>
+      <div class="psum-div"></div>
+      <div class="psum-item"><strong>Adapter</strong><span>병목 모듈 삽입<br>추론 지연 소폭 있음</span></div>
+      <div class="psum-div"></div>
+      <div class="psum-item"><strong>LoRA ★ 권장</strong><span>저차원 행렬 분해<br>성능·효율 최고 균형</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S13: RLHF & DPO ═══ -->
+<div class="slide" id="s13">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>12. 정렬 튜닝 — RLHF와 DPO</h1><p>Alignment Tuning — RLHF &amp; DPO</p></div></div>
+  <div class="body">
+    <div class="s13l">
+      <div class="align-def"><div class="dlbl">Why Alignment?</div><p>SFT만으로는 모델이 <strong>지시는 따르지만 인간이 진정 원하는</strong> 응답을 하지 못함. 정렬 튜닝은 모델이 안전하고 도움이 되며 정직한 방향으로 <strong>인간 가치관에 맞게</strong> 출력을 최적화하는 과정. ChatGPT 등 상업 모델의 핵심 비결.</p></div>
+      <div class="card rlhf-card">
+        <div class="ch"><div class="ibox" style="background:#EFF6FF"><i class="fas fa-users-gear" style="color:#3B82F6"></i></div><h3>RLHF — 인간 피드백 강화학습</h3></div>
+        <div class="rlhf-flow">
+          <div class="rf-step"><strong>SFT 모델</strong><span>지시 학습 완료</span></div>
+          <div class="rf-arr">→</div>
+          <div class="rf-step"><strong>응답 쌍 생성</strong><span>동일 질문에 2개 응답</span></div>
+          <div class="rf-arr">→</div>
+          <div class="rf-step"><strong>인간 선호 레이블</strong><span>어느 쪽이 더 좋은가?</span></div>
+          <div class="rf-arr">→</div>
+          <div class="rf-step"><strong>보상 모델</strong><span>선호도 수치화</span></div>
+          <div class="rf-arr">→</div>
+          <div class="rf-step"><strong>PPO 강화학습</strong><span>보상 최대화 정책 학습</span></div>
+        </div>
+        <ul class="bl" style="margin-top:8px">
+          <li><strong>장점:</strong> 인간의 주관적 선호도를 정교하게 수치화하여 최적화 가능</li>
+          <li><strong>단점:</strong> 복잡한 3단계 파이프라인, 보상 모델 학습 추가 필요, 막대한 연산 비용</li>
+        </ul>
+      </div>
+      <div class="card dpo-card">
+        <div class="ch"><div class="ibox"><i class="fas fa-bolt"></i></div><h3>DPO — 직접 선호도 최적화</h3></div>
+        <div class="dpo-vs">
+          <div class="dpo-v r"><strong>RLHF의 문제</strong><p>보상 모델을 별도로 학습해야 함. 파이프라인 복잡, 불안정하고 느림</p></div>
+          <div class="dpo-v g"><strong>DPO의 해결</strong><p>보상 모델 없이 선호도 데이터를 직접 손실함수로 최적화. 단순하고 안정적</p></div>
+        </div>
+        <ul class="bl" style="margin-top:8px">
+          <li>선택된(chosen) 응답과 거부된(rejected) 응답 쌍만 있으면 학습 가능</li>
+          <li>RLHF 대비 학습 안정성 높고 구현이 간소화됨</li>
+        </ul>
+      </div>
+    </div>
+    <div class="s13r">
+      <div class="score-card">
+        <h4>인간 선호도 점수 비교</h4>
+        <div class="sc-bar-row"><div class="sc-lbl">RLHF</div><div class="sc-tr"><div class="sc-fi rl">기준 100</div></div></div>
+        <div class="sc-bar-row"><div class="sc-lbl">DPO</div><div class="sc-tr"><div class="sc-fi dp">150% ↑</div></div></div>
+        <div style="font-size:11px;color:rgba(255,255,255,.45);margin-top:6px">* 특정 벤치마크 기준. 태스크·데이터에 따라 결과 상이</div>
+      </div>
+      <div class="card" style="padding:14px 17px;flex:1;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:700;color:var(--dk)">RLHF vs DPO 한눈에 비교</div>
+        <div style="overflow:hidden;border-radius:9px;border:1px solid var(--bg)">
+          <table style="width:100%;border-collapse:collapse;font-size:12px">
+            <thead><tr style="background:var(--bg)"><th style="padding:8px 10px;text-align:left;color:var(--md)">항목</th><th style="padding:8px 10px;text-align:left;color:var(--md)">RLHF</th><th style="padding:8px 10px;text-align:left;color:var(--g)">DPO</th></tr></thead>
+            <tbody>
+              <tr style="border-top:1px solid var(--bg)"><td style="padding:8px 10px;font-weight:600;color:var(--dk)">보상 모델</td><td style="padding:8px 10px;color:#EF4444">필요</td><td style="padding:8px 10px;color:var(--g)">불필요</td></tr>
+              <tr style="border-top:1px solid var(--bg)"><td style="padding:8px 10px;font-weight:600;color:var(--dk)">학습 단계</td><td style="padding:8px 10px;color:#EF4444">3단계</td><td style="padding:8px 10px;color:var(--g)">1단계</td></tr>
+              <tr style="border-top:1px solid var(--bg)"><td style="padding:8px 10px;font-weight:600;color:var(--dk)">안정성</td><td style="padding:8px 10px;color:#F59E0B">보통</td><td style="padding:8px 10px;color:var(--g)">높음</td></tr>
+              <tr style="border-top:1px solid var(--bg)"><td style="padding:8px 10px;font-weight:600;color:var(--dk)">연산 비용</td><td style="padding:8px 10px;color:#EF4444">매우 높음</td><td style="padding:8px 10px;color:var(--g)">낮음</td></tr>
+              <tr style="border-top:1px solid var(--bg)"><td style="padding:8px 10px;font-weight:600;color:var(--dk)">데이터 형식</td><td style="padding:8px 10px;color:var(--md)">선호도 쌍 + 보상 레이블</td><td style="padding:8px 10px;color:var(--md)">chosen/rejected 쌍</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="alert g"><i class="fas fa-check-circle"></i><span><strong>권장 순서:</strong> SFT → DPO 순서로 진행. DPO가 RLHF 대비 구현이 훨씬 단순하고 성능도 동등하거나 우월한 경우가 많아 현재 업계 표준으로 빠르게 전환 중</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S14: 비교 테이블 ═══ -->
+<div class="slide" id="s14">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>13. 전체 방법론 비교 테이블</h1><p>Comprehensive Method Comparison</p></div></div>
+  <div class="body">
+    <div class="ctable">
+      <table>
+        <thead>
+          <tr>
+            <th>비교 항목</th>
+            <th>Full Fine-Tuning</th>
+            <th class="acc">LoRA</th>
+            <th class="acc">QLoRA</th>
+            <th>Prefix/Prompt Tuning</th>
+            <th>SFT + DPO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>학습 파라미터 수</td>
+            <td class="rv">100% (전체)</td>
+            <td class="gv">&lt;1% (어댑터)</td>
+            <td class="gv">&lt;1% (어댑터)</td>
+            <td class="gv">&lt;0.01%</td>
+            <td class="gv">&lt;1% (SFT+DPO)</td>
+          </tr>
+          <tr>
+            <td>GPU VRAM 요구량</td>
+            <td class="rv">극히 높음 (A100×다수)</td>
+            <td class="yv">중간 (≥24GB)</td>
+            <td class="gv">낮음 (소비자 GPU)</td>
+            <td class="gv">최소</td>
+            <td class="yv">중간 (PEFT 조합 시 낮음)</td>
+          </tr>
+          <tr>
+            <td>재앙적 망각</td>
+            <td class="rv">위험 높음</td>
+            <td class="gv">낮음</td>
+            <td class="gv">낮음</td>
+            <td class="gv">매우 낮음</td>
+            <td class="gv">낮음</td>
+          </tr>
+          <tr>
+            <td>추론 속도 (배포 후)</td>
+            <td class="gv">빠름</td>
+            <td class="gv">빠름 (병합 시)</td>
+            <td class="yv">약간 느림</td>
+            <td class="yv">약간 느림</td>
+            <td class="gv">빠름 (병합 시)</td>
+          </tr>
+          <tr>
+            <td>최종 성능</td>
+            <td class="gv">최고 (자원 충분 시)</td>
+            <td class="gv">Full FT에 근접</td>
+            <td class="yv">LoRA에 근접</td>
+            <td class="yv">모델 크기에 의존</td>
+            <td class="gv">인간 선호도 최적화</td>
+          </tr>
+          <tr>
+            <td>인간 정렬 (Alignment)</td>
+            <td class="rv">없음</td>
+            <td class="rv">없음</td>
+            <td class="rv">없음</td>
+            <td class="rv">없음</td>
+            <td class="gv">핵심 목적</td>
+          </tr>
+          <tr>
+            <td>저장 용량 (출력)</td>
+            <td class="rv">수십~수백 GB</td>
+            <td class="gv">10~100 MB</td>
+            <td class="gv">10~100 MB</td>
+            <td class="gv">수 MB</td>
+            <td class="gv">10~100 MB</td>
+          </tr>
+          <tr>
+            <td>모듈화/Hot-swap</td>
+            <td class="rv">불가</td>
+            <td class="gv">가능</td>
+            <td class="gv">가능</td>
+            <td class="gv">가능</td>
+            <td class="gv">가능</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="csum">
+      <div class="csi gb"><i class="fas fa-trophy"></i><div><strong>LoRA: 범용 최선</strong><p>성능·비용·유연성의 균형. 대부분 첫 번째 선택</p></div></div>
+      <div class="csi yb"><i class="fas fa-memory"></i><div><strong>QLoRA: 자원 절약</strong><p>VRAM 부족·30B+ 모델. 성능 차이 미미</p></div></div>
+      <div class="csi db"><i class="fas fa-scale-balanced"></i><div><strong>SFT+DPO: 품질 정렬</strong><p>사용자 만족도·안전성 중요 서비스에 필수</p></div></div>
+      <div class="csi db" style="background:#7F1D1D"><i class="fas fa-exclamation-circle" style="color:#FCA5A5"></i><div><strong style="color:#fff">Full FT: 최후 선택</strong><p style="color:rgba(255,200,200,.6)">자원 무제한, 최고 성능 필수 시만 고려</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ S15: 선택 가이드 ═══ -->
+<div class="slide" id="s15">
+  <div class="stitle"><div class="tbar"></div><div class="ttx"><h1>14. 상황별 최적 방법 선택 가이드</h1><p>When to Use Which Method — Practical Decision Guide</p></div></div>
+  <div class="body">
+    <div class="s15c">
+      <div class="card wcard">
+        <div class="wnum">OPTION 01</div>
+        <div class="wh"><h3><i class="fas fa-comment-dots" style="color:var(--g);margin-right:5px"></i>프롬프트 엔지니어링</h3></div>
+        <div class="wd">학습 없이 입력 텍스트만 최적화. 간단한 형식 교정이나 일반 태스크에서 가장 빠르고 비용 제로. 항상 첫 번째로 시도.</div>
+        <div class="wcase"><span>형식 변경</span><span>일회성 태스크</span><span>데이터 없을 때</span></div>
+        <div class="walert w"><i class="fas fa-times-circle"></i><span>모델의 근본 행동·도메인 지식은 변경 불가</span></div>
+      </div>
+      <div class="card wcard">
+        <div class="wnum">OPTION 02</div>
+        <div class="wh"><h3><i class="fas fa-database" style="color:var(--g);margin-right:5px"></i>RAG (검색 증강 생성)</h3></div>
+        <div class="wd">외부 데이터·사내 문서 접근 권한 부여. 최신 정보나 기밀 문서에 강함. 모델 행동 자체는 변경 불가.</div>
+        <div class="wcase"><span>실시간 데이터</span><span>사내 문서 QA</span><span>지식 업데이트 빈번</span></div>
+        <div class="walert w"><i class="fas fa-times-circle"></i><span>행동·스타일은 변경 불가. 검색 품질에 전적으로 의존</span></div>
+      </div>
+    </div>
+    <div class="s15c">
+      <div class="card wcard hl">
+        <div class="wnum">OPTION 03 ★ 권장</div>
+        <div class="wh"><h3><i class="fas fa-layer-group" style="color:var(--g);margin-right:5px"></i>SFT + LoRA / QLoRA</h3></div>
+        <div class="wd">모델의 행동·어투·스타일 변경 또는 도메인 지식 주입. 자원 제약 시 첫 번째 선택. 대부분의 실무 파인 튜닝 시나리오에서 최선.</div>
+        <div class="wcase"><span>행동·스타일 변경</span><span>도메인 지식 주입</span><span>자원 제한</span><span>빠른 실험</span></div>
+        <div class="walert g"><i class="fas fa-check-circle"></i><span>VRAM ≥24GB → LoRA, 부족 또는 30B+ → QLoRA</span></div>
+      </div>
+      <div class="card wcard">
+        <div class="wnum">OPTION 04</div>
+        <div class="wh"><h3><i class="fas fa-scale-balanced" style="color:var(--g);margin-right:5px"></i>SFT + DPO / RLHF</h3></div>
+        <div class="wd">사용자 만족도, 안전성, 인간 선호도가 핵심인 서비스. ChatGPT류 어시스턴트를 구축할 때 필수. SFT 이후 추가로 적용.</div>
+        <div class="wcase"><span>챗봇 품질</span><span>안전성 중요</span><span>인간 선호도 최적화</span></div>
+        <div class="walert g"><i class="fas fa-check-circle"></i><span>DPO가 RLHF보다 구현 단순하고 성능 동등하거나 우월</span></div>
+      </div>
+      <div class="card wcard">
+        <div class="wnum">OPTION 05</div>
+        <div class="wh"><h3><i class="fas fa-server" style="color:var(--g);margin-right:5px"></i>Full Fine-Tuning</h3></div>
+        <div class="wd">최고 성능이 절대적으로 필요하고 데이터·컴퓨팅이 무제한일 때만. LoRA 시도 후 성능 격차가 실제로 확인됐을 때 고려.</div>
+        <div class="wcase"><span>최고 성능 필수</span><span>대규모 데이터</span><span>예산 무제한</span></div>
+        <div class="walert w"><i class="fas fa-exclamation-triangle"></i><span>재앙적 망각, 극대 비용, 느린 실험 사이클 감수 필요</span></div>
+      </div>
+    </div>
+    <div class="s15c">
+      <div class="dec-wrap" style="flex:1;display:flex;flex-direction:column;gap:9px">
+        <div class="dec-card">
+          <h4><i class="fas fa-route" style="margin-right:5px"></i>빠른 결정 트리</h4>
+          <div class="dc-row"><div class="dc-arr">▸</div><div><strong>형식·일반 작업</strong> → <em>프롬프트 엔지니어링</em></div></div>
+          <div class="dc-row"><div class="dc-arr">▸</div><div><strong>최신·외부 정보 접근</strong> → <em>RAG</em></div></div>
+          <div class="dc-row"><div class="dc-arr">▸</div><div><strong>행동·도메인, VRAM ≥24GB</strong> → <em>SFT + LoRA</em></div></div>
+          <div class="dc-row"><div class="dc-arr">▸</div><div><strong>행동·도메인, VRAM 부족/30B+</strong> → <em>SFT + QLoRA</em></div></div>
+          <div class="dc-row"><div class="dc-arr">▸</div><div><strong>사용자 선호도·안전성 중요</strong> → <em>+ DPO/RLHF</em></div></div>
+          <div class="dc-row"><div class="dc-arr">▸</div><div><strong>성능 부족 + 자원 무제한</strong> → <em>Full FT</em></div></div>
+        </div>
+        <div class="golden-card">
+          <h4>★ 실무 황금률</h4>
+          <div class="gl-list">
+            <div class="gl-i">항상 <strong>프롬프트 → RAG → QLoRA → LoRA → Full FT</strong> 순으로 단계 상향</div>
+            <div class="gl-i">데이터 <strong>품질이 양보다</strong> 훨씬 더 중요. 100건 완벽 데이터 &gt; 10만 건 저품질</div>
+            <div class="gl-i">SFT + DPO 조합으로 지식 + 인간 선호도를 <strong>동시에 최적화</strong> 가능</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /vp -->
+
+<div class="ctrl">
+  <button class="nb" id="pb" onclick="go(-1)" disabled><i class="fas fa-chevron-left"></i></button>
+  <div class="dots" id="dr"></div>
+  <div class="cnt" id="ct">1 / 15</div>
+  <button class="nb" id="nb" onclick="go(1)"><i class="fas fa-chevron-right"></i></button>
+</div>
+</div>
+
+<script>
+const sl=document.querySelectorAll('.slide'),N=sl.length;let c=0;
+const dr=document.getElementById('dr');
+document.getElementById('ct').textContent='1 / '+N;
+sl.forEach((_,i)=>{const d=document.createElement('div');d.className='dot'+(i===0?' on':'');d.onclick=()=>gt(i);dr.appendChild(d)});
+function gt(n){sl[c].classList.remove('on');dr.children[c].classList.remove('on');c=Math.max(0,Math.min(N-1,n));sl[c].classList.add('on');dr.children[c].classList.add('on');document.getElementById('ct').textContent=(c+1)+' / '+N;document.getElementById('pb').disabled=c===0;document.getElementById('nb').disabled=c===N-1}
+function go(d){gt(c+d)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(-1)});
+</script>
+</body>
+</html>
