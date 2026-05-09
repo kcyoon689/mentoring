@@ -31,6 +31,7 @@
     background: var(--bg);
     color: var(--text);
     font-family: var(--font-body);
+    /* font-size: 17px; */
   }
 
   /* ── Slideshow shell ── */
@@ -867,8 +868,14 @@
     <div class="title-line"></div>
     <h1 class="page-title">RAG <span class="accent">vs</span> 파인튜닝</h1>
 
-    <div class="card" style="margin-bottom:14px">
-      <p class="text-sm" style="line-height:1.7">두 기법 모두 LLM 성능을 향상시키지만, 접근 방식과 장단점에서 큰 차이를 보입니다.</p>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:14px;margin-bottom:14px;align-items:center">
+      <div class="card">
+        <p class="text-sm" style="line-height:1.7">두 기법 모두 LLM 성능을 향상시키지만, 접근 방식과 장단점에서 큰 차이를 보입니다.</p>
+      </div>
+      <div style="text-align:center;flex-shrink:0">
+        <img src="images/when-to-use.png" alt="When to use RAG vs Fine-Tuning" style="height:160px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
+        <p class="text-xs text-muted" style="margin-top:4px">언제 무엇을 쓸까?</p>
+      </div>
     </div>
 
     <div class="cmp-table" style="flex:1">
