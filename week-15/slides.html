@@ -8,154 +8,47 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
 <style>
   :root {
-    --bg: #0a0f1e;
-    --surface: #111827;
-    --surface2: #1a2235;
-    --green: #00d68f;
-    --green-dim: rgba(0,214,143,0.12);
-    --teal: #00c9d4;
-    --teal-dim: rgba(0,201,212,0.12);
-    --orange: #ff8c42;
-    --orange-dim: rgba(255,140,66,0.12);
-    --text: #e8edf5;
-    --text-muted: #6b7fa3;
+    --bg: #0a0f1e; --surface: #111827; --surface2: #1a2235;
+    --green: #00d68f; --green-dim: rgba(0,214,143,0.12);
+    --teal: #00c9d4; --teal-dim: rgba(0,201,212,0.12);
+    --orange: #ff8c42; --orange-dim: rgba(255,140,66,0.12);
+    --text: #e8edf5; --text-muted: #6b7fa3;
     --border: rgba(255,255,255,0.07);
     --font-body: 'Noto Sans KR', sans-serif;
     --font-mono: 'Space Mono', monospace;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html, body {
-    width: 100%; height: 100%; overflow: hidden;
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    /* font-size: 17px; */
-  }
-
-  /* ── Slideshow shell ── */
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-body); }
   .deck { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
-
-  .slide {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column;
-    padding: 52px 72px 40px;
-    opacity: 0; pointer-events: none;
-    transform: translateX(60px);
-    transition: opacity .5s ease, transform .5s ease;
-    overflow: hidden;
-  }
-  .slide.active {
-    opacity: 1; pointer-events: all; transform: translateX(0);
-  }
-  .slide.out {
-    opacity: 0; transform: translateX(-60px);
-  }
-
-  /* ── Grid noise bg ── */
-  .deck::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background-image:
-      linear-gradient(rgba(0,214,143,.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,214,143,.03) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-  }
-
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 52px 72px 40px; opacity: 0; pointer-events: none; transform: translateX(60px); transition: opacity .5s ease, transform .5s ease; overflow: hidden; }
+  .slide.active { opacity: 1; pointer-events: all; transform: translateX(0); }
+  .slide.out { opacity: 0; transform: translateX(-60px); }
+  .deck::before { content: ''; position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(rgba(0,214,143,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,214,143,.03) 1px, transparent 1px); background-size: 48px 48px; pointer-events: none; }
   .slide { z-index: 1; }
-
-  /* ── Nav bar ── */
-  .nav {
-    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-    z-index: 100;
-    display: flex; align-items: center; gap: 16px;
-    background: rgba(17,24,39,.9);
-    border: 1px solid var(--border);
-    border-radius: 50px;
-    padding: 10px 24px;
-    backdrop-filter: blur(12px);
-  }
-  .nav-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); font-size: 15px; transition: color .2s;
-    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    border-radius: 50%;
-  }
+  .nav { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; align-items: center; gap: 16px; background: rgba(17,24,39,.9); border: 1px solid var(--border); border-radius: 50px; padding: 10px 24px; backdrop-filter: blur(12px); }
+  .nav-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 15px; transition: color .2s; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
   .nav-btn:hover { color: var(--green); background: var(--green-dim); }
-  .slide-counter {
-    font-family: var(--font-mono); font-size: 12px;
-    color: var(--text-muted); min-width: 52px; text-align: center;
-  }
+  .slide-counter { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); min-width: 52px; text-align: center; }
   .dots { display: flex; gap: 6px; align-items: center; }
-  .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--text-muted); cursor: pointer;
-    transition: background .2s, transform .2s;
-  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); cursor: pointer; transition: background .2s, transform .2s; }
   .dot.active { background: var(--green); transform: scale(1.4); }
-
-  /* ── Progress bar ── */
-  .progress {
-    position: fixed; top: 0; left: 0; right: 0; height: 2px;
-    background: var(--surface2); z-index: 100;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--green), var(--teal));
-    transition: width .4s ease;
-  }
-
-  /* ── Slide number badge ── */
-  .slide-badge {
-    font-family: var(--font-mono); font-size: 11px;
-    color: var(--text-muted); margin-bottom: 8px;
-    letter-spacing: .12em;
-  }
-
-  /* ── Headings ── */
-  h1.page-title {
-    font-size: 2.6rem; font-weight: 900;
-    line-height: 1.15; margin-bottom: 28px;
-    letter-spacing: -.02em;
-  }
+  .progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--surface2); z-index: 100; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--teal)); transition: width .4s ease; }
+  .slide-badge { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); margin-bottom: 8px; letter-spacing: .12em; }
+  h1.page-title { font-size: 2.6rem; font-weight: 900; line-height: 1.15; margin-bottom: 28px; letter-spacing: -.02em; }
   h1.page-title span.accent { color: var(--green); }
-  .title-line {
-    width: 48px; height: 4px;
-    background: linear-gradient(90deg, var(--green), var(--teal));
-    border-radius: 2px; margin-bottom: 20px;
-  }
-
-  /* ── Cards ── */
-  .card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 20px 24px;
-  }
+  .title-line { width: 48px; height: 4px; background: linear-gradient(90deg, var(--green), var(--teal)); border-radius: 2px; margin-bottom: 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
   .card.green-left { border-left: 3px solid var(--green); }
   .card.teal-left { border-left: 3px solid var(--teal); }
   .card.orange-left { border-left: 3px solid var(--orange); }
-
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 12px; border-radius: 20px;
-    font-size: 12px; font-weight: 700; letter-spacing: .06em;
-  }
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .06em; }
   .badge.green { background: var(--green-dim); color: var(--green); }
   .badge.teal { background: var(--teal-dim); color: var(--teal); }
   .badge.orange { background: var(--orange-dim); color: var(--orange); }
-
-  .tag {
-    font-size: 11px; font-family: var(--font-mono);
-    padding: 2px 8px; border-radius: 4px;
-    background: var(--surface2); color: var(--text-muted);
-  }
-
-  /* ── Utility ── */
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
   .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
-  .flex-row { display: flex; gap: 12px; align-items: center; }
   .flex-col { display: flex; flex-direction: column; gap: 10px; }
   .mt-auto { margin-top: auto; }
   .text-muted { color: var(--text-muted); font-size: .85rem; }
@@ -163,81 +56,25 @@
   .text-xs { font-size: .75rem; }
   .font-bold { font-weight: 700; }
   .gap-8 { gap: 8px; }
-  .gap-16 { gap: 16px; }
-
-  /* ── SLIDE 1: Title ── */
-  #s1 {
-    background: radial-gradient(ellipse 80% 60% at 60% 30%, rgba(0,214,143,.07) 0%, transparent 70%),
-                radial-gradient(ellipse 60% 60% at 10% 80%, rgba(0,201,212,.05) 0%, transparent 70%),
-                var(--bg);
-    justify-content: center; align-items: flex-start;
-  }
-  .s1-eyebrow {
-    font-family: var(--font-mono); font-size: .8rem; color: var(--green);
-    letter-spacing: .15em; margin-bottom: 18px;
-  }
-  .s1-title {
-    font-size: 4rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.1;
-    margin-bottom: 14px;
-  }
+  #s1 { background: radial-gradient(ellipse 80% 60% at 60% 30%, rgba(0,214,143,.07) 0%, transparent 70%), radial-gradient(ellipse 60% 60% at 10% 80%, rgba(0,201,212,.05) 0%, transparent 70%), var(--bg); justify-content: center; align-items: flex-start; }
+  .s1-eyebrow { font-family: var(--font-mono); font-size: .8rem; color: var(--green); letter-spacing: .15em; margin-bottom: 18px; }
+  .s1-title { font-size: 4rem; font-weight: 900; letter-spacing: -.03em; line-height: 1.1; margin-bottom: 14px; }
   .s1-title em { font-style: normal; color: var(--green); }
-  .s1-sub {
-    font-size: 1.1rem; color: var(--text-muted); margin-bottom: 48px;
-  }
+  .s1-sub { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 48px; }
   .s1-pills { display: flex; gap: 10px; }
-  .s1-date {
-    position: absolute; bottom: 40px; right: 72px;
-    font-family: var(--font-mono); font-size: .75rem; color: var(--text-muted);
-  }
-  .s1-decoration {
-    position: absolute; right: 80px; top: 50%; transform: translateY(-50%);
-    width: 280px; height: 280px;
-    border: 1px solid rgba(0,214,143,.15);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .s1-decoration::before {
-    content: '';
-    position: absolute;
-    width: 200px; height: 200px;
-    border: 1px solid rgba(0,201,212,.2);
-    border-radius: 50%;
-  }
-  .s1-decoration-icon {
-    font-size: 4rem; color: rgba(0,214,143,.25);
-  }
-
-  /* ── Flow arrow ── */
+  .s1-date { position: absolute; bottom: 40px; right: 72px; font-family: var(--font-mono); font-size: .75rem; color: var(--text-muted); }
+  .s1-decoration { position: absolute; right: 80px; top: 50%; transform: translateY(-50%); width: 280px; height: 280px; border: 1px solid rgba(0,214,143,.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .s1-decoration::before { content: ''; position: absolute; width: 200px; height: 200px; border: 1px solid rgba(0,201,212,.2); border-radius: 50%; }
+  .s1-decoration-icon { font-size: 4rem; color: rgba(0,214,143,.25); }
   .flow { display: flex; align-items: center; gap: 10px; }
-  .flow-node {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 8px 14px;
-    font-size: .82rem; display: flex; align-items: center; gap: 6px;
-    white-space: nowrap;
-  }
+  .flow-node { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: .82rem; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
   .flow-arrow { color: var(--orange); font-size: .9rem; flex-shrink: 0; }
-
-  /* ── Step cards ── */
-  .step-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px 16px;
-    position: relative;
-  }
-  .step-num {
-    font-family: var(--font-mono); font-size: 2rem; font-weight: 700;
-    color: rgba(0,214,143,.15); position: absolute; top: 12px; right: 14px;
-    line-height: 1;
-  }
-  .step-icon {
-    width: 38px; height: 38px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; margin-bottom: 10px;
-  }
+  .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; position: relative; }
+  .step-num { font-family: var(--font-mono); font-size: 2rem; font-weight: 700; color: rgba(0,214,143,.15); position: absolute; top: 12px; right: 14px; line-height: 1; }
+  .step-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; margin-bottom: 10px; }
   .step-icon.green { background: var(--green-dim); color: var(--green); }
   .step-icon.teal { background: var(--teal-dim); color: var(--teal); }
   .step-icon.orange { background: var(--orange-dim); color: var(--orange); }
-
-  /* ── Comparison table ── */
   .cmp-table { border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
   .cmp-header { display: grid; grid-template-columns: 160px 1fr 1fr; }
   .cmp-row { display: grid; grid-template-columns: 160px 1fr 1fr; border-top: 1px solid var(--border); }
@@ -246,751 +83,480 @@
   .cmp-cell.label { background: var(--surface2); font-weight: 600; font-size: .8rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: 8px; padding-top: 14px; }
   .cmp-cell:not(.head):not(.label) { background: var(--surface); }
   .cmp-row:nth-child(even) .cmp-cell:not(.head):not(.label) { background: rgba(0,214,143,.02); }
-  .cmp-cell ul { padding-left: 14px; }
-  .cmp-cell li { margin-bottom: 4px; }
-
-  /* ── Chunking cards ── */
-  .chunk-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px;
-  }
+  .chunk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
   .chunk-card h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; margin-top: 10px; }
   .pro { color: var(--teal); font-size: .75rem; }
   .con { color: var(--orange); font-size: .75rem; }
-  .use-pill {
-    background: var(--surface2); border-radius: 6px;
-    padding: 5px 10px; font-size: .72rem; color: var(--text-muted);
-    margin-top: 8px; border-left: 2px solid var(--green);
-  }
-
-  /* ── Model cards ── */
-  .model-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 16px;
-    display: flex; gap: 12px; align-items: flex-start;
-  }
-  .model-icon {
-    width: 36px; height: 36px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .9rem; flex-shrink: 0;
-  }
-
-  /* ── Conclusion cards ── */
-  .contrib-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 18px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .contrib-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; margin-bottom: 4px;
-  }
-
-  /* ── Arch cards (slide 8) ── */
-  .arch-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: 3px solid;
-    border-radius: 10px;
-    padding: 0 0 12px;
-    display: flex; flex-direction: column; gap: 8px;
-    overflow: hidden;
-  }
-  .arch-header {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 12px 7px;
-    border-bottom: 1px solid var(--border);
-  }
+  .use-pill { background: var(--surface2); border-radius: 6px; padding: 5px 10px; font-size: .72rem; color: var(--text-muted); margin-top: 8px; border-left: 2px solid var(--green); }
+  .model-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .model-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; }
+  .contrib-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .contrib-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 4px; }
+  .arch-card { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid; border-radius: 10px; padding: 0 0 12px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .arch-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px 7px; border-bottom: 1px solid var(--border); }
   .arch-header strong { font-size: .82rem; }
-  .arch-num {
-    font-family: var(--font-mono); font-size: .68rem; font-weight: 700;
-    opacity: .7;
-  }
+  .arch-num { font-family: var(--font-mono); font-size: .68rem; font-weight: 700; opacity: .7; }
   .arch-card .text-xs { padding: 0 12px; }
-  .arch-flow {
-    display: flex; align-items: center; flex-wrap: wrap;
-    gap: 3px; padding: 4px 12px 0;
-    margin-top: auto;
-  }
-  .arch-node {
-    background: var(--surface2);
-    border-radius: 4px; padding: 2px 6px;
-    font-size: .62rem; font-family: var(--font-mono);
-    white-space: nowrap;
-  }
+  .arch-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; padding: 4px 12px 0; margin-top: auto; }
+  .arch-node { background: var(--surface2); border-radius: 4px; padding: 2px 6px; font-size: .62rem; font-family: var(--font-mono); white-space: nowrap; }
   .arch-arr { font-size: .65rem; color: var(--text-muted); }
-
-  /* scrollbar hide */
   ::-webkit-scrollbar { display: none; }
 </style>
 </head>
 <body>
 
 <div class="progress"><div class="progress-fill" id="pbar" style="width:10%"></div></div>
-
 <div class="deck" id="deck">
 
-  <!-- ══ SLIDE 1: Title ══ -->
-  <div class="slide active" id="s1">
-    <p class="s1-eyebrow">// AI TECHNOLOGY · 2025</p>
-    <h1 class="s1-title">Retrieval-<br/><em>Augmented</em><br/>Generation</h1>
-    <p class="s1-sub">검색 기반 증강 생성 기술의 이해</p>
-    <div class="s1-pills">
-      <span class="badge green"><i class="fas fa-search"></i> 검색</span>
-      <span style="color:var(--orange);font-size:1.2rem;line-height:1">+</span>
-      <span class="badge teal"><i class="fas fa-brain"></i> 생성</span>
-      <span style="color:var(--orange);font-size:1.2rem;line-height:1">=</span>
-      <span class="badge orange"><i class="fas fa-lightbulb"></i> 혁신적인 AI</span>
-    </div>
-    <div class="s1-decoration">
-      <i class="fas fa-robot s1-decoration-icon"></i>
-    </div>
-    <p class="s1-date"><i class="far fa-calendar-alt"></i> &nbsp;2025-09-23</p>
+<!-- SLIDE 1 -->
+<div class="slide active" id="s1">
+  <p class="s1-eyebrow">// AI TECHNOLOGY · 2025</p>
+  <h1 class="s1-title">Retrieval-<br/><em>Augmented</em><br/>Generation</h1>
+  <p class="s1-sub">검색 기반 증강 생성 기술의 이해</p>
+  <div class="s1-pills">
+    <span class="badge green"><i class="fas fa-search"></i> 검색</span>
+    <span style="color:var(--orange);font-size:1.2rem;line-height:1">+</span>
+    <span class="badge teal"><i class="fas fa-brain"></i> 생성</span>
+    <span style="color:var(--orange);font-size:1.2rem;line-height:1">=</span>
+    <span class="badge orange"><i class="fas fa-lightbulb"></i> 혁신적인 AI</span>
   </div>
+  <div class="s1-decoration"><i class="fas fa-robot s1-decoration-icon"></i></div>
+  <p class="s1-date"><i class="far fa-calendar-alt"></i> &nbsp;2025-09-23</p>
+</div>
 
-  <!-- ══ SLIDE 2: RAG 소개 ══ -->
-  <div class="slide" id="s2">
-    <div class="slide-badge">02 / RAG 소개</div>
-    <div class="title-line"></div>
-    <h1 class="page-title">RAG <span class="accent">소개</span></h1>
-
-    <div style="display:grid;grid-template-columns:1fr auto;gap:16px;margin-bottom:16px;align-items:center">
-      <div class="card green-left">
-        <p class="text-sm" style="line-height:1.7">
-          <strong style="color:var(--green)">RAG(Retrieval-Augmented Generation)</strong>은 대규모 언어 모델(LLM)의 한계를 극복하기 위해 등장한 혁신적인 기술입니다.
-          외부 지식 소스에서 관련 정보를 검색하여 LLM의 답변 생성 과정을 보강합니다.
-        </p>
-      </div>
-      <img src="images/rag-flow.png" alt="RAG Flow" style="height:160px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
+<!-- SLIDE 2 -->
+<div class="slide" id="s2">
+  <div class="slide-badge">02 / RAG 소개</div>
+  <div class="title-line"></div>
+  <h1 class="page-title">RAG <span class="accent">소개</span></h1>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;margin-bottom:16px;align-items:center">
+    <div class="card green-left">
+      <p class="text-sm" style="line-height:1.7"><strong style="color:var(--green)">RAG(Retrieval-Augmented Generation)</strong>은 대규모 언어 모델(LLM)의 한계를 극복하기 위해 등장한 혁신적인 기술입니다. 외부 지식 소스에서 관련 정보를 검색하여 LLM의 답변 생성 과정을 보강합니다.</p>
     </div>
-
-    <p class="font-bold" style="margin-bottom:10px;color:var(--text-muted);font-size:.8rem;letter-spacing:.08em">LLM의 한계점</p>
-    <div class="grid-3" style="margin-bottom:16px">
-      <div class="card orange-left flex-col gap-8">
-        <div class="step-icon orange"><i class="fas fa-clock"></i></div>
-        <strong style="font-size:.9rem">최신 정보 부족</strong>
-        <p class="text-sm text-muted">학습 데이터 이후로 생성된 정보에 접근할 수 없습니다.</p>
-      </div>
-      <div class="card orange-left flex-col gap-8">
-        <div class="step-icon orange"><i class="fas fa-brain"></i></div>
-        <strong style="font-size:.9rem">환각 현상</strong>
-        <p class="text-sm text-muted">사실이 아닌 정보를 생성하거나 존재하지 않는 사실을 진술합니다.</p>
-      </div>
-      <div class="card orange-left flex-col gap-8">
-        <div class="step-icon orange"><i class="fas fa-book"></i></div>
-        <strong style="font-size:.9rem">특정 도메인 지식 부재</strong>
-        <p class="text-sm text-muted">특정 분야의 전문 용어나 지식에 제한적입니다.</p>
-      </div>
+    <img src="images/rag-flow.png" alt="RAG Flow" style="height:160px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
+  </div>
+  <p class="font-bold" style="margin-bottom:10px;color:var(--text-muted);font-size:.8rem;letter-spacing:.08em">LLM의 한계점</p>
+  <div class="grid-3" style="margin-bottom:16px">
+    <div class="card orange-left flex-col gap-8">
+      <div class="step-icon orange"><i class="fas fa-clock"></i></div>
+      <strong style="font-size:.9rem">최신 정보 부족</strong>
+      <p class="text-sm text-muted">학습 데이터 이후로 생성된 정보에 접근할 수 없습니다.</p>
     </div>
-
-    <p class="font-bold" style="margin-bottom:10px;color:var(--text-muted);font-size:.8rem;letter-spacing:.08em">RAG의 해결 방안</p>
-    <div style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center">
-      <div class="card teal-left">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-          <div class="step-icon teal"><i class="fas fa-search-plus"></i></div>
-          <p class="text-sm" style="line-height:1.7">
-            <strong>검색기(Retriever)</strong>와 <strong>생성기(Generator)</strong>의 두 단계로 구성되어 외부 지식 소스에서 관련 정보를 검색, LLM의 답변 생성 과정을 보강합니다.
-          </p>
-        </div>
-        <div class="grid-2" style="gap:10px">
-          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">
-            <i class="fas fa-database" style="color:var(--orange)"></i>
-            <p class="text-sm">외부 지식 소스에서 관련 정보 검색</p>
-          </div>
-          <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">
-            <i class="fas fa-sync" style="color:var(--teal)"></i>
-            <p class="text-sm">검색된 정보로 LLM 답변 생성 보강</p>
-          </div>
-        </div>
-      </div>
-      <div style="text-align:center">
-        <img src="images/lc-vs-rag.png" alt="Long Context vs RAG" style="height:200px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
-        <p class="text-xs text-muted" style="margin-top:4px">LC vs RAG 비교</p>
-      </div>
+    <div class="card orange-left flex-col gap-8">
+      <div class="step-icon orange"><i class="fas fa-brain"></i></div>
+      <strong style="font-size:.9rem">환각 현상</strong>
+      <p class="text-sm text-muted">사실이 아닌 정보를 생성하거나 존재하지 않는 사실을 진술합니다.</p>
+    </div>
+    <div class="card orange-left flex-col gap-8">
+      <div class="step-icon orange"><i class="fas fa-book"></i></div>
+      <strong style="font-size:.9rem">특정 도메인 지식 부재</strong>
+      <p class="text-sm text-muted">특정 분야의 전문 용어나 지식에 제한적입니다.</p>
     </div>
   </div>
-
-  <!-- ══ SLIDE 3: 핵심 원리 ══ -->
-  <div class="slide" id="s3">
-    <div class="slide-badge">03 / RAG의 핵심 원리</div>
-    <div class="title-line"></div>
-    <h1 class="page-title">핵심 <span class="accent">원리</span></h1>
-
-    <!-- Flow -->
-    <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-bottom:20px">
-      <div class="flow" style="justify-content:center;flex-wrap:wrap">
-        <div class="flow-node"><i class="fas fa-user-circle" style="color:var(--text-muted)"></i> 사용자 질문</div>
-        <i class="fas fa-arrow-right flow-arrow"></i>
-        <div class="flow-node" style="border-color:var(--orange);color:var(--orange)"><i class="fas fa-search"></i> 검색기</div>
-        <i class="fas fa-arrow-right flow-arrow"></i>
-        <div class="flow-node"><i class="fas fa-database" style="color:var(--text-muted)"></i> 외부 데이터</div>
-        <i class="fas fa-arrow-right flow-arrow"></i>
-        <div class="flow-node" style="border-color:var(--teal);color:var(--teal)"><i class="fas fa-brain"></i> 생성기</div>
-        <i class="fas fa-arrow-right flow-arrow"></i>
-        <div class="flow-node"><i class="fas fa-lightbulb" style="color:var(--green)"></i> 최종 답변</div>
+  <p class="font-bold" style="margin-bottom:10px;color:var(--text-muted);font-size:.8rem;letter-spacing:.08em">RAG의 해결 방안</p>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center">
+    <div class="card teal-left">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div class="step-icon teal"><i class="fas fa-search-plus"></i></div>
+        <p class="text-sm" style="line-height:1.7"><strong>검색기(Retriever)</strong>와 <strong>생성기(Generator)</strong>의 두 단계로 구성되어 외부 지식 소스에서 관련 정보를 검색, LLM의 답변 생성 과정을 보강합니다.</p>
       </div>
-      <div style="text-align:center;flex-shrink:0">
-        <img src="images/rag-retrieval-generation.png" alt="RAG Retrieval Generation" style="height:170px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
-        <p class="text-xs text-muted" style="margin-top:4px">검색 + 생성</p>
+      <div class="grid-2" style="gap:10px">
+        <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <i class="fas fa-database" style="color:var(--orange)"></i>
+          <p class="text-sm">외부 지식 소스에서 관련 정보 검색</p>
+        </div>
+        <div style="background:var(--surface2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <i class="fas fa-sync" style="color:var(--teal)"></i>
+          <p class="text-sm">검색된 정보로 LLM 답변 생성 보강</p>
+        </div>
       </div>
     </div>
-
-    <div class="grid-2" style="flex:1">
-      <!-- Retriever -->
-      <div class="card orange-left flex-col gap-8">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="step-icon orange"><i class="fas fa-search"></i></div>
-          <h2 style="font-size:1.2rem;font-weight:800">검색기 (Retriever)</h2>
-        </div>
-        <ul style="padding-left:4px;display:flex;flex-direction:column;gap:8px;list-style:none">
-          <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>질문 벡터 변환:</strong> 사용자 질문을 고차원 벡터 공간의 임베딩으로 변환</div></li>
-          <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>벡터 데이터베이스:</strong> 외부 문서를 청크로 분할, 벡터로 변환 저장</div></li>
-          <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>유사도 검색:</strong> 코사인 유사도로 관련 문서 청크 식별</div></li>
-          <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>관련 문서 추출:</strong> 유사도 Top-N 문서 청크 추출</div></li>
-        </ul>
-        <div style="background:var(--orange-dim);border-radius:8px;padding:10px 12px">
-          <p class="text-xs text-muted"><i class="fas fa-info-circle" style="color:var(--orange);margin-right:6px"></i>DPR(Dense Passage Retrieval) 기술로 검색 정확도 향상</p>
-        </div>
-      </div>
-      <!-- Generator -->
-      <div class="card teal-left flex-col gap-8">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="step-icon teal"><i class="fas fa-brain"></i></div>
-          <h2 style="font-size:1.2rem;font-weight:800">생성기 (Generator)</h2>
-        </div>
-        <ul style="padding-left:4px;display:flex;flex-direction:column;gap:8px;list-style:none">
-          <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--teal);margin-top:2px">▸</span><div><strong>컨텍스트 구성:</strong> 검색된 문서 청크 + 사용자 질문을 LLM 프롬프트에 추가</div></li>
-          <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--teal);margin-top:2px">▸</span><div><strong>답변 생성:</strong> 확장된 프롬프트 기반으로 답변 생성</div></li>
-          <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--teal);margin-top:2px">▸</span><div><strong>환각 감소:</strong> 외부 지식 참조로 사실과 다른 정보 생성 감소</div></li>
-        </ul>
-        <div style="background:var(--teal-dim);border-radius:8px;padding:10px 12px">
-          <p class="text-xs text-muted"><i class="fas fa-info-circle" style="color:var(--teal);margin-right:6px"></i>LLM이 컨텍스트 내 정보를 활용하여 답변의 정확성과 사실성을 높입니다</p>
-        </div>
-      </div>
+    <div style="text-align:center">
+      <img src="images/lc-vs-rag.png" alt="Long Context vs RAG" style="height:200px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
+      <p class="text-xs text-muted" style="margin-top:4px">LC vs RAG 비교</p>
     </div>
   </div>
+</div>
 
-  <!-- ══ SLIDE 4: 검색기 ══ -->
-  <div class="slide" id="s4">
-    <div class="slide-badge">04 / 검색기 작동 방식</div>
-    <div class="title-line"></div>
-    <h1 class="page-title"><span class="accent">검색기</span>의 작동 방식</h1>
-
-    <div class="card" style="margin-bottom:16px">
-      <p class="text-sm" style="line-height:1.7">검색기는 RAG 시스템의 첫 번째 단계로, 사용자의 질문과 관련된 정보를 외부 지식 소스에서 찾아내는 역할을 합니다.</p>
+<!-- SLIDE 3 -->
+<div class="slide" id="s3">
+  <div class="slide-badge">03 / RAG의 핵심 원리</div>
+  <div class="title-line"></div>
+  <h1 class="page-title">핵심 <span class="accent">원리</span></h1>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;margin-bottom:20px">
+    <div class="flow" style="justify-content:center;flex-wrap:wrap">
+      <div class="flow-node"><i class="fas fa-user-circle" style="color:var(--text-muted)"></i> 사용자 질문</div>
+      <i class="fas fa-arrow-right flow-arrow"></i>
+      <div class="flow-node" style="border-color:var(--orange);color:var(--orange)"><i class="fas fa-search"></i> 검색기</div>
+      <i class="fas fa-arrow-right flow-arrow"></i>
+      <div class="flow-node"><i class="fas fa-database" style="color:var(--text-muted)"></i> 외부 데이터</div>
+      <i class="fas fa-arrow-right flow-arrow"></i>
+      <div class="flow-node" style="border-color:var(--teal);color:var(--teal)"><i class="fas fa-brain"></i> 생성기</div>
+      <i class="fas fa-arrow-right flow-arrow"></i>
+      <div class="flow-node"><i class="fas fa-lightbulb" style="color:var(--green)"></i> 최종 답변</div>
     </div>
-
-    <div class="grid-4" style="flex:1;margin-bottom:16px">
-      <div class="step-card">
-        <div class="step-num">01</div>
-        <div class="step-icon green"><i class="fas fa-vector-square"></i></div>
-        <strong style="font-size:.9rem;display:block;margin-bottom:8px">질문 벡터 변환</strong>
-        <p class="text-xs text-muted" style="line-height:1.6">사용자 질문을 고차원 벡터 공간의 임베딩으로 변환합니다. 이 임베딩은 질문의 의미론적 특징을 나타냅니다.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">02</div>
-        <div class="step-icon teal"><i class="fas fa-database"></i></div>
-        <strong style="font-size:.9rem;display:block;margin-bottom:8px">벡터 DB 구축</strong>
-        <p class="text-xs text-muted" style="line-height:1.6">외부 문서를 작은 단위(청크)로 분할하고, 각 청크를 벡터로 변환하여 벡터 데이터베이스에 저장합니다.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-num">03</div>
+    <div style="text-align:center;flex-shrink:0">
+      <img src="images/rag-retrieval-generation.png" alt="RAG Retrieval Generation" style="height:170px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
+      <p class="text-xs text-muted" style="margin-top:4px">검색 + 생성</p>
+    </div>
+  </div>
+  <div class="grid-2" style="flex:1">
+    <div class="card orange-left flex-col gap-8">
+      <div style="display:flex;align-items:center;gap:10px">
         <div class="step-icon orange"><i class="fas fa-search"></i></div>
-        <strong style="font-size:.9rem;display:block;margin-bottom:8px">유사도 검색</strong>
-        <p class="text-xs text-muted" style="line-height:1.6">질문 벡터와 문서 청크 벡터 간의 유사도를 계산합니다. 코사인 유사도를 사용해 가장 유사한 청크를 식별합니다.</p>
+        <h2 style="font-size:1.2rem;font-weight:800">검색기 (Retriever)</h2>
       </div>
-      <div class="step-card">
-        <div class="step-num">04</div>
-        <div class="step-icon green"><i class="fas fa-file-alt"></i></div>
-        <strong style="font-size:.9rem;display:block;margin-bottom:8px">관련 문서 추출</strong>
-        <p class="text-xs text-muted" style="line-height:1.6">유사도 점수 Top-N 문서 청크를 추출하여 다음 단계인 생성기로 전달합니다.</p>
+      <ul style="padding-left:4px;display:flex;flex-direction:column;gap:8px;list-style:none">
+        <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>질문 벡터 변환:</strong> 사용자 질문을 고차원 벡터 공간의 임베딩으로 변환</div></li>
+        <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>벡터 데이터베이스:</strong> 외부 문서를 청크로 분할, 벡터로 변환 저장</div></li>
+        <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>유사도 검색:</strong> 코사인 유사도로 관련 문서 청크 식별</div></li>
+        <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--orange);margin-top:2px">▸</span><div><strong>관련 문서 추출:</strong> 유사도 Top-N 문서 청크 추출</div></li>
+      </ul>
+      <div style="background:var(--orange-dim);border-radius:8px;padding:10px 12px">
+        <p class="text-xs text-muted"><i class="fas fa-info-circle" style="color:var(--orange);margin-right:6px"></i>DPR(Dense Passage Retrieval) 기술로 검색 정확도 향상</p>
       </div>
     </div>
+    <div class="card teal-left flex-col gap-8">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="step-icon teal"><i class="fas fa-brain"></i></div>
+        <h2 style="font-size:1.2rem;font-weight:800">생성기 (Generator)</h2>
+      </div>
+      <ul style="padding-left:4px;display:flex;flex-direction:column;gap:8px;list-style:none">
+        <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--teal);margin-top:2px">▸</span><div><strong>컨텍스트 구성:</strong> 검색된 문서 청크 + 사용자 질문을 LLM 프롬프트에 추가</div></li>
+        <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--teal);margin-top:2px">▸</span><div><strong>답변 생성:</strong> 확장된 프롬프트 기반으로 답변 생성</div></li>
+        <li class="text-sm" style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--teal);margin-top:2px">▸</span><div><strong>환각 감소:</strong> 외부 지식 참조로 사실과 다른 정보 생성 감소</div></li>
+      </ul>
+      <div style="background:var(--teal-dim);border-radius:8px;padding:10px 12px">
+        <p class="text-xs text-muted"><i class="fas fa-info-circle" style="color:var(--teal);margin-right:6px"></i>LLM이 컨텍스트 내 정보를 활용하여 답변의 정확성과 사실성을 높입니다</p>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- SLIDE 4 (Reranker 추가) -->
+<div class="slide" id="s4">
+  <div class="slide-badge">04 / 검색기 작동 방식</div>
+  <div class="title-line"></div>
+  <h1 class="page-title"><span class="accent">검색기</span>의 작동 방식</h1>
+
+  <div class="card" style="margin-bottom:14px">
+    <p class="text-sm" style="line-height:1.7">검색기는 RAG 시스템의 첫 번째 단계로, 사용자의 질문과 관련된 정보를 외부 지식 소스에서 찾아내는 역할을 합니다.</p>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:14px">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <div class="step-icon green"><i class="fas fa-vector-square"></i></div>
+      <strong style="font-size:.9rem;display:block;margin-bottom:8px">질문 벡터 변환</strong>
+      <p class="text-xs text-muted" style="line-height:1.6">사용자 질문을 고차원 벡터 공간의 임베딩으로 변환합니다. 이 임베딩은 질문의 의미론적 특징을 나타냅니다.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <div class="step-icon teal"><i class="fas fa-database"></i></div>
+      <strong style="font-size:.9rem;display:block;margin-bottom:8px">벡터 DB 구축</strong>
+      <p class="text-xs text-muted" style="line-height:1.6">외부 문서를 작은 단위(청크)로 분할하고, 각 청크를 벡터로 변환하여 벡터 데이터베이스에 저장합니다.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <div class="step-icon orange"><i class="fas fa-search"></i></div>
+      <strong style="font-size:.9rem;display:block;margin-bottom:8px">유사도 검색</strong>
+      <p class="text-xs text-muted" style="line-height:1.6">질문 벡터와 문서 청크 벡터 간의 유사도를 계산합니다. 코사인 유사도를 사용해 가장 유사한 청크를 식별합니다.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <div class="step-icon green"><i class="fas fa-file-alt"></i></div>
+      <strong style="font-size:.9rem;display:block;margin-bottom:8px">관련 문서 추출</strong>
+      <p class="text-xs text-muted" style="line-height:1.6">유사도 점수 Top-N 문서 청크를 추출하여 다음 단계인 생성기로 전달합니다.</p>
+    </div>
+  </div>
+
+  <!-- DPR + Reranker 나란히 -->
+  <div class="grid-2" style="gap:12px;margin-bottom:8px">
     <div class="card green-left">
       <div style="display:flex;align-items:flex-start;gap:12px">
-        <i class="fas fa-lightbulb" style="color:var(--orange);font-size:1.2rem;margin-top:2px"></i>
+        <i class="fas fa-lightbulb" style="color:var(--orange);font-size:1.1rem;margin-top:2px;flex-shrink:0"></i>
         <div>
-          <strong style="color:var(--green);font-size:.9rem">Dense Passage Retrieval (DPR)</strong>
-          <p class="text-sm text-muted" style="margin-top:4px;line-height:1.6">질문과 문서의 임베딩을 학습하여 관련성 높은 문서를 효율적으로 검색하도록 최적화된 모델입니다. RAG의 성능 향상에 핵심적인 역할을 합니다.</p>
+          <strong style="color:var(--green);font-size:.88rem">Dense Passage Retrieval (DPR)</strong>
+          <p class="text-xs text-muted" style="margin-top:4px;line-height:1.6">질문 인코더와 문서 인코더를 따로 학습시켜 관련성 높은 문서를 효율적으로 검색하도록 최적화된 모델입니다. RAG 검색 정확도 향상에 핵심적인 역할을 합니다.</p>
         </div>
       </div>
     </div>
 
-    <p class="text-xs text-muted mt-auto" style="text-align:right;padding-top:8px">참고: Karpukhin et al., 2020. Dense passage retrieval for open-domain question answering.</p>
-  </div>
-
-  <!-- ══ SLIDE 5: 생성기 ══ -->
-  <div class="slide" id="s5">
-    <div class="slide-badge">05 / 생성기 작동 방식</div>
-    <div class="title-line"></div>
-    <h1 class="page-title"><span class="accent">생성기</span>의 작동 방식</h1>
-
-    <div class="card" style="margin-bottom:16px">
-      <p class="text-sm" style="line-height:1.7">생성기는 RAG 시스템의 두 번째 단계로, 검색기를 통해 얻은 관련 문서를 기반으로 최종 답변을 생성합니다. 주로 대규모 언어 모델(LLM)이 이 역할을 수행합니다.</p>
-    </div>
-
-    <div class="grid-3" style="margin-bottom:16px;flex:1">
-      <div class="card flex-col" style="align-items:center;text-align:center;gap:10px">
-        <div class="step-icon green" style="width:52px;height:52px;font-size:1.3rem"><i class="fas fa-puzzle-piece"></i></div>
-        <strong style="font-size:1rem;color:var(--green)">컨텍스트 구성</strong>
-        <p class="text-sm text-muted" style="line-height:1.7">검색된 관련 문서 청크들은 사용자의 원래 질문과 함께 LLM의 입력 프롬프트에 컨텍스트로 추가됩니다.</p>
-      </div>
-      <div class="card flex-col" style="align-items:center;text-align:center;gap:10px">
-        <div class="step-icon orange" style="width:52px;height:52px;font-size:1.3rem"><i class="fas fa-lightbulb"></i></div>
-        <strong style="font-size:1rem;color:var(--orange)">답변 생성</strong>
-        <p class="text-sm text-muted" style="line-height:1.7">LLM은 확장된 프롬프트(질문 + 관련 문서)를 기반으로 답변을 생성합니다. 질문뿐 아니라 컨텍스트 내 정보를 함께 활용합니다.</p>
-      </div>
-      <div class="card flex-col" style="align-items:center;text-align:center;gap:10px">
-        <div class="step-icon teal" style="width:52px;height:52px;font-size:1.3rem"><i class="fas fa-filter"></i></div>
-        <strong style="font-size:1rem;color:var(--teal)">환각 감소</strong>
-        <p class="text-sm text-muted" style="line-height:1.7">외부 지식을 참조하여 '환각' 현상을 줄이고 최신 정보나 특정 도메인 지식을 정확하게 반영할 수 있습니다.</p>
-      </div>
-    </div>
-
-    <div class="card green-left">
-      <strong style="color:var(--green);font-size:.9rem;display:block;margin-bottom:10px">생성기 역할 예시</strong>
-      <div class="grid-2" style="gap:10px">
-        <div style="background:var(--surface2);border-radius:8px;padding:12px 14px">
-          <p class="text-xs" style="color:var(--orange);margin-bottom:4px;font-weight:700"><i class="fas fa-question-circle"></i> 입력</p>
-          <p class="text-xs text-muted">"오늘의 날씨는 무엇인가?" + "오늘의 날씨에 관한 최신 뉴스 기사"</p>
-        </div>
-        <div style="background:var(--surface2);border-radius:8px;padding:12px 14px">
-          <p class="text-xs" style="color:var(--teal);margin-bottom:4px;font-weight:700"><i class="fas fa-comment-dots"></i> 출력</p>
-          <p class="text-xs text-muted">"오늘의 날씨는 맑으며, 기온은 25도로 예상됩니다. 이는 최근의 날씨 데이터와 일치합니다."</p>
+    <!-- ★ Reranker 카드 (신규) -->
+    <div class="card" style="border-left:3px solid var(--teal)">
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <i class="fas fa-sort-amount-down" style="color:var(--teal);font-size:1.1rem;margin-top:2px;flex-shrink:0"></i>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <strong style="color:var(--teal);font-size:.88rem">Reranker (재순위화)</strong>
+            <span style="background:var(--teal-dim);color:var(--teal);font-size:.65rem;font-family:var(--font-mono);padding:1px 7px;border-radius:4px;white-space:nowrap">2-stage</span>
+          </div>
+          <p class="text-xs text-muted" style="line-height:1.6;margin-bottom:8px">벡터 검색이 빠르게 추린 Top-20~50 후보를 Cross-Encoder가 질문과 문서를 <em>함께</em> 보며 정밀 재평가합니다. 최종 Top-3~5만 생성기에 전달합니다.</p>
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+            <span style="background:var(--surface2);border-radius:4px;padding:2px 7px;font-size:.65rem;font-family:var(--font-mono);color:var(--text-muted)">벡터검색 Top-50</span>
+            <span style="color:var(--teal);font-size:.7rem">→</span>
+            <span style="background:var(--teal-dim);border-radius:4px;padding:2px 7px;font-size:.65rem;font-family:var(--font-mono);color:var(--teal)">Reranker</span>
+            <span style="color:var(--teal);font-size:.7rem">→</span>
+            <span style="background:var(--surface2);border-radius:4px;padding:2px 7px;font-size:.65rem;font-family:var(--font-mono);color:var(--text-muted)">Top-5 → LLM</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══ SLIDE 6: 청킹 전략 ══ -->
-  <div class="slide" id="s6">
-    <div class="slide-badge">06 / 청킹 전략</div>
-    <div class="title-line"></div>
-    <h1 class="page-title">청킹 <span class="accent">전략</span></h1>
+  <p class="text-xs text-muted mt-auto" style="text-align:right;padding-top:4px">참고: Karpukhin et al., 2020. Dense passage retrieval for open-domain question answering.</p>
+</div>
 
-    <p class="text-sm text-muted" style="margin-bottom:16px;line-height:1.7">원본 문서를 의미 있는 단위로 분할하는 것은 RAG 시스템의 검색 정확도와 효율성에 직접적인 영향을 미칩니다.</p>
-
-    <div class="grid-2" style="flex:1;gap:14px">
-      <div class="chunk-card">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="step-icon green" style="flex-shrink:0"><i class="fas fa-cut"></i></div>
-          <h3>고정 크기 청킹</h3>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">미리 정해진 고정된 길이(256·512토큰)로 분할하는 가장 기본적인 방법입니다.</p>
-        <div style="display:flex;gap:14px;margin-top:8px">
-          <p class="pro"><i class="fas fa-check"></i> 구현 간단, 예측 가능</p>
-          <p class="con"><i class="fas fa-times"></i> 문맥이 경계에서 잘릴 수 있음</p>
-        </div>
-        <div class="use-pill">문서 내용이 균일하고 문맥 연속성이 덜 중요한 경우</div>
+<!-- SLIDE 5 -->
+<div class="slide" id="s5">
+  <div class="slide-badge">05 / 생성기 작동 방식</div>
+  <div class="title-line"></div>
+  <h1 class="page-title"><span class="accent">생성기</span>의 작동 방식</h1>
+  <div class="card" style="margin-bottom:16px">
+    <p class="text-sm" style="line-height:1.7">생성기는 RAG 시스템의 두 번째 단계로, 검색기를 통해 얻은 관련 문서를 기반으로 최종 답변을 생성합니다. 주로 대규모 언어 모델(LLM)이 이 역할을 수행합니다.</p>
+  </div>
+  <div class="grid-3" style="margin-bottom:16px;flex:1">
+    <div class="card flex-col" style="align-items:center;text-align:center;gap:10px">
+      <div class="step-icon green" style="width:52px;height:52px;font-size:1.3rem"><i class="fas fa-puzzle-piece"></i></div>
+      <strong style="font-size:1rem;color:var(--green)">컨텍스트 구성</strong>
+      <p class="text-sm text-muted" style="line-height:1.7">검색된 관련 문서 청크들은 사용자의 원래 질문과 함께 LLM의 입력 프롬프트에 컨텍스트로 추가됩니다.</p>
+    </div>
+    <div class="card flex-col" style="align-items:center;text-align:center;gap:10px">
+      <div class="step-icon orange" style="width:52px;height:52px;font-size:1.3rem"><i class="fas fa-lightbulb"></i></div>
+      <strong style="font-size:1rem;color:var(--orange)">답변 생성</strong>
+      <p class="text-sm text-muted" style="line-height:1.7">LLM은 확장된 프롬프트(질문 + 관련 문서)를 기반으로 답변을 생성합니다. 질문뿐 아니라 컨텍스트 내 정보를 함께 활용합니다.</p>
+    </div>
+    <div class="card flex-col" style="align-items:center;text-align:center;gap:10px">
+      <div class="step-icon teal" style="width:52px;height:52px;font-size:1.3rem"><i class="fas fa-filter"></i></div>
+      <strong style="font-size:1rem;color:var(--teal)">환각 감소</strong>
+      <p class="text-sm text-muted" style="line-height:1.7">외부 지식을 참조하여 '환각' 현상을 줄이고 최신 정보나 특정 도메인 지식을 정확하게 반영할 수 있습니다.</p>
+    </div>
+  </div>
+  <div class="card green-left">
+    <strong style="color:var(--green);font-size:.9rem;display:block;margin-bottom:10px">생성기 역할 예시</strong>
+    <div class="grid-2" style="gap:10px">
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px">
+        <p class="text-xs" style="color:var(--orange);margin-bottom:4px;font-weight:700"><i class="fas fa-question-circle"></i> 입력</p>
+        <p class="text-xs text-muted">"오늘의 날씨는 무엇인가?" + "오늘의 날씨에 관한 최신 뉴스 기사"</p>
       </div>
-
-      <div class="chunk-card">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="step-icon teal" style="flex-shrink:0"><i class="fas fa-object-group"></i></div>
-          <h3>고정 크기 + 오버랩</h3>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">인접한 청크 사이에 일정 부분(10~20% 토큰)을 중복시켜 문맥 손실을 최소화합니다.</p>
-        <div style="display:flex;gap:14px;margin-top:8px">
-          <p class="pro"><i class="fas fa-check"></i> 문맥 손실 감소</p>
-          <p class="con"><i class="fas fa-times"></i> 저장 공간·처리량 증가</p>
-        </div>
-        <div class="use-pill">문맥 연속성이 중요하지만 복잡한 구조 분석이 어려운 경우</div>
-      </div>
-
-      <div class="chunk-card">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="step-icon orange" style="flex-shrink:0"><i class="fas fa-sitemap"></i></div>
-          <h3>재귀적 분할</h3>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">단락·문장·제목 등 구분자를 기준으로 큰 단위에서 작은 단위로 재귀적으로 분할합니다.</p>
-        <div style="display:flex;gap:14px;margin-top:8px">
-          <p class="pro"><i class="fas fa-check"></i> 계층 구조 반영</p>
-          <p class="con"><i class="fas fa-times"></i> 구현 복잡, 구분자 선정 중요</p>
-        </div>
-        <div class="use-pill">보고서·논문·매뉴얼 등 구조화된 문서 검색</div>
-      </div>
-
-      <div class="chunk-card">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="step-icon green" style="flex-shrink:0"><i class="fas fa-brain"></i></div>
-          <h3>의미 기반 청킹</h3>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">문장 임베딩 기반 의미적 유사성으로 청크를 분할합니다. 유사도 낮은 지점에서 분리합니다.</p>
-        <div style="display:flex;gap:14px;margin-top:8px">
-          <p class="pro"><i class="fas fa-check"></i> 의미적 응집도 높음</p>
-          <p class="con"><i class="fas fa-times"></i> 계산 비용 증가</p>
-        </div>
-        <div class="use-pill">문맥 의미적 연결성이 중요한 비정형 텍스트</div>
+      <div style="background:var(--surface2);border-radius:8px;padding:12px 14px">
+        <p class="text-xs" style="color:var(--teal);margin-bottom:4px;font-weight:700"><i class="fas fa-comment-dots"></i> 출력</p>
+        <p class="text-xs text-muted">"오늘의 날씨는 맑으며, 기온은 25도로 예상됩니다. 이는 최근의 날씨 데이터와 일치합니다."</p>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ══ SLIDE 7: 임베딩 모델 ══ -->
-  <div class="slide" id="s7">
-    <div class="slide-badge">07 / 임베딩 모델</div>
-    <div class="title-line"></div>
-    <h1 class="page-title">임베딩 <span class="accent">모델</span></h1>
-
-    <div class="card" style="margin-bottom:16px">
-      <p class="text-sm" style="line-height:1.7">임베딩 모델은 텍스트를 고차원 벡터 공간의 수치형 표현으로 변환합니다. 이 벡터는 텍스트의 의미를 함축하여 유사도 계산으로 관련 문서를 효율적으로 검색할 수 있게 합니다.</p>
+<!-- SLIDE 6 -->
+<div class="slide" id="s6">
+  <div class="slide-badge">06 / 청킹 전략</div>
+  <div class="title-line"></div>
+  <h1 class="page-title">청킹 <span class="accent">전략</span></h1>
+  <p class="text-sm text-muted" style="margin-bottom:16px;line-height:1.7">원본 문서를 의미 있는 단위로 분할하는 것은 RAG 시스템의 검색 정확도와 효율성에 직접적인 영향을 미칩니다.</p>
+  <div class="grid-2" style="flex:1;gap:14px">
+    <div class="chunk-card">
+      <div style="display:flex;align-items:center;gap:8px"><div class="step-icon green" style="flex-shrink:0"><i class="fas fa-cut"></i></div><h3>고정 크기 청킹</h3></div>
+      <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">미리 정해진 고정된 길이(256·512토큰)로 분할하는 가장 기본적인 방법입니다.</p>
+      <div style="display:flex;gap:14px;margin-top:8px"><p class="pro"><i class="fas fa-check"></i> 구현 간단, 예측 가능</p><p class="con"><i class="fas fa-times"></i> 문맥이 경계에서 잘릴 수 있음</p></div>
+      <div class="use-pill">문서 내용이 균일하고 문맥 연속성이 덜 중요한 경우</div>
     </div>
-
-    <div class="grid-2" style="flex:1;gap:16px">
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <div class="step-icon orange" style="flex-shrink:0;font-size:.85rem"><i class="fas fa-globe"></i></div>
-          <strong>일반 임베딩 모델</strong>
-        </div>
-        <div class="flex-col" style="gap:10px">
-          <div class="model-card">
-            <div class="model-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-code-branch"></i></div>
-            <div>
-              <strong style="color:var(--orange);font-size:.9rem">BERT</strong>
-              <p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">구글이 개발한 양방향 문맥 학습 모델. 파생 모델: RoBERTa, ALBERT</p>
-            </div>
-          </div>
-          <div class="model-card">
-            <div class="model-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-align-left"></i></div>
-            <div>
-              <strong style="color:var(--orange);font-size:.9rem">Sentence-BERT (SBERT)</strong>
-              <p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">BERT를 문장 임베딩에 최적화. 문장 간 유사도 계산에 특히 효과적</p>
-            </div>
-          </div>
-          <div class="model-card">
-            <div class="model-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-globe-asia"></i></div>
-            <div>
-              <strong style="color:var(--orange);font-size:.9rem">BGE (BAAI General Embedding)</strong>
-              <p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">중국 BAAI 개발. 다양한 언어·도메인에서 높은 성능의 범용 임베딩 모델</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <div class="step-icon teal" style="flex-shrink:0;font-size:.85rem"><i class="fas fa-language"></i></div>
-          <strong>한국어 특화 임베딩 모델</strong>
-        </div>
-        <div class="flex-col" style="gap:10px">
-          <div class="model-card">
-            <div class="model-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-comment-dots"></i></div>
-            <div>
-              <strong style="color:var(--teal);font-size:.9rem">Ko-SimCSE</strong>
-              <p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">한국어 문장 임베딩 특화. 비지도 학습 방식으로 임베딩 품질 향상</p>
-            </div>
-          </div>
-          <div class="model-card">
-            <div class="model-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-database"></i></div>
-            <div>
-              <strong style="color:var(--teal);font-size:.9rem">KLUE-RoBERTa</strong>
-              <p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">한국어 대규모 말뭉치 사전학습 RoBERTa 기반. 한국어 NLP 우수 성능</p>
-            </div>
-          </div>
-          <div class="model-card">
-            <div class="model-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-cogs"></i></div>
-            <div>
-              <strong style="color:var(--teal);font-size:.9rem">Upstage-Embedding</strong>
-              <p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">업스테이지 개발 한국어 임베딩. 한국어 RAG 시스템 구축에 활용</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="chunk-card">
+      <div style="display:flex;align-items:center;gap:8px"><div class="step-icon teal" style="flex-shrink:0"><i class="fas fa-object-group"></i></div><h3>고정 크기 + 오버랩</h3></div>
+      <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">인접한 청크 사이에 일정 부분(10~20% 토큰)을 중복시켜 문맥 손실을 최소화합니다.</p>
+      <div style="display:flex;gap:14px;margin-top:8px"><p class="pro"><i class="fas fa-check"></i> 문맥 손실 감소</p><p class="con"><i class="fas fa-times"></i> 저장 공간·처리량 증가</p></div>
+      <div class="use-pill">문맥 연속성이 중요하지만 복잡한 구조 분석이 어려운 경우</div>
     </div>
-
-    <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
-      <i class="fas fa-lightbulb" style="color:var(--orange)"></i>
-      <p class="text-xs text-muted">도메인 특화 모델 선택 및 미세 조정은 RAG 시스템의 검색 정확도를 크게 향상시킬 수 있습니다.</p>
+    <div class="chunk-card">
+      <div style="display:flex;align-items:center;gap:8px"><div class="step-icon orange" style="flex-shrink:0"><i class="fas fa-sitemap"></i></div><h3>재귀적 분할</h3></div>
+      <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">단락·문장·제목 등 구분자를 기준으로 큰 단위에서 작은 단위로 재귀적으로 분할합니다.</p>
+      <div style="display:flex;gap:14px;margin-top:8px"><p class="pro"><i class="fas fa-check"></i> 계층 구조 반영</p><p class="con"><i class="fas fa-times"></i> 구현 복잡, 구분자 선정 중요</p></div>
+      <div class="use-pill">보고서·논문·매뉴얼 등 구조화된 문서 검색</div>
+    </div>
+    <div class="chunk-card">
+      <div style="display:flex;align-items:center;gap:8px"><div class="step-icon green" style="flex-shrink:0"><i class="fas fa-brain"></i></div><h3>의미 기반 청킹</h3></div>
+      <p class="text-xs text-muted" style="line-height:1.6;margin-top:6px">문장 임베딩 기반 의미적 유사성으로 청크를 분할합니다. 유사도 낮은 지점에서 분리합니다.</p>
+      <div style="display:flex;gap:14px;margin-top:8px"><p class="pro"><i class="fas fa-check"></i> 의미적 응집도 높음</p><p class="con"><i class="fas fa-times"></i> 계산 비용 증가</p></div>
+      <div class="use-pill">문맥 의미적 연결성이 중요한 비정형 텍스트</div>
     </div>
   </div>
+</div>
 
-  <!-- ══ SLIDE 8: 8 RAG 아키텍처 ══ -->
-  <div class="slide" id="s8">
-    <div class="slide-badge">08 / 8가지 RAG 아키텍처</div>
-    <div class="title-line"></div>
-    <h1 class="page-title">8가지 RAG <span class="accent">아키텍처</span></h1>
-
-    <div class="grid-4" style="flex:1;gap:10px">
-
-      <!-- 1. Naive RAG -->
-      <div class="arch-card" style="border-color:var(--teal)">
-        <div class="arch-header" style="background:var(--teal-dim)">
-          <span class="arch-num" style="color:var(--teal)">01</span>
-          <strong style="color:var(--teal)">Naive RAG</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">가장 기본적인 형태. 질문 → 임베딩 → 벡터 DB 검색 → 프롬프트 → LLM 생성의 단순 파이프라인.</p>
-        <div class="arch-flow">
-          <span class="arch-node">Query</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">Embed</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">VecDB</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
+<!-- SLIDE 7 -->
+<div class="slide" id="s7">
+  <div class="slide-badge">07 / 임베딩 모델</div>
+  <div class="title-line"></div>
+  <h1 class="page-title">임베딩 <span class="accent">모델</span></h1>
+  <div class="card" style="margin-bottom:16px">
+    <p class="text-sm" style="line-height:1.7">임베딩 모델은 텍스트를 고차원 벡터 공간의 수치형 표현으로 변환합니다. 이 벡터는 텍스트의 의미를 함축하여 유사도 계산으로 관련 문서를 효율적으로 검색할 수 있게 합니다.</p>
+  </div>
+  <div class="grid-2" style="flex:1;gap:16px">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div class="step-icon orange" style="flex-shrink:0;font-size:.85rem"><i class="fas fa-globe"></i></div>
+        <strong>일반 임베딩 모델</strong>
       </div>
-
-      <!-- 2. Multimodal RAG -->
-      <div class="arch-card" style="border-color:var(--orange)">
-        <div class="arch-header" style="background:var(--orange-dim)">
-          <span class="arch-num" style="color:var(--orange)">02</span>
-          <strong style="color:var(--orange)">Multimodal RAG</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">텍스트·이미지·오디오 등 다양한 형식의 데이터 소스를 동시에 처리하는 멀티모달 아키텍처.</p>
-        <div class="arch-flow">
-          <span class="arch-node" style="color:var(--orange)">🖼 Text/Img</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">Embed</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
+      <div class="flex-col" style="gap:10px">
+        <div class="model-card"><div class="model-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-code-branch"></i></div><div><strong style="color:var(--orange);font-size:.9rem">BERT</strong><p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">구글이 개발한 양방향 문맥 학습 모델. 파생 모델: RoBERTa, ALBERT</p></div></div>
+        <div class="model-card"><div class="model-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-align-left"></i></div><div><strong style="color:var(--orange);font-size:.9rem">Sentence-BERT (SBERT)</strong><p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">BERT를 문장 임베딩에 최적화. 문장 간 유사도 계산에 특히 효과적</p></div></div>
+        <div class="model-card"><div class="model-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-globe-asia"></i></div><div><strong style="color:var(--orange);font-size:.9rem">BGE (BAAI General Embedding)</strong><p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">중국 BAAI 개발. 다양한 언어·도메인에서 높은 성능의 범용 임베딩 모델</p></div></div>
       </div>
-
-      <!-- 3. HyDE -->
-      <div class="arch-card" style="border-color:var(--green)">
-        <div class="arch-header" style="background:var(--green-dim)">
-          <span class="arch-num" style="color:var(--green)">03</span>
-          <strong style="color:var(--green)">HyDE</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">Hypothetical Document Embedding. LLM이 가상의 답변을 먼저 생성한 후, 이를 임베딩해 실제 문서를 검색하는 방식.</p>
-        <div class="arch-flow">
-          <span class="arch-node">Query</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node" style="color:var(--green)">가상답변</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">검색</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
-      </div>
-
-      <!-- 4. Corrective RAG -->
-      <div class="arch-card" style="border-color:#a78bfa">
-        <div class="arch-header" style="background:rgba(167,139,250,.12)">
-          <span class="arch-num" style="color:#a78bfa">04</span>
-          <strong style="color:#a78bfa">Corrective RAG</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">검색된 문서의 품질을 평가(Grade)하고 불충분하면 웹 검색으로 보완 후 쿼리를 수정하는 자가교정 방식.</p>
-        <div class="arch-flow">
-          <span class="arch-node">검색</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node" style="color:#a78bfa">평가</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">웹보완</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
-      </div>
-
-      <!-- 5. Graph RAG -->
-      <div class="arch-card" style="border-color:#f472b6">
-        <div class="arch-header" style="background:rgba(244,114,182,.1)">
-          <span class="arch-num" style="color:#f472b6">05</span>
-          <strong style="color:#f472b6">Graph RAG</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">지식 그래프(Graph DB)와 벡터 DB를 결합. 엔티티 간 관계를 파악하여 복잡한 다단계 추론이 가능.</p>
-        <div class="arch-flow">
-          <span class="arch-node">Query</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node" style="color:#f472b6">GraphDB</span>
-          <span class="arch-arr">+</span>
-          <span class="arch-node">VecDB</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
-      </div>
-
-      <!-- 6. Hybrid RAG -->
-      <div class="arch-card" style="border-color:var(--teal)">
-        <div class="arch-header" style="background:var(--teal-dim)">
-          <span class="arch-num" style="color:var(--teal)">06</span>
-          <strong style="color:var(--teal)">Hybrid RAG</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">벡터 검색과 그래프 검색을 병렬로 수행, 두 결과를 결합하여 더 풍부한 컨텍스트를 LLM에 제공.</p>
-        <div class="arch-flow">
-          <span class="arch-node">Embed</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">VecDB</span>
-          <span class="arch-arr">+</span>
-          <span class="arch-node" style="color:var(--teal)">GraphDB</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
-      </div>
-
-      <!-- 7. Adaptive RAG -->
-      <div class="arch-card" style="border-color:var(--orange)">
-        <div class="arch-header" style="background:var(--orange-dim)">
-          <span class="arch-num" style="color:var(--orange)">07</span>
-          <strong style="color:var(--orange)">Adaptive RAG</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">쿼리 분석기(Query Analyzer)가 질문 복잡도를 판단, 단순 질문은 직접 응답, 복잡한 질문은 검색 파이프라인을 동적으로 선택.</p>
-        <div class="arch-flow">
-          <span class="arch-node" style="color:var(--orange)">분석기</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">Direct</span>
-          <span style="font-size:.65rem;color:var(--text-muted)">/</span>
-          <span class="arch-node">검색</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
-      </div>
-
-      <!-- 8. Agentic RAG -->
-      <div class="arch-card" style="border-color:var(--green)">
-        <div class="arch-header" style="background:var(--green-dim)">
-          <span class="arch-num" style="color:var(--green)">08</span>
-          <strong style="color:var(--green)">Agentic RAG</strong>
-        </div>
-        <p class="text-xs text-muted" style="line-height:1.6">ReACT·CoT 기반 플래닝으로 여러 Agent가 로컬 데이터·검색엔진·클라우드(MCP 서버)를 자율 활용하는 최신 아키텍처.</p>
-        <div class="arch-flow">
-          <span class="arch-node" style="color:var(--green)">Planning</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">Agents</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">MCP</span>
-          <span class="arch-arr">→</span>
-          <span class="arch-node">LLM</span>
-        </div>
-      </div>
-
     </div>
-
-    <div class="card" style="margin-top:10px;text-align:center">
-      <p class="text-xs text-muted">출처: <span style="font-family:var(--font-mono)">mcp.DailyDoseofDS.com</span> &nbsp;·&nbsp; Naive → Multimodal → HyDE → Corrective → Graph → Hybrid → Adaptive → Agentic 순으로 복잡도가 증가합니다.</p>
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div class="step-icon teal" style="flex-shrink:0;font-size:.85rem"><i class="fas fa-language"></i></div>
+        <strong>한국어 특화 임베딩 모델</strong>
+      </div>
+      <div class="flex-col" style="gap:10px">
+        <div class="model-card"><div class="model-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-comment-dots"></i></div><div><strong style="color:var(--teal);font-size:.9rem">Ko-SimCSE</strong><p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">한국어 문장 임베딩 특화. 비지도 학습 방식으로 임베딩 품질 향상</p></div></div>
+        <div class="model-card"><div class="model-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-database"></i></div><div><strong style="color:var(--teal);font-size:.9rem">KLUE-RoBERTa</strong><p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">한국어 대규모 말뭉치 사전학습 RoBERTa 기반. 한국어 NLP 우수 성능</p></div></div>
+        <div class="model-card"><div class="model-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-cogs"></i></div><div><strong style="color:var(--teal);font-size:.9rem">Upstage-Embedding</strong><p class="text-xs text-muted" style="margin-top:3px;line-height:1.6">업스테이지 개발 한국어 임베딩. 한국어 RAG 시스템 구축에 활용</p></div></div>
+      </div>
     </div>
   </div>
+  <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+    <i class="fas fa-lightbulb" style="color:var(--orange)"></i>
+    <p class="text-xs text-muted">도메인 특화 모델 선택 및 미세 조정은 RAG 시스템의 검색 정확도를 크게 향상시킬 수 있습니다.</p>
+  </div>
+</div>
 
-  <!-- ══ SLIDE 9: RAG vs 파인튜닝 ══ -->
-  <div class="slide" id="s9">
-    <div class="slide-badge">09 / RAG vs 파인튜닝</div>
-    <div class="title-line"></div>
-    <h1 class="page-title">RAG <span class="accent">vs</span> 파인튜닝</h1>
-
-    <div style="display:grid;grid-template-columns:1fr auto;gap:14px;margin-bottom:14px;align-items:center">
-      <div class="card">
-        <p class="text-sm" style="line-height:1.7">두 기법 모두 LLM 성능을 향상시키지만, 접근 방식과 장단점에서 큰 차이를 보입니다.</p>
-      </div>
-      <div style="text-align:center;flex-shrink:0">
-        <img src="images/when-to-use.png" alt="When to use RAG vs Fine-Tuning" style="height:160px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
-        <p class="text-xs text-muted" style="margin-top:4px">언제 무엇을 쓸까?</p>
-      </div>
+<!-- SLIDE 8 -->
+<div class="slide" id="s8">
+  <div class="slide-badge">08 / 8가지 RAG 아키텍처</div>
+  <div class="title-line"></div>
+  <h1 class="page-title">8가지 RAG <span class="accent">아키텍처</span></h1>
+  <div class="grid-4" style="flex:1;gap:10px">
+    <div class="arch-card" style="border-color:var(--teal)">
+      <div class="arch-header" style="background:var(--teal-dim)"><span class="arch-num" style="color:var(--teal)">01</span><strong style="color:var(--teal)">Naive RAG</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">가장 기본적인 형태. 질문 → 임베딩 → 벡터 DB 검색 → 프롬프트 → LLM 생성의 단순 파이프라인.</p>
+      <div class="arch-flow"><span class="arch-node">Query</span><span class="arch-arr">→</span><span class="arch-node">Embed</span><span class="arch-arr">→</span><span class="arch-node">VecDB</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
     </div>
-
-    <div class="cmp-table" style="flex:1">
-      <div class="cmp-header">
-        <div class="cmp-cell head">비교 기준</div>
-        <div class="cmp-cell head" style="color:var(--green)"><i class="fas fa-search-plus"></i> &nbsp;RAG</div>
-        <div class="cmp-cell head" style="color:var(--orange)"><i class="fas fa-sliders-h"></i> &nbsp;파인튜닝</div>
-      </div>
-      <div class="cmp-row">
-        <div class="cmp-cell label"><i class="fas fa-lightbulb" style="color:var(--green);margin-top:2px"></i>접근 방식</div>
-        <div class="cmp-cell text-xs" style="line-height:1.6">외부 지식 소스에서 관련 정보를 검색하여 LLM의 답변 생성 과정에 통합</div>
-        <div class="cmp-cell text-xs" style="line-height:1.6">LLM을 특정 작업에 맞게 미세 조정하고, 고정된 답변을 생성</div>
-      </div>
-      <div class="cmp-row">
-        <div class="cmp-cell label"><i class="fas fa-plus-circle" style="color:var(--green);margin-top:2px"></i>장점</div>
-        <div class="cmp-cell text-xs">
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px">
-            <li style="display:flex;gap:6px"><span style="color:var(--green)">✓</span> 최신 정보 및 도메인 지식 활용</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--green)">✓</span> 환각 현상 감소</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--green)">✓</span> 외부 지식 소스 쉬운 업데이트</li>
-          </ul>
-        </div>
-        <div class="cmp-cell text-xs">
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px">
-            <li style="display:flex;gap:6px"><span style="color:var(--orange)">✓</span> 특정 작업 특화 높은 성능</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--orange)">✓</span> 단순하고 직관적인 접근</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--orange)">✓</span> 동일 입력에 일관된 답변</li>
-          </ul>
-        </div>
-      </div>
-      <div class="cmp-row">
-        <div class="cmp-cell label"><i class="fas fa-minus-circle" style="color:var(--green);margin-top:2px"></i>단점</div>
-        <div class="cmp-cell text-xs">
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px">
-            <li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 검색·통합 과정 오버헤드</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 외부 지식 소스 품질 의존</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 시스템 복잡·유지보수 어려움</li>
-          </ul>
-        </div>
-        <div class="cmp-cell text-xs">
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px">
-            <li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 새 정보 추가 어렵고 비효율적</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 도메인 특화 시 범용성 저하</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 훈련 데이터 편향 유지됨</li>
-          </ul>
-        </div>
-      </div>
-      <div class="cmp-row">
-        <div class="cmp-cell label"><i class="fas fa-tasks" style="color:var(--green);margin-top:2px"></i>적합한 활용</div>
-        <div class="cmp-cell text-xs">
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px">
-            <li style="display:flex;gap:6px"><span style="color:var(--teal)">→</span> 빠르게 변화하는 정보 환경</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--teal)">→</span> 특정 도메인 지식의 복잡한 질문</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--teal)">→</span> 주기적 지식 업데이트 필요</li>
-          </ul>
-        </div>
-        <div class="cmp-cell text-xs">
-          <ul style="list-style:none;display:flex;flex-direction:column;gap:4px">
-            <li style="display:flex;gap:6px"><span style="color:var(--orange)">→</span> 특정 작업 높은 정확도 필요</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--orange)">→</span> 문맥이 중요한 긴 텍스트 생성</li>
-            <li style="display:flex;gap:6px"><span style="color:var(--orange)">→</span> 도메인 전문 용어 다수 사용</li>
-          </ul>
-        </div>
-      </div>
+    <div class="arch-card" style="border-color:var(--orange)">
+      <div class="arch-header" style="background:var(--orange-dim)"><span class="arch-num" style="color:var(--orange)">02</span><strong style="color:var(--orange)">Multimodal RAG</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">텍스트·이미지·오디오 등 다양한 형식의 데이터 소스를 동시에 처리하는 멀티모달 아키텍처.</p>
+      <div class="arch-flow"><span class="arch-node" style="color:var(--orange)">🖼 Text/Img</span><span class="arch-arr">→</span><span class="arch-node">Embed</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
     </div>
-
-    <div class="card" style="margin-top:12px;text-align:center">
-      <p class="text-xs text-muted" style="line-height:1.7"><i class="fas fa-info-circle" style="color:var(--teal);margin-right:6px"></i>두 기법은 서로 보완적이며, 특정 작업에 따라 적절히 선택하거나 조합하여 사용할 수 있습니다.</p>
+    <div class="arch-card" style="border-color:var(--green)">
+      <div class="arch-header" style="background:var(--green-dim)"><span class="arch-num" style="color:var(--green)">03</span><strong style="color:var(--green)">HyDE</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">Hypothetical Document Embedding. LLM이 가상의 답변을 먼저 생성한 후, 이를 임베딩해 실제 문서를 검색하는 방식.</p>
+      <div class="arch-flow"><span class="arch-node">Query</span><span class="arch-arr">→</span><span class="arch-node" style="color:var(--green)">가상답변</span><span class="arch-arr">→</span><span class="arch-node">검색</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
+    </div>
+    <div class="arch-card" style="border-color:#a78bfa">
+      <div class="arch-header" style="background:rgba(167,139,250,.12)"><span class="arch-num" style="color:#a78bfa">04</span><strong style="color:#a78bfa">Corrective RAG</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">검색된 문서의 품질을 평가(Grade)하고 불충분하면 웹 검색으로 보완 후 쿼리를 수정하는 자가교정 방식.</p>
+      <div class="arch-flow"><span class="arch-node">검색</span><span class="arch-arr">→</span><span class="arch-node" style="color:#a78bfa">평가</span><span class="arch-arr">→</span><span class="arch-node">웹보완</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
+    </div>
+    <div class="arch-card" style="border-color:#f472b6">
+      <div class="arch-header" style="background:rgba(244,114,182,.1)"><span class="arch-num" style="color:#f472b6">05</span><strong style="color:#f472b6">Graph RAG</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">지식 그래프(Graph DB)와 벡터 DB를 결합. 엔티티 간 관계를 파악하여 복잡한 다단계 추론이 가능.</p>
+      <div class="arch-flow"><span class="arch-node">Query</span><span class="arch-arr">→</span><span class="arch-node" style="color:#f472b6">GraphDB</span><span class="arch-arr">+</span><span class="arch-node">VecDB</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
+    </div>
+    <!-- Hybrid RAG — Reranker 언급 추가 -->
+    <div class="arch-card" style="border-color:var(--teal)">
+      <div class="arch-header" style="background:var(--teal-dim)"><span class="arch-num" style="color:var(--teal)">06</span><strong style="color:var(--teal)">Hybrid RAG</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">벡터 검색(의미 기반)과 BM25 키워드 검색을 병렬 수행, RRF로 결합 후 <strong style="color:var(--teal)">Reranker</strong>로 최종 정렬하여 각 방식의 장점을 모두 취합니다.</p>
+      <div class="arch-flow"><span class="arch-node">VecDB</span><span class="arch-arr">+</span><span class="arch-node" style="color:var(--teal)">BM25</span><span class="arch-arr">→</span><span class="arch-node" style="color:var(--teal)">Rerank</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
+    </div>
+    <div class="arch-card" style="border-color:var(--orange)">
+      <div class="arch-header" style="background:var(--orange-dim)"><span class="arch-num" style="color:var(--orange)">07</span><strong style="color:var(--orange)">Adaptive RAG</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">쿼리 분석기(Query Analyzer)가 질문 복잡도를 판단, 단순 질문은 직접 응답, 복잡한 질문은 검색 파이프라인을 동적으로 선택.</p>
+      <div class="arch-flow"><span class="arch-node" style="color:var(--orange)">분석기</span><span class="arch-arr">→</span><span class="arch-node">Direct</span><span style="font-size:.65rem;color:var(--text-muted)">/</span><span class="arch-node">검색</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
+    </div>
+    <div class="arch-card" style="border-color:var(--green)">
+      <div class="arch-header" style="background:var(--green-dim)"><span class="arch-num" style="color:var(--green)">08</span><strong style="color:var(--green)">Agentic RAG</strong></div>
+      <p class="text-xs text-muted" style="line-height:1.6">ReACT·CoT 기반 플래닝으로 여러 Agent가 로컬 데이터·검색엔진·클라우드(MCP 서버)를 자율 활용하는 최신 아키텍처.</p>
+      <div class="arch-flow"><span class="arch-node" style="color:var(--green)">Planning</span><span class="arch-arr">→</span><span class="arch-node">Agents</span><span class="arch-arr">→</span><span class="arch-node">MCP</span><span class="arch-arr">→</span><span class="arch-node">LLM</span></div>
     </div>
   </div>
+  <div class="card" style="margin-top:10px;text-align:center">
+    <p class="text-xs text-muted">출처: <span style="font-family:var(--font-mono)">mcp.DailyDoseofDS.com</span> &nbsp;·&nbsp; Naive → Multimodal → HyDE → Corrective → Graph → Hybrid → Adaptive → Agentic 순으로 복잡도가 증가합니다.</p>
+  </div>
+</div>
 
-  <!-- ══ SLIDE 10: 결론 ══ -->
-  <div class="slide" id="s10">
-    <div class="slide-badge">10 / 결론</div>
-    <div class="title-line"></div>
-    <h1 class="page-title">결론</h1>
+<!-- SLIDE 9 -->
+<div class="slide" id="s9">
+  <div class="slide-badge">09 / RAG vs 파인튜닝</div>
+  <div class="title-line"></div>
+  <h1 class="page-title">RAG <span class="accent">vs</span> 파인튜닝</h1>
+  <div style="display:grid;grid-template-columns:1fr auto;gap:14px;margin-bottom:14px;align-items:center">
+    <div class="card"><p class="text-sm" style="line-height:1.7">두 기법 모두 LLM 성능을 향상시키지만, 접근 방식과 장단점에서 큰 차이를 보입니다.</p></div>
+    <div style="text-align:center;flex-shrink:0">
+      <img src="images/when-to-use.png" alt="When to use RAG vs Fine-Tuning" style="height:160px;border-radius:10px;border:1px solid var(--border);object-fit:contain;background:#fff"/>
+      <p class="text-xs text-muted" style="margin-top:4px">언제 무엇을 쓸까?</p>
+    </div>
+  </div>
+  <div class="cmp-table" style="flex:1">
+    <div class="cmp-header">
+      <div class="cmp-cell head">비교 기준</div>
+      <div class="cmp-cell head" style="color:var(--green)"><i class="fas fa-search-plus"></i> &nbsp;RAG</div>
+      <div class="cmp-cell head" style="color:var(--orange)"><i class="fas fa-sliders-h"></i> &nbsp;파인튜닝</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell label"><i class="fas fa-lightbulb" style="color:var(--green);margin-top:2px"></i>접근 방식</div>
+      <div class="cmp-cell text-xs" style="line-height:1.6">외부 지식 소스에서 관련 정보를 검색하여 LLM의 답변 생성 과정에 통합</div>
+      <div class="cmp-cell text-xs" style="line-height:1.6">LLM을 특정 작업에 맞게 미세 조정하고, 고정된 답변을 생성</div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell label"><i class="fas fa-plus-circle" style="color:var(--green);margin-top:2px"></i>장점</div>
+      <div class="cmp-cell text-xs"><ul style="list-style:none;display:flex;flex-direction:column;gap:4px"><li style="display:flex;gap:6px"><span style="color:var(--green)">✓</span> 최신 정보 및 도메인 지식 활용</li><li style="display:flex;gap:6px"><span style="color:var(--green)">✓</span> 환각 현상 감소</li><li style="display:flex;gap:6px"><span style="color:var(--green)">✓</span> 외부 지식 소스 쉬운 업데이트</li></ul></div>
+      <div class="cmp-cell text-xs"><ul style="list-style:none;display:flex;flex-direction:column;gap:4px"><li style="display:flex;gap:6px"><span style="color:var(--orange)">✓</span> 특정 작업 특화 높은 성능</li><li style="display:flex;gap:6px"><span style="color:var(--orange)">✓</span> 단순하고 직관적인 접근</li><li style="display:flex;gap:6px"><span style="color:var(--orange)">✓</span> 동일 입력에 일관된 답변</li></ul></div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell label"><i class="fas fa-minus-circle" style="color:var(--green);margin-top:2px"></i>단점</div>
+      <div class="cmp-cell text-xs"><ul style="list-style:none;display:flex;flex-direction:column;gap:4px"><li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 검색·통합 과정 오버헤드</li><li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 외부 지식 소스 품질 의존</li><li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 시스템 복잡·유지보수 어려움</li></ul></div>
+      <div class="cmp-cell text-xs"><ul style="list-style:none;display:flex;flex-direction:column;gap:4px"><li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 새 정보 추가 어렵고 비효율적</li><li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 도메인 특화 시 범용성 저하</li><li style="display:flex;gap:6px"><span style="color:var(--text-muted)">✗</span> 훈련 데이터 편향 유지됨</li></ul></div>
+    </div>
+    <div class="cmp-row">
+      <div class="cmp-cell label"><i class="fas fa-tasks" style="color:var(--green);margin-top:2px"></i>적합한 활용</div>
+      <div class="cmp-cell text-xs"><ul style="list-style:none;display:flex;flex-direction:column;gap:4px"><li style="display:flex;gap:6px"><span style="color:var(--teal)">→</span> 빠르게 변화하는 정보 환경</li><li style="display:flex;gap:6px"><span style="color:var(--teal)">→</span> 특정 도메인 지식의 복잡한 질문</li><li style="display:flex;gap:6px"><span style="color:var(--teal)">→</span> 주기적 지식 업데이트 필요</li></ul></div>
+      <div class="cmp-cell text-xs"><ul style="list-style:none;display:flex;flex-direction:column;gap:4px"><li style="display:flex;gap:6px"><span style="color:var(--orange)">→</span> 특정 작업 높은 정확도 필요</li><li style="display:flex;gap:6px"><span style="color:var(--orange)">→</span> 문맥이 중요한 긴 텍스트 생성</li><li style="display:flex;gap:6px"><span style="color:var(--orange)">→</span> 도메인 전문 용어 다수 사용</li></ul></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px;text-align:center">
+    <p class="text-xs text-muted"><i class="fas fa-info-circle" style="color:var(--teal);margin-right:6px"></i>두 기법은 서로 보완적이며, 특정 작업에 따라 적절히 선택하거나 조합하여 사용할 수 있습니다.</p>
+  </div>
+</div>
 
-    <div class="card green-left" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-        <h2 style="font-size:1.1rem;font-weight:800">RAG의 기여</h2>
-        <div style="height:2px;background:var(--green);flex-grow:1;opacity:.3"></div>
+<!-- SLIDE 10 -->
+<div class="slide" id="s10">
+  <div class="slide-badge">10 / 결론</div>
+  <div class="title-line"></div>
+  <h1 class="page-title">결론</h1>
+  <div class="card green-left" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <h2 style="font-size:1.1rem;font-weight:800">RAG의 기여</h2>
+      <div style="height:2px;background:var(--green);flex-grow:1;opacity:.3"></div>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px">
+      <div class="contrib-card">
+        <div class="contrib-icon" style="background:var(--green-dim);color:var(--green)"><i class="fas fa-check-circle"></i></div>
+        <strong style="font-size:.9rem">환각 감소</strong>
+        <p class="text-xs text-muted" style="line-height:1.6">외부 지식을 참조하여 LLM의 사실이 아닌 정보 생성(Hallucination)을 효과적으로 줄입니다.</p>
       </div>
-      <div class="grid-3" style="margin-bottom:14px">
-        <div class="contrib-card">
-          <div class="contrib-icon" style="background:var(--green-dim);color:var(--green)"><i class="fas fa-check-circle"></i></div>
-          <strong style="font-size:.9rem">환각 감소</strong>
-          <p class="text-xs text-muted" style="line-height:1.6">외부 지식을 참조하여 LLM의 사실이 아닌 정보 생성(Hallucination)을 효과적으로 줄입니다.</p>
-        </div>
-        <div class="contrib-card">
-          <div class="contrib-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-sync-alt"></i></div>
-          <strong style="font-size:.9rem">정보 최신화</strong>
-          <p class="text-xs text-muted" style="line-height:1.6">외부 지식 소스로부터 최신 정보를 검색하여 LLM의 최신 정보 부족 문제를 해결합니다.</p>
-        </div>
-        <div class="contrib-card">
-          <div class="contrib-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-graduation-cap"></i></div>
-          <strong style="font-size:.9rem">도메인 지식</strong>
-          <p class="text-xs text-muted" style="line-height:1.6">특정 도메인의 전문 용어와 지식을 효과적으로 처리하여 도메인 지식 부재 문제를 해결합니다.</p>
-        </div>
+      <div class="contrib-card">
+        <div class="contrib-icon" style="background:var(--teal-dim);color:var(--teal)"><i class="fas fa-sync-alt"></i></div>
+        <strong style="font-size:.9rem">정보 최신화</strong>
+        <p class="text-xs text-muted" style="line-height:1.6">외부 지식 소스로부터 최신 정보를 검색하여 LLM의 최신 정보 부족 문제를 해결합니다.</p>
+      </div>
+      <div class="contrib-card">
+        <div class="contrib-icon" style="background:var(--orange-dim);color:var(--orange)"><i class="fas fa-graduation-cap"></i></div>
+        <strong style="font-size:.9rem">도메인 지식</strong>
+        <p class="text-xs text-muted" style="line-height:1.6">특정 도메인의 전문 용어와 지식을 효과적으로 처리하여 도메인 지식 부재 문제를 해결합니다.</p>
       </div>
     </div>
+  </div>
+  <div class="card orange-left" style="display:flex;flex-direction:column;gap:8px;justify-content:center">
+    <strong style="color:var(--orange);font-size:.9rem">RAG의 핵심 가치</strong>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
+      <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--green)">✦</span>외부 지식을 실시간으로 활용하는 검색-생성 구조</li>
+      <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--teal)">✦</span>청킹·임베딩·Reranker·검색 전략 조합으로 성능 최적화</li>
+      <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--orange)">✦</span>Self-Corrective RAG 등 고급 기법으로 지속 발전</li>
+      <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--green)">✦</span>파인튜닝과 상호 보완적으로 활용 가능</li>
+    </ul>
+  </div>
+</div>
 
-    <!-- Summary -->
-      <div class="card orange-left" style="display:flex;flex-direction:column;gap:8px;justify-content:center">
-        <strong style="color:var(--orange);font-size:.9rem">RAG의 핵심 가치</strong>
-        <ul style="list-style:none;display:flex;flex-direction:column;gap:8px">
-          <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--green)">✦</span>외부 지식을 실시간으로 활용하는 검색-생성 구조</li>
-          <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--teal)">✦</span>청킹·임베딩·검색 전략 조합으로 성능 최적화</li>
-          <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--orange)">✦</span>Self-Corrective RAG 등 고급 기법으로 지속 발전</li>
-          <li class="text-sm" style="display:flex;gap:8px"><span style="color:var(--green)">✦</span>파인튜닝과 상호 보완적으로 활용 가능</li>
-        </ul>
-      </div>
-    </div>
 </div><!-- /deck -->
 
-<!-- Navigation -->
 <div class="nav">
   <button class="nav-btn" id="prevBtn" onclick="goTo(current-1)"><i class="fas fa-chevron-left"></i></button>
   <div class="dots" id="dots"></div>
@@ -1005,15 +571,12 @@
   const pbar = document.getElementById('pbar');
   const counter = document.getElementById('counter');
   const dotsEl = document.getElementById('dots');
-
-  // Build dots
   for (let i=0;i<total;i++){
     const d = document.createElement('div');
     d.className='dot'+(i===0?' active':'');
     d.onclick=()=>goTo(i);
     dotsEl.appendChild(d);
   }
-
   function goTo(n){
     if(n<0||n>=total)return;
     slides[current].classList.remove('active');
@@ -1021,15 +584,11 @@
     setTimeout(()=>slides[current-((current-n>0)?1:-1)]?.classList.remove('out'),500);
     current=n;
     slides[current].classList.add('active');
-    setTimeout(()=>{
-      document.querySelectorAll('.slide.out').forEach(s=>s.classList.remove('out'));
-    },500);
-    // update UI
+    setTimeout(()=>{ document.querySelectorAll('.slide.out').forEach(s=>s.classList.remove('out')); },500);
     document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current));
     counter.textContent=String(current+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
     pbar.style.width=((current+1)/total*100)+'%';
   }
-
   document.addEventListener('keydown',e=>{
     if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
     if(e.key==='ArrowLeft'||e.key==='ArrowUp') goTo(current-1);
