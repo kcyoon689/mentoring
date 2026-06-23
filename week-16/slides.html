@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 엔지니어 중요 논문 14선</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif;
+  background: #f5f5f0;
+  color: #1a1a1a;
+  padding: 32px 20px 60px;
+  min-height: 100vh;
+}
+#arrow-svg {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 50;
+  overflow: visible;
+  transition: opacity .2s ease;
+}
+#arrow-svg.hidden { opacity: 0; }
+.wrap { max-width: 1020px; margin: 0 auto; }
+h1 { font-size: 22px; font-weight: 700; margin-bottom: 5px; color: #111; }
+.subtitle { font-size: 12px; color: #666; margin-bottom: 10px; }
+
+/* Legend */
+.legend {
+  display: flex; gap: 18px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 18px; font-size: 11px; color: #666;
+  padding: 8px 12px; background: #fff; border-radius: 8px;
+  border: 1px solid #e5e5e0; width: fit-content;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.leg-line { width: 28px; height: 2px; background: #888; display: inline-block; border-radius: 1px; }
+.leg-line.dashed { background: repeating-linear-gradient(90deg,#888 0,#888 5px,transparent 5px,transparent 9px); }
+
+/* Toggle button */
+.arrow-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-left: auto;
+  font-size: 11px; font-weight: 600; color: #444;
+  background: #f5f5f0; border: 1px solid #ddd; border-radius: 20px;
+  padding: 5px 6px 5px 12px;
+  cursor: pointer; user-select: none;
+  transition: background .15s, border-color .15s;
+}
+.arrow-toggle:hover { background: #ececE5; }
+.switch {
+  position: relative; width: 34px; height: 18px;
+  background: #cbd5e1; border-radius: 999px; flex-shrink: 0;
+  transition: background .2s ease;
+}
+.switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.3);
+  transition: transform .2s ease;
+}
+.arrow-toggle.on .switch { background: #6366f1; }
+.arrow-toggle.on .switch::after { transform: translateX(16px); }
+
+/* Sections */
+.section {
+  border: 1.5px solid #ddd; border-radius: 16px;
+  padding: 18px 20px; margin-bottom: 10px; background: #fff;
+}
+.sec-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: #222; }
+.boxes { display: flex; gap: 10px; align-items: flex-start; flex-wrap: nowrap; }
+
+/* Paper boxes */
+.box {
+  border-radius: 10px; padding: 11px 12px;
+  flex: 1; min-width: 0;
+  cursor: pointer; transition: transform .15s, box-shadow .15s;
+  text-decoration: none; display: block; color: inherit;
+}
+.box:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.1); }
+.year {
+  display: inline-block; font-size: 10px; font-weight: 600;
+  border-radius: 20px; padding: 2px 8px; margin-bottom: 5px;
+}
+.bttl { font-size: 12.5px; font-weight: 700; margin-bottom: 4px; }
+.bdesc { font-size: 10.5px; line-height: 1.45; margin-bottom: 4px; opacity: .85; }
+.bpaper { font-size: 9.5px; opacity: .55; font-style: italic; }
+
+/* Normalization row */
+.norm-row {
+  display: flex; gap: 10px; margin-top: 12px;
+  padding-top: 11px; border-top: 1px dashed #ddd;
+  flex-wrap: nowrap; align-items: center;
+}
+.norm-lbl { font-size: 11px; font-weight: 600; color: #888; min-width: 50px; flex-shrink: 0; }
+.norm-chip {
+  border-radius: 8px; padding: 8px 11px; flex: 1;
+  text-decoration: none; color: inherit; display: block;
+  transition: transform .12s;
+}
+.norm-chip:hover { transform: translateY(-1px); }
+.nc-ttl { font-size: 11.5px; font-weight: 700; margin-bottom: 3px; }
+.nc-desc { font-size: 10px; line-height: 1.4; opacity: .8; }
+.nc-paper { font-size: 9.5px; opacity: .5; font-style: italic; margin-top: 3px; }
+
+/* Tips column */
+.tips { width: 165px; flex-shrink: 0; padding-top: 4px; }
+.tips-s { width: 155px; flex-shrink: 0; padding-top: 4px; }
+.tlbl { font-size: 10.5px; font-weight: 600; color: #555; margin-bottom: 5px; }
+.ti { font-size: 10.5px; color: #555; margin-bottom: 3px; line-height: 1.4; }
+.tdiv { border: none; border-top: 1px dashed #ddd; margin: 6px 0; }
+
+.farrow { text-align: center; font-size: 11px; color: #999; margin: 4px 0; }
+.newbadge {
+  display: inline-block; font-size: 9px; background: #ef4444;
+  color: #fff; border-radius: 4px; padding: 2px 5px;
+  margin-left: 5px; vertical-align: middle; font-weight: 600;
+}
+.foot {
+  margin-top: 14px; padding: 10px 14px; border-radius: 8px;
+  background: #f0f0eb; font-size: 11px; color: #555; line-height: 1.7;
+}
+
+/* === Box colors === */
+.mlp  { background:#eff6ff; border:1.5px solid #bfdbfe; }
+.mlp  .year { background:#dbeafe; color:#1e40af; }
+.mlp  .bttl { color:#1e3a8a; }
+.cnn  { background:#f0fdf4; border:1.5px solid #86efac; }
+.cnn  .year { background:#dcfce7; color:#15803d; }
+.cnn  .bttl { color:#14532d; }
+.rnn  { background:#fff7ed; border:1.5px solid #fdba74; }
+.rnn  .year { background:#fed7aa; color:#9a3412; }
+.rnn  .bttl { color:#c2410c; }
+.vae  { background:#ecfeff; border:1.5px solid #a5f3fc; }
+.vae  .year { background:#cffafe; color:#155e75; }
+.vae  .bttl { color:#0e7490; }
+.gan  { background:#f0fdf4; border:1.5px solid #6ee7b7; }
+.gan  .year { background:#d1fae5; color:#065f46; }
+.gan  .bttl { color:#047857; }
+.ddpm { background:#f5f3ff; border:1.5px solid #c4b5fd; }
+.ddpm .year { background:#ede9fe; color:#4c1d95; }
+.ddpm .bttl { color:#5b21b6; }
+.trns { background:#fefce8; border:1.5px solid #fde047; }
+.trns .year { background:#fef9c3; color:#854d0e; }
+.trns .bttl { color:#a16207; }
+.gpt  { background:#fff7ed; border:1.5px solid #fdba74; }
+.gpt  .year { background:#fed7aa; color:#9a3412; }
+.gpt  .bttl { color:#c2410c; }
+.bert { background:#faf5ff; border:1.5px solid #d8b4fe; }
+.bert .year { background:#e9d5ff; color:#581c87; }
+.bert .bttl { color:#6b21a8; }
+.vit  { background:#ecfeff; border:1.5px solid #67e8f9; }
+.vit  .year { background:#cffafe; color:#164e63; }
+.vit  .bttl { color:#0e7490; }
+.rag  { background:#f0fdfa; border:1.5px solid #5eead4; }
+.rag  .year { background:#ccfbf1; color:#134e4a; }
+.rag  .bttl { color:#0f766e; }
+.lora { background:#fff1f2; border:1.5px solid #fca5a5; }
+.lora .year { background:#fee2e2; color:#7f1d1d; }
+.lora .bttl { color:#b91c1c; }
+.peft { background:#eff6ff; border:1.5px solid #93c5fd; }
+.peft .year { background:#dbeafe; color:#1e3a8a; }
+.peft .bttl { color:#1d4ed8; }
+.bnorm { background:#fdf4ff; border:1.5px solid #e879f9; }
+.bnorm .nc-ttl { color:#86198f; }
+.lnorm { background:#fff0f9; border:1.5px solid #f9a8d4; }
+.lnorm .nc-ttl { color:#9d174d; }
+
+.sec0 { background: linear-gradient(135deg,#eff6ff 0%,#fff7ed 50%,#f0fdf4 100%); border-color:#a5b4fc; }
+</style>
+</head>
+<body>
+
+<svg id="arrow-svg" aria-hidden="true"><defs></defs></svg>
+
+<div class="wrap">
+  <h1>AI 엔지니어 중요 논문 14선: 발전 흐름 요약</h1>
+  <div class="subtitle">MLP·CNN·RNN 기반 → 생성모델 → Transformer 기반 표현/생성 → 멀티모달 확장 → 적용 계보</div>
+
+  <div class="legend">
+    <span>흐름 표시:</span>
+    <div class="legend-item"><div class="leg-line"></div><span>직접 발전·계승</span></div>
+    <div class="legend-item"><div class="leg-line dashed"></div><span>간접 영향·영감</span></div>
+    <div id="arrow-toggle" class="arrow-toggle on" role="button" tabindex="0" aria-pressed="true">
+      <span class="switch"></span>
+      <span id="arrow-toggle-label">화살표 표시 중</span>
+    </div>
+  </div>
+
+  <!-- ── Section 0 ── -->
+  <div class="section sec0">
+    <div class="sec-title">⓪ 딥러닝의 기반: 뉴런·합성곱·순환 <span class="newbadge">NEW</span></div>
+    <div class="boxes">
+      <a id="b-mlp" class="box mlp" href="https://www.nature.com/articles/323533a0" target="_blank">
+        <span class="year">1958/1986</span>
+        <div class="bttl">MLP</div>
+        <div class="bdesc">다층 퍼셉트론 + 역전파<br>범용 함수 근사기의 이론적 토대</div>
+        <div class="bpaper">Backpropagation — Rumelhart et al.</div>
+      </a>
+      <a id="b-cnn" class="box cnn" href="https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf" target="_blank">
+        <span class="year">1989/2012</span>
+        <div class="bttl">CNN</div>
+        <div class="bdesc">지역 필터로 공간 특징 추출<br>AlexNet으로 딥러닝 시대 개막</div>
+        <div class="bpaper">LeNet / AlexNet — LeCun, Krizhevsky</div>
+      </a>
+      <a id="b-rnn" class="box rnn" href="https://arxiv.org/abs/1402.1128" target="_blank">
+        <span class="year">1986/1997</span>
+        <div class="bttl">RNN / LSTM / GRU</div>
+        <div class="bdesc">시퀀스를 hidden state로 압축<br>LSTM 게이트로 장기 의존성 해결</div>
+        <div class="bpaper">LSTM — Hochreiter &amp; Schmidhuber</div>
+      </a>
+      <div class="tips">
+        <div class="tlbl">포인트</div>
+        <div class="ti">• MLP: 활성함수, 범용근사정리(UAT)</div>
+        <div class="ti">• MLP: vanishing gradient → ReLU</div>
+        <hr class="tdiv">
+        <div class="ti">• CNN: receptive field, parameter sharing</div>
+        <div class="ti">• CNN: pooling 종류와 역할</div>
+        <hr class="tdiv">
+        <div class="ti">• RNN: BPTT, vanishing gradient</div>
+        <div class="ti">• LSTM: forget/input/output gate</div>
+        <div class="ti">• GRU: reset/update gate (경량화)</div>
+        <div class="ti">• RNN vs Transformer: 병렬화 차이</div>
+      </div>
+    </div>
+    <div class="norm-row">
+      <div class="norm-lbl">정규화<br>기법</div>
+      <a id="b-bnorm" class="norm-chip bnorm" href="https://arxiv.org/abs/1502.03167" target="_blank">
+        <div class="nc-ttl">Batch Normalization</div>
+        <div class="nc-desc">미니배치 통계로 내부 공변량 이동 제거<br>학습 안정화·속도 향상</div>
+        <div class="nc-paper">Ioffe &amp; Szegedy, 2015</div>
+      </a>
+      <a id="b-lnorm" class="norm-chip lnorm" href="https://arxiv.org/abs/1607.06450" target="_blank">
+        <div class="nc-ttl">Layer Normalization</div>
+        <div class="nc-desc">토큰 단위 정규화 → Transformer 표준<br>배치 크기에 무관하게 동작</div>
+        <div class="nc-paper">Ba et al., 2016</div>
+      </a>
+      <div class="tips-s" style="padding-top:4px">
+        <div class="tlbl">포인트</div>
+        <div class="ti">• Internal Covariate Shift 개념</div>
+        <div class="ti">• BatchNorm: train vs inference 통계</div>
+        <div class="ti">• LayerNorm: 왜 Transformer 표준?</div>
+        <div class="ti">• GroupNorm / InstanceNorm 비교</div>
+        <div class="ti">• γ·β 학습 파라미터 역할</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="farrow">↓</div>
+
+  <!-- ── Section 1 ── -->
+  <div class="section">
+    <div class="sec-title">① 생성모델의 기초: 잠재공간·게임·확산</div>
+    <div class="boxes">
+      <a id="b-vae" class="box vae" href="https://arxiv.org/abs/1312.6114" target="_blank">
+        <span class="year">2013</span>
+        <div class="bttl">VAE</div>
+        <div class="bdesc">확률적 잠재변수 + 재매개변수화<br>생성모델을 안정적으로 학습</div>
+        <div class="bpaper">Auto-Encoding Variational Bayes</div>
+      </a>
+      <a id="b-gan" class="box gan" href="https://arxiv.org/abs/1406.2661" target="_blank">
+        <span class="year">2014</span>
+        <div class="bttl">GAN</div>
+        <div class="bdesc">Generator vs Discriminator<br>적대적 학습으로 사실적 샘플 생성</div>
+        <div class="bpaper">Generative Adversarial Nets</div>
+      </a>
+      <a id="b-ddpm" class="box ddpm" href="https://arxiv.org/abs/2006.11239" target="_blank">
+        <span class="year">2020</span>
+        <div class="bttl">DDPM / Diffusion</div>
+        <div class="bdesc">노이즈를 점진적으로 제거해 생성<br>현대 이미지 생성모델의 핵심 축</div>
+        <div class="bpaper">Denoising Diffusion Probabilistic Models</div>
+      </a>
+      <div class="tips">
+        <div class="tlbl">포인트</div>
+        <div class="ti">• VAE: ELBO, reparameterization trick</div>
+        <div class="ti">• GAN: minimax loss, mode collapse</div>
+        <div class="ti">• GAN: Nash equilibrium 관점</div>
+        <div class="ti">• Diffusion: forward/reverse process</div>
+        <div class="ti">• DDPM vs GAN: 학습 안정성 비교</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="farrow">↓</div>
+
+  <!-- ── Section 2 ── -->
+  <div class="section">
+    <div class="sec-title">② Transformer/LLM의 본류: Attention → 사전학습 → 언어/비전 확장</div>
+    <div class="boxes">
+      <a id="b-transformer" class="box trns" href="https://arxiv.org/abs/1706.03762" target="_blank">
+        <span class="year">2017</span>
+        <div class="bttl">Transformer</div>
+        <div class="bdesc">Self-Attention 기반 seq2seq<br>RNN 없이 완전 병렬 학습</div>
+        <div class="bpaper">Attention Is All You Need</div>
+      </a>
+      <a id="b-gpt" class="box gpt" href="https://cdn.openai.com/research-covers/language-understanding-paper.pdf" target="_blank">
+        <span class="year">2018</span>
+        <div class="bttl">GPT-1</div>
+        <div class="bdesc">생성형 사전학습 + fine-tuning<br>decoder-only LLM 계열의 출발점</div>
+        <div class="bpaper">Generative Pre-Training</div>
+      </a>
+      <a id="b-bert" class="box bert" href="https://arxiv.org/abs/1810.04805" target="_blank">
+        <span class="year">2018</span>
+        <div class="bttl">BERT</div>
+        <div class="bdesc">양방향 encoder 표현학습, NLU 강자<br>MLM + NSP 사전학습</div>
+        <div class="bpaper">Bidirectional Encoder Representations</div>
+      </a>
+      <a id="b-vit" class="box vit" href="https://arxiv.org/abs/2010.11929" target="_blank">
+        <span class="year">2020</span>
+        <div class="bttl">ViT</div>
+        <div class="bdesc">이미지를 patch sequence로 보고<br>순수 Transformer로 비전 처리</div>
+        <div class="bpaper">Image is Worth 16x16 Words</div>
+      </a>
+      <div class="tips">
+        <div class="tlbl">포인트</div>
+        <div class="ti">• Scaled dot-product attention, Q·K·V</div>
+        <div class="ti">• Multi-head attention의 역할</div>
+        <div class="ti">• Positional encoding 방식 비교</div>
+        <div class="ti">• encoder-only vs decoder-only</div>
+        <div class="ti">• pretrain → fine-tune 패러다임</div>
+        <div class="ti">• ViT: CNN 대비 inductive bias 차이</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="farrow">↓</div>
+
+  <!-- ── Section 3 ── -->
+  <div class="section">
+    <div class="sec-title">③ LLM 적용: 적응·효율·외부지식</div>
+    <div class="boxes">
+      <a id="b-rag" class="box rag" href="https://arxiv.org/abs/2005.11401" target="_blank">
+        <span class="year">2020</span>
+        <div class="bttl">RAG</div>
+        <div class="bdesc">Retriever + Generator 결합<br>parametric + non-parametric memory</div>
+        <div class="bpaper">Retrieval-Augmented Generation</div>
+      </a>
+      <a id="b-lora" class="box lora" href="https://arxiv.org/abs/2106.09685" target="_blank">
+        <span class="year">2021</span>
+        <div class="bttl">LoRA</div>
+        <div class="bdesc">기존 weight 동결 + 저랭크 행렬 학습<br>parameter-efficient adaptation</div>
+        <div class="bpaper">Low-Rank Adaptation of Large Language Models</div>
+      </a>
+      <a id="b-peft" class="box peft" href="https://arxiv.org/abs/2312.12148" target="_blank">
+        <span class="year">2023</span>
+        <div class="bttl">PEFT Review</div>
+        <div class="bdesc">Adapter/Prompt/LoRA류 방법론 비교<br>리뷰·평가 논문 성격</div>
+        <div class="bpaper">Parameter-Efficient Fine-Tuning (Survey)</div>
+      </a>
+      <div class="tips">
+        <div class="tlbl">포인트</div>
+        <div class="ti">• RAG: 환각(hallucination) 완화 원리</div>
+        <div class="ti">• RAG: dense vs sparse retrieval</div>
+        <div class="ti">• LoRA: rank r, alpha 하이퍼파라미터</div>
+        <div class="ti">• LoRA: W = W₀ + BA 수식 이해</div>
+        <div class="ti">• PEFT 종류: adapter, prefix, prompt</div>
+        <div class="ti">• full fine-tuning vs PEFT 트레이드오프</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ── Connection definitions ── */
+const CONNS = [
+  // Section 0 → Section 1
+  { f:'b-mlp',  t:'b-vae',  dash:true,  c:'#3b82f6', lbl:'수식 기반' },
+  { f:'b-cnn',  t:'b-gan',  dash:true,  c:'#16a34a', lbl:'DCGAN' },
+  // Section 0 → Section 2 (long cross-section)
+  { f:'b-rnn',  t:'b-transformer', dash:false, c:'#ea580c', lbl:'대체' },
+  { f:'b-lnorm',t:'b-transformer', dash:true,  c:'#c026d3', lbl:'내부 표준' },
+  // Section 1 internal (horizontal)
+  { f:'b-vae',  t:'b-gan',  dash:true,  c:'#0891b2' },
+  { f:'b-gan',  t:'b-ddpm', dash:true,  c:'#059669' },
+  // Section 2 internal
+  { f:'b-transformer', t:'b-gpt',  dash:false, c:'#ca8a04' },
+  { f:'b-transformer', t:'b-bert', dash:false, c:'#ca8a04' },
+  { f:'b-gpt',  t:'b-vit',  dash:true,  c:'#ea580c' },
+  { f:'b-bert', t:'b-vit',  dash:true,  c:'#7c3aed' },
+  // Section 2 → Section 3
+  { f:'b-bert', t:'b-rag',  dash:false, c:'#7c3aed' },
+  { f:'b-bert', t:'b-lora', dash:false, c:'#7c3aed' },
+  { f:'b-vit',  t:'b-peft', dash:true,  c:'#0891b2' },
+  // Section 3 internal
+  { f:'b-lora', t:'b-peft', dash:false, c:'#dc2626' },
+];
+
+function getBox(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  const r = el.getBoundingClientRect();
+  const sy = window.pageYOffset;
+  const sx = window.pageXOffset;
+  return {
+    t: r.top + sy,    b: r.bottom + sy,
+    l: r.left + sx,   r: r.right + sx,
+    cx: r.left + sx + r.width / 2,
+    cy: r.top + sy + r.height / 2,
+    w: r.width,       h: r.height
+  };
+}
+
+function ensureMarker(defs, color) {
+  const id = 'mk' + color.replace('#', '');
+  if (defs.querySelector('#' + id)) return id;
+  const m = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  m.id = id;
+  m.setAttribute('viewBox', '0 0 10 10');
+  m.setAttribute('refX', '8'); m.setAttribute('refY', '5');
+  m.setAttribute('markerWidth', '5'); m.setAttribute('markerHeight', '5');
+  m.setAttribute('orient', 'auto-start-reverse');
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', 'M1 2L8 5L1 8');
+  p.setAttribute('fill', 'none');
+  p.setAttribute('stroke', color);
+  p.setAttribute('stroke-width', '2');
+  p.setAttribute('stroke-linecap', 'round');
+  p.setAttribute('stroke-linejoin', 'round');
+  m.appendChild(p);
+  defs.appendChild(m);
+  return id;
+}
+
+function bezierMid(x1,y1,cx1,cy1,cx2,cy2,x2,y2) {
+  // Point at t=0.5 on cubic bezier
+  const t = 0.5;
+  const mt = 1 - t;
+  return {
+    x: mt*mt*mt*x1 + 3*mt*mt*t*cx1 + 3*mt*t*t*cx2 + t*t*t*x2,
+    y: mt*mt*mt*y1 + 3*mt*mt*t*cy1 + 3*mt*t*t*cy2 + t*t*t*y2
+  };
+}
+
+function drawAll() {
+  const svg = document.getElementById('arrow-svg');
+  const defs = svg.querySelector('defs');
+
+  // Remove old paths/texts
+  [...svg.children].filter(c => c.tagName !== 'defs').forEach(c => c.remove());
+
+  const H = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+  const W = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth);
+  svg.style.width  = W + 'px';
+  svg.style.height = H + 'px';
+
+  for (const cn of CONNS) {
+    const A = getBox(cn.f), B = getBox(cn.t);
+    if (!A || !B) continue;
+
+    const dy = B.cy - A.cy;
+    const dx = B.cx - A.cx;
+
+    let x1, y1, x2, y2, cpx1, cpy1, cpx2, cpy2;
+
+    const goDown  = dy > 50;
+    const goRight = dx > 30;
+    const farLeft = dx < -180;
+    const farRight = dx > 180;
+    const crossSection = Math.abs(dy) > 120;
+
+    if (goDown && farLeft) {
+      // Long diagonal: down + far left (e.g. RNN → Transformer, LN → Transformer)
+      // Route: exit bottom of source → sweep left then down → enter top of target
+      x1 = A.cx; y1 = A.b;
+      x2 = B.cx; y2 = B.t;
+      const midY = (A.b + B.t) / 2;
+      cpx1 = A.cx - Math.abs(dx) * 0.15; cpy1 = midY;
+      cpx2 = B.cx; cpy2 = B.t - Math.abs(dy) * 0.15;
+    } else if (goDown && farRight && crossSection) {
+      // Down + far right cross-section
+      x1 = A.cx; y1 = A.b;
+      x2 = B.cx; y2 = B.t;
+      cpx1 = A.cx + Math.abs(dx) * 0.15; cpy1 = A.b + Math.abs(dy) * 0.4;
+      cpx2 = B.cx; cpy2 = B.t - Math.abs(dy) * 0.15;
+    } else if (goDown && crossSection) {
+      // Mostly vertical cross-section (same ~column)
+      x1 = A.cx + dx * 0.15; y1 = A.b;
+      x2 = B.cx - dx * 0.1;  y2 = B.t;
+      cpx1 = x1; cpy1 = y1 + Math.abs(dy) * 0.4;
+      cpx2 = x2; cpy2 = y2 - Math.abs(dy) * 0.15;
+    } else if (goDown && goRight) {
+      // Down-right within same section area
+      x1 = A.r; y1 = A.cy;
+      x2 = B.cx; y2 = B.t;
+      cpx1 = A.r + 20; cpy1 = A.cy;
+      cpx2 = B.cx; cpy2 = B.t - 30;
+    } else if (goRight) {
+      // Horizontal right (same section row)
+      x1 = A.r; y1 = A.cy;
+      x2 = B.l; y2 = B.cy;
+      const gap = B.l - A.r;
+      cpx1 = x1 + gap * 0.55; cpy1 = y1 - 12;
+      cpx2 = x2 - gap * 0.25; cpy2 = y2 + 12;
+    } else {
+      // Horizontal left
+      x1 = A.l; y1 = A.cy;
+      x2 = B.r; y2 = B.cy;
+      const gap = A.l - B.r;
+      cpx1 = x1 - gap * 0.55; cpy1 = y1 + 12;
+      cpx2 = x2 + gap * 0.25; cpy2 = y2 - 12;
+    }
+
+    const mkId = ensureMarker(defs, cn.c);
+
+    // Draw path
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', `M ${x1} ${y1} C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${x2} ${y2}`);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', cn.c);
+    path.setAttribute('stroke-width', '1.8');
+    path.setAttribute('stroke-opacity', '0.75');
+    if (cn.dash) path.setAttribute('stroke-dasharray', '6 4');
+    path.setAttribute('marker-end', `url(#${mkId})`);
+    svg.appendChild(path);
+
+    // Label at bezier midpoint
+    if (cn.lbl) {
+      const mid = bezierMid(x1,y1,cpx1,cpy1,cpx2,cpy2,x2,y2);
+      const tw = cn.lbl.length * 6 + 10;
+      const th = 14;
+
+      const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bg.setAttribute('x', mid.x - tw/2);
+      bg.setAttribute('y', mid.y - th/2 - 1);
+      bg.setAttribute('width', tw); bg.setAttribute('height', th);
+      bg.setAttribute('rx', '4');
+      bg.setAttribute('fill', '#fff');
+      bg.setAttribute('fill-opacity', '0.88');
+      svg.appendChild(bg);
+
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('x', mid.x);
+      txt.setAttribute('y', mid.y);
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('dominant-baseline', 'middle');
+      txt.setAttribute('font-size', '9.5');
+      txt.setAttribute('font-family', '-apple-system, BlinkMacSystemFont, sans-serif');
+      txt.setAttribute('fill', cn.c);
+      txt.setAttribute('font-weight', '600');
+      txt.textContent = cn.lbl;
+      svg.appendChild(txt);
+    }
+  }
+}
+
+/* ── Arrow on/off toggle ── */
+const ARROWS_KEY_DEFAULT_ON = true;
+let arrowsOn = ARROWS_KEY_DEFAULT_ON;
+
+function applyToggleUI() {
+  const btn = document.getElementById('arrow-toggle');
+  const label = document.getElementById('arrow-toggle-label');
+  const svg = document.getElementById('arrow-svg');
+  btn.classList.toggle('on', arrowsOn);
+  btn.setAttribute('aria-pressed', String(arrowsOn));
+  label.textContent = arrowsOn ? 'On' : 'Off';
+  svg.classList.toggle('hidden', !arrowsOn);
+}
+
+function setupToggle() {
+  const btn = document.getElementById('arrow-toggle');
+  btn.addEventListener('click', () => {
+    arrowsOn = !arrowsOn;
+    applyToggleUI();
+  });
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      arrowsOn = !arrowsOn;
+      applyToggleUI();
+    }
+  });
+  applyToggleUI();
+}
+
+window.addEventListener('load', () => { drawAll(); setupToggle(); });
+window.addEventListener('resize', () => { clearTimeout(window._rt); window._rt = setTimeout(drawAll, 80); });
+</script>
+</body>
+</html>
