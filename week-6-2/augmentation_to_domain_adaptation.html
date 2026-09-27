@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Augmentation에서 Domain Adaptation까지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F6; --stage:#FBFCFE; --fg:#141B2D; --muted:#5B6479; --line:#D5DBE6; --soft:#E6EBF3;
+  --src:#2F5BEA; --src-soft:#DDE6FD; --tgt:#D9820B; --tgt-soft:#FBEBD2;
+  --ok:#1E9E6A; --bad:#D2452F; --code-bg:#F1F4F9;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --hand:"Nanum Pen Script","Comic Sans MS",cursive;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#070B15; --stage:#0F1628; --fg:#E7ECF6; --muted:#98A3BB; --line:#26304A; --soft:#172039;
+    --src:#6F93FF; --src-soft:#1B2A56; --tgt:#F5A83A; --tgt-soft:#3D2A10;
+    --ok:#3CCB8F; --bad:#FF7560; --code-bg:#141D33;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#070B15; --stage:#0F1628; --fg:#E7ECF6; --muted:#98A3BB; --line:#26304A; --soft:#172039;
+  --src:#6F93FF; --src-soft:#1B2A56; --tgt:#F5A83A; --tgt-soft:#3D2A10;
+  --ok:#3CCB8F; --bad:#FF7560; --code-bg:#141D33;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+img,svg,canvas{max-width:100%}
+
+/* ---------- stage ---------- */
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#deck{width:1280px;height:720px;position:relative;background:var(--stage);border-radius:6px;
+  box-shadow:0 30px 80px -40px rgba(10,20,50,.45);transform-origin:center center;overflow:hidden}
+.slide{position:absolute;inset:0;padding:54px 72px 64px;display:none;flex-direction:column}
+.slide.active{display:flex}
+.slide.active .reveal{animation:rise .45s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.slide.active .reveal{animation:none}}
+
+/* ---------- chrome ---------- */
+.part{font-size:14px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.part i{display:inline-block;width:22px;height:4px;border-radius:2px;background:var(--line)}
+.part.p1 i{background:var(--fg)} .part.p2 i{background:var(--tgt)} .part.p3 i{background:var(--src)}
+h1{font-size:62px;line-height:1.12;margin:0;font-weight:700;letter-spacing:-.02em}
+h2{font-size:36px;line-height:1.25;margin:0 0 26px;font-weight:700;letter-spacing:-.015em}
+h3{font-size:20px;margin:0 0 8px;font-weight:700}
+p{margin:0 0 12px;line-height:1.6;font-size:19px}
+.lead{font-size:23px;line-height:1.6;color:var(--fg);max-width:880px}
+.muted{color:var(--muted)}
+.small{font-size:15px;line-height:1.55}
+.tiny{font-size:13px;line-height:1.5;color:var(--muted)}
+.src{color:var(--src)} .tgt{color:var(--tgt)} .ok{color:var(--ok)} .bad{color:var(--bad)}
+b{font-weight:700}
+code,.mono{font-family:var(--mono);font-size:.9em}
+.grid{display:grid;gap:22px}
+.g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+.g23{grid-template-columns:1.1fr .9fr} .g32{grid-template-columns:.85fr 1.15fr}
+.box{border:1px solid var(--line);border-radius:10px;padding:18px 20px;background:var(--stage)}
+.box.fill{background:var(--soft);border-color:transparent}
+.box.s{border-left:5px solid var(--src)} .box.t{border-left:5px solid var(--tgt)}
+.box p{font-size:16px;margin:0 0 6px}
+.box ul{margin:4px 0 0;padding-left:18px}
+.box li{font-size:15.5px;line-height:1.55;margin:2px 0}
+.tag{display:inline-block;font-size:12.5px;padding:2px 8px;border-radius:99px;background:var(--soft);color:var(--muted);margin:2px 4px 2px 0}
+.tag.s{background:var(--src-soft);color:var(--src)} .tag.t{background:var(--tgt-soft);color:var(--tgt)}
+.formula{font-family:"Times New Roman",Georgia,serif;font-size:26px;padding:14px 20px;background:var(--code-bg);border-radius:8px;display:inline-block;letter-spacing:.01em}
+.formula sub,.formula sup{font-size:.62em}
+.formula .c{font-family:var(--sans);font-size:14px;color:var(--muted);margin-left:10px}
+pre{margin:0;font-family:var(--mono);font-size:14px;line-height:1.6;background:var(--code-bg);padding:16px 18px;border-radius:8px;overflow-x:auto}
+pre .k{color:var(--src)} pre .cm{color:var(--muted)} pre .n{color:var(--tgt)}
+table{border-collapse:collapse;width:100%;font-size:15.5px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;line-height:1.45}
+th{font-weight:700;color:var(--muted);font-size:14px}
+.tablewrap{overflow-x:auto}
+.foot{position:absolute;left:72px;right:72px;bottom:22px;display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)}
+.cite{font-size:12.5px;color:var(--muted)}
+
+/* controls */
+input[type=range]{width:100%;accent-color:var(--src)}
+.ctl{display:grid;grid-template-columns:92px 1fr 48px;align-items:center;gap:10px;font-size:14.5px;margin:6px 0}
+.ctl output{font-family:var(--mono);font-size:13px;color:var(--muted);text-align:right}
+button.b{font:inherit;font-size:14px;padding:7px 14px;border-radius:7px;border:1px solid var(--line);background:var(--stage);color:var(--fg);cursor:pointer}
+button.b:hover{border-color:var(--src)}
+button.b.on{background:var(--src);border-color:var(--src);color:#fff}
+button:focus-visible,input:focus-visible{outline:3px solid var(--tgt);outline-offset:2px}
+canvas.px{image-rendering:pixelated;border-radius:6px;display:block}
+
+/* nav */
+#nav{position:fixed;right:16px;bottom:14px;display:flex;gap:6px;align-items:center;z-index:5;
+  background:var(--stage);border:1px solid var(--line);border-radius:10px;padding:5px 6px;font-size:13px;color:var(--muted)}
+#nav button{font:inherit;background:none;border:0;color:var(--fg);cursor:pointer;padding:4px 9px;border-radius:6px;font-size:15px}
+#nav button:hover{background:var(--soft)}
+#count{font-family:var(--mono);min-width:58px;text-align:center}
+#bar{position:fixed;left:0;top:0;height:3px;background:linear-gradient(90deg,var(--src),var(--tgt));z-index:6;transition:width .25s}
+
+/* title slide */
+.title-wrap{margin:auto 0;display:grid;grid-template-columns:1.25fr .75fr;gap:40px;align-items:center}
+.flow{display:flex;flex-direction:column;gap:10px}
+.flow div{padding:14px 18px;border-radius:10px;font-size:18px;font-weight:500}
+.flow .f1{background:var(--soft)}
+.flow .f2{background:var(--tgt-soft);color:var(--tgt)}
+.flow .f3{background:var(--src-soft);color:var(--src)}
+.flow small{display:block;font-weight:400;font-size:13.5px;color:var(--muted);margin-top:2px}
+
+/* section divider */
+.divider{justify-content:center}
+.divider .num{font-size:120px;font-weight:300;line-height:1;margin-bottom:16px}
+.divider h1{font-size:56px}
+.divider .q{margin-top:24px;font-size:24px;color:var(--muted);max-width:820px;line-height:1.55}
+
+.aug-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.aug-grid figure{margin:0;text-align:center}
+.aug-grid figcaption{font-size:12px;color:var(--muted);margin-top:4px;font-family:var(--mono)}
+.gal figure{margin:0}
+.gal figcaption{margin-top:8px;font-size:15px;font-weight:500}
+.gal figcaption span{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.labelbar{display:flex;align-items:center;gap:8px;font-size:14px;margin:4px 0}
+.labelbar .track{flex:1;height:14px;border-radius:4px;background:var(--soft);overflow:hidden}
+.labelbar .track div{height:100%;background:var(--src)}
+.labelbar .track.t div{background:var(--tgt)}
+.metric{font-size:40px;font-weight:700;font-family:var(--mono);line-height:1.1}
+.check li{margin:6px 0}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="viewport"><div id="deck">
+
+<!-- 1 TITLE -->
+<section class="slide">
+  <div class="title-wrap">
+    <div class="reveal">
+      <p class="muted" style="font-size:17px;margin-bottom:18px">지난 실험 이어보기 · CNN과 invariance</p>
+      <h1>Data Augmentation에서<br>Domain Adaptation까지</h1>
+      <p class="lead muted" style="margin-top:22px">모델에게 “어떤 변화에는 둔감해도 된다”를 가르치는 방법,<br>그리고 그것만으로는 부족할 때 할 수 있는 것</p>
+    </div>
+    <div class="flow reveal">
+      <div class="f1">Data Augmentation<small>우리가 아는 변화를 데이터로 주입</small></div>
+      <div class="f2">Distribution Shift<small>학습 때 본 세상 ≠ 실제로 쓸 세상</small></div>
+      <div class="f3">Domain Adaptation<small>target domain에 모델을 맞추기</small></div>
+    </div>
+  </div>
+  <div class="foot"><span>← → 키 또는 스페이스로 이동 · F 전체화면 · T 테마</span><span></span></div>
+</section>
+
+<!-- 2 RECAP -->
+<section class="slide">
+  <div class="part p1"><i></i>복습</div>
+  <h2>CNN은 translation에 “어느 정도만” 강했습니다</h2>
+  <div class="grid g2" style="align-items:start">
+    <div>
+      <div class="box fill" style="margin-bottom:14px">
+        <h3>Convolution → equivariance</h3>
+        <p>입력이 이동하면 feature map도 같이 이동합니다.</p>
+        <div class="formula" style="font-size:22px">f(T<sub>δ</sub>x) = T<sub>δ</sub> f(x)</div>
+      </div>
+      <div class="box fill" style="margin-bottom:14px">
+        <h3>Pooling → 국소적인 invariance</h3>
+        <p>작은 이동은 흡수하지만, stride·padding·경계 때문에 큰 이동에는 출력이 흔들립니다.</p>
+      </div>
+      <div class="box s">
+        <h3>그래서 마지막 실험: 데이터를 움직였다</h3>
+        <p>“위치가 달라져도 이건 같은 숫자다”를 모델이 직접 보게 함 → 우리가 원하는 <b>invariance</b></p>
+        <div class="formula" style="font-size:22px">g(T<sub>δ</sub>x) ≈ g(x)</div>
+      </div>
+    </div>
+    <div class="box" style="text-align:center">
+      <svg viewBox="0 0 520 420" width="100%" role="img" aria-label="equivariance와 invariance 비교 다이어그램">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+        <g font-family="var(--sans)" font-size="14" fill="currentColor">
+          <text x="20" y="26" font-weight="700">입력</text><text x="190" y="26" font-weight="700">feature map</text><text x="390" y="26" font-weight="700">예측</text>
+          <!-- row 1 -->
+          <rect x="20" y="44" width="110" height="110" rx="6" fill="#000"/>
+          <text x="52" y="126" font-family="var(--hand)" font-size="80" fill="#fff">7</text>
+          <rect x="190" y="54" width="90" height="90" rx="4" fill="none" stroke="var(--line)"/>
+          <rect x="204" y="68" width="30" height="40" rx="3" fill="var(--src)" opacity=".75"/>
+          <text x="390" y="106" font-size="30" font-weight="700" fill="var(--src)">“7”</text>
+          <line x1="138" y1="99" x2="182" y2="99" stroke="currentColor" marker-end="url(#ar)" color="var(--muted)"/>
+          <line x1="290" y1="99" x2="380" y2="99" stroke="currentColor" marker-end="url(#ar)" color="var(--muted)"/>
+          <!-- row 2 -->
+          <rect x="20" y="224" width="110" height="110" rx="6" fill="#000"/>
+          <text x="72" y="320" font-family="var(--hand)" font-size="80" fill="#fff">7</text>
+          <rect x="190" y="234" width="90" height="90" rx="4" fill="none" stroke="var(--line)"/>
+          <rect x="226" y="262" width="30" height="40" rx="3" fill="var(--src)" opacity=".75"/>
+          <text x="390" y="286" font-size="30" font-weight="700" fill="var(--src)">“7”</text>
+          <line x1="138" y1="279" x2="182" y2="279" stroke="currentColor" marker-end="url(#ar)" color="var(--muted)"/>
+          <line x1="290" y1="279" x2="380" y2="279" stroke="currentColor" marker-end="url(#ar)" color="var(--muted)"/>
+          <text x="20" y="200" fill="var(--muted)" font-size="13">T<tspan baseline-shift="sub" font-size="10">δ</tspan> : 몇 pixel 이동</text>
+          <text x="190" y="364" fill="var(--muted)" font-size="13">같이 이동 = equivariant</text>
+          <text x="390" y="364" fill="var(--muted)" font-size="13">그대로 = invariant</text>
+          <text x="20" y="404" font-size="13" fill="var(--muted)">구조가 주는 것(equivariance)과 우리가 원하는 것(invariance)은 다릅니다.</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 3 PERSPECTIVE -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 · Data Augmentation</div>
+  <h2>Augmentation은 데이터 개수 늘리기가 아니라<br>“무엇에 둔감해야 하는지”에 대한 약속입니다</h2>
+  <div class="grid g2">
+    <div>
+      <p class="lead" style="font-size:20px">변환 집합 𝒯 를 정하는 순간, 우리는 모델에게 이렇게 말하는 셈입니다.</p>
+      <div class="formula" style="margin:6px 0 18px">y(T(x)) = y(x),&nbsp;&nbsp; ∀ T ∈ 𝒯</div>
+      <p style="font-size:18px">학습 목표는 원래 데이터의 risk가 아니라, 변환된 데이터에 대한 기대 risk가 됩니다.</p>
+      <div class="formula" style="font-size:23px">min<sub>θ</sub> 𝔼<sub>(x,y)</sub> 𝔼<sub>T∼𝒯</sub> [ ℓ( f<sub>θ</sub>(T(x)), y ) ]</div>
+    </div>
+    <div class="grid" style="gap:14px">
+      <div class="box fill"><h3>관점 1 · 정규화(regularization)</h3><p>같은 이미지를 반복해서 외우지 못하게 하여 overfitting을 줄입니다.</p></div>
+      <div class="box s"><h3>관점 2 · 사전지식(prior) 주입</h3><p>“회전·조명·위치는 label과 무관하다”는 도메인 지식을 architecture 대신 데이터로 전달합니다.</p></div>
+      <div class="box fill"><h3>관점 3 · 분포 넓히기</h3><p>학습 분포의 support를 넓혀서, 테스트에서 만날 법한 변화를 미리 보여줍니다. → 이 관점이 뒤의 domain shift로 이어집니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 TAXONOMY -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 · Data Augmentation</div>
+  <h2>Augmentation의 종류</h2>
+  <div class="grid g3" style="gap:16px">
+    <div class="box"><h3>Geometric</h3><p class="small">위치·크기·방향이 달라도 같은 물체</p>
+      <span class="tag">translate</span><span class="tag">rotate</span><span class="tag">scale / crop</span><span class="tag">flip</span><span class="tag">elastic</span></div>
+    <div class="box"><h3>Photometric</h3><p class="small">카메라·조명이 달라도 같은 물체</p>
+      <span class="tag">brightness</span><span class="tag">contrast</span><span class="tag">color jitter</span><span class="tag">gamma</span><span class="tag">grayscale</span></div>
+    <div class="box"><h3>Degradation</h3><p class="small">화질이 나빠져도 같은 물체</p>
+      <span class="tag">Gaussian noise</span><span class="tag">blur</span><span class="tag">JPEG</span><span class="tag">downsample</span></div>
+    <div class="box"><h3>Occlusion / Erasing</h3><p class="small">일부가 가려져도 알아볼 수 있어야 함</p>
+      <span class="tag">Cutout</span><span class="tag">Random Erasing</span><span class="tag">GridMask</span>
+      <p class="cite" style="margin-top:6px">DeVries &amp; Taylor 2017 · Zhong et al. 2020</p></div>
+    <div class="box"><h3>Mixing</h3><p class="small">두 샘플을 섞고 label도 섞음 → 결정경계를 부드럽게</p>
+      <span class="tag">Mixup</span><span class="tag">CutMix</span><span class="tag">Manifold Mixup</span>
+      <p class="cite" style="margin-top:6px">Zhang et al. 2018 · Yun et al. 2019</p></div>
+    <div class="box"><h3>Learned / Generative</h3><p class="small">정책을 자동 탐색하거나 생성모델로 합성</p>
+      <span class="tag">AutoAugment</span><span class="tag">RandAugment</span><span class="tag">TrivialAugment</span><span class="tag">AugMix</span><span class="tag">diffusion 합성</span>
+      <p class="cite" style="margin-top:6px">Cubuk et al. 2019, 2020 · Hendrycks et al. 2020</p></div>
+  </div>
+</section>
+
+<!-- 5 INTERACTIVE AUG -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 · 직접 해보기</div>
+  <h2>같은 “3”을 여러 방식으로 흔들어보기</h2>
+  <div class="grid g32">
+    <div>
+      <div style="display:flex;gap:18px;align-items:flex-start">
+        <div><canvas id="augOrig" class="px" width="168" height="168"></canvas><div class="tiny" style="margin-top:4px">원본 (28×28)</div></div>
+        <div><canvas id="augOut" class="px" width="168" height="168"></canvas><div class="tiny" style="margin-top:4px">변환 결과 · label은 그대로 3</div></div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="ctl"><label for="aTx">이동 x</label><input id="aTx" type="range" min="-8" max="8" value="0"><output></output></div>
+        <div class="ctl"><label for="aTy">이동 y</label><input id="aTy" type="range" min="-8" max="8" value="0"><output></output></div>
+        <div class="ctl"><label for="aRot">회전</label><input id="aRot" type="range" min="-45" max="45" value="0"><output></output></div>
+        <div class="ctl"><label for="aSc">크기</label><input id="aSc" type="range" min="60" max="140" value="100"><output></output></div>
+        <div class="ctl"><label for="aBr">밝기</label><input id="aBr" type="range" min="20" max="160" value="100"><output></output></div>
+        <div class="ctl"><label for="aNz">노이즈</label><input id="aNz" type="range" min="0" max="100" value="0"><output></output></div>
+        <div class="ctl"><label for="aEr">Erasing</label><input id="aEr" type="range" min="0" max="14" value="0"><output></output></div>
+      </div>
+      <button class="b" id="augReset" style="margin-top:6px">원래대로</button>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h3 style="margin:0">RandAugment 스타일 무작위 샘플</h3>
+        <button class="b on" id="augRand">다시 뽑기</button>
+      </div>
+      <div class="aug-grid" id="augGrid"></div>
+      <p class="small muted" style="margin-top:14px">매 epoch마다 모델은 같은 이미지를 조금씩 다르게 봅니다. 모델 입장에서 “이것들은 모두 3”이라는 사실이 곧 invariance에 대한 학습 신호입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 MIXUP / CUTMIX -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 · 직접 해보기</div>
+  <h2>Mixup과 CutMix: 입력뿐 아니라 label도 섞습니다</h2>
+  <div class="grid g2">
+    <div class="box">
+      <h3>Mixup</h3>
+      <div class="formula" style="font-size:20px;margin-bottom:12px">x̃ = λx<sub>a</sub> + (1−λ)x<sub>b</sub> ,&nbsp; ỹ = λy<sub>a</sub> + (1−λ)y<sub>b</sub></div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <canvas id="mixA" class="px" width="84" height="84"></canvas><span style="font-size:22px">+</span>
+        <canvas id="mixB" class="px" width="84" height="84"></canvas><span style="font-size:22px">=</span>
+        <canvas id="mixOut" class="px" width="140" height="140"></canvas>
+      </div>
+      <div style="margin-top:12px">
+        <div class="labelbar"><span style="width:26px">“3”</span><div class="track"><div id="mixL3"></div></div><span class="mono" id="mixV3" style="width:42px"></span></div>
+        <div class="labelbar"><span style="width:26px">“8”</span><div class="track t"><div id="mixL8"></div></div><span class="mono" id="mixV8" style="width:42px"></span></div>
+      </div>
+    </div>
+    <div class="box">
+      <h3>CutMix</h3>
+      <div class="formula" style="font-size:20px;margin-bottom:12px">x̃ = M⊙x<sub>a</sub> + (1−M)⊙x<sub>b</sub> ,&nbsp; λ = 잘라낸 면적 비율</div>
+      <div style="display:flex;gap:16px;align-items:center">
+        <canvas id="cutOut" class="px" width="140" height="140"></canvas>
+        <p class="small muted" style="margin:0">정보가 없는 검은 패치 대신(Cutout) 다른 샘플의 일부를 붙여 넣어, 가려진 영역도 학습 신호로 씁니다.</p>
+      </div>
+      <div style="margin-top:12px">
+        <div class="labelbar"><span style="width:26px">“3”</span><div class="track"><div id="cutL3"></div></div><span class="mono" id="cutV3" style="width:42px"></span></div>
+        <div class="labelbar"><span style="width:26px">“8”</span><div class="track t"><div id="cutL8"></div></div><span class="mono" id="cutV8" style="width:42px"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="ctl" style="max-width:560px;margin-top:18px;grid-template-columns:110px 1fr 48px"><label for="mixLam">λ (3의 비율)</label><input id="mixLam" type="range" min="0" max="100" value="65"><output></output></div>
+</section>
+
+<!-- 7 CAUTION -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 · Data Augmentation</div>
+  <h2>주의: 변환이 label을 바꾸면 안 됩니다</h2>
+  <div class="grid g2">
+    <div class="box">
+      <h3>숫자 “6”을 회전시키면?</h3>
+      <div style="display:flex;gap:18px;align-items:center;margin:10px 0">
+        <canvas id="sixCv" class="px" width="140" height="140"></canvas>
+        <div style="flex:1">
+          <div class="ctl" style="grid-template-columns:50px 1fr 48px"><label for="sixRot">회전</label><input id="sixRot" type="range" min="0" max="180" value="0"><output></output></div>
+          <p id="sixMsg" style="font-size:18px;margin-top:10px"></p>
+        </div>
+      </div>
+      <p class="small muted">MNIST에서 ±15° 정도는 안전하지만, 180° 회전은 “6 ↔ 9”를 만들어 label noise가 됩니다.</p>
+    </div>
+    <div class="grid" style="gap:12px">
+      <div class="box t"><h3>이런 경우들을 조심하세요</h3>
+        <ul>
+          <li><b>좌우 반전</b>: 문자·표지판 인식, 흉부 X-ray의 좌/우 위치(내장 역위)</li>
+          <li><b>색 변환</b>: 과일 숙성도, 피부 병변, 신호등 색 분류</li>
+          <li><b>crop</b>: 물체가 잘려 나가면 “개가 있다”는 label이 틀려짐</li>
+          <li><b>speed / pitch</b>: 화자 인식에서는 목소리 특성 자체가 label</li>
+        </ul></div>
+      <div class="box fill"><h3>핵심 질문</h3><p>“이 변환이 일어나도 <b>정답이 그대로인가?</b>” 좋은 augmentation은 모델이 아니라 <b>task</b>가 결정합니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 DOMAIN-SPECIFIC -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 · Data Augmentation</div>
+  <h2>도메인마다 “불변이어야 할 것”이 다릅니다</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th style="width:15%">분야</th><th style="width:33%">대표 augmentation</th><th>의도하는 invariance</th></tr></thead>
+    <tbody>
+      <tr><td><b>자연 이미지</b></td><td>RandomResizedCrop, flip, color jitter</td><td>촬영 구도, 조명, 카메라 색감</td></tr>
+      <tr><td><b>의료 영상</b></td><td>elastic deformation, intensity scaling, bias field</td><td>장기 모양의 개인차, 스캐너별 밝기 차이 (U-Net 논문에서 elastic deformation 강조)</td></tr>
+      <tr><td><b>음성</b></td><td>SpecAugment (time/frequency masking), 잡음·잔향 추가</td><td>배경 소음, 마이크 특성, 발화 속도 (Park et al. 2019)</td></tr>
+      <tr><td><b>텍스트</b></td><td>back-translation, 동의어 치환, 토큰 dropout</td><td>같은 의미의 다른 표현</td></tr>
+      <tr><td><b>시계열·센서</b></td><td>jittering, scaling, time warping, window slicing</td><td>센서 오차, 동작 속도 차이</td></tr>
+      <tr><td><b>원격탐사</b></td><td>90° 회전, 수직 반전, 계절 색 변화</td><td>위성 촬영 방향, 계절·대기 조건</td></tr>
+      <tr><td><b>자기지도학습</b></td><td>강한 crop + color distortion 두 view</td><td>augmentation 자체가 표현 학습의 목표를 정의 (SimCLR, Chen et al. 2020)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 9 AUTO + TTA -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 · Data Augmentation</div>
+  <h2>더 나아가: 정책을 자동으로 고르고, 테스트에서도 쓰기</h2>
+  <div class="grid g2">
+    <div class="box">
+      <h3>Automated augmentation</h3>
+      <ul>
+        <li><b>AutoAugment</b>: 강화학습으로 (연산, 확률, 강도) 정책 탐색. 효과적이지만 탐색 비용이 큼</li>
+        <li><b>RandAugment</b>: 탐색 공간을 N(연산 개수), M(강도) 두 개로 축소</li>
+        <li><b>TrivialAugment</b>: 이미지마다 연산 하나를 무작위로 골라 적용, 하이퍼파라미터 거의 없음</li>
+        <li><b>AugMix</b>: 여러 augmentation chain을 섞고 원본과의 예측 일관성(JS divergence)을 강제 → corruption robustness 향상</li>
+      </ul>
+      <p class="cite" style="margin-top:8px">torchvision.transforms.v2 에 대부분 구현되어 있습니다.</p>
+    </div>
+    <div class="box">
+      <h3>Test-Time Augmentation (TTA)</h3>
+      <svg viewBox="0 0 460 170" width="100%" aria-label="TTA 흐름">
+        <g font-family="var(--sans)" font-size="13" fill="currentColor">
+          <rect x="0" y="62" width="70" height="46" rx="6" fill="var(--soft)"/><text x="18" y="90">test x</text>
+          <g fill="var(--src-soft)"><rect x="110" y="10" width="80" height="34" rx="6"/><rect x="110" y="68" width="80" height="34" rx="6"/><rect x="110" y="126" width="80" height="34" rx="6"/></g>
+          <text x="126" y="32">원본</text><text x="126" y="90">flip</text><text x="126" y="148">crop</text>
+          <g stroke="var(--muted)" fill="none"><path d="M70 85 L110 27"/><path d="M70 85 L110 85"/><path d="M70 85 L110 143"/>
+          <path d="M190 27 L260 85"/><path d="M190 85 L260 85"/><path d="M190 143 L260 85"/></g>
+          <rect x="260" y="62" width="90" height="46" rx="6" fill="var(--src)"/><text x="276" y="90" fill="#fff">f(·) 평균</text>
+          <path d="M350 85 L385 85" stroke="var(--muted)"/><text x="392" y="90" font-weight="700">ŷ</text>
+        </g>
+      </svg>
+      <p class="small">여러 view의 예측을 평균해 분산을 줄입니다. 추론 비용이 N배가 되는 대신, 별도 학습 없이 성능이 약간 오르는 경우가 많습니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 LIMITS -->
+<section class="slide">
+  <div class="part p1"><i></i>Part 1 → Part 2</div>
+  <h2>Augmentation의 한계: 우리가 <u>식으로 쓸 수 있는</u> 변화만 흉내 낼 수 있습니다</h2>
+  <div class="grid g2" style="align-items:center">
+    <div>
+      <div class="box fill" style="margin-bottom:14px"><h3>잘 되는 경우</h3><p>이동, 회전, 밝기처럼 변환 T를 명시적으로 정의할 수 있는 변화</p></div>
+      <div class="box t"><h3>어려운 경우</h3>
+        <ul>
+          <li>병원 A의 CT 장비 → 병원 B의 장비 (재구성 커널, 노이즈 특성)</li>
+          <li>게임 엔진으로 렌더링한 도로 → 실제 블랙박스 영상</li>
+          <li>손글씨 흑백 숫자 → 번지수 사진 속 컬러 숫자</li>
+        </ul>
+        <p style="margin-top:8px">“무엇이 달라지는지”를 T로 정확히 적기 어렵고, target 데이터가 있어도 <b>label이 없는</b> 경우가 많습니다.</p>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <svg viewBox="0 0 420 330" width="100%" aria-label="augmentation이 넓힌 분포와 target 분포">
+        <g font-family="var(--sans)" font-size="14">
+          <ellipse cx="150" cy="170" rx="70" ry="55" fill="var(--src)" opacity=".85"/>
+          <ellipse cx="150" cy="170" rx="125" ry="100" fill="var(--src)" opacity=".15" stroke="var(--src)" stroke-dasharray="6 5"/>
+          <ellipse cx="320" cy="95" rx="70" ry="50" fill="var(--tgt)" opacity=".8"/>
+          <text x="118" y="175" fill="#fff" font-weight="700">source</text>
+          <text x="60" y="300" fill="var(--src)">augmentation으로 넓힌 영역</text>
+          <text x="290" y="100" fill="#fff" font-weight="700">target</text>
+          <text x="250" y="170" fill="var(--muted)" font-size="13">여전히 닿지 않는 부분</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 11 DIVIDER 2 -->
+<section class="slide divider">
+  <div class="num tgt reveal">2</div>
+  <h1 class="reveal">Distribution Shift</h1>
+  <p class="q reveal">학습할 때 본 데이터의 분포와, 실제로 사용할 데이터의 분포가 다르면 어떤 일이 일어날까?</p>
+</section>
+
+<!-- 12 DEFINITION + GALLERY -->
+<section class="slide">
+  <div class="part p2"><i></i>Part 2 · Distribution Shift</div>
+  <h2>같은 “숫자 5”, 다른 domain</h2>
+  <div class="grid g4 gal" style="gap:18px">
+    <figure><canvas id="dMnist" class="px" width="220" height="220" style="width:100%"></canvas><figcaption>MNIST<span>흑백 손글씨, 중앙 정렬</span></figcaption></figure>
+    <figure><canvas id="dUsps" class="px" width="220" height="220" style="width:100%"></canvas><figcaption>USPS<span>16×16, 꽉 채운 글씨</span></figcaption></figure>
+    <figure><canvas id="dMnistm" class="px" width="220" height="220" style="width:100%"></canvas><figcaption>MNIST-M<span>MNIST + 컬러 사진 패치 배경</span></figcaption></figure>
+    <figure><canvas id="dSvhn" class="px" width="220" height="220" style="width:100%"></canvas><figcaption>SVHN<span>번지수 사진, 인쇄체, 주변 숫자</span></figcaption></figure>
+  </div>
+  <div style="display:flex;gap:28px;align-items:center;margin-top:22px">
+    <div class="formula">P<sub class="src">S</sub>(x, y) ≠ P<sub class="tgt">T</sub>(x, y)</div>
+    <p style="margin:0;max-width:640px"><b class="src">Source domain</b>: 학습에 쓴 데이터 · <b class="tgt">Target domain</b>: 실제로 적용할 데이터. <br>MNIST로 학습한 모델은 SVHN에서 성능이 크게 떨어지며, 이것이 DA 논문의 대표적인 벤치마크입니다.</p>
+  </div>
+  <p class="tiny" style="margin-top:10px">※ 위 이미지는 각 데이터셋의 특징을 흉내 내 브라우저에서 절차적으로 그린 예시입니다. <button class="b" id="galRedraw" style="font-size:12px;padding:3px 10px;margin-left:6px">다른 샘플</button></p>
+</section>
+
+<!-- 13 REAL WORLD -->
+<section class="slide">
+  <div class="part p2"><i></i>Part 2 · Distribution Shift</div>
+  <h2>현실에서 domain shift가 생기는 곳</h2>
+  <div class="grid g3" style="gap:16px">
+    <div class="box"><h3>📷 센서·카메라</h3><p class="small">DSLR로 찍은 상품 사진 → 웹캠 사진. 해상도, 노이즈, 색감이 모두 다름</p><span class="tag">Office-31</span><span class="tag">Office-Home</span></div>
+    <div class="box"><h3>🌧 날씨·조명·시간대</h3><p class="small">맑은 낮 주행 데이터 → 밤, 비, 안개. 같은 도로도 전혀 다르게 보임</p><span class="tag">ACDC</span><span class="tag">BDD100K</span></div>
+    <div class="box"><h3>🏥 병원·장비</h3><p class="small">병원마다 염색 프로토콜, 스캐너 제조사, 촬영 파라미터가 다름</p><span class="tag">Camelyon17-WILDS</span></div>
+    <div class="box"><h3>🎮 Synthetic → Real</h3><p class="small">게임 엔진·시뮬레이터로 무한히 만든 label 데이터 → 실제 영상</p><span class="tag">GTA5 → Cityscapes</span><span class="tag">VisDA</span></div>
+    <div class="box"><h3>🎨 스타일</h3><p class="small">사진으로 학습 → 스케치, 클립아트, 그림에서 사용</p><span class="tag">PACS</span><span class="tag">DomainNet</span></div>
+    <div class="box"><h3>⏳ 시간·지역</h3><p class="small">작년 데이터 → 올해 데이터, 한 나라의 위성사진 → 다른 대륙</p><span class="tag">FMoW-WILDS</span><span class="tag">iWildCam</span></div>
+  </div>
+  <p class="small muted" style="margin-top:16px">공통점: 사람 눈에는 “같은 과제”인데, 모델이 학습 중에 우연히 의존한 단서(spurious cue)가 target에서는 사라지거나 바뀝니다.</p>
+</section>
+
+<!-- 14 TYPES -->
+<section class="slide">
+  <div class="part p2"><i></i>Part 2 · Distribution Shift</div>
+  <h2>P(x, y) = P(x)·P(y|x) = P(y)·P(x|y) — 어느 항이 바뀌었나?</h2>
+  <div class="grid g3">
+    <div class="box">
+      <h3>Covariate shift</h3>
+      <svg id="svCov" viewBox="0 0 300 130" width="100%"></svg>
+      <p class="small"><b>P(x)</b>가 바뀌고 <b>P(y|x)</b>는 유지</p>
+      <p class="small muted">예: 낮 사진 → 밤 사진. “자동차”의 정의는 같지만 입력의 모습이 달라짐. <b>DA가 주로 다루는 가정</b></p>
+    </div>
+    <div class="box">
+      <h3>Label shift (prior shift)</h3>
+      <svg id="svLab" viewBox="0 0 300 130" width="100%"></svg>
+      <p class="small"><b>P(y)</b>가 바뀌고 <b>P(x|y)</b>는 유지</p>
+      <p class="small muted">예: 독감 유행기에 양성 비율 급증. 증상의 모습은 같지만 클래스 비율이 달라짐. → 예측 확률 재보정(re-weighting)</p>
+    </div>
+    <div class="box">
+      <h3>Concept shift</h3>
+      <svg id="svCon" viewBox="0 0 300 130" width="100%"></svg>
+      <p class="small"><b>P(y|x)</b> 자체가 바뀜</p>
+      <p class="small muted">예: 스팸의 기준 변화, 병원마다 다른 진단 기준. 같은 x에도 정답이 달라지므로 target label 없이는 해결 불가</p>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top:14px">실제로는 섞여서 나타납니다. Subpopulation shift(소수 그룹 비율 변화), temporal drift 등도 함께 연구됩니다.</p>
+</section>
+
+<!-- 15 DIAGNOSE -->
+<section class="slide">
+  <div class="part p2"><i></i>Part 2 · Distribution Shift</div>
+  <h2>Shift가 있는지 어떻게 알 수 있을까?</h2>
+  <div class="grid g2">
+    <div class="grid" style="gap:14px">
+      <div class="box s"><h3>Domain classifier test</h3><p>source vs target을 구분하는 분류기를 학습. 정확도가 50%보다 크게 높으면 두 분포는 구분 가능 = shift 존재</p></div>
+      <div class="box fill"><h3>통계적 거리</h3><p>feature 공간에서 MMD, Fréchet distance, KL 등으로 두 분포 거리 측정</p></div>
+      <div class="box fill"><h3>모델 신호 모니터링</h3><p>평균 confidence 하락, 예측 entropy 증가, 예측 클래스 비율 변화</p></div>
+    </div>
+    <div class="box">
+      <h3>“흔들어보는” 벤치마크</h3>
+      <ul>
+        <li><b>ImageNet-C</b>: noise, blur, weather, digital 계열 corruption을 5단계 강도로 적용 (Hendrycks &amp; Dietterich 2019)</li>
+        <li><b>ImageNet-R / Sketch</b>: 렌더링·스케치 스타일</li>
+        <li><b>WILDS</b>: 병원, 지역, 시간, 사용자 등 실제 배포 환경의 shift 모음 (Koh et al. 2021)</li>
+        <li><b>DomainBed</b>: domain generalization 방법들을 같은 조건에서 비교 (Gulrajani &amp; Lopez-Paz 2021)</li>
+      </ul>
+      <p class="small muted" style="margin-top:10px">DomainBed의 교훈: 공정하게 튜닝한 ERM(그냥 모아서 학습) + 좋은 augmentation이 생각보다 강한 baseline입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 16 DIVIDER 3 -->
+<section class="slide divider">
+  <div class="num src reveal">3</div>
+  <h1 class="reveal">Domain Adaptation</h1>
+  <p class="q reveal">Augmentation만으로 해결하기 어려운 distribution shift는 어떻게 다룰 수 있을까?</p>
+</section>
+
+<!-- 17 SETTINGS -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · Domain Adaptation</div>
+  <h2>학습 때 무엇을 볼 수 있느냐에 따라 문제가 달라집니다</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th style="width:26%">설정</th><th style="width:15%">Source 데이터</th><th style="width:18%">Target 데이터</th><th>예시 상황</th></tr></thead>
+    <tbody>
+      <tr><td><b>Supervised / Fine-tuning</b></td><td class="src">label O</td><td class="tgt">label O (소량)</td><td>새 병원 데이터 100장에 전문의 label을 받은 경우</td></tr>
+      <tr><td><b>Semi-supervised DA</b></td><td class="src">label O</td><td class="tgt">소량 label + 다수 unlabeled</td><td>일부만 검수한 새 공장 라인 이미지</td></tr>
+      <tr style="background:var(--src-soft)"><td><b>Unsupervised DA (UDA)</b></td><td class="src">label O</td><td class="tgt">unlabeled만</td><td>시뮬레이터 label + 실제 주행 영상. <b>가장 많이 연구되는 설정</b></td></tr>
+      <tr><td><b>Source-free DA</b></td><td class="muted">학습된 모델만</td><td class="tgt">unlabeled</td><td>개인정보 때문에 원본 데이터를 넘겨줄 수 없는 경우</td></tr>
+      <tr><td><b>Test-time adaptation</b></td><td class="muted">학습된 모델만</td><td class="tgt">추론 중 들어오는 batch</td><td>배포 후 날씨가 바뀌는 상황에서 실시간 적응</td></tr>
+      <tr><td><b>Domain generalization</b></td><td class="src">여러 source domain</td><td class="muted">전혀 못 봄</td><td>아직 존재하지 않는 병원에도 잘 동작해야 하는 경우</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="small muted" style="margin-top:14px">라벨 공간이 다를 때: Partial DA (target 클래스 ⊂ source), Open-set DA (target에 모르는 클래스 존재), Universal DA</p>
+</section>
+
+<!-- 18 THEORY -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · Domain Adaptation</div>
+  <h2>이론적 직관: target error는 세 가지로 묶입니다</h2>
+  <div class="formula" style="font-size:30px;margin-bottom:24px">ε<sub class="tgt">T</sub>(h) ≤ ε<sub class="src">S</sub>(h) + ½ d<sub>ℋΔℋ</sub>(𝒟<sub class="src">S</sub>, 𝒟<sub class="tgt">T</sub>) + λ*<span class="c">Ben-David et al., 2010</span></div>
+  <div class="grid g3">
+    <div class="box s"><h3>① Source error</h3><p>source에서 잘 맞혀야 함. label이 있으니 일반적인 supervised learning으로 줄일 수 있음</p></div>
+    <div class="box t"><h3>② Domain divergence</h3><p>분류기 입장에서 두 domain이 얼마나 구분 가능한가. <b>feature 공간에서 이 값을 줄이는 것</b>이 대부분 DA 방법의 핵심</p></div>
+    <div class="box fill"><h3>③ λ* : 이상적 공동 오차</h3><p>두 domain 모두에서 잘 맞히는 h가 존재하는가. 이게 크면(예: concept shift) 어떤 정렬로도 해결되지 않음</p></div>
+  </div>
+  <p style="margin-top:22px">→ 전략: <b>label로 ①을 줄이고, unlabeled target으로 ②를 줄인다.</b> 단, 정렬 과정에서 ③이 커지지 않도록 주의해야 합니다. 다음 슬라이드에서 직접 확인해봅니다.</p>
+</section>
+
+<!-- 19 ALIGN DEMO -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · 직접 해보기</div>
+  <h2>Feature 공간에서 두 domain 정렬하기</h2>
+  <div class="grid g23">
+    <div class="box" style="padding:10px"><canvas id="alCv" width="640" height="480" style="width:100%;display:block;border-radius:6px"></canvas></div>
+    <div>
+      <p class="small">분류기(점선)는 <b class="src">source</b>로만 학습해 고정했습니다. <b class="tgt">target</b>은 label 없이 feature만 보입니다.</p>
+      <div class="ctl" style="grid-template-columns:70px 1fr 48px;margin:14px 0"><label for="alT">정렬 정도</label><input id="alT" type="range" min="0" max="100" value="0"><output></output></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+        <button class="b on" id="alGood">올바른 정렬</button>
+        <button class="b" id="alBad">클래스가 뒤바뀐 정렬</button>
+        <button class="b" id="alShow">target label 보기</button>
+      </div>
+      <div class="grid g2" style="gap:12px">
+        <div class="box fill"><div class="tiny">Target 정확도</div><div class="metric" id="alAcc">–</div></div>
+        <div class="box fill"><div class="tiny">Domain 거리 (chamfer)</div><div class="metric" id="alDist">–</div></div>
+      </div>
+      <p class="small" style="margin-top:14px" id="alMsg"></p>
+    </div>
+  </div>
+</section>
+
+<!-- 20 DISCREPANCY -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · 방법 ① Discrepancy 기반</div>
+  <h2>두 feature 분포의 통계량을 직접 맞추기</h2>
+  <div class="grid g2">
+    <div class="box">
+      <h3>MMD (Maximum Mean Discrepancy)</h3>
+      <div class="formula" style="font-size:21px;margin:6px 0 12px">MMD² = ‖ 𝔼<sub>S</sub>[φ(z)] − 𝔼<sub>T</sub>[φ(z)] ‖²<sub>ℋ</sub></div>
+      <p class="small">kernel로 매핑한 평균이 같아지도록 → 사실상 모든 차수의 moment를 맞춤</p>
+      <p class="cite">DDC (Tzeng et al. 2014), DAN (Long et al. 2015), JAN (Long et al. 2017)</p>
+    </div>
+    <div class="box">
+      <h3>CORAL (Correlation Alignment)</h3>
+      <div class="formula" style="font-size:21px;margin:6px 0 12px">ℒ<sub>CORAL</sub> = ¼d² ‖ C<sub>S</sub> − C<sub>T</sub> ‖²<sub>F</sub></div>
+      <p class="small">2차 통계량(공분산)만 맞춤. 구현이 매우 간단하고 안정적</p>
+      <p class="cite">CORAL (Sun et al. 2016), Deep CORAL (Sun &amp; Saenko 2016)</p>
+    </div>
+  </div>
+  <div style="margin-top:20px">
+<pre><span class="cm"># Deep CORAL loss (PyTorch) — 기존 학습 루프에 한 줄 추가하면 됩니다</span>
+<span class="k">def</span> <span class="n">coral</span>(zs, zt):
+    d = zs.size(<span class="n">1</span>)
+    cs = torch.cov(zs.T); ct = torch.cov(zt.T)
+    <span class="k">return</span> ((cs - ct) ** <span class="n">2</span>).sum() / (<span class="n">4</span> * d * d)
+
+loss = F.cross_entropy(clf(zs), ys) + lam * coral(zs, zt)   <span class="cm"># zt는 label 불필요</span></pre>
+  </div>
+</section>
+
+<!-- 21 ADVERSARIAL -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · 방법 ② Adversarial</div>
+  <h2>DANN: domain을 구분하지 못하는 feature를 만들기</h2>
+  <div class="grid g23" style="align-items:start">
+    <div class="box" style="padding:12px">
+      <svg viewBox="0 0 640 330" width="100%" aria-label="DANN 구조">
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker>
+        <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--bad)"/></marker></defs>
+        <g font-family="var(--sans)" font-size="14" fill="currentColor">
+          <rect x="10" y="60" width="96" height="44" rx="8" fill="var(--src-soft)"/><text x="22" y="87" fill="var(--src)" font-weight="700">source x</text>
+          <rect x="10" y="200" width="96" height="44" rx="8" fill="var(--tgt-soft)"/><text x="24" y="227" fill="var(--tgt)" font-weight="700">target x</text>
+          <path d="M106 82 L160 140" stroke="var(--muted)" marker-end="url(#ar2)" fill="none"/>
+          <path d="M106 222 L160 170" stroke="var(--muted)" marker-end="url(#ar2)" fill="none"/>
+          <polygon points="165,110 265,125 265,185 165,200" fill="var(--soft)" stroke="var(--line)"/>
+          <text x="180" y="152" font-weight="700">Feature</text><text x="180" y="170">extractor G<tspan font-size="10" baseline-shift="sub">f</tspan></text>
+          <path d="M265 155 L300 155" stroke="var(--muted)"/><circle cx="306" cy="155" r="6" fill="var(--fg)"/><text x="296" y="143" font-size="12">z</text>
+          <path d="M306 155 L306 70 L360 70" stroke="var(--muted)" marker-end="url(#ar2)" fill="none"/>
+          <path d="M306 155 L306 240 L340 240" stroke="var(--muted)" marker-end="url(#ar2)" fill="none"/>
+          <rect x="362" y="46" width="150" height="48" rx="8" fill="var(--src)"/><text x="376" y="68" fill="#fff" font-weight="700">Label predictor</text><text x="376" y="85" fill="#fff" font-size="12">G_y (source만)</text>
+          <path d="M512 70 L545 70" stroke="var(--muted)" marker-end="url(#ar2)"/><text x="551" y="75" font-weight="700">ℒ<tspan font-size="10" baseline-shift="sub">y</tspan></text>
+          <rect x="342" y="220" width="56" height="40" rx="8" fill="var(--bad)" opacity=".9"/><text x="355" y="245" fill="#fff" font-weight="700">GRL</text>
+          <path d="M398 240 L420 240" stroke="var(--muted)" marker-end="url(#ar2)"/>
+          <rect x="422" y="216" width="120" height="48" rx="8" fill="var(--tgt)"/><text x="432" y="238" fill="#fff" font-weight="700">Domain</text><text x="432" y="255" fill="#fff" font-size="12">classifier G_d</text>
+          <path d="M542 240 L570 240" stroke="var(--muted)" marker-end="url(#ar2)"/><text x="576" y="245" font-weight="700">ℒ<tspan font-size="10" baseline-shift="sub">d</tspan></text>
+          <path d="M470 272 C 400 300, 260 300, 220 212" stroke="var(--bad)" stroke-dasharray="5 4" fill="none" marker-end="url(#ar3)"/>
+          <text x="250" y="322" fill="var(--bad)" font-size="13">역방향 gradient: −λ·∂ℒ<tspan font-size="9" baseline-shift="sub">d</tspan>/∂θ<tspan font-size="9" baseline-shift="sub">f</tspan></text>
+        </g>
+      </svg>
+      <div class="formula" style="font-size:19px;margin-top:6px">E(θ<sub>f</sub>,θ<sub>y</sub>,θ<sub>d</sub>) = ℒ<sub>y</sub> − λℒ<sub>d</sub>&nbsp;&nbsp; min<sub>θf,θy</sub> · max<sub>θd</sub></div>
+    </div>
+    <div>
+      <p class="small">G<sub>d</sub>는 domain을 맞히려 하고, G<sub>f</sub>는 GRL을 통해 뒤집힌 gradient를 받아 <b>구분되지 않는 feature</b>를 만듭니다. GAN의 generator–discriminator 관계와 같습니다.</p>
+<pre style="font-size:12.5px"><span class="k">class</span> <span class="n">GradReverse</span>(torch.autograd.Function):
+    @staticmethod
+    <span class="k">def</span> forward(ctx, x, lam):
+        ctx.lam = lam
+        <span class="k">return</span> x.view_as(x)
+    @staticmethod
+    <span class="k">def</span> backward(ctx, g):
+        <span class="k">return</span> -ctx.lam * g, <span class="k">None</span></pre>
+      <p class="cite" style="margin-top:10px">Ganin &amp; Lempitsky 2015 · Ganin et al. JMLR 2016<br>후속: ADDA (Tzeng et al. 2017), CDAN (Long et al. 2018), MCD (Saito et al. 2018)</p>
+      <p class="small muted" style="margin-top:6px">λ는 0에서 시작해 점점 키우는 schedule이 흔히 쓰입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 22 PIXEL LEVEL -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · 방법 ③ 입력 공간에서 맞추기</div>
+  <h2>Feature 대신 이미지 자체를 target처럼 바꾸기</h2>
+  <div class="grid g2">
+    <div class="box">
+      <h3>Image-to-image translation</h3>
+      <div style="display:flex;align-items:center;gap:12px;margin:10px 0">
+        <canvas id="pxA" class="px" width="120" height="120"></canvas>
+        <svg width="70" height="30" viewBox="0 0 70 30"><path d="M2 15 H60" stroke="var(--muted)" stroke-width="2"/><path d="M56 8 L66 15 L56 22" fill="none" stroke="var(--muted)" stroke-width="2"/></svg>
+        <canvas id="pxB" class="px" width="120" height="120"></canvas>
+      </div>
+      <p class="small">source 이미지를 target 스타일로 변환하고, source label을 그대로 사용해 학습</p>
+      <ul>
+        <li><b>CycleGAN</b>: 짝지어진 데이터 없이 cycle-consistency로 변환 (Zhu et al. 2017)</li>
+        <li><b>CyCADA</b>: pixel 정렬 + feature 정렬 + semantic consistency (Hoffman et al. 2018)</li>
+        <li><b>FDA</b>: Fourier 저주파 성분만 교체하는 간단한 스타일 전이 (Yang &amp; Soatto 2020)</li>
+      </ul>
+      <p class="tiny">※ 위 변환은 개념을 보여주는 예시 그림입니다.</p>
+    </div>
+    <div class="box t">
+      <h3>Domain randomization: augmentation의 극단</h3>
+      <p class="small">target을 모르겠다면, source의 변화를 <b>현실보다 훨씬 넓게</b> 만들어서 현실이 그 중 하나가 되도록 함</p>
+      <div class="aug-grid" id="drGrid" style="grid-template-columns:repeat(4,1fr);margin:10px 0"></div>
+      <p class="small">시뮬레이터에서 텍스처·조명·카메라 위치를 무작위화해 학습한 로봇 비전 모델을 실제 환경에 옮긴 연구가 대표적입니다 (Tobin et al. 2017).</p>
+      <p class="small muted">→ Part 1의 augmentation 아이디어가 domain generalization으로 이어지는 지점</p>
+    </div>
+  </div>
+</section>
+
+<!-- 23 SELF TRAINING -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · 방법 ④ Self-training과 test-time</div>
+  <h2>Target에 대한 모델 자신의 예측을 활용하기</h2>
+  <div class="grid g3">
+    <div class="box">
+      <h3>Pseudo-labeling</h3>
+      <p class="small">confidence가 높은 target 예측을 정답처럼 사용해 재학습</p>
+      <ul><li>Mean Teacher / EMA teacher로 안정화</li><li>weak aug로 label 만들고 strong aug로 학습 (FixMatch식 일관성)</li><li>위험: 틀린 pseudo-label이 누적되는 confirmation bias</li></ul>
+      <p class="cite">CBST (Zou et al. 2018), DAFormer (Hoyer et al. 2022)</p>
+    </div>
+    <div class="box">
+      <h3>Normalization 통계 교체</h3>
+      <p class="small">BatchNorm의 평균·분산을 target 데이터로 다시 계산</p>
+      <div class="formula" style="font-size:18px;margin:6px 0">x̂ = (x − μ<sub class="tgt">T</sub>) / σ<sub class="tgt">T</sub></div>
+      <p class="small">학습 없이 몇 줄로 적용 가능한 강력한 baseline</p>
+      <p class="cite">AdaBN (Li et al. 2016)</p>
+    </div>
+    <div class="box">
+      <h3>Test-time / Source-free</h3>
+      <p class="small"><b>TENT</b>: 테스트 batch의 예측 entropy를 최소화하도록 BN의 affine 파라미터만 업데이트</p>
+      <div class="formula" style="font-size:18px;margin:6px 0">H(ŷ) = −Σ<sub>c</sub> p(ŷ<sub>c</sub>) log p(ŷ<sub>c</sub>)</div>
+      <p class="small"><b>SHOT</b>: source 분류기는 고정하고, 정보 최대화 + pseudo-label로 feature extractor만 적응</p>
+      <p class="cite">Wang et al. 2021 · Liang et al. 2020</p>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top:16px">여기서도 augmentation이 다시 등장합니다: 서로 다른 augmentation view의 예측이 일치하도록 만드는 것이 self-training의 핵심 신호입니다.</p>
+</section>
+
+<!-- 24 MAP -->
+<section class="slide">
+  <div class="part p3"><i></i>Part 3 · 정리</div>
+  <h2>세 가지 접근의 비교</h2>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th style="width:17%"></th><th style="width:27%">Data Augmentation</th><th style="width:28%">Domain Adaptation</th><th>Domain Generalization</th></tr></thead>
+    <tbody>
+      <tr><td><b>Target 데이터</b></td><td>필요 없음</td><td class="tgt">unlabeled target 필요</td><td>필요 없음 (여러 source)</td></tr>
+      <tr><td><b>핵심 아이디어</b></td><td>알려진 변환 T에 대한 불변성</td><td>특정 target 분포에 맞춤</td><td>보지 못한 domain에도 통하는 불변 특징</td></tr>
+      <tr><td><b>대표 방법</b></td><td>RandAugment, Mixup, CutMix, AugMix</td><td>MMD, CORAL, DANN, CyCADA, self-training, TENT</td><td>domain randomization, IRM, MixStyle, SWAD</td></tr>
+      <tr><td><b>장점</b></td><td>간단, 거의 항상 이득</td><td>실제 target에 직접 최적화</td><td>배포 환경을 미리 몰라도 됨</td></tr>
+      <tr><td><b>한계</b></td><td>식으로 쓸 수 있는 변화만</td><td>target 검증 label이 없어 튜닝이 어려움, 정렬 실패 가능</td><td>일관된 성능 향상이 어려움 (DomainBed)</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="box fill" style="margin-top:18px"><p style="margin:0"><b>실전 순서</b>: 강한 augmentation + pretrained backbone으로 baseline → shift 진단 → AdaBN·self-training 같은 가벼운 DA → 필요하면 adversarial·pixel-level DA → 가능하면 target label 소량 확보</p></div>
+</section>
+
+<!-- 25 RESEARCH -->
+<section class="slide">
+  <div class="part p3"><i></i>연구 분야</div>
+  <h2>지금 활발한 연구 방향</h2>
+  <div class="grid g3" style="gap:16px">
+    <div class="box"><h3>Test-time adaptation</h3><p class="small">배포 중 계속 바뀌는 환경(continual TTA)에서 성능이 무너지지 않게 적응. 오류 누적과 망각이 핵심 난제</p><span class="tag">TENT</span><span class="tag">CoTTA</span><span class="tag">EATA</span></div>
+    <div class="box"><h3>Source-free · Federated DA</h3><p class="small">데이터를 공유하지 못하는 병원·기업 환경. 모델만 주고받으며 적응</p><span class="tag">SHOT</span><span class="tag">NRC</span></div>
+    <div class="box"><h3>Open-set · Universal DA</h3><p class="small">target에 학습 때 없던 클래스가 섞여 있을 때, 모르는 것을 모른다고 말하기</p><span class="tag">OSBP</span><span class="tag">UAN</span></div>
+    <div class="box"><h3>Foundation model 시대의 robustness</h3><p class="small">CLIP 같은 대규모 사전학습 모델은 shift에 강하지만, fine-tuning 과정에서 그 강인성을 잃기도 함 → robust fine-tuning, prompt 기반 적응</p><span class="tag">WiSE-FT</span><span class="tag">CoOp</span><span class="tag">LP-FT</span></div>
+    <div class="box"><h3>생성모델로 target 데이터 만들기</h3><p class="small">diffusion 모델로 target 스타일 데이터 합성, 텍스트로 domain을 서술해 적응</p><span class="tag">synthetic data</span><span class="tag">text-driven DA</span></div>
+    <div class="box"><h3>Dense prediction · 3D · 시계열</h3><p class="small">segmentation, detection, LiDAR point cloud, 센서 시계열로 확장. 픽셀 단위 정렬이 필요</p><span class="tag">DAFormer</span><span class="tag">MIC</span></div>
+  </div>
+  <p class="small muted" style="margin-top:14px">함께 볼 주제: causal representation / invariant risk minimization, OOD detection, calibration under shift, label shift estimation</p>
+</section>
+
+<!-- 26 APPLICATIONS -->
+<section class="slide">
+  <div class="part p3"><i></i>적용 분야</div>
+  <h2>어디에 쓰이나</h2>
+  <div class="grid g2" style="gap:14px 22px">
+    <div class="box s"><h3>🏥 의료 영상</h3><p class="small">병원·스캐너·염색 프로토콜 차이. stain normalization / augmentation, 다기관 학습, source-free DA로 개인정보 문제 대응</p></div>
+    <div class="box s"><h3>🚗 자율주행</h3><p class="small">시뮬레이터 → 실제 도로, 도시·국가 간 차이, 야간·악천후. segmentation UDA의 주 무대</p></div>
+    <div class="box s"><h3>🤖 로보틱스</h3><p class="small">sim-to-real transfer. domain randomization으로 시뮬레이션에서 배운 grasping·조작 정책을 실제 로봇에 적용</p></div>
+    <div class="box s"><h3>🏭 제조 · 불량 검사</h3><p class="small">라인·조명·제품 버전이 바뀔 때마다 재라벨링 비용이 큼 → 적은 label로 새 라인에 적응</p></div>
+    <div class="box s"><h3>🛰 원격탐사 · 농업</h3><p class="small">위성·드론 센서, 계절, 지역 차이. 한 지역에서 만든 작물·건물 분류 모델을 다른 지역에 적용</p></div>
+    <div class="box s"><h3>🎙 음성 · 🌐 NLP</h3><p class="small">마이크·방언·잡음 환경 적응, 리뷰 도메인(영화 → 전자제품) 감성분석, 일반 언어모델의 전문 분야 적응</p></div>
+  </div>
+</section>
+
+<!-- 27 NEXT LAB -->
+<section class="slide">
+  <div class="part p3"><i></i>다음 실습 제안</div>
+  <h2>MNIST → MNIST-M으로 직접 확인해보기</h2>
+  <div class="grid g2">
+    <div class="box">
+      <h3>실험 단계</h3>
+      <ol class="check" style="padding-left:20px;margin:6px 0;font-size:16px;line-height:1.55">
+        <li><b>Source only</b>: MNIST로만 학습 → MNIST-M 정확도 측정</li>
+        <li><b>+ Augmentation</b>: color jitter, 반전, 노이즈 추가 → 얼마나 좁혀지는가?</li>
+        <li><b>+ AdaBN</b>: target 데이터로 BN 통계만 다시 계산</li>
+        <li><b>+ DANN</b>: unlabeled MNIST-M으로 GRL 학습</li>
+        <li><b>Target oracle</b>: MNIST-M label로 학습 (상한선)</li>
+      </ol>
+      <p class="small muted">각 단계를 같은 backbone, 같은 epoch으로 비교하고, t-SNE로 source/target feature 분포를 그려봅니다.</p>
+    </div>
+    <div class="box">
+      <h3>생각해볼 점</h3>
+      <ul>
+        <li>target label 없이 λ와 epoch은 어떻게 고를까? (검증 전략 문제)</li>
+        <li>t-SNE에서 두 domain이 섞였다고 정확도가 반드시 올랐을까? (클래스 뒤바뀐 정렬 데모 참고)</li>
+        <li>MNIST → SVHN으로 방향을 바꾸면 어떤 방법이 먼저 무너질까?</li>
+      </ul>
+      <p class="small muted" style="margin-top:10px">MNIST-M은 DANN 논문에서 MNIST 숫자에 BSDS500 사진 패치를 합성해 만든 데이터셋입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 28 SUMMARY -->
+<section class="slide">
+  <div class="part"><i></i>요약</div>
+  <h2>오늘의 흐름</h2>
+  <div class="grid g3">
+    <div class="box fill"><h3>Data Augmentation</h3><p>데이터 개수가 아니라 <b>불변성에 대한 약속</b>. 변환이 label을 보존하는지는 task가 결정</p></div>
+    <div class="box t"><h3>Distribution Shift</h3><p>P<sub>S</sub>(x,y) ≠ P<sub>T</sub>(x,y). 어떤 항이 바뀌었는지(covariate / label / concept)에 따라 해법이 다름</p></div>
+    <div class="box s"><h3>Domain Adaptation</h3><p>unlabeled target으로 domain 차이를 줄임. 통계 정렬, adversarial, pixel-level, self-training</p></div>
+  </div>
+  <div class="box" style="margin-top:22px">
+    <h3>토론 질문</h3>
+    <ul style="font-size:17px">
+      <li>우리 연구·서비스에서 source와 target은 각각 무엇이고, 무엇이 달라지나요?</li>
+      <li>그 변화를 augmentation으로 흉내 낼 수 있나요, 아니면 target 데이터가 꼭 필요한가요?</li>
+      <li>target label이 전혀 없다면, 적응이 “성공했다”는 것을 어떻게 확인할 수 있을까요?</li>
+    </ul>
+  </div>
+</section>
+
+</div></div>
+
+<div id="nav" aria-label="슬라이드 이동">
+  <button id="prev" aria-label="이전 슬라이드">‹</button>
+  <span id="count">1 / 1</span>
+  <button id="next" aria-label="다음 슬라이드">›</button>
+  <button id="theme" aria-label="테마 전환" title="테마 전환 (T)">◐</button>
+  <button id="fs" aria-label="전체화면" title="전체화면 (F)">⤢</button>
+</div>
+
+<script>
+(function(){
+/* ================= deck navigation ================= */
+const slides=[...document.querySelectorAll('.slide')];
+const deck=document.getElementById('deck');
+let cur=0;
+function fit(){const s=Math.min(innerWidth/1280,(innerHeight-8)/720);deck.style.transform='scale('+s+')';}
+addEventListener('resize',fit);fit();
+function go(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,k)=>s.classList.toggle('active',k===cur));
+  document.getElementById('count').textContent=(cur+1)+' / '+slides.length;
+  document.getElementById('bar').style.width=((cur+1)/slides.length*100)+'%';
+  if(location.hash!=='#'+(cur+1)) history.replaceState(null,'','#'+(cur+1));
+}
+document.getElementById('prev').onclick=()=>go(cur-1);
+document.getElementById('next').onclick=()=>go(cur+1);
+document.getElementById('fs').onclick=toggleFS;
+document.getElementById('theme').onclick=toggleTheme;
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.();}
+function toggleTheme(){
+  const r=document.documentElement;
+  const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  r.dataset.theme=dark?'light':'dark';
+  try{localStorage.setItem('deckTheme',r.dataset.theme)}catch(e){}
+  redrawAll();
+}
+try{const t=localStorage.getItem('deckTheme');if(t)document.documentElement.dataset.theme=t;}catch(e){}
+addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))return;
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(cur+1);}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(cur-1);}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F')toggleFS();
+  else if(e.key==='t'||e.key==='T')toggleTheme();
+});
+let tx0=null;
+deck.addEventListener('touchstart',e=>{tx0=e.touches[0].clientX},{passive:true});
+deck.addEventListener('touchend',e=>{if(tx0===null)return;const d=e.changedTouches[0].clientX-tx0;if(Math.abs(d)>60&&e.target.tagName!=='INPUT')go(cur+(d<0?1:-1));tx0=null;});
+go((parseInt(location.hash.slice(1))||1)-1);
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ================= helpers ================= */
+let seed=7;function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;}
+function gauss(){let u=0,v=0;while(!u)u=rnd();while(!v)v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const HAND='"Nanum Pen Script", cursive';
+
+// base 28x28 digit (grayscale array 0..1)
+function digitArray(d,o={}){
+  const c=document.createElement('canvas');c.width=28;c.height=28;const x=c.getContext('2d');
+  x.fillStyle='#000';x.fillRect(0,0,28,28);
+  x.save();x.translate(14+(o.tx||0),14+(o.ty||0));x.rotate((o.rot||0)*Math.PI/180);const s=o.sc||1;x.scale(s,s);
+  x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';
+  x.font=(o.font||('30px '+HAND));x.lineWidth=o.lw||1.4;x.strokeStyle='#fff';
+  x.fillText(String(d),0,1.5);x.strokeText(String(d),0,1.5);
+  x.restore();
+  const im=x.getImageData(0,0,28,28).data;const a=new Float32Array(784);
+  for(let i=0;i<784;i++)a[i]=im[i*4]/255;return a;
+}
+function putArray(cv,a,n=28,tint){
+  const c=document.createElement('canvas');c.width=n;c.height=n;const x=c.getContext('2d');
+  const id=x.createImageData(n,n);
+  for(let i=0;i<n*n;i++){const v=Math.max(0,Math.min(1,a[i]));
+    if(tint){id.data[i*4]=tint[0]*v+(1-v)*tint[3];id.data[i*4+1]=tint[1]*v+(1-v)*tint[4];id.data[i*4+2]=tint[2]*v+(1-v)*tint[5];}
+    else{id.data[i*4]=id.data[i*4+1]=id.data[i*4+2]=v*255;}
+    id.data[i*4+3]=255;}
+  x.putImageData(id,0,0);
+  const g=cv.getContext('2d');g.imageSmoothingEnabled=false;g.clearRect(0,0,cv.width,cv.height);g.drawImage(c,0,0,cv.width,cv.height);
+}
+function augment(d,p){
+  let a=digitArray(d,{tx:p.tx,ty:p.ty,rot:p.rot,sc:p.sc});
+  for(let i=0;i<784;i++){let v=a[i]*p.br;v+=p.nz*gauss();a[i]=v;}
+  if(p.er>0){const x0=p.ex??Math.floor(rnd()*(28-p.er)),y0=p.ey??Math.floor(rnd()*(28-p.er));
+    for(let y=y0;y<y0+p.er;y++)for(let x=x0;x<x0+p.er;x++)a[y*28+x]=p.erv??0;}
+  return a;
+}
+
+/* ================= slide 5: augmentation demo ================= */
+const ids=['aTx','aTy','aRot','aSc','aBr','aNz','aEr'];
+const units={aTx:'px',aTy:'px',aRot:'°',aSc:'%',aBr:'%',aNz:'',aEr:'px'};
+function augDraw(){
+  const v=Object.fromEntries(ids.map(i=>[i,+document.getElementById(i).value]));
+  ids.forEach(i=>{const el=document.getElementById(i);el.nextElementSibling.textContent=el.value+units[i];});
+  putArray(document.getElementById('augOrig'),digitArray(3));
+  seed=99;
+  putArray(document.getElementById('augOut'),augment(3,{tx:v.aTx,ty:v.aTy,rot:v.aRot,sc:v.aSc/100,br:v.aBr/100,nz:v.aNz/250,er:v.aEr,ex:7,ey:9}));
+}
+ids.forEach(i=>document.getElementById(i).addEventListener('input',augDraw));
+document.getElementById('augReset').onclick=()=>{const d={aTx:0,aTy:0,aRot:0,aSc:100,aBr:100,aNz:0,aEr:0};ids.forEach(i=>document.getElementById(i).value=d[i]);augDraw();};
+let gridSeed=11;
+function augGrid(){
+  const g=document.getElementById('augGrid');g.innerHTML='';seed=gridSeed;
+  const ops=[
+    ['translate',()=>({tx:Math.round((rnd()-.5)*12),ty:Math.round((rnd()-.5)*12)})],
+    ['rotate',()=>({rot:Math.round((rnd()-.5)*50)})],
+    ['scale',()=>({sc:.7+rnd()*.6})],
+    ['brightness',()=>({br:.35+rnd()*.5})],
+    ['noise',()=>({nz:.15+rnd()*.2})],
+    ['erasing',()=>({er:6+Math.floor(rnd()*6)})],
+    ['invert',()=>({inv:true})],
+  ];
+  for(let k=0;k<12;k++){
+    const n=1+Math.floor(rnd()*2);let p={tx:0,ty:0,rot:0,sc:1,br:1,nz:0,er:0};const names=[];
+    for(let j=0;j<n;j++){const o=ops[Math.floor(rnd()*ops.length)];Object.assign(p,o[1]());names.push(o[0]);}
+    let a=augment(3,p);if(p.inv)for(let i=0;i<784;i++)a[i]=1-a[i];
+    const f=document.createElement('figure');const cv=document.createElement('canvas');cv.width=cv.height=96;cv.className='px';cv.style.width='100%';
+    putArray(cv,a);f.appendChild(cv);const cap=document.createElement('figcaption');cap.textContent=[...new Set(names)].join('+');f.appendChild(cap);g.appendChild(f);
+  }
+}
+document.getElementById('augRand').onclick=()=>{gridSeed=Math.floor(Math.random()*1e6)+1;augGrid();};
+
+/* ================= slide 6: mixup ================= */
+function mixDraw(){
+  const lam=+document.getElementById('mixLam').value/100;
+  document.getElementById('mixLam').nextElementSibling.textContent=lam.toFixed(2);
+  const A=digitArray(3),B=digitArray(8);
+  putArray(document.getElementById('mixA'),A);putArray(document.getElementById('mixB'),B);
+  const M=new Float32Array(784);for(let i=0;i<784;i++)M[i]=lam*A[i]+(1-lam)*B[i];
+  putArray(document.getElementById('mixOut'),M);
+  // cutmix: square box of area (1-lam)
+  const side=Math.round(Math.sqrt((1-lam)*784));const x0=Math.max(0,Math.min(28-side,15-Math.floor(side/2))),y0=Math.max(0,Math.min(28-side,13-Math.floor(side/2)));
+  const C=new Float32Array(A);for(let y=y0;y<y0+side;y++)for(let x=x0;x<x0+side;x++)C[y*28+x]=B[y*28+x];
+  const cv=document.getElementById('cutOut');putArray(cv,C);
+  const g=cv.getContext('2d');const s=cv.width/28;g.strokeStyle=css('--tgt');g.lineWidth=2;if(side>0)g.strokeRect(x0*s+1,y0*s+1,side*s-2,side*s-2);
+  const lc=1-side*side/784;
+  const set=(id,v)=>{document.getElementById(id).style.width=(v*100)+'%';};
+  set('mixL3',lam);set('mixL8',1-lam);document.getElementById('mixV3').textContent=lam.toFixed(2);document.getElementById('mixV8').textContent=(1-lam).toFixed(2);
+  set('cutL3',lc);set('cutL8',1-lc);document.getElementById('cutV3').textContent=lc.toFixed(2);document.getElementById('cutV8').textContent=(1-lc).toFixed(2);
+}
+document.getElementById('mixLam').addEventListener('input',mixDraw);
+
+/* ================= slide 7: six rotation ================= */
+function sixDraw(){
+  const r=+document.getElementById('sixRot').value;
+  document.getElementById('sixRot').nextElementSibling.textContent=r+'°';
+  putArray(document.getElementById('sixCv'),digitArray(6,{rot:r}));
+  const m=document.getElementById('sixMsg');
+  if(r<=20){m.innerHTML='<b class="ok">안전</b> · 여전히 “6”으로 읽힘';}
+  else if(r<120){m.innerHTML='<b class="tgt">애매함</b> · 사람도 헷갈리기 시작';}
+  else{m.innerHTML='<b class="bad">label이 바뀜</b> · “9”처럼 보이는데 label은 6';}
+}
+document.getElementById('sixRot').addEventListener('input',sixDraw);
+
+/* ================= slide 12: domain gallery ================= */
+let galSeed=5;
+function drawDomain(id,style){
+  const cv=document.getElementById(id);const g=cv.getContext('2d');const W=cv.width;
+  seed=galSeed+id.length*13;
+  g.imageSmoothingEnabled=false;
+  if(style==='mnist'){putArray(cv,digitArray(5,{rot:(rnd()-.5)*16}));return;}
+  if(style==='usps'){
+    const c=document.createElement('canvas');c.width=c.height=16;const x=c.getContext('2d');
+    x.fillStyle='#000';x.fillRect(0,0,16,16);x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';
+    x.save();x.translate(8,8.5);x.scale(1.25,1.05);x.font='19px '+HAND;x.lineWidth=.9;x.strokeStyle='#fff';x.fillText('5',0,1);x.strokeText('5',0,1);x.restore();
+    // gray normalization look
+    const d=x.getImageData(0,0,16,16);for(let i=0;i<256;i++){const v=d.data[i*4];const n=Math.round(40+v*.8);d.data[i*4]=d.data[i*4+1]=d.data[i*4+2]=n;}x.putImageData(d,0,0);
+    g.drawImage(c,0,0,W,W);return;
+  }
+  if(style==='mnistm'){
+    const a=digitArray(5,{rot:(rnd()-.5)*16});
+    const c=document.createElement('canvas');c.width=c.height=28;const x=c.getContext('2d');const id=x.createImageData(28,28);
+    const base=[rnd()*255,rnd()*255,rnd()*255],base2=[rnd()*255,rnd()*255,rnd()*255];
+    for(let y=0;y<28;y++)for(let xx=0;xx<28;xx++){const i=y*28+xx;const t=(xx+y)/56+.15*Math.sin(xx*.7+y*.4)+.1*gauss();
+      for(let ch=0;ch<3;ch++){const bg=base[ch]*(1-t)+base2[ch]*t;const v=a[i];id.data[i*4+ch]=Math.abs(bg-v*255);}
+      id.data[i*4+3]=255;}
+    x.putImageData(id,0,0);g.drawImage(c,0,0,W,W);return;
+  }
+  if(style==='svhn'){
+    const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d');
+    const hue=Math.floor(rnd()*360);
+    const gr=x.createLinearGradient(0,0,32,32);gr.addColorStop(0,`hsl(${hue},35%,${55+rnd()*20}%)`);gr.addColorStop(1,`hsl(${(hue+30)%360},30%,${35+rnd()*15}%)`);
+    x.fillStyle=gr;x.fillRect(0,0,32,32);
+    x.fillStyle=`hsl(${(hue+180)%360},25%,${rnd()<.5?12:92}%)`;x.textAlign='center';x.textBaseline='middle';
+    x.font='bold 24px Georgia, serif';x.fillText('5',16,17);x.font='bold 22px Georgia, serif';x.fillText('2',-1,17);x.fillText('8',33,17);
+    const d=x.getImageData(0,0,32,32);for(let i=0;i<1024;i++)for(let ch=0;ch<3;ch++)d.data[i*4+ch]=Math.max(0,Math.min(255,d.data[i*4+ch]+gauss()*9));x.putImageData(d,0,0);
+    g.imageSmoothingEnabled=true;g.filter='blur(2px)';g.drawImage(c,0,0,W,W);g.filter='none';return;
+  }
+}
+function galDraw(){drawDomain('dMnist','mnist');drawDomain('dUsps','usps');drawDomain('dMnistm','mnistm');drawDomain('dSvhn','svhn');}
+document.getElementById('galRedraw').onclick=()=>{galSeed=Math.floor(Math.random()*1e5)+1;galDraw();};
+
+/* ================= slide 14: shift type svgs ================= */
+function gp(mu,sd,amp,x0,x1,y0){let d='';for(let i=0;i<=60;i++){const x=x0+(x1-x0)*i/60;const t=(i/60)*10-5;const y=y0-amp*Math.exp(-((t-mu)**2)/(2*sd*sd));d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);}return d;}
+function shiftSvgs(){
+  const S=css('--src'),T=css('--tgt'),M=css('--muted'),L=css('--line');
+  document.getElementById('svCov').innerHTML=`
+    <line x1="10" y1="110" x2="290" y2="110" stroke="${L}"/>
+    <path d="${gp(-1.6,1,70,10,290,110)}" fill="${S}" fill-opacity=".18" stroke="${S}" stroke-width="2"/>
+    <path d="${gp(1.6,1,70,10,290,110)}" fill="${T}" fill-opacity=".18" stroke="${T}" stroke-width="2"/>
+    <path d="M10 95 C 110 95, 130 25, 290 22" fill="none" stroke="${M}" stroke-dasharray="4 4"/>
+    <text x="206" y="18" font-size="11" fill="${M}">P(y|x) 동일</text>
+    <text x="40" y="126" font-size="11" fill="${S}">P_S(x)</text><text x="210" y="126" font-size="11" fill="${T}">P_T(x)</text>`;
+  const bars=(xs,vals,col,off)=>vals.map((v,i)=>`<rect x="${xs[i]+off}" y="${110-v}" width="22" height="${v}" fill="${col}" rx="2"/>`).join('');
+  document.getElementById('svLab').innerHTML=`
+    <line x1="10" y1="110" x2="290" y2="110" stroke="${L}"/>
+    ${bars([40,130,220],[70,60,65],S,0)}${bars([40,130,220],[20,95,30],T,26)}
+    <text x="42" y="126" font-size="11" fill="${M}">class A</text><text x="132" y="126" font-size="11" fill="${M}">class B</text><text x="222" y="126" font-size="11" fill="${M}">class C</text>
+    <text x="200" y="18" font-size="11" fill="${M}">P(y) 변화</text>`;
+  const dots=(pts,col)=>pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="${p[2]?col:'none'}" stroke="${col}" stroke-width="2"/>`).join('');
+  const P=[[40,40,1],[70,70,1],[55,95,1],[110,50,1],[140,85,0],[170,40,0],[200,95,0],[230,60,0],[260,85,0],[125,100,1]];
+  document.getElementById('svCon').innerHTML=`
+    <line x1="150" y1="10" x2="150" y2="118" stroke="${S}" stroke-width="2" stroke-dasharray="5 4"/>
+    <line x1="215" y1="10" x2="215" y2="118" stroke="${T}" stroke-width="2"/>
+    ${dots(P,M)}
+    <text x="100" y="126" font-size="11" fill="${S}">S 경계</text><text x="220" y="126" font-size="11" fill="${T}">T 경계</text>
+    <text x="180" y="18" font-size="11" fill="${M}">같은 x, 다른 y</text>`;
+}
+
+/* ================= slide 19: alignment demo ================= */
+const AL={t:0,mode:'good',show:false,S:[],Tr:[]};
+(function(){seed=2024;
+  const c=[[-1.3,.3],[1.3,-.3]];
+  for(let k=0;k<2;k++)for(let i=0;i<70;i++){AL.S.push([c[k][0]+gauss()*.42,c[k][1]+gauss()*.48,k]);AL.Tr.push([c[k][0]+gauss()*.42,c[k][1]+gauss()*.48,k]);}
+})();
+function tgtPoint(p){
+  const t=AL.t;const ang0=110, ang1=AL.mode==='good'?0:180;
+  const ang=(ang0+(ang1-ang0)*t)*Math.PI/180, sc=.85+(1-.85)*t, sh=[.6*(1-t),.2*(1-t)];
+  const x=p[0]*sc,y=p[1]*sc;
+  return [x*Math.cos(ang)-y*Math.sin(ang)+sh[0], x*Math.sin(ang)+y*Math.cos(ang)+sh[1], p[2]];
+}
+function alDraw(){
+  const cv=document.getElementById('alCv');const g=cv.getContext('2d');const W=cv.width,H=cv.height;
+  const S=css('--src'),T=css('--tgt'),M=css('--muted'),L=css('--line'),BG=css('--stage'),FG=css('--fg');
+  g.fillStyle=BG;g.fillRect(0,0,W,H);
+  const sx=v=>W/2+v*105, sy=v=>H/2-v*105;
+  g.fillStyle=S;g.globalAlpha=.06;g.fillRect(W/2,0,W/2,H);g.globalAlpha=1;
+  g.strokeStyle=L;g.lineWidth=1;for(let i=-3;i<=3;i++){g.beginPath();g.moveTo(sx(i),0);g.lineTo(sx(i),H);g.stroke();g.beginPath();g.moveTo(0,sy(i));g.lineTo(W,sy(i));g.stroke();}
+  g.setLineDash([7,6]);g.strokeStyle=FG;g.lineWidth=2;g.beginPath();g.moveTo(W/2,0);g.lineTo(W/2,H);g.stroke();g.setLineDash([]);
+  g.font='14px '+css('--sans');g.fillStyle=M;g.fillText('예측: class 0',14,24);g.fillText('예측: class 1',W-104,24);
+  // source
+  for(const p of AL.S){g.beginPath();const X=sx(p[0]),Y=sy(p[1]);
+    if(p[2]===0){g.arc(X,Y,4.5,0,7);g.fillStyle=S;g.fill();}else{g.rect(X-4,Y-4,8,8);g.fillStyle=S;g.fill();}}
+  // target
+  let correct=0;const TP=AL.Tr.map(tgtPoint);
+  for(const p of TP){const X=sx(p[0]),Y=sy(p[1]);const pred=p[0]>0?1:0;if(pred===p[2])correct++;
+    g.beginPath();g.lineWidth=2;
+    if(AL.show){g.strokeStyle=pred===p[2]?T:css('--bad');}else g.strokeStyle=T;
+    if(AL.show&&p[2]===1)g.rect(X-4.5,Y-4.5,9,9);else g.arc(X,Y,5,0,7);
+    g.stroke();}
+  // chamfer distance
+  let dsum=0;for(const p of TP){let m=1e9;for(const q of AL.S){const d=(p[0]-q[0])**2+(p[1]-q[1])**2;if(d<m)m=d;}dsum+=Math.sqrt(m);}
+  const acc=correct/TP.length, dist=dsum/TP.length;
+  // legend
+  g.font='13px '+css('--sans');
+  g.fillStyle=S;g.beginPath();g.arc(20,H-40,5,0,7);g.fill();g.fillStyle=M;g.fillText('source (● class 0, ■ class 1)',32,H-35);
+  g.strokeStyle=T;g.lineWidth=2;g.beginPath();g.arc(20,H-18,5,0,7);g.stroke();g.fillStyle=M;g.fillText(AL.show?'target (빨강 = 오분류)':'target (label 모름)',32,H-13);
+  document.getElementById('alT').nextElementSibling.textContent=Math.round(AL.t*100)+'%';
+  const accEl=document.getElementById('alAcc');accEl.textContent=Math.round(acc*100)+'%';accEl.style.color=acc>.85?css('--ok'):acc<.3?css('--bad'):FG;
+  document.getElementById('alDist').textContent=dist.toFixed(2);
+  const msg=document.getElementById('alMsg');
+  if(AL.t<.15)msg.innerHTML='정렬 전: target이 source와 다른 곳에 있어, source 분류기가 절반가량을 틀립니다.';
+  else if(AL.mode==='good')msg.innerHTML=AL.t>.85?'<b class="ok">정렬 성공</b>: domain 거리도 줄고 정확도도 회복됩니다. DA가 기대하는 상황입니다.':'정렬이 진행될수록 target 점들이 올바른 쪽으로 이동합니다.';
+  else msg.innerHTML=AL.t>.85?'<b class="bad">주의</b>: domain 거리는 올바른 정렬만큼 작아졌는데 정확도는 거의 0%. <b>marginal P(z)만 맞추면 class가 뒤섞일 수 있습니다.</b> → 클래스 조건부 정렬(CDAN), pseudo-label이 필요한 이유':'분포 전체 모양은 맞춰지고 있지만, 클래스가 반대편으로 가고 있습니다.';
+}
+document.getElementById('alT').addEventListener('input',e=>{AL.t=e.target.value/100;alDraw();});
+const setMode=m=>{AL.mode=m;document.getElementById('alGood').classList.toggle('on',m==='good');document.getElementById('alBad').classList.toggle('on',m==='bad');alDraw();};
+document.getElementById('alGood').onclick=()=>setMode('good');
+document.getElementById('alBad').onclick=()=>setMode('bad');
+document.getElementById('alShow').onclick=e=>{AL.show=!AL.show;e.target.classList.toggle('on',AL.show);e.target.textContent=AL.show?'target label 숨기기':'target label 보기';alDraw();};
+
+/* ================= slide 22: pixel-level & domain randomization ================= */
+function pixelDraw(){
+  putArray(document.getElementById('pxA'),digitArray(4));
+  seed=31;
+  const a=digitArray(4);const c=document.createElement('canvas');c.width=c.height=28;const x=c.getContext('2d');const id=x.createImageData(28,28);
+  for(let y=0;y<28;y++)for(let xx=0;xx<28;xx++){const i=y*28+xx;const t=(xx*.6+y)/45+.08*gauss();
+    const bg=[60+120*t,110+60*Math.sin(xx*.4),170-90*t];for(let ch=0;ch<3;ch++)id.data[i*4+ch]=Math.abs(bg[ch]-a[i]*230);id.data[i*4+3]=255;}
+  x.putImageData(id,0,0);const g=document.getElementById('pxB').getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(c,0,0,120,120);
+  const grid=document.getElementById('drGrid');grid.innerHTML='';seed=77;
+  for(let k=0;k<8;k++){
+    const cv=document.createElement('canvas');cv.width=cv.height=72;cv.style.width='100%';cv.style.borderRadius='5px';cv.style.display='block';
+    const q=cv.getContext('2d');
+    const h1=rnd()*360,h2=rnd()*360;
+    for(let i=0;i<6;i++){q.fillStyle=`hsl(${(h1+i*40)%360},${40+rnd()*50}%,${30+rnd()*50}%)`;const s=rnd()<.5;
+      if(s)q.fillRect(rnd()*72-20,rnd()*72-20,20+rnd()*50,20+rnd()*50);else{q.beginPath();q.arc(rnd()*72,rnd()*72,8+rnd()*25,0,7);q.fill();}}
+    q.save();q.translate(36+(rnd()-.5)*16,38+(rnd()-.5)*10);q.rotate((rnd()-.5)*.8);const sc=.7+rnd()*.6;q.scale(sc,sc);
+    q.fillStyle=`hsl(${h2},${60+rnd()*40}%,${rnd()<.5?15:85}%)`;q.textAlign='center';q.textBaseline='middle';
+    q.font=(rnd()<.5?'bold 54px Georgia, serif':'64px '+HAND);q.fillText('4',0,2);q.restore();
+    const f=document.createElement('figure');f.appendChild(cv);grid.appendChild(f);
+  }
+}
+
+function redrawAll(){augDraw();augGrid();mixDraw();sixDraw();galDraw();shiftSvgs();alDraw();pixelDraw();}
+redrawAll();
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(redrawAll);
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',redrawAll);
+})();
+</script>
+</body>
+</html>
