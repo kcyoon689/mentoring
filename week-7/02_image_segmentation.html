@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 2. 이미지 세그멘테이션 — 개념부터 모델까지</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:#1A3A5C; --teal:#1C7293; --teal-lt:#EAF4F9; --coral:#C9443F; --coral-lt:#FDF2F2;
+    --slate:#3D5A73; --gray:#6B8599; --gray-line:#D0DDE8; --bg:#F4F7FB; --white:#FFFFFF;
+    --accent:var(--coral); --accent-lt:var(--coral-lt); --accent-soft:#F4908D;
+  }
+  html, body { width:100%; height:100%; background:#1a1f2e; overflow:hidden; }
+  body { font-family:'Noto Sans KR',sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; }
+
+  #frame { position:relative; flex-shrink:0; }
+  #deck { position:absolute; top:0; left:0; width:1280px; height:720px; transform-origin:0 0; border-radius:8px; overflow:hidden; box-shadow:0 20px 70px rgba(0,0,0,.55); background:var(--bg); }
+  .slide { position:absolute; inset:0; background:var(--bg); opacity:0; pointer-events:none; transform:translateX(40px);
+    transition:opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.4,0,.2,1); font-size:14px; color:var(--slate); overflow:hidden; }
+  .slide.active { opacity:1; pointer-events:auto; transform:none; }
+  .slide.prev { transform:translateX(-40px); }
+  @media (prefers-reduced-motion: reduce) { .slide, .slide.prev { transition:none; transform:none; } .cover * { animation:none !important; } }
+
+  #nav { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:999px; padding:7px 20px; color:#fff; user-select:none; }
+  #nav button { background:none; border:none; color:inherit; cursor:pointer; font-size:16px; padding:3px 10px; border-radius:6px; font-family:inherit; }
+  #nav button:hover, #nav button:focus-visible { background:rgba(255,255,255,.2); outline:none; }
+  #counter { font-size:13px; opacity:.7; min-width:50px; text-align:center; }
+  #dots { display:flex; gap:7px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.3); cursor:pointer; transition:background .25s; }
+  .dot.on { background:#fff; }
+  #hint { position:fixed; top:10px; right:18px; color:rgba(255,255,255,.3); font-size:11px; pointer-events:none; }
+
+  /* ── header / content ── */
+  .hd { position:absolute; top:0; left:0; right:0; height:150px; background:var(--accent); display:flex; flex-direction:column; justify-content:center; padding:0 64px; }
+  .hd.navy { background:var(--navy); }
+  .hd .no { font-size:13px; font-weight:700; color:rgba(255,255,255,.62); margin-bottom:6px; }
+  .hd h1 { font-family:'Noto Serif KR',serif; font-size:31px; font-weight:700; color:#fff; line-height:1.25; }
+  .hd p { font-size:15px; color:rgba(255,255,255,.75); margin-top:6px; font-style:italic; }
+  .ct { position:absolute; top:150px; left:0; right:0; bottom:0; padding:24px 64px 28px; }
+
+  /* ── color sets ── */
+  .t { --bc:#1C7293; --bl:#EAF4F9; } .c { --bc:#C9443F; --bl:#FDF2F2; } .n { --bc:#1A3A5C; --bl:#EBF0F7; }
+  .a { --bc:#B8710A; --bl:#FEF6E7; } .p { --bc:#6B5EA8; --bl:#F1EFF9; } .g { --bc:#6B8599; --bl:#EEF2F6; }
+
+  /* ── layout ── */
+  .g2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .col { display:flex; flex-direction:column; gap:14px; min-height:0; }
+  .h100 { height:100%; }
+  .fill { flex:1; min-height:0; }
+
+  /* ── components ── */
+  .box { background:#fff; border:1px solid var(--gray-line); border-radius:8px; box-shadow:0 2px 10px rgba(26,58,92,.06); padding:13px 18px 13px 23px; position:relative; overflow:hidden; }
+  .box::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--bc,var(--teal)); }
+  .box h4 { font-size:15.5px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .box h4 small { font-weight:400; color:var(--gray); font-size:12.5px; margin-left:6px; }
+  .box p, .box li { font-size:13.5px; line-height:1.6; color:var(--slate); }
+  ul.tk { list-style:none; }
+  ul.tk li::before { content:'▸ '; color:var(--bc,var(--teal)); }
+  ol.nm { list-style:none; counter-reset:n; }
+  ol.nm li { counter-increment:n; padding-left:1.6em; position:relative; font-size:13.3px; line-height:1.6; }
+  ol.nm li::before { content:counter(n); position:absolute; left:0; top:.2em; width:1.2em; height:1.2em; border-radius:50%; background:var(--bc,var(--teal)); color:#fff; font-size:.78em; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .def { background:var(--accent-lt); border-left:5px solid var(--accent); border-radius:6px; padding:12px 18px; }
+  .def .lbl { font-size:12.5px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+  .def p { font-size:14px; line-height:1.62; }
+  .fm { background:#EEF4FF; border:1px solid #C5D8F0; border-radius:5px; padding:6px 12px; font-family:'Courier New',monospace; font-size:13px; color:var(--navy); margin:5px 0 7px; line-height:1.55; }
+  .kc { background:#fff; border:1px solid var(--gray-line); border-radius:8px; box-shadow:0 2px 10px rgba(26,58,92,.06); display:flex; flex-direction:column; overflow:hidden; }
+  .kc .cap { height:5px; background:var(--bc); flex-shrink:0; }
+  .kc .bd { padding:12px 18px; flex:1; }
+  .kc h3 { font-family:'Noto Serif KR',serif; font-size:17px; color:var(--navy); line-height:1.3; }
+  .kc .sub { font-size:12.5px; color:var(--bc); font-style:italic; margin:2px 0 6px; }
+  .kc .lb { font-size:12.5px; font-weight:700; color:var(--bc); margin:8px 0 2px; }
+  .kc p, .kc li { font-size:13px; line-height:1.56; }
+  .kc .ft { padding:8px 16px; font-size:12.5px; font-weight:700; text-align:center; background:var(--bl); color:var(--bc); }
+  .flow { display:flex; align-items:stretch; }
+  .flow .st { flex:1; text-align:center; background:var(--bl,var(--teal-lt)); border:1px solid var(--bc,var(--teal)); border-radius:5px; padding:8px 4px; font-size:12.5px; font-weight:700; color:var(--bc,var(--teal)); line-height:1.35; display:flex; flex-direction:column; justify-content:center; }
+  .flow .st small { display:block; font-weight:400; color:var(--slate); font-size:11px; margin-top:2px; }
+  .flow .ar { align-self:center; color:var(--gray); padding:0 5px; font-size:15px; flex-shrink:0; }
+  .fig { background:#fff; border:1px solid var(--gray-line); border-radius:8px; padding:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(26,58,92,.06); }
+  .fig svg { display:block; max-width:100%; }
+  .fc { font-size:12px; color:var(--gray); margin-top:6px; text-align:center; line-height:1.45; }
+  .fig h5 { font-size:14.5px; color:var(--navy); margin-top:8px; }
+  .fig.on { border:2px solid var(--accent); background:var(--accent-lt); }
+  .tag { display:inline-block; padding:1px 7px; border-radius:4px; font-size:11px; font-weight:700; background:var(--bc,var(--teal)); color:#fff; vertical-align:middle; margin-left:4px; }
+  .strip { background:var(--bl,var(--teal-lt)); border:1px solid var(--bc,var(--teal)); border-radius:6px; padding:9px 16px; font-size:13.3px; color:var(--slate); line-height:1.55; }
+  .strip b { color:var(--bc,var(--teal)); }
+  .sec { font-size:12.5px; font-weight:700; color:var(--gray); margin-bottom:4px; }
+  table.tb { width:100%; border-collapse:collapse; font-size:13px; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 10px rgba(26,58,92,.06); }
+  .tb th { background:var(--navy); color:#fff; padding:9px 12px; text-align:left; font-family:'Noto Serif KR',serif; font-size:13.5px; }
+  .tb td { padding:8px 12px; border-bottom:1px solid var(--gray-line); color:var(--slate); line-height:1.45; vertical-align:middle; }
+  .tb tr:nth-child(even) td { background:#F8FBFF; }
+  .tb td:first-child { font-weight:700; color:var(--navy); white-space:nowrap; }
+  strong { color:var(--navy); }
+
+  /* ── cover ── */
+  .cover { background:var(--navy); }
+  .cover .lp { position:absolute; left:0; top:0; bottom:0; width:56%; display:flex; flex-direction:column; justify-content:center; padding:0 72px 50px; }
+  .cover .part { font-size:15px; color:var(--accent-soft); font-weight:700; margin-bottom:20px; animation:fadeUp .7s ease both; }
+  .cover h1 { font-family:'Noto Serif KR',serif; font-size:50px; font-weight:900; line-height:1.22; color:#fff; animation:fadeUp .7s .06s ease both; }
+  .cover h1 span { display:block; color:var(--accent-soft); }
+  .cover .en { font-size:17px; color:rgba(255,255,255,.5); font-style:italic; margin-top:14px; animation:fadeUp .7s .12s ease both; }
+  .cover .dv { width:50%; height:2px; background:var(--accent); margin:26px 0; animation:growW .6s .25s ease both; }
+  .cover .sub { font-size:15.5px; color:rgba(255,255,255,.62); line-height:1.7; animation:fadeUp .7s .3s ease both; }
+  .cover .rp { position:absolute; right:0; top:0; bottom:0; width:44%; background:var(--bg); display:flex; flex-direction:column; justify-content:center; padding:0 54px; animation:fadeUp .7s .15s ease both; }
+  .cover .rp .lbl { font-family:'Noto Serif KR',serif; font-size:19px; font-weight:700; color:var(--navy); margin-bottom:16px; }
+  .cc { background:#fff; border:1px solid var(--gray-line); border-radius:6px; box-shadow:0 2px 12px rgba(26,58,92,.08); padding:11px 16px 11px 24px; position:relative; overflow:hidden; margin-bottom:11px; }
+  .cc::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--bc); }
+  .cc h4 { font-family:'Noto Serif KR',serif; font-size:16px; color:var(--bc); margin-bottom:2px; }
+  .cc p { font-size:13px; color:var(--slate); line-height:1.5; }
+  .cover .bb { position:absolute; bottom:0; left:0; width:56%; background:var(--accent); padding:13px 72px; font-size:14px; color:#fff; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  @keyframes growW { from { width:0; } to { width:50%; } }
+
+  /* ── summary ── */
+  .sum { background:var(--navy); }
+  .sum .sh { position:absolute; top:0; left:0; right:0; height:124px; background:var(--accent); display:flex; flex-direction:column; justify-content:center; padding:0 64px; }
+  .sum .sh h1 { font-family:'Noto Serif KR',serif; font-size:31px; color:#fff; }
+  .sum .sh p { font-size:15px; color:rgba(255,255,255,.72); font-style:italic; margin-top:5px; }
+  .sum .sb { position:absolute; top:124px; left:0; right:0; bottom:46px; padding:22px 64px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:18px; }
+  .sc { background:#1E3550; border:1px solid rgba(255,255,255,.12); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+  .sc .tp { height:5px; background:var(--bc); }
+  .sc .bd { padding:13px 20px; }
+  .sc h4 { font-family:'Noto Serif KR',serif; font-size:19px; color:var(--lc); margin-bottom:7px; }
+  .sc ul { list-style:none; }
+  .sc li { font-size:15px; color:#C8D8E8; line-height:1.62; }
+  .sc li::before { content:'▸ '; color:rgba(255,255,255,.35); }
+    .sum .sf { position:absolute; bottom:0; left:0; right:0; height:46px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; }
+  .stk { flex:1.3; display:flex; flex-direction:column; gap:5px; }
+  .stk .st { flex:1; padding:3px 4px; }
+  .stk .st small { margin-top:0; }
+  #s10 .kc p { font-size:13.8px; line-height:1.62; }
+  #s11 .col { gap:10px; } #s11 .box { padding:10px 16px 10px 22px; } #s11 .box p { font-size:13px; line-height:1.5; } #s11 .fm { margin:3px 0 5px; font-size:12.5px; }
+  #s5 [data-up] svg { max-height:150px !important; }
+  #s3 [data-street] svg { max-height:150px !important; }
+  .tl { display:flex; border:1px solid var(--gray-line); border-radius:8px; background:#fff; overflow:hidden; }
+  .tl > div { flex:1; padding:8px 10px; font-size:12.5px; color:var(--slate); line-height:1.4; border-right:1px solid var(--gray-line); text-align:center; }
+  .tl > div:last-child { border-right:none; background:var(--coral-lt); }
+  .tl b { display:block; color:var(--coral); font-size:13.5px; margin-bottom:2px; }
+  #s3 .kc p { font-size:13.5px; }
+  #s9 .kc p { font-size:13.8px; line-height:1.62; }
+  #s12 .tb td { padding:9px 12px; font-size:13.5px; }
+</style>
+</head>
+<body>
+<div id="hint">← → 키 · 스와이프 · F 전체화면</div>
+
+<div id="frame"><div id="deck">
+
+<!-- ═══ 1. 표지 ═══ -->
+<section class="slide cover" id="s1">
+  <div class="lp">
+    <div class="part">Part 2 / 2</div>
+    <h1>이미지 세그멘테이션<span>개념부터 모델까지</span></h1>
+    <div class="en">Image Segmentation — From Concepts to Models</div>
+    <div class="dv"></div>
+    <div class="sub">박스를 넘어 모든 픽셀에 의미를 부여하는<br>세그멘테이션의 원리와 대표 모델</div>
+  </div>
+  <div class="rp">
+    <div class="lbl">발표 구성</div>
+    <div class="cc c"><h4>01&nbsp;&nbsp;개념과 유형</h4><p>세그멘테이션의 정의, 시맨틱·인스턴스·파놉틱</p></div>
+    <div class="cc a"><h4>02&nbsp;&nbsp;핵심 원리</h4><p>인코더–디코더, 업샘플링, 스킵 연결</p></div>
+    <div class="cc n"><h4>03&nbsp;&nbsp;대표 모델</h4><p>FCN, U-Net, DeepLab, Mask R-CNN, Mask2Former, SAM</p></div>
+    <div class="cc p"><h4>04&nbsp;&nbsp;학습과 평가</h4><p>Cross-Entropy·Dice 손실, mIoU·mask AP·PQ</p></div>
+  </div>
+  <div class="bb">세그멘테이션 = 픽셀마다 "무엇인가"를 예측</div>
+</section>
+
+<!-- ═══ 2. 세그멘테이션이란 ═══ -->
+<section class="slide" id="s2">
+  <div class="hd"><div class="no">01 개념과 유형</div><h1>이미지 세그멘테이션이란?</h1><p>객체가 "어디쯤" 있는지가 아니라, 정확히 "어느 픽셀"인지</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="def">
+      <div class="lbl">정의</div>
+      <p>이미지 세그멘테이션(Image Segmentation)은 이미지의 <strong>모든 픽셀</strong>에 클래스 레이블을 할당해 이미지를 의미 있는 영역으로 나누는 기술입니다. 결과물은 입력과 같은 크기의 <strong>레이블 맵(마스크)</strong>이며, 객체의 정확한 형태와 경계까지 표현합니다.</p>
+    </div>
+    <div class="g3">
+      <div class="fig"><div data-scene="cls"></div><h5>이미지 분류</h5><div class="fc">이미지 전체 → 레이블 1개</div></div>
+      <div class="fig"><div data-scene="det"></div><h5>객체 탐지 (Part 1)</h5><div class="fc">객체마다 클래스 + 사각형 박스 · 대략적 위치</div></div>
+      <div class="fig on"><div data-scene="seg"></div><h5>세그멘테이션</h5><div class="fc">픽셀마다 클래스 · 정확한 형태와 경계</div></div>
+    </div>
+    <div class="g2 fill">
+      <div class="box c">
+        <h4>왜 박스로는 부족한가?</h4>
+        <ul class="tk">
+          <li>박스 안에는 객체와 <strong>배경이 섞여</strong> 있음 (기울어진 차, 사람의 팔 사이)</li>
+          <li>도로·하늘처럼 <strong>형태가 정해지지 않은 영역</strong>은 박스로 표현하기 어려움</li>
+          <li>면적·부피 측정, 정밀한 경계가 필요한 작업에는 픽셀 정보가 필수</li>
+        </ul>
+      </div>
+      <div class="box n">
+        <h4>주요 활용 분야</h4>
+        <ul class="tk">
+          <li><strong>자율 주행</strong>: 주행 가능 영역, 차선, 보행자 영역 분할</li>
+          <li><strong>의료 영상</strong>: 종양·장기 경계 분할, 크기 측정</li>
+          <li><strong>위성·항공</strong>: 토지 피복, 건물·도로 추출</li>
+          <li><strong>영상 편집</strong>: 인물 배경 제거, 가상 배경</li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 3. 유형 ═══ -->
+<section class="slide" id="s3">
+  <div class="hd"><div class="no">01 개념과 유형</div><h1>세그멘테이션의 세 가지 유형</h1><p>같은 장면도 "무엇을 구분하느냐"에 따라 결과가 달라진다</p></div>
+  <div class="ct"><div class="g3 h100">
+    <div class="kc t"><div class="cap"></div>
+      <div style="padding:12px 16px 0"><div data-street="semantic"></div></div>
+      <div class="bd">
+        <h3>시맨틱 세그멘테이션</h3><div class="sub">Semantic Segmentation</div>
+        <p>모든 픽셀을 클래스로 분류합니다. <strong>같은 클래스면 같은 레이블</strong>이므로 두 자동차는 하나의 "차량" 영역이 됩니다.</p>
+        <div class="lb">답하는 질문</div><p>"이 픽셀은 무엇인가?"</p>
+        <div class="lb">대표 모델</div><p>FCN, U-Net, DeepLab, SegFormer</p>
+      </div><div class="ft">평가 지표: mIoU</div></div>
+    <div class="kc n"><div class="cap"></div>
+      <div style="padding:12px 16px 0"><div data-street="instance"></div></div>
+      <div class="bd">
+        <h3>인스턴스 세그멘테이션</h3><div class="sub">Instance Segmentation</div>
+        <p>셀 수 있는 객체(Thing)를 찾아 <strong>개체마다 별도의 마스크</strong>를 만듭니다. 두 자동차가 서로 다른 인스턴스로 구분되며, 배경은 다루지 않습니다.</p>
+        <div class="lb">답하는 질문</div><p>"이 픽셀은 어느 객체의 것인가?"</p>
+        <div class="lb">대표 모델</div><p>Mask R-CNN, YOLACT, SOLO</p>
+      </div><div class="ft">평가 지표: mask AP</div></div>
+    <div class="kc c"><div class="cap"></div>
+      <div style="padding:12px 16px 0"><div data-street="panoptic"></div></div>
+      <div class="bd">
+        <h3>파놉틱 세그멘테이션</h3><div class="sub">Panoptic Segmentation</div>
+        <p>두 방식을 통합해 <strong>모든 픽셀</strong>에 클래스를 주고, Thing(차·사람)은 인스턴스 ID까지 부여합니다. Stuff(하늘·도로)는 클래스만 가집니다.</p>
+        <div class="lb">답하는 질문</div><p>"무엇이며, 몇 번째 객체인가?"</p>
+        <div class="lb">대표 모델</div><p>Panoptic FPN, Mask2Former</p>
+      </div><div class="ft">평가 지표: PQ = SQ × RQ</div></div>
+  </div></div>
+</section>
+
+<!-- ═══ 4. 핵심 과제: 인코더-디코더 ═══ -->
+<section class="slide" id="s4">
+  <div class="hd"><div class="no">02 핵심 원리</div><h1>픽셀 단위 예측의 딜레마와 인코더–디코더</h1><p>"무엇(what)"을 알려면 줄여야 하고, "어디(where)"를 지키려면 줄이면 안 된다</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="def" style="display:flex;gap:22px;align-items:center">
+      <p style="flex:1">분류용 CNN은 풀링·stride로 해상도를 1/32까지 줄이며 <strong>의미 정보</strong>를 얻지만, 그 과정에서 <strong>위치 정보</strong>를 잃습니다. 세그멘테이션은 입력과 같은 해상도로 픽셀마다 답해야 하므로, 줄였다가 다시 키우는 구조가 필요합니다.</p>
+      <div class="fm" style="margin:0;white-space:nowrap">입력 H×W×3 → 출력 H×W×C<br>(픽셀별 C개 클래스 점수 → argmax)</div>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 -14 800 206" width="100%" style="max-height:200px" font-family="Noto Sans KR, sans-serif">
+        <defs><marker id="m4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6B8599"/></marker></defs>
+        <g fill="none" stroke="#6B8599" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#m4)">
+          <path d="M122 40 C 122 2, 668 2, 668 38"/><path d="M176 54 C 176 22, 612 22, 612 52"/>
+          <path d="M238 67 C 238 42, 548 42, 548 65"/><path d="M308 78 C 308 60, 476 60, 476 76"/>
+        </g>
+        <text x="395" y="-2" font-size="12" fill="#6B8599" text-anchor="middle" font-weight="700">스킵 연결 (Skip Connection): 인코더의 고해상도 특징을 디코더로 전달</text>
+        <rect x="10" y="40" width="70" height="120" rx="4" fill="#DDE6EE"/><circle cx="36" cy="90" r="12" fill="#8A9BAD"/><rect x="28" y="102" width="16" height="36" rx="5" fill="#8A9BAD"/><rect x="50" y="112" width="26" height="18" rx="4" fill="#8A9BAD"/>
+        <rect x="110" y="40" width="24" height="120" rx="3" fill="#7FB5CB"/><rect x="160" y="54" width="32" height="92" rx="3" fill="#4A93B0"/>
+        <rect x="218" y="67" width="40" height="66" rx="3" fill="#2F7F9E"/><rect x="284" y="78" width="48" height="44" rx="3" fill="#1C7293"/>
+        <rect x="360" y="86" width="64" height="28" rx="3" fill="#1A3A5C"/>
+        <rect x="452" y="78" width="48" height="44" rx="3" fill="#C9443F"/><rect x="528" y="67" width="40" height="66" rx="3" fill="#D4625D"/>
+        <rect x="596" y="54" width="32" height="92" rx="3" fill="#DE827E"/><rect x="656" y="40" width="24" height="120" rx="3" fill="#E9A5A2"/>
+        <rect x="710" y="40" width="70" height="120" rx="4" fill="#9CC8E0"/><rect x="710" y="118" width="70" height="42" fill="#B8B2C8"/><circle cx="736" cy="90" r="12" fill="#1C7293"/><rect x="728" y="102" width="16" height="36" rx="5" fill="#1C7293"/><rect x="750" y="112" width="26" height="18" rx="4" fill="#C9443F"/>
+        <g stroke="#9FB3C4" stroke-width="1.5" marker-end="url(#m4)"><line x1="82" y1="100" x2="107" y2="100"/><line x1="136" y1="100" x2="157" y2="100"/><line x1="194" y1="100" x2="215" y2="100"/><line x1="260" y1="100" x2="281" y2="100"/><line x1="334" y1="100" x2="357" y2="100"/><line x1="426" y1="100" x2="449" y2="100"/><line x1="502" y1="100" x2="525" y2="100"/><line x1="570" y1="100" x2="593" y2="100"/><line x1="630" y1="100" x2="653" y2="100"/><line x1="682" y1="100" x2="707" y2="100"/></g>
+        <text x="45" y="180" font-size="12" fill="#3D5A73" text-anchor="middle">입력 H×W×3</text>
+        <text x="221" y="180" font-size="12.5" fill="#1C7293" text-anchor="middle" font-weight="700">인코더: 해상도 ↓ · 채널 ↑</text>
+        <text x="392" y="140" font-size="12" fill="#1A3A5C" text-anchor="middle" font-weight="700">병목</text>
+        <text x="566" y="180" font-size="12.5" fill="#C9443F" text-anchor="middle" font-weight="700">디코더: 해상도 ↑ (업샘플링)</text>
+        <text x="745" y="180" font-size="12" fill="#3D5A73" text-anchor="middle">출력 H×W×C</text>
+      </svg>
+    </div>
+    <div class="g3 fill">
+      <div class="box t"><h4>인코더 (Encoder)</h4><p>사전학습된 분류망(VGG, ResNet 등)으로 특징을 추출. 깊어질수록 해상도는 작아지고 <strong>무엇인지</strong>에 대한 정보가 풍부해집니다.</p></div>
+      <div class="box c"><h4>디코더 (Decoder)</h4><p>작아진 특징맵을 단계적으로 <strong>업샘플링</strong>해 원래 해상도로 복원하고, 마지막 1×1 conv로 픽셀마다 C개 클래스 점수를 냅니다.</p></div>
+      <div class="box g"><h4>스킵 연결 (Skip Connection)</h4><p>인코더 초기 층의 세밀한 <strong>위치·경계 정보</strong>를 디코더에 직접 전달해, 업샘플링만으로는 복원하기 어려운 디테일을 되살립니다.</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 5. 업샘플링 ═══ -->
+<section class="slide" id="s5">
+  <div class="hd"><div class="no">02 핵심 원리</div><h1>업샘플링: 해상도를 어떻게 되살리는가</h1><p>디코더의 핵심 연산, 작은 특징맵을 큰 특징맵으로</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="g3 fill">
+      <div class="kc t"><div class="cap"></div><div class="bd">
+        <h3>보간 (Interpolation)</h3><div class="sub">Nearest · Bilinear</div>
+        <div data-up="bilinear" style="margin:4px 0 2px"></div>
+        <p>주변 값들의 거리에 따른 가중 평균으로 새 픽셀 값을 채웁니다. <strong>학습 파라미터가 없어</strong> 가볍고 안정적이며, 보간 후 conv를 붙여 보완하는 경우가 많습니다.</p>
+      </div><div class="ft">사용 예: FCN(초기화), DeepLab 출력 복원</div></div>
+      <div class="kc a"><div class="cap"></div><div class="bd">
+        <h3>전치 합성곱</h3><div class="sub">Transposed Convolution</div>
+        <div data-up="tconv" style="margin:4px 0 2px"></div>
+        <p>입력 값 하나하나에 <strong>학습된 커널</strong>을 곱해 넓은 출력에 뿌려 더합니다. stride 2면 해상도 2배. 업샘플링 방식 자체를 데이터로 학습합니다.</p>
+      </div><div class="ft">주의: 커널이 겹치며 체커보드 무늬가 생길 수 있음</div></div>
+      <div class="kc n"><div class="cap"></div><div class="bd">
+        <h3>맥스 언풀링</h3><div class="sub">Max Unpooling</div>
+        <div data-up="unpool" style="margin:4px 0 2px"></div>
+        <p>인코더의 max pooling 때 <strong>최댓값이 있던 위치</strong>를 기억해 두었다가, 그 자리에 값을 되돌려 놓고 나머지는 0으로 채웁니다.</p>
+      </div><div class="ft">사용 예: SegNet (메모리 효율적인 경계 복원)</div></div>
+    </div>
+    <div class="strip c"><b>마지막 단계</b>&nbsp;&nbsp;원래 해상도로 복원된 특징맵에 1×1 conv를 적용해 채널 수를 클래스 수 C로 맞추고, 픽셀마다 Softmax → argmax로 최종 레이블 맵을 만듭니다.</div>
+  </div></div>
+</section>
+
+<!-- ═══ 6. FCN ═══ -->
+<section class="slide" id="s6">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>FCN: 세그멘테이션의 출발점 (2015)</h1><p>Fully Convolutional Network — 분류망을 픽셀 예측망으로 바꾸다</p></div>
+  <div class="ct"><div class="g2 h100" style="grid-template-columns:1fr 1.1fr">
+    <div class="col">
+      <div class="box c">
+        <h4>핵심 아이디어</h4>
+        <ul class="tk">
+          <li>분류망(VGG-16)의 마지막 <strong>FC 층을 1×1 conv로 교체</strong></li>
+          <li>FC 층은 고정 크기 입력만 받고 위치 정보를 버리지만, conv로 바꾸면 <strong>임의 크기 입력</strong>에 대해 클래스별 <strong>공간 히트맵</strong>이 출력됨</li>
+          <li>ImageNet 사전학습 가중치를 그대로 재활용해 end-to-end로 픽셀 예측 학습</li>
+        </ul>
+      </div>
+      <div class="flow g" style="height:62px">
+        <div class="st">conv1–3<small>pool3 · 1/8</small></div><div class="ar">→</div>
+        <div class="st">conv4<small>pool4 · 1/16</small></div><div class="ar">→</div>
+        <div class="st">conv5<small>pool5 · 1/32</small></div><div class="ar">→</div>
+        <div class="st c">1×1 conv<small>클래스 점수 맵</small></div>
+      </div>
+      <div class="box n fill">
+        <h4>의의와 한계</h4>
+        <ul class="tk">
+          <li><strong>의의</strong>: "인코더 + 업샘플링 + 스킵"이라는, 이후 거의 모든 세그멘테이션 모델의 기본 틀을 제시</li>
+          <li><strong>한계</strong>: 1/32까지 줄어든 특징에서 복원하므로 경계가 뭉개지고, 넓은 문맥(전역 정보) 활용이 부족</li>
+          <li>이 한계를 U-Net(정교한 디코더)과 DeepLab(해상도 유지 + 다중 스케일)이 각각 다른 방식으로 해결</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="sec">스킵 구조에 따른 세 가지 변형</div>
+      <div class="box g fill" style="display:flex;gap:16px;align-items:center"><div data-blocky="5"></div><div><h4>FCN-32s</h4><p>pool5(1/32)의 예측을 한 번에 <strong>32배 업샘플</strong>. 가장 단순하지만 결과가 거칠고 뭉툭합니다.</p></div></div>
+      <div class="box a fill" style="display:flex;gap:16px;align-items:center"><div data-blocky="10"></div><div><h4>FCN-16s</h4><p>pool5 예측을 2배 업샘플해 <strong>pool4 예측과 합산</strong> 후 16배 업샘플. 경계가 개선됩니다.</p></div></div>
+      <div class="box c fill" style="display:flex;gap:16px;align-items:center"><div data-blocky="20"></div><div><h4>FCN-8s</h4><p>위 결과를 다시 2배 업샘플해 <strong>pool3 예측까지 합산</strong> 후 8배 업샘플. 세 변형 중 가장 정밀합니다.</p></div></div>
+      <div class="fc">왼쪽 그림: 같은 원형 객체를 거친 해상도에서 복원할수록 경계가 계단처럼 뭉개지는 모습</div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 7. U-Net ═══ -->
+<section class="slide" id="s7">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>U-Net: 대칭형 인코더–디코더 (2015)</h1><p>의료 영상에서 출발해, 가장 널리 쓰이는 세그멘테이션 구조가 되다</p></div>
+  <div class="ct"><div class="g2 h100" style="grid-template-columns:1.1fr .9fr">
+    <div class="fig">
+      <svg viewBox="0 0 540 332" width="100%" style="max-height:470px" font-family="Noto Sans KR, sans-serif">
+        <defs>
+          <marker id="u1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#C9443F"/></marker>
+          <marker id="u2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#2E8B57"/></marker>
+          <marker id="u3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6B8599"/></marker>
+        </defs>
+        <g stroke="#6B8599" stroke-width="1.4" stroke-dasharray="5 3" marker-end="url(#u3)">
+          <line x1="62" y1="46" x2="446" y2="46"/><line x1="102" y1="112" x2="406" y2="112"/><line x1="142" y1="178" x2="366" y2="178"/><line x1="182" y1="237" x2="326" y2="237"/>
+        </g>
+        <rect x="30" y="20" width="30" height="52" rx="2" fill="#1C7293"/><rect x="70" y="90" width="30" height="44" rx="2" fill="#1C7293"/>
+        <rect x="110" y="160" width="30" height="36" rx="2" fill="#1C7293"/><rect x="150" y="222" width="30" height="30" rx="2" fill="#1C7293"/>
+        <rect x="210" y="276" width="60" height="26" rx="2" fill="#1A3A5C"/>
+        <g><rect x="450" y="20" width="15" height="52" fill="#7FB5CB"/><rect x="465" y="20" width="15" height="52" fill="#C9443F"/>
+        <rect x="410" y="90" width="15" height="44" fill="#7FB5CB"/><rect x="425" y="90" width="15" height="44" fill="#C9443F"/>
+        <rect x="370" y="160" width="15" height="36" fill="#7FB5CB"/><rect x="385" y="160" width="15" height="36" fill="#C9443F"/>
+        <rect x="330" y="222" width="15" height="30" fill="#7FB5CB"/><rect x="345" y="222" width="15" height="30" fill="#C9443F"/></g>
+        <g font-size="11" fill="#1A3A5C" text-anchor="middle" font-weight="700"><text x="45" y="15">64</text><text x="85" y="85">128</text><text x="125" y="155">256</text><text x="165" y="217">512</text><text x="240" y="293" fill="#fff">1024</text>
+        <text x="465" y="15">64</text><text x="425" y="85">128</text><text x="385" y="155">256</text><text x="345" y="217">512</text></g>
+        <g stroke="#C9443F" stroke-width="2" marker-end="url(#u1)"><line x1="45" y1="74" x2="82" y2="88"/><line x1="85" y1="136" x2="122" y2="158"/><line x1="125" y1="198" x2="162" y2="220"/><line x1="165" y1="254" x2="222" y2="274"/></g>
+        <g stroke="#2E8B57" stroke-width="2" marker-end="url(#u2)"><line x1="258" y1="274" x2="342" y2="254"/><line x1="348" y1="220" x2="385" y2="198"/><line x1="388" y1="158" x2="425" y2="136"/><line x1="428" y1="88" x2="462" y2="74"/></g>
+        <line x1="482" y1="46" x2="498" y2="46" stroke="#1A3A5C" stroke-width="2" marker-end="url(#u3)"/>
+        <rect x="500" y="22" width="34" height="48" fill="#9CC8E0"/><rect x="500" y="50" width="34" height="20" fill="#B8B2C8"/><circle cx="514" cy="42" r="7" fill="#C9443F"/>
+        <text x="517" y="84" font-size="10.5" fill="#3D5A73" text-anchor="middle">출력 맵</text>
+        <text x="100" y="296" font-size="12" fill="#1C7293" font-weight="700" text-anchor="middle">수축 경로</text>
+        <text x="410" y="296" font-size="12" fill="#C9443F" font-weight="700" text-anchor="middle">확장 경로</text>
+        <g font-size="11" fill="#3D5A73"><line x1="20" y1="322" x2="40" y2="322" stroke="#C9443F" stroke-width="2"/><text x="46" y="326">max pool 2×2 (해상도 ½)</text>
+        <line x1="190" y1="322" x2="210" y2="322" stroke="#2E8B57" stroke-width="2"/><text x="216" y="326">up-conv 2×2 (해상도 ×2)</text>
+        <line x1="360" y1="322" x2="380" y2="322" stroke="#6B8599" stroke-width="1.4" stroke-dasharray="4 2"/><text x="386" y="326">copy &amp; concat</text></g>
+      </svg>
+    </div>
+    <div class="col">
+      <div class="box t">
+        <h4>구조</h4>
+        <ul class="tk">
+          <li><strong>수축 경로</strong>: 3×3 conv 2회 + 2×2 max pool을 반복하며 채널 64 → 1024</li>
+          <li><strong>확장 경로</strong>: up-conv로 해상도를 2배씩 키우고, 같은 층의 인코더 특징을 <strong>채널 방향으로 이어 붙인 뒤(concat)</strong> conv</li>
+          <li>마지막 1×1 conv로 클래스 맵 출력</li>
+        </ul>
+      </div>
+      <div class="box c">
+        <h4>FCN과 무엇이 다른가</h4>
+        <ul class="tk">
+          <li>FCN은 스킵 특징을 <strong>더하지만(add)</strong>, U-Net은 <strong>이어 붙여(concat)</strong> 세밀한 정보를 더 많이 보존</li>
+          <li>디코더가 인코더만큼 깊은 대칭 구조 → 경계 복원이 정교</li>
+          <li>강한 데이터 증강(탄성 변형)으로 <strong>수십 장 규모</strong> 데이터에서도 학습</li>
+        </ul>
+      </div>
+      <div class="box n fill">
+        <h4>영향</h4>
+        <ul class="tk">
+          <li>세포·장기·종양 분할 등 <strong>의료 영상의 사실상 표준</strong></li>
+          <li>후속: U-Net++, Attention U-Net, 자동 설정형 nnU-Net</li>
+          <li>Stable Diffusion 같은 확산 모델의 노이즈 예측망으로도 사용</li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 8. DeepLab ═══ -->
+<section class="slide" id="s8">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>DeepLab: Atrous Convolution과 ASPP</h1><p>해상도를 줄이지 않고도 넓게 보기, 여러 배율로 동시에 보기</p></div>
+  <div class="ct"><div class="g2 h100">
+    <div class="col">
+      <div class="fig">
+        <div style="display:flex;gap:26px">
+          <div style="text-align:center"><div data-atrous="1"></div><div class="fc">rate = 1 (일반 conv)<br>수용 영역 3×3</div></div>
+          <div style="text-align:center"><div data-atrous="2"></div><div class="fc">rate = 2<br>수용 영역 5×5</div></div>
+          <div style="text-align:center"><div data-atrous="3"></div><div class="fc">rate = 3<br>수용 영역 7×7</div></div>
+        </div>
+      </div>
+      <div class="box c fill">
+        <h4>Atrous (Dilated) Convolution</h4>
+        <ul class="tk">
+          <li>3×3 커널의 원소 사이에 <strong>rate − 1칸의 간격</strong>을 두고 샘플링</li>
+          <li>파라미터 수와 연산량은 그대로, <strong>수용 영역(receptive field)만 확장</strong></li>
+          <li>풀링으로 해상도를 줄이지 않고도 넓은 문맥을 볼 수 있어, 특징맵을 1/8 또는 1/16 해상도로 유지</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="box a">
+        <h4>ASPP <small>Atrous Spatial Pyramid Pooling</small></h4>
+        <div class="flow a" style="height:196px;margin:6px 0">
+          <div class="st">백본<small>특징맵</small></div><div class="ar">→</div>
+          <div class="stk">
+            <div class="st">1×1 conv</div><div class="st">3×3 rate 6</div><div class="st">3×3 rate 12</div><div class="st">3×3 rate 18</div><div class="st">이미지 풀링</div>
+          </div><div class="ar">→</div>
+          <div class="st">Concat<small>+ 1×1 conv</small></div><div class="ar">→</div>
+          <div class="st">디코더<small>/ 출력</small></div>
+        </div>
+        <p>서로 다른 rate의 atrous conv를 <strong>병렬</strong>로 적용해 작은 객체부터 큰 객체까지 여러 스케일의 문맥을 한 번에 포착합니다.</p>
+      </div>
+      <div class="box n fill">
+        <h4>버전별 발전</h4>
+        <ul class="tk">
+          <li><strong>v1</strong> (2014): Atrous conv + <strong>CRF</strong> 후처리로 경계 보정</li>
+          <li><strong>v2</strong>: ASPP 도입, ResNet 백본</li>
+          <li><strong>v3</strong> (2017): ASPP 개선(BN, 이미지 수준 특징), CRF 제거</li>
+          <li><strong>v3+</strong> (2018): 가벼운 <strong>디코더</strong> 추가로 경계 품질 향상 → 인코더–디코더와 다중 스케일의 결합</li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 9. Mask R-CNN ═══ -->
+<section class="slide" id="s9">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>Mask R-CNN: 탐지에서 인스턴스 세그멘테이션으로 (2017)</h1><p>Part 1의 Faster R-CNN에 "마스크 브랜치" 하나를 더하다</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="flow" style="height:150px">
+      <div class="st g">입력 이미지</div><div class="ar">→</div>
+      <div class="st t">Backbone<small>ResNet + FPN</small></div><div class="ar">→</div>
+      <div class="st t">RPN<small>후보 영역</small></div><div class="ar">→</div>
+      <div class="st c">RoIAlign<small>정밀한 특징 추출</small></div><div class="ar">→</div>
+      <div class="stk">
+        <div class="st n">분류 헤드<small>클래스</small></div>
+        <div class="st n">회귀 헤드<small>박스 정제</small></div>
+        <div class="st c">마스크 헤드<small>RoI마다 28×28 마스크</small></div>
+      </div>
+    </div>
+    <div class="g3 fill">
+      <div class="kc t"><div class="cap"></div><div class="bd">
+        <h3>핵심 아이디어</h3>
+        <p style="margin-top:6px">Faster R-CNN(탐지)에 <strong>마스크 예측 브랜치를 병렬로</strong> 추가. 박스로 객체를 찾고, 그 박스 안에서 어떤 픽셀이 객체인지를 예측합니다.</p>
+        <div class="lb">탐지 → 분할</div>
+        <p>"먼저 찾고, 그다음 분할한다(detect-then-segment)"는 인스턴스 세그멘테이션의 대표 방식을 확립했습니다.</p>
+      </div></div>
+      <div class="kc c"><div class="cap"></div><div class="bd">
+        <h3>RoIAlign</h3>
+        <p style="margin-top:6px">기존 RoI Pooling은 좌표를 정수 격자로 <strong>반올림(양자화)</strong>해 특징과 원본 사이에 몇 픽셀씩 어긋남이 생깁니다. 박스 분류엔 괜찮지만 마스크에는 치명적입니다.</p>
+        <div class="lb">해결</div>
+        <p>반올림 없이 실수 좌표 그대로 두고 <strong>bilinear 보간</strong>으로 특징을 샘플링 → 픽셀 정렬 오차 해소, 마스크 정확도 크게 향상</p>
+      </div></div>
+      <div class="kc n"><div class="cap"></div><div class="bd">
+        <h3>마스크 브랜치</h3>
+        <p style="margin-top:6px">각 RoI에 작은 FCN을 적용해 <strong>클래스별 m×m(28×28) 이진 마스크</strong>를 출력하고, 박스 크기로 되돌려 붙입니다.</p>
+        <div class="lb">분리된 학습</div>
+        <p>Softmax로 클래스끼리 경쟁시키지 않고, 분류 헤드가 고른 클래스의 마스크에만 <strong>픽셀별 Sigmoid + BCE</strong>를 적용 → "무엇"과 "모양"을 분리해 학습</p>
+      </div></div>
+    </div>
+    <div class="strip n">이 구조는 키포인트(사람 관절) 추정으로도 쉽게 확장되며, 오랫동안 COCO 인스턴스 세그멘테이션의 기준 모델로 쓰였습니다.</div>
+  </div></div>
+</section>
+
+<!-- ═══ 10. 파놉틱과 최신 동향 ═══ -->
+<section class="slide" id="s10">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>파놉틱 세그멘테이션과 최신 동향</h1><p>과제별 전용 모델에서, 하나로 모든 것을 분할하는 모델로</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="tl">
+      <div><b>2015</b>FCN · U-Net</div><div><b>2017</b>Mask R-CNN<br>DeepLab v3</div><div><b>2019</b>Panoptic FPN</div>
+      <div><b>2021</b>SegFormer<br>MaskFormer</div><div><b>2022</b>Mask2Former</div><div><b>2023</b>SAM</div><div><b>2024–25</b>SAM 2 · SAM 3</div>
+    </div>
+    <div class="g3 fill">
+      <div class="kc c"><div class="cap"></div><div class="bd">
+        <h3>Panoptic FPN <span class="tag">2019</span></h3><div class="sub">두 브랜치를 하나로</div>
+        <p>Mask R-CNN에 FPN 특징을 공유하는 <strong>시맨틱 브랜치</strong>를 추가. Thing은 인스턴스 브랜치, Stuff는 시맨틱 브랜치 결과를 쓰고, 겹치는 픽셀은 규칙에 따라 병합합니다.</p>
+        <div class="lb">의미</div><p>하나의 네트워크로 파놉틱 결과를 내는 강력한 기준 모델</p>
+      </div></div>
+      <div class="kc p"><div class="cap"></div><div class="bd">
+        <h3>Mask2Former <span class="tag">2022</span></h3><div class="sub">픽셀 분류 → 마스크 분류</div>
+        <p>픽셀마다 클래스를 고르는 대신, N개의 쿼리가 각각 <strong>(마스크, 클래스) 쌍</strong>을 예측합니다. DETR의 집합 예측을 세그멘테이션으로 가져온 방식입니다.</p>
+        <div class="lb">핵심</div><p><strong>Masked attention</strong>으로 각 쿼리가 자기 마스크 영역에만 집중 → 같은 구조로 시맨틱·인스턴스·파놉틱 모두에서 당시 최고 수준</p>
+      </div></div>
+      <div class="kc t"><div class="cap"></div><div class="bd">
+        <h3>SAM <span class="tag">2023</span></h3><div class="sub">Segment Anything Model (Meta)</div>
+        <p>점·박스·마스크 같은 <strong>프롬프트</strong>를 주면 해당 객체의 마스크를 출력하는 분할 파운데이션 모델. 약 1,100만 장 이미지, 10억 개 이상의 마스크(SA-1B)로 학습했습니다.</p>
+        <div class="lb">특징</div><p>처음 보는 대상도 추가 학습 없이 분할(zero-shot). 클래스 이름 대신 "마스크"만 출력 → 라벨링 도구로 널리 활용. SAM 2는 비디오, SAM 3는 텍스트 개념 프롬프트까지 확장</p>
+      </div></div>
+    </div>
+    <div class="strip c"><b>패러다임 변화</b>&nbsp;&nbsp;픽셀별 분류 (FCN · U-Net · DeepLab) → 마스크 분류 (MaskFormer · Mask2Former) → 프롬프트 기반 범용 분할 (SAM)</div>
+  </div></div>
+</section>
+
+<!-- ═══ 11. 손실 & 평가 ═══ -->
+<section class="slide" id="s11">
+  <div class="hd"><div class="no">04 학습과 평가</div><h1>세그멘테이션의 손실 함수와 평가 지표</h1><p>픽셀을 맞혔는가, 그리고 영역이 얼마나 겹치는가</p></div>
+  <div class="ct"><div class="g2 h100">
+    <div class="col">
+      <div class="sec">손실 함수 (학습)</div>
+      <div class="box c">
+        <h4>Pixel-wise Cross-Entropy</h4>
+        <div class="fm">L = −(1/N) Σ<sub>픽셀</sub> Σ<sub>c</sub> y<sub>c</sub> · log p<sub>c</sub></div>
+        <p>픽셀 하나하나를 분류 문제로 보고 평균. 배경 픽셀이 대부분이면 작은 객체가 무시되므로 <strong>클래스 가중치</strong>를 주기도 합니다.</p>
+      </div>
+      <div class="box a">
+        <h4>Dice Loss</h4>
+        <div class="fm">Dice = 2|A ∩ B| / (|A| + |B|)&nbsp;&nbsp;&nbsp;L = 1 − Dice</div>
+        <p>예측 영역 A와 정답 영역 B의 <strong>겹침 자체</strong>를 최적화. 전경이 아주 작은 의료 영상에서 특히 효과적이며, CE + Dice 조합이 흔합니다.</p>
+      </div>
+      <div class="box n fill">
+        <h4>인스턴스 마스크 손실</h4>
+        <p>Mask R-CNN처럼 RoI마다 이진 마스크를 예측할 때는 <strong>픽셀별 BCE</strong>를 사용합니다. Mask2Former는 마스크에 BCE + Dice, 클래스에 CE를 함께 씁니다.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="sec">평가 지표</div>
+      <div class="box t">
+        <h4>Pixel Accuracy <small>가장 단순한 지표</small></h4>
+        <p>전체 픽셀 중 맞힌 비율. 배경이 90%면 전부 "배경"이라 답해도 90%가 되어 단독으로는 부족</p>
+      </div>
+      <div class="box c">
+        <h4>IoU · mIoU <small>시맨틱의 표준</small></h4>
+        <div class="fm">IoU<sub>c</sub> = TP / (TP + FP + FN)&nbsp;&nbsp;&nbsp;mIoU = 클래스별 IoU 평균</div>
+        <p>클래스마다 겹침을 재고 평균 → 작은 클래스도 같은 비중으로 평가</p>
+      </div>
+      <div class="box n">
+        <h4>mask AP <small>인스턴스</small></h4>
+        <p>Part 1의 AP와 같은 방식이지만, 박스 IoU 대신 <strong>마스크 IoU</strong>로 TP/FP를 판정합니다.</p>
+      </div>
+      <div class="box p fill">
+        <h4>PQ (Panoptic Quality) <small>파놉틱</small></h4>
+        <div class="fm">PQ = SQ × RQ<br>SQ = 매칭된 쌍(IoU &gt; 0.5)의 평균 IoU<br>RQ = TP / (TP + ½FP + ½FN)</div>
+        <p>"얼마나 정확히 분할했나(SQ)"와 "얼마나 잘 찾았나(RQ)"를 곱해 하나로 평가</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 12. 모델 비교 ═══ -->
+<section class="slide" id="s12">
+  <div class="hd navy"><div class="no">03 대표 모델</div><h1>대표 세그멘테이션 모델 한눈에 보기</h1><p>과제 유형과 핵심 아이디어로 정리한 모델 계보</p></div>
+  <div class="ct"><div class="col h100">
+    <table class="tb">
+      <tr><th style="width:15%">모델</th><th style="width:8%">연도</th><th style="width:13%">과제</th><th>핵심 아이디어</th><th style="width:27%">강점 · 주요 활용</th></tr>
+      <tr><td>FCN</td><td>2015</td><td>시맨틱</td><td>FC → 1×1 conv, 스킵 합산</td><td>세그멘테이션 구조의 출발점</td></tr>
+      <tr><td>U-Net</td><td>2015</td><td>시맨틱</td><td>대칭 인코더–디코더 + concat 스킵</td><td>적은 데이터, 의료 영상</td></tr>
+      <tr><td>SegNet</td><td>2015</td><td>시맨틱</td><td>풀링 인덱스 기반 언풀링</td><td>메모리 효율, 도로 장면</td></tr>
+      <tr><td>DeepLab v3+</td><td>2018</td><td>시맨틱</td><td>Atrous conv + ASPP + 디코더</td><td>다중 스케일 문맥, 도시 장면</td></tr>
+      <tr><td>Mask R-CNN</td><td>2017</td><td>인스턴스</td><td>Faster R-CNN + 마스크 브랜치, RoIAlign</td><td>탐지와 분할 동시, 범용 기준 모델</td></tr>
+      <tr><td>Panoptic FPN</td><td>2019</td><td>파놉틱</td><td>인스턴스 + 시맨틱 브랜치 통합</td><td>장면 전체 이해</td></tr>
+      <tr><td>Mask2Former</td><td>2022</td><td>통합</td><td>마스크 분류 + Masked Attention</td><td>세 과제를 하나의 구조로</td></tr>
+      <tr><td>SAM</td><td>2023</td><td>프롬프트 분할</td><td>프롬프트 인코더 + 대규모 사전학습</td><td>제로샷 범용 분할, 라벨링 도구</td></tr>
+    </table>
+    <div class="g2 fill">
+      <div class="strip t" style="display:flex;align-items:center"><p><b>Part 1과의 연결</b>&nbsp;&nbsp;Mask R-CNN = Faster R-CNN + 마스크, Mask2Former = DETR식 집합 예측 + 마스크. 탐지의 발전이 그대로 세그멘테이션으로 이어집니다.</p></div>
+      <div class="strip c" style="display:flex;align-items:center"><p><b>선택 기준</b>&nbsp;&nbsp;영역만 필요하면 시맨틱, 개체 수·개별 형태가 필요하면 인스턴스, 장면 전체를 이해해야 하면 파놉틱을 선택합니다.</p></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 13. 정리 ═══ -->
+<section class="slide sum" id="s13">
+  <div class="sh"><h1>정리</h1><p>세그멘테이션 = 픽셀마다 무엇인지, 그리고 어느 객체인지</p></div>
+  <div class="sb">
+    <div class="sc" style="--bc:#C9443F;--lc:#F4908D"><div class="tp"></div><div class="bd"><h4>개념과 유형</h4><ul>
+      <li>모든 픽셀에 레이블을 할당해 정확한 형태·경계 파악</li>
+      <li>시맨틱(클래스) · 인스턴스(개체) · 파놉틱(통합)</li>
+      <li>Thing은 개체로 세고, Stuff는 영역으로 본다</li>
+    </ul></div></div>
+    <div class="sc" style="--bc:#B8710A;--lc:#F0C27B"><div class="tp"></div><div class="bd"><h4>핵심 원리</h4><ul>
+      <li>인코더(의미) → 디코더(해상도 복원)</li>
+      <li>업샘플링: 보간 · 전치 합성곱 · 언풀링</li>
+      <li>스킵 연결로 경계 복원, Atrous conv로 해상도 유지</li>
+    </ul></div></div>
+    <div class="sc" style="--bc:#2E6DA4;--lc:#7BBFEF"><div class="tp"></div><div class="bd"><h4>대표 모델</h4><ul>
+      <li>시맨틱: FCN → U-Net → DeepLab(ASPP)</li>
+      <li>인스턴스: Mask R-CNN(RoIAlign + 마스크 브랜치)</li>
+      <li>통합·범용: Panoptic FPN → Mask2Former → SAM</li>
+    </ul></div></div>
+    <div class="sc" style="--bc:#6B5EA8;--lc:#B0A8D8"><div class="tp"></div><div class="bd"><h4>학습과 평가</h4><ul>
+      <li>손실: 픽셀별 Cross-Entropy, Dice</li>
+      <li>지표: mIoU(시맨틱) · mask AP(인스턴스) · PQ(파놉틱)</li>
+      <li>목적에 맞는 유형과 지표를 함께 선택</li>
+    </ul></div></div>
+  </div>
+  <div class="sf">객체 탐지: 무엇이 어디에 (박스)&nbsp;&nbsp;|&nbsp;&nbsp;세그멘테이션: 무엇이 정확히 어느 픽셀에 (마스크)</div>
+</section>
+
+</div></div>
+
+<div id="nav">
+  <button onclick="go(-1)" aria-label="이전 슬라이드">&#8592;</button>
+  <div id="dots"></div>
+  <span id="counter">1 / 1</span>
+  <button onclick="go(1)" aria-label="다음 슬라이드">&#8594;</button>
+</div>
+
+<script>
+  /* ── 미니 장면: 분류 / 탐지 / 세그멘테이션 ── */
+  function scene(mode) {
+    const g = '#8A9BAD', dk = '#3D5A73';
+    const catF = mode === 'seg' ? '#1C7293' : g, carF = mode === 'seg' ? '#C9443F' : g;
+    const wheel = mode === 'seg' ? '#C9443F' : dk;
+    let s = `<svg viewBox="0 0 200 120" width="100%" style="max-height:112px" font-family="Noto Sans KR, sans-serif">
+      <rect width="200" height="120" rx="6" fill="${mode === 'seg' ? '#F1F4F7' : '#E8EEF4'}"/>
+      <rect y="96" width="200" height="24" fill="${mode === 'seg' ? '#E6EBF0' : '#D5DFE8'}"/>
+      <path d="M44 60 L47 44 L57 55 Z" fill="${catF}"/><path d="M80 60 L77 44 L67 55 Z" fill="${catF}"/>
+      <ellipse cx="62" cy="76" rx="22" ry="20" fill="${catF}"/>
+      <rect x="124" y="54" width="38" height="16" rx="5" fill="${carF}"/><rect x="112" y="66" width="66" height="24" rx="6" fill="${carF}"/>
+      <circle cx="128" cy="91" r="6" fill="${wheel}"/><circle cx="162" cy="91" r="6" fill="${wheel}"/>`;
+    const lbl = (x, y, w, c, t) => `<rect x="${x}" y="${y}" width="${w}" height="13" fill="${c}"/><text x="${x + 3}" y="${y + 10}" font-size="9.5" fill="#fff" font-weight="700">${t}</text>`;
+    if (mode === 'cls') s += `<rect x="8" y="8" width="74" height="18" rx="9" fill="#6B8599"/><text x="45" y="21" font-size="10.5" fill="#fff" font-weight="700" text-anchor="middle">고양이 0.91</text>`;
+    if (mode === 'det') s += `<rect x="37" y="42" width="50" height="56" fill="none" stroke="#1C7293" stroke-width="2.4"/>` + lbl(37, 29, 42, '#1C7293', 'cat .94')
+      + `<rect x="108" y="50" width="74" height="50" fill="none" stroke="#C9443F" stroke-width="2.4"/>` + lbl(108, 37, 44, '#C9443F', 'car .88');
+    return s + '</svg>';
+  }
+  document.querySelectorAll('[data-scene]').forEach(el => el.innerHTML = scene(el.dataset.scene));
+
+  /* ── 거리 장면: 시맨틱 / 인스턴스 / 파놉틱 ── */
+  function street(mode) {
+    const P = {
+      semantic: { sky:'#9CC8E0', road:'#B8B2C8', person:'#1C7293', c1:'#C9443F', c2:'#C9443F', t1:'car', t2:'car' },
+      instance: { sky:'#F1F4F7', road:'#E6EBF0', person:'#1C7293', c1:'#C9443F', c2:'#E8A33D', t1:'car #1', t2:'car #2' },
+      panoptic: { sky:'#9CC8E0', road:'#B8B2C8', person:'#1C7293', c1:'#C9443F', c2:'#E8A33D', t1:'car #1', t2:'car #2' }
+    }[mode];
+    const stuff = mode === 'instance' ? '' : `<text x="8" y="16" font-size="9" fill="#1A3A5C" font-weight="700">sky</text><text x="192" y="114" font-size="9" fill="#1A3A5C" font-weight="700" text-anchor="end">road</text>`;
+    return `<svg viewBox="0 0 200 120" width="100%" style="max-height:118px;border-radius:6px" font-family="Noto Sans KR, sans-serif">
+      <rect width="200" height="58" fill="${P.sky}"/><rect y="58" width="200" height="62" fill="${P.road}"/>
+      <circle cx="38" cy="50" r="7" fill="${P.person}"/><rect x="31" y="58" width="14" height="28" rx="4" fill="${P.person}"/>
+      <rect x="32" y="82" width="5" height="16" fill="${P.person}"/><rect x="39" y="82" width="5" height="16" fill="${P.person}"/>
+      <rect x="72" y="58" width="34" height="14" rx="4" fill="${P.c1}"/><rect x="62" y="68" width="58" height="22" rx="5" fill="${P.c1}"/>
+      <circle cx="74" cy="92" r="6" fill="${P.c1}"/><circle cx="108" cy="92" r="6" fill="${P.c1}"/>
+      <rect x="142" y="64" width="30" height="13" rx="4" fill="${P.c2}"/><rect x="132" y="74" width="56" height="20" rx="5" fill="${P.c2}"/>
+      <circle cx="144" cy="96" r="5" fill="${P.c2}"/><circle cx="176" cy="96" r="5" fill="${P.c2}"/>
+      <text x="91" y="83" font-size="9" fill="#fff" font-weight="700" text-anchor="middle">${P.t1}</text>
+      <text x="160" y="87" font-size="9" fill="#fff" font-weight="700" text-anchor="middle">${P.t2}</text>
+      <text x="38" y="108" font-size="9" fill="#1A3A5C" font-weight="700" text-anchor="middle">person</text>${stuff}</svg>`;
+  }
+  document.querySelectorAll('[data-street]').forEach(el => el.innerHTML = street(el.dataset.street));
+
+  /* ── 격자 그리기 도우미 ── */
+  function grid(x, y, n, s, cells, stroke = '#9FB3C4') {
+    let o = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      const k = cells[r * n + c] || {};
+      o += `<rect x="${x + c * s}" y="${y + r * s}" width="${s}" height="${s}" fill="${k.f || '#fff'}" stroke="${stroke}"/>`;
+      if (k.t != null) o += `<text x="${x + c * s + s / 2}" y="${y + r * s + s / 2 + 3.5}" font-size="${k.fs || 10}" text-anchor="middle" fill="${k.tc || '#1A3A5C'}" font-weight="700">${k.t}</text>`;
+    }
+    return o;
+  }
+  function shade(t, a, b) { return `rgb(${a.map((x, i) => Math.round(x + (b[i] - x) * t)).join(',')})`; }
+
+  /* ── 업샘플링 도식 ── */
+  function up(mode) {
+    const lo = [238, 244, 250];
+    let inC, outC, hi;
+    if (mode === 'bilinear') {
+      hi = [28, 114, 147];
+      inC = [1, 2, 3, 4].map(v => ({ f: shade((v - 1) / 3, lo, hi), t: v, tc: v > 2 ? '#fff' : '#1A3A5C' }));
+      outC = [];
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) { const v = 1 + c / 3 + 2 * r / 3; outC.push({ f: shade((v - 1) / 3, lo, hi), t: v.toFixed(1), fs: 8.5, tc: v > 2.6 ? '#fff' : '#1A3A5C' }); }
+    } else if (mode === 'tconv') {
+      hi = [184, 113, 10];
+      const cols = ['#F3D9A8', '#E7B865', '#D39530', '#B8710A'], L = ['a', 'b', 'c', 'd'];
+      inC = L.map((t, i) => ({ f: cols[i], t, tc: i > 1 ? '#fff' : '#1A3A5C' }));
+      outC = [];
+      for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) { const i = (r >> 1) * 2 + (c >> 1); outC.push({ f: cols[i], t: `${L[i]}w${(r % 2) * 2 + (c % 2) + 1}`, fs: 8, tc: i > 1 ? '#fff' : '#1A3A5C' }); }
+    } else {
+      const vals = [6, 8, 3, 4], pos = { 4: 0, 3: 1, 13: 2, 10: 3 };
+      inC = vals.map(v => ({ f: '#1A3A5C', t: v, tc: '#fff' }));
+      outC = [];
+      for (let k = 0; k < 16; k++) outC.push(k in pos ? { f: '#1A3A5C', t: vals[pos[k]], tc: '#fff' } : { f: '#F4F7FB', t: 0, tc: '#B5C3D0' });
+    }
+    return `<svg viewBox="0 0 210 110" width="100%" style="max-height:112px" font-family="Noto Sans KR, sans-serif">
+      ${grid(10, 30, 2, 22, inC)}<text x="32" y="90" font-size="10" fill="#6B8599" text-anchor="middle">입력 2×2</text>
+      <line x1="64" y1="52" x2="96" y2="52" stroke="#6B8599" stroke-width="1.6"/><path d="M96 47 L104 52 L96 57 Z" fill="#6B8599"/>
+      ${grid(112, 8, 4, 22, outC)}<text x="156" y="106" font-size="10" fill="#6B8599" text-anchor="middle">출력 4×4</text></svg>`;
+  }
+  document.querySelectorAll('[data-up]').forEach(el => el.innerHTML = up(el.dataset.up));
+
+  /* ── 해상도별 복원 품질 (FCN 변형) ── */
+  function blocky(n) {
+    const S = 72, s = S / n, R = 27; let o = '';
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      const cx = (c + .5) * s - S / 2, cy = (r + .5) * s - S / 2;
+      o += `<rect x="${c * s}" y="${r * s}" width="${s}" height="${s}" fill="${cx * cx + cy * cy < R * R ? '#C9443F' : '#F1F4F7'}"/>`;
+    }
+    return `<svg viewBox="0 0 ${S} ${S}" width="72" height="72" style="border:1px solid #D0DDE8;border-radius:4px">${o}<circle cx="36" cy="36" r="${R}" fill="none" stroke="#1A3A5C" stroke-width="1.2" stroke-dasharray="3 2"/></svg>`;
+  }
+  document.querySelectorAll('[data-blocky]').forEach(el => el.innerHTML = blocky(+el.dataset.blocky));
+
+  /* ── Atrous convolution 샘플링 위치 ── */
+  function atrous(rate) {
+    const cells = [];
+    for (let r = 0; r < 7; r++) for (let c = 0; c < 7; c++) {
+      const inRF = Math.abs(r - 3) <= rate && Math.abs(c - 3) <= rate;
+      const hit = (r - 3) % rate === 0 && (c - 3) % rate === 0 && inRF;
+      cells.push({ f: hit ? '#C9443F' : inRF ? '#FBE3E2' : '#fff' });
+    }
+    return `<svg viewBox="0 0 106 106" width="112">${grid(4, 4, 7, 14, cells, '#C9D6E2')}</svg>`;
+  }
+  document.querySelectorAll('[data-atrous]').forEach(el => el.innerHTML = atrous(+el.dataset.atrous));
+
+
+  /* ── 화면 크기에 맞춰 1280×720 덱 스케일 ── */
+  function fit() {
+    const s = Math.min((innerWidth - 32) / 1280, (innerHeight - 80) / 720);
+    const f = document.getElementById('frame');
+    f.style.width = 1280 * s + 'px'; f.style.height = 720 * s + 'px';
+    document.getElementById('deck').style.transform = `scale(${s})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  /* ── 슬라이드 이동 ── */
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  let cur = 0;
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => { const d = document.createElement('div'); d.className = 'dot'; d.onclick = () => goTo(i); dotsEl.appendChild(d); });
+
+  function goTo(n) {
+    const prev = cur;
+    cur = (n + total) % total;
+    slides.forEach(s => s.classList.remove('active', 'prev'));
+    if (prev !== cur) slides[prev].classList.add('prev');
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur));
+  }
+  function go(d) { goTo(cur + d); }
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); go(1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(-1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(total - 1);
+    if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
+  });
+  let tx = null;
+  addEventListener('touchstart', e => tx = e.touches[0].clientX, { passive: true });
+  addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1); tx = null; });
+
+  goTo(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Part 1. 이미지 객체 탐지 — 모델의 작동 원리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:#1A3A5C; --teal:#1C7293; --teal-lt:#EAF4F9; --coral:#C9443F; --coral-lt:#FDF2F2;
+    --slate:#3D5A73; --gray:#6B8599; --gray-line:#D0DDE8; --bg:#F4F7FB; --white:#FFFFFF;
+    --accent:var(--teal); --accent-lt:var(--teal-lt); --accent-soft:#6EC6E6;
+  }
+  html, body { width:100%; height:100%; background:#1a1f2e; overflow:hidden; }
+  body { font-family:'Noto Sans KR',sans-serif; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; }
+
+  #frame { position:relative; flex-shrink:0; }
+  #deck { position:absolute; top:0; left:0; width:1280px; height:720px; transform-origin:0 0; border-radius:8px; overflow:hidden; box-shadow:0 20px 70px rgba(0,0,0,.55); background:var(--bg); }
+  .slide { position:absolute; inset:0; background:var(--bg); opacity:0; pointer-events:none; transform:translateX(40px);
+    transition:opacity .4s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.4,0,.2,1); font-size:14px; color:var(--slate); overflow:hidden; }
+  .slide.active { opacity:1; pointer-events:auto; transform:none; }
+  .slide.prev { transform:translateX(-40px); }
+  @media (prefers-reduced-motion: reduce) { .slide, .slide.prev { transition:none; transform:none; } .cover * { animation:none !important; } }
+
+  #nav { display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:999px; padding:7px 20px; color:#fff; user-select:none; }
+  #nav button { background:none; border:none; color:inherit; cursor:pointer; font-size:16px; padding:3px 10px; border-radius:6px; font-family:inherit; }
+  #nav button:hover, #nav button:focus-visible { background:rgba(255,255,255,.2); outline:none; }
+  #counter { font-size:13px; opacity:.7; min-width:50px; text-align:center; }
+  #dots { display:flex; gap:7px; }
+  .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,.3); cursor:pointer; transition:background .25s; }
+  .dot.on { background:#fff; }
+  #hint { position:fixed; top:10px; right:18px; color:rgba(255,255,255,.3); font-size:11px; pointer-events:none; }
+
+  /* ── header / content ── */
+  .hd { position:absolute; top:0; left:0; right:0; height:150px; background:var(--accent); display:flex; flex-direction:column; justify-content:center; padding:0 64px; }
+  .hd.navy { background:var(--navy); }
+  .hd .no { font-size:13px; font-weight:700; color:rgba(255,255,255,.62); margin-bottom:6px; }
+  .hd h1 { font-family:'Noto Serif KR',serif; font-size:31px; font-weight:700; color:#fff; line-height:1.25; }
+  .hd p { font-size:15px; color:rgba(255,255,255,.75); margin-top:6px; font-style:italic; }
+  .ct { position:absolute; top:150px; left:0; right:0; bottom:0; padding:24px 64px 28px; }
+
+  /* ── color sets ── */
+  .t { --bc:#1C7293; --bl:#EAF4F9; } .c { --bc:#C9443F; --bl:#FDF2F2; } .n { --bc:#1A3A5C; --bl:#EBF0F7; }
+  .a { --bc:#B8710A; --bl:#FEF6E7; } .p { --bc:#6B5EA8; --bl:#F1EFF9; } .g { --bc:#6B8599; --bl:#EEF2F6; }
+
+  /* ── layout ── */
+  .g2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .col { display:flex; flex-direction:column; gap:14px; min-height:0; }
+  .h100 { height:100%; }
+  .fill { flex:1; min-height:0; }
+
+  /* ── components ── */
+  .box { background:#fff; border:1px solid var(--gray-line); border-radius:8px; box-shadow:0 2px 10px rgba(26,58,92,.06); padding:13px 18px 13px 23px; position:relative; overflow:hidden; }
+  .box::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--bc,var(--teal)); }
+  .box h4 { font-size:15.5px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .box h4 small { font-weight:400; color:var(--gray); font-size:12.5px; margin-left:6px; }
+  .box p, .box li { font-size:13.5px; line-height:1.6; color:var(--slate); }
+  ul.tk { list-style:none; }
+  ul.tk li::before { content:'▸ '; color:var(--bc,var(--teal)); }
+  ol.nm { list-style:none; counter-reset:n; }
+  ol.nm li { counter-increment:n; padding-left:1.6em; position:relative; font-size:13.3px; line-height:1.6; }
+  ol.nm li::before { content:counter(n); position:absolute; left:0; top:.2em; width:1.2em; height:1.2em; border-radius:50%; background:var(--bc,var(--teal)); color:#fff; font-size:.78em; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .def { background:var(--accent-lt); border-left:5px solid var(--accent); border-radius:6px; padding:12px 18px; }
+  .def .lbl { font-size:12.5px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+  .def p { font-size:14px; line-height:1.62; }
+  .fm { background:#EEF4FF; border:1px solid #C5D8F0; border-radius:5px; padding:6px 12px; font-family:'Courier New',monospace; font-size:13px; color:var(--navy); margin:5px 0 7px; line-height:1.55; }
+  .kc { background:#fff; border:1px solid var(--gray-line); border-radius:8px; box-shadow:0 2px 10px rgba(26,58,92,.06); display:flex; flex-direction:column; overflow:hidden; }
+  .kc .cap { height:5px; background:var(--bc); flex-shrink:0; }
+  .kc .bd { padding:12px 18px; flex:1; }
+  .kc h3 { font-family:'Noto Serif KR',serif; font-size:17px; color:var(--navy); line-height:1.3; }
+  .kc .sub { font-size:12.5px; color:var(--bc); font-style:italic; margin:2px 0 6px; }
+  .kc .lb { font-size:12.5px; font-weight:700; color:var(--bc); margin:8px 0 2px; }
+  .kc p, .kc li { font-size:13px; line-height:1.56; }
+  .kc .ft { padding:8px 16px; font-size:12.5px; font-weight:700; text-align:center; background:var(--bl); color:var(--bc); }
+  .flow { display:flex; align-items:stretch; }
+  .flow .st { flex:1; text-align:center; background:var(--bl,var(--teal-lt)); border:1px solid var(--bc,var(--teal)); border-radius:5px; padding:8px 4px; font-size:12.5px; font-weight:700; color:var(--bc,var(--teal)); line-height:1.35; display:flex; flex-direction:column; justify-content:center; }
+  .flow .st small { display:block; font-weight:400; color:var(--slate); font-size:11px; margin-top:2px; }
+  .flow .ar { align-self:center; color:var(--gray); padding:0 5px; font-size:15px; flex-shrink:0; }
+  .fig { background:#fff; border:1px solid var(--gray-line); border-radius:8px; padding:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(26,58,92,.06); }
+  .fig svg { display:block; max-width:100%; }
+  .fc { font-size:12px; color:var(--gray); margin-top:6px; text-align:center; line-height:1.45; }
+  .fig h5 { font-size:14.5px; color:var(--navy); margin-top:8px; }
+  .fig.on { border:2px solid var(--accent); background:var(--accent-lt); }
+  .tag { display:inline-block; padding:1px 7px; border-radius:4px; font-size:11px; font-weight:700; background:var(--bc,var(--teal)); color:#fff; vertical-align:middle; margin-left:4px; }
+  .strip { background:var(--bl,var(--teal-lt)); border:1px solid var(--bc,var(--teal)); border-radius:6px; padding:9px 16px; font-size:13.3px; color:var(--slate); line-height:1.55; }
+  .strip b { color:var(--bc,var(--teal)); }
+  .sec { font-size:12.5px; font-weight:700; color:var(--gray); margin-bottom:4px; }
+  table.tb { width:100%; border-collapse:collapse; font-size:13px; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 10px rgba(26,58,92,.06); }
+  .tb th { background:var(--navy); color:#fff; padding:9px 12px; text-align:left; font-family:'Noto Serif KR',serif; font-size:13.5px; }
+  .tb td { padding:8px 12px; border-bottom:1px solid var(--gray-line); color:var(--slate); line-height:1.45; vertical-align:middle; }
+  .tb tr:nth-child(even) td { background:#F8FBFF; }
+  .tb td:first-child { font-weight:700; color:var(--navy); white-space:nowrap; }
+  strong { color:var(--navy); }
+
+  /* ── cover ── */
+  .cover { background:var(--navy); }
+  .cover .lp { position:absolute; left:0; top:0; bottom:0; width:56%; display:flex; flex-direction:column; justify-content:center; padding:0 72px 50px; }
+  .cover .part { font-size:15px; color:var(--accent-soft); font-weight:700; margin-bottom:20px; animation:fadeUp .7s ease both; }
+  .cover h1 { font-family:'Noto Serif KR',serif; font-size:50px; font-weight:900; line-height:1.22; color:#fff; animation:fadeUp .7s .06s ease both; }
+  .cover h1 span { display:block; color:var(--accent-soft); }
+  .cover .en { font-size:17px; color:rgba(255,255,255,.5); font-style:italic; margin-top:14px; animation:fadeUp .7s .12s ease both; }
+  .cover .dv { width:50%; height:2px; background:var(--accent); margin:26px 0; animation:growW .6s .25s ease both; }
+  .cover .sub { font-size:15.5px; color:rgba(255,255,255,.62); line-height:1.7; animation:fadeUp .7s .3s ease both; }
+  .cover .rp { position:absolute; right:0; top:0; bottom:0; width:44%; background:var(--bg); display:flex; flex-direction:column; justify-content:center; padding:0 54px; animation:fadeUp .7s .15s ease both; }
+  .cover .rp .lbl { font-family:'Noto Serif KR',serif; font-size:19px; font-weight:700; color:var(--navy); margin-bottom:16px; }
+  .cc { background:#fff; border:1px solid var(--gray-line); border-radius:6px; box-shadow:0 2px 12px rgba(26,58,92,.08); padding:11px 16px 11px 24px; position:relative; overflow:hidden; margin-bottom:11px; }
+  .cc::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:var(--bc); }
+  .cc h4 { font-family:'Noto Serif KR',serif; font-size:16px; color:var(--bc); margin-bottom:2px; }
+  .cc p { font-size:13px; color:var(--slate); line-height:1.5; }
+  .cover .bb { position:absolute; bottom:0; left:0; width:56%; background:var(--accent); padding:13px 72px; font-size:14px; color:#fff; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  @keyframes growW { from { width:0; } to { width:50%; } }
+
+  /* ── summary ── */
+  .sum { background:var(--navy); }
+  .sum .sh { position:absolute; top:0; left:0; right:0; height:124px; background:var(--accent); display:flex; flex-direction:column; justify-content:center; padding:0 64px; }
+  .sum .sh h1 { font-family:'Noto Serif KR',serif; font-size:31px; color:#fff; }
+  .sum .sh p { font-size:15px; color:rgba(255,255,255,.72); font-style:italic; margin-top:5px; }
+  .sum .sb { position:absolute; top:124px; left:0; right:0; bottom:46px; padding:22px 64px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:18px; }
+  .sc { background:#1E3550; border:1px solid rgba(255,255,255,.12); border-radius:8px; overflow:hidden; display:flex; flex-direction:column; }
+  .sc .tp { height:5px; background:var(--bc); }
+  .sc .bd { padding:13px 20px; }
+  .sc h4 { font-family:'Noto Serif KR',serif; font-size:19px; color:var(--lc); margin-bottom:7px; }
+  .sc ul { list-style:none; }
+  .sc li { font-size:15px; color:#C8D8E8; line-height:1.62; }
+  .sc li::before { content:'▸ '; color:rgba(255,255,255,.35); }
+  /* per-slide tuning */
+  #d5 .kc p { font-size:13.8px; } #d5 .kc svg { max-height:122px !important; }
+  #d9 ol.nm li { font-size:14.5px; line-height:1.9; }
+  #d11 .kc p, #d11 ol.nm li { font-size:13.6px; line-height:1.62; } #d11 .kc svg { max-height:130px !important; }
+  .sum .sf { position:absolute; bottom:0; left:0; right:0; height:46px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; }
+</style>
+</head>
+<body>
+<div id="hint">← → 키 · 스와이프 · F 전체화면</div>
+
+<div id="frame"><div id="deck">
+
+<!-- ═══ 1. 표지 ═══ -->
+<section class="slide cover" id="d1">
+  <div class="lp">
+    <div class="part">Part 1 / 2</div>
+    <h1>이미지 객체 탐지<span>모델은 어떻게 찾는가</span></h1>
+    <div class="en">Image Object Detection — How Detection Models Work</div>
+    <div class="dv"></div>
+    <div class="sub">이미지 속 객체의 종류와 위치를 동시에 예측하는<br>탐지 모델의 구조와 작동 원리</div>
+  </div>
+  <div class="rp">
+    <div class="lbl">발표 구성</div>
+    <div class="cc t"><h4>01&nbsp;&nbsp;개념</h4><p>태스크 구분, 입력과 출력, 전통적 방식에서 딥러닝으로</p></div>
+    <div class="cc a"><h4>02&nbsp;&nbsp;구조와 작동 원리</h4><p>Backbone·Neck·Head, 앵커와 박스 회귀, IoU, 손실 함수</p></div>
+    <div class="cc n"><h4>03&nbsp;&nbsp;대표 모델</h4><p>2-Stage(R-CNN 계열), 1-Stage(YOLO·SSD·RetinaNet), NMS와 DETR</p></div>
+    <div class="cc p"><h4>04&nbsp;&nbsp;성능 평가</h4><p>Precision·Recall, AP·mAP, 속도 지표</p></div>
+  </div>
+  <div class="bb">탐지 = 무엇이(클래스) + 어디에(Bounding Box)</div>
+</section>
+
+<!-- ═══ 2. 태스크 구분 ═══ -->
+<section class="slide" id="d2">
+  <div class="hd"><div class="no">01 개념</div><h1>컴퓨터 비전 태스크와 객체 탐지의 위치</h1><p>"무엇이 있는가"에서 "무엇이 어디에 있는가"로</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="g4">
+      <div class="fig"><div data-scene="cls"></div><h5>이미지 분류</h5><div class="fc">이미지 전체 → 레이블 1개<br>위치 정보 없음</div></div>
+      <div class="fig"><div data-scene="loc"></div><h5>분류 + 위치 추정</h5><div class="fc">대표 객체 1개의<br>클래스와 박스</div></div>
+      <div class="fig on"><div data-scene="det"></div><h5>객체 탐지</h5><div class="fc">여러 객체 각각의<br>클래스 + 박스</div></div>
+      <div class="fig"><div data-scene="seg"></div><h5>세그멘테이션</h5><div class="fc">픽셀 단위의 형태<br>(Part 2에서 다룸)</div></div>
+    </div>
+    <div class="g2 fill">
+      <div class="def">
+        <div class="lbl">정의</div>
+        <p>객체 탐지(Object Detection)는 이미지 안의 관심 객체마다 <strong>클래스(무엇)</strong>와 <strong>위치(Bounding Box, 어디)</strong>를 동시에 예측하는 기술입니다. 객체 인식(Recognition)을 확장한 과제로 볼 수 있습니다.</p>
+        <p style="margin-top:8px">분류와의 결정적 차이는 <strong>객체의 개수가 정해져 있지 않다</strong>는 점입니다. 모델은 0개부터 수백 개까지, 이미지마다 다른 수의 객체를 찾아내야 합니다.</p>
+      </div>
+      <div class="box n">
+        <h4>주요 활용 분야</h4>
+        <ul class="tk">
+          <li><strong>자율 주행</strong>: 차량·보행자·신호등·표지판 탐지</li>
+          <li><strong>보안·감시</strong>: 침입자, 이상 행동, 유기 물체 감지</li>
+          <li><strong>의료 영상</strong>: X-ray·내시경에서 병변 위치 표시</li>
+          <li><strong>제조·검사</strong>: 생산 라인의 결함·불량 위치 탐지</li>
+          <li><strong>리테일·물류</strong>: 진열 상품 인식, 재고·택배 계수</li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 3. 입력과 출력 ═══ -->
+<section class="slide" id="d3">
+  <div class="hd"><div class="no">01 개념</div><h1>탐지 모델의 입력과 출력</h1><p>하나의 객체 = 클래스 + 박스 좌표 + 신뢰도 점수</p></div>
+  <div class="ct"><div class="g2 h100" style="grid-template-columns:1fr 1.1fr">
+    <div class="col">
+      <div class="fig fill">
+        <svg viewBox="0 0 320 222" width="420" font-family="Noto Sans KR, sans-serif">
+          <defs><marker id="m3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#1A3A5C"/></marker></defs>
+          <rect width="320" height="222" rx="6" fill="#E8EEF4"/><rect y="172" width="320" height="50" fill="#D5DFE8"/>
+          <circle cx="150" cy="62" r="18" fill="#8A9BAD"/><rect x="128" y="82" width="44" height="62" rx="10" fill="#8A9BAD"/>
+          <rect x="132" y="138" width="14" height="38" rx="5" fill="#8A9BAD"/><rect x="154" y="138" width="14" height="38" rx="5" fill="#8A9BAD"/>
+          <rect x="120" y="40" width="60" height="140" fill="none" stroke="#1C7293" stroke-width="2.5"/>
+          <rect x="120" y="24" width="84" height="16" fill="#1C7293"/><text x="125" y="36" font-size="11" fill="#fff" font-weight="700">person 0.94</text>
+          <circle cx="150" cy="110" r="4" fill="#C9443F"/><text x="158" y="114" font-size="12" fill="#C9443F" font-weight="700">(x, y)</text>
+          <line x1="122" y1="198" x2="178" y2="198" stroke="#1A3A5C" stroke-width="1.5" marker-start="url(#m3)" marker-end="url(#m3)"/><text x="146" y="214" font-size="12" fill="#1A3A5C" font-weight="700">w</text>
+          <line x1="198" y1="42" x2="198" y2="178" stroke="#1A3A5C" stroke-width="1.5" marker-start="url(#m3)" marker-end="url(#m3)"/><text x="205" y="114" font-size="12" fill="#1A3A5C" font-weight="700">h</text>
+        </svg>
+        <div class="fc">중심 좌표 (x, y)와 너비·높이 (w, h)로 표현한 바운딩 박스</div>
+      </div>
+      <div class="fm">출력 예) { class: "person", conf: 0.94,<br>&nbsp;&nbsp;box: (x=0.47, y=0.50, w=0.19, h=0.63) }</div>
+    </div>
+    <div class="col">
+      <div class="box t">
+        <h4>출력의 세 가지 구성 요소</h4>
+        <ul class="tk">
+          <li><strong>클래스 확률</strong>: 각 클래스일 확률 (Softmax 또는 Sigmoid)</li>
+          <li><strong>박스 좌표</strong>: 객체를 둘러싼 사각형의 위치와 크기 (4개 값)</li>
+          <li><strong>신뢰도 점수</strong>: 이 예측을 얼마나 믿을 수 있는지 (0~1)</li>
+        </ul>
+      </div>
+      <div class="box a">
+        <h4>박스 좌표 표현 방식</h4>
+        <ul class="tk">
+          <li><strong>xywh</strong>: 중심점 + 너비·높이 (YOLO 형식, 0~1로 정규화)</li>
+          <li><strong>xyxy</strong>: 좌상단 (x₁, y₁) + 우하단 (x₂, y₂) (PASCAL VOC 형식)</li>
+          <li><strong>COCO</strong>: 좌상단 (x, y) + 너비·높이, 픽셀 단위</li>
+        </ul>
+      </div>
+      <div class="box c fill">
+        <h4>탐지가 어려운 이유</h4>
+        <ul class="tk">
+          <li>같은 클래스라도 <strong>크기·종횡비·자세</strong>가 제각각</li>
+          <li>객체끼리 <strong>가려지거나(occlusion) 밀집</strong>되어 있음</li>
+          <li>후보 위치의 대부분이 <strong>배경</strong> → 극심한 클래스 불균형</li>
+          <li>실시간 서비스를 위한 <strong>속도와 정확도의 트레이드오프</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 4. 전통 vs 딥러닝 ═══ -->
+<section class="slide" id="d4">
+  <div class="hd"><div class="no">01 개념</div><h1>전통적 탐지에서 딥러닝 탐지로</h1><p>사람이 설계한 특징에서, 데이터로 학습하는 특징으로</p></div>
+  <div class="ct"><div class="g2 h100" style="grid-template-columns:.95fr 1.05fr">
+    <div class="col">
+      <div class="sec">딥러닝 이전의 탐지 파이프라인</div>
+      <div class="flow g">
+        <div class="st">슬라이딩 윈도우<small>+ 이미지 피라미드</small></div><div class="ar">→</div>
+        <div class="st">수작업 특징<small>HOG · Haar · SIFT</small></div><div class="ar">→</div>
+        <div class="st">분류기<small>SVM · AdaBoost</small></div><div class="ar">→</div>
+        <div class="st">NMS<small>중복 제거</small></div>
+      </div>
+      <div class="box t"><h4>Viola–Jones <small>2001</small></h4><p>Haar-like 특징 + 적분 이미지 + AdaBoost 캐스케이드. 대부분의 윈도우를 초기 단계에서 빠르게 걸러내 <strong>실시간 얼굴 탐지</strong>를 처음 실현했습니다.</p></div>
+      <div class="box n"><h4>HOG + SVM <small>2005</small></h4><p>픽셀 그래디언트 방향의 히스토그램(HOG)으로 윤곽을 표현하고 선형 SVM으로 분류. <strong>보행자 탐지</strong>의 표준이 되었습니다.</p></div>
+      <div class="box g"><h4>DPM <small>2008</small></h4><p>객체를 여러 부분(part)의 변형 가능한 조합으로 모델링. 딥러닝 이전 PASCAL VOC의 최고 성능 방식이었습니다.</p></div>
+    </div>
+    <div class="col">
+      <table class="tb">
+        <tr><th style="width:20%">구분</th><th>전통적 방식</th><th>딥러닝 방식</th></tr>
+        <tr><td>특징 추출</td><td>사람이 설계 (HOG, Haar)</td><td>CNN이 데이터에서 자동 학습</td></tr>
+        <tr><td>후보 영역</td><td>슬라이딩 윈도우로 전수 탐색</td><td>RPN·앵커·격자 기반 예측</td></tr>
+        <tr><td>학습 방식</td><td>특징·분류기를 단계별로 따로</td><td>전체를 end-to-end로 학습</td></tr>
+        <tr><td>데이터</td><td>적은 데이터로도 동작</td><td>대규모 레이블 데이터 필요</td></tr>
+        <tr><td>연산 자원</td><td>CPU로 충분</td><td>GPU 필요 (경량 모델은 엣지 가능)</td></tr>
+        <tr><td>한계·강점</td><td>복잡한 배경, 다양한 자세에 취약</td><td>높은 정확도와 범용성</td></tr>
+      </table>
+      <div class="strip n fill" style="display:flex;flex-direction:column;justify-content:center">
+        <p><b>전환점</b></p>
+        <p>2012년 AlexNet이 ImageNet 분류에서 CNN의 위력을 보여준 뒤, 2014년 <strong>R-CNN</strong>이 CNN 특징을 탐지에 적용해 PASCAL VOC 성능을 크게 끌어올렸습니다. 이후 탐지 연구는 딥러닝 중심으로 전환됩니다.</p>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 5. Backbone Neck Head ═══ -->
+<section class="slide" id="d5">
+  <div class="hd"><div class="no">02 구조와 작동 원리</div><h1>탐지 모델의 기본 구조: Backbone · Neck · Head</h1><p>대부분의 현대 탐지기는 이 세 블록의 조합으로 설명됩니다</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="flow" style="height:74px">
+      <div class="st g">입력 이미지<small>H × W × 3</small></div><div class="ar">→</div>
+      <div class="st t">Backbone<small>특징 추출</small></div><div class="ar">→</div>
+      <div class="st a">Neck<small>다중 스케일 융합</small></div><div class="ar">→</div>
+      <div class="st n">Head<small>클래스 · 박스 예측</small></div><div class="ar">→</div>
+      <div class="st p">후처리<small>임계값 · NMS</small></div><div class="ar">→</div>
+      <div class="st g">최종 결과<small>class · box · conf</small></div>
+    </div>
+    <div class="g3 fill">
+      <div class="kc t"><div class="cap"></div><div class="bd">
+        <h3>Backbone</h3><div class="sub">이미지 → 특징맵</div>
+        <p>ImageNet 등으로 사전학습된 CNN 또는 Transformer. 층이 깊어질수록 해상도는 줄고 의미 정보는 풍부해집니다.</p>
+        <div class="fm" style="font-size:12px">C3: 1/8 · C4: 1/16 · C5: 1/32 해상도</div>
+        <div class="lb">대표 예</div>
+        <p>VGG, ResNet, CSPDarknet, EfficientNet, Swin Transformer</p>
+      </div></div>
+      <div class="kc a"><div class="cap"></div><div class="bd">
+        <h3>Neck</h3><div class="sub">여러 스케일의 특징을 섞기</div>
+        <svg viewBox="0 0 230 96" width="100%" style="max-height:92px" font-family="Noto Sans KR, sans-serif">
+          <defs><marker id="m5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#B8710A"/></marker><marker id="m5g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6B8599"/></marker></defs>
+          <rect x="22" y="4" width="36" height="20" rx="3" fill="#1C7293"/><text x="40" y="18" font-size="10" fill="#fff" text-anchor="middle">C5</text>
+          <rect x="16" y="34" width="48" height="24" rx="3" fill="#4A93B0"/><text x="40" y="50" font-size="10" fill="#fff" text-anchor="middle">C4</text>
+          <rect x="10" y="66" width="60" height="28" rx="3" fill="#7FB5CB"/><text x="40" y="84" font-size="10" fill="#fff" text-anchor="middle">C3</text>
+          <rect x="152" y="4" width="36" height="20" rx="3" fill="#B8710A"/><text x="170" y="18" font-size="10" fill="#fff" text-anchor="middle">P5</text>
+          <rect x="146" y="34" width="48" height="24" rx="3" fill="#CB8F36"/><text x="170" y="50" font-size="10" fill="#fff" text-anchor="middle">P4</text>
+          <rect x="140" y="66" width="60" height="28" rx="3" fill="#DDAE68"/><text x="170" y="84" font-size="10" fill="#fff" text-anchor="middle">P3</text>
+          <line x1="60" y1="14" x2="148" y2="14" stroke="#6B8599" stroke-width="1.3" marker-end="url(#m5g)"/>
+          <line x1="66" y1="46" x2="142" y2="46" stroke="#6B8599" stroke-width="1.3" marker-end="url(#m5g)"/>
+          <line x1="72" y1="80" x2="136" y2="80" stroke="#6B8599" stroke-width="1.3" marker-end="url(#m5g)"/>
+          <path d="M190 16 C 214 20, 214 38, 198 44" fill="none" stroke="#B8710A" stroke-width="1.6" marker-end="url(#m5)"/>
+          <path d="M196 50 C 222 56, 222 72, 204 77" fill="none" stroke="#B8710A" stroke-width="1.6" marker-end="url(#m5)"/>
+        </svg>
+        <p><strong>FPN</strong>: 의미가 풍부한 상위 특징을 위→아래로 업샘플해 고해상도 하위 특징과 합산. 작은 객체는 P3, 큰 객체는 P5에서 탐지합니다.</p>
+        <p style="margin-top:3px">변형: PAN(아래→위 경로 추가), BiFPN</p>
+      </div></div>
+      <div class="kc n"><div class="cap"></div><div class="bd">
+        <h3>Head</h3><div class="sub">특징맵의 각 위치에서 예측</div>
+        <div class="lb">분류 브랜치</div><p>각 위치(또는 앵커)가 어떤 클래스인지 점수를 출력</p>
+        <div class="lb">회귀 브랜치</div><p>박스 위치를 보정하는 4개 값(오프셋) 출력</p>
+        <div class="lb">보조 출력 (모델별)</div><p>Objectness(YOLO), Centerness(FCOS) 등 예측 품질 점수</p>
+        <div class="lb">Coupled vs Decoupled</div><p>최근 모델은 분류·회귀 헤드를 분리해 수렴과 정확도를 개선</p>
+      </div></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 6. 앵커와 박스 회귀 ═══ -->
+<section class="slide" id="d6">
+  <div class="hd"><div class="no">02 구조와 작동 원리</div><h1>앵커 박스와 바운딩 박스 회귀</h1><p>박스를 처음부터 그리지 않고, 기준 박스를 조금씩 고친다</p></div>
+  <div class="ct"><div class="g2 h100" style="grid-template-columns:.9fr 1.1fr">
+    <div class="fig">
+      <svg viewBox="0 0 300 250" width="400" font-family="Noto Sans KR, sans-serif">
+        <defs><marker id="m6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#C9443F"/></marker></defs>
+        <rect width="300" height="250" fill="#E8EEF4"/>
+        <g stroke="#C4D2DE" stroke-width="1"><line x1="50" y1="0" x2="50" y2="250"/><line x1="100" y1="0" x2="100" y2="250"/><line x1="150" y1="0" x2="150" y2="250"/><line x1="200" y1="0" x2="200" y2="250"/><line x1="250" y1="0" x2="250" y2="250"/><line x1="0" y1="50" x2="300" y2="50"/><line x1="0" y1="100" x2="300" y2="100"/><line x1="0" y1="150" x2="300" y2="150"/><line x1="0" y1="200" x2="300" y2="200"/></g>
+        <rect x="100" y="100" width="50" height="50" fill="#1C7293" opacity=".13"/>
+        <rect x="88" y="104" width="46" height="18" rx="5" fill="#8A9BAD"/><rect x="74" y="118" width="116" height="34" rx="8" fill="#8A9BAD"/><circle cx="98" cy="153" r="9" fill="#3D5A73"/><circle cx="166" cy="153" r="9" fill="#3D5A73"/>
+        <rect x="85" y="85" width="80" height="80" fill="none" stroke="#1C7293" stroke-width="1.8" stroke-dasharray="5 3"/>
+        <rect x="65" y="95" width="120" height="60" fill="none" stroke="#B8710A" stroke-width="1.8" stroke-dasharray="5 3"/>
+        <rect x="97" y="69" width="56" height="112" fill="none" stroke="#6B5EA8" stroke-width="1.8" stroke-dasharray="5 3"/>
+        <rect x="70" y="100" width="124" height="64" fill="none" stroke="#C9443F" stroke-width="2.6"/>
+        <circle cx="125" cy="125" r="3.5" fill="#1A3A5C"/>
+        <line x1="125" y1="125" x2="129" y2="129" stroke="#C9443F" stroke-width="1.6" marker-end="url(#m6)"/>
+        <circle cx="132" cy="132" r="3.5" fill="#C9443F"/>
+        <rect x="6" y="196" width="288" height="48" rx="5" fill="#fff" opacity=".92"/>
+        <line x1="14" y1="210" x2="30" y2="210" stroke="#1C7293" stroke-width="2" stroke-dasharray="4 2"/><text x="34" y="214" font-size="10.5" fill="#3D5A73">앵커 1:1</text>
+        <line x1="92" y1="210" x2="108" y2="210" stroke="#B8710A" stroke-width="2" stroke-dasharray="4 2"/><text x="112" y="214" font-size="10.5" fill="#3D5A73">앵커 2:1</text>
+        <line x1="170" y1="210" x2="186" y2="210" stroke="#6B5EA8" stroke-width="2" stroke-dasharray="4 2"/><text x="190" y="214" font-size="10.5" fill="#3D5A73">앵커 1:2</text>
+        <line x1="14" y1="232" x2="30" y2="232" stroke="#C9443F" stroke-width="2.6"/><text x="34" y="236" font-size="10.5" fill="#3D5A73">정답 박스(GT)</text>
+        <rect x="130" y="226" width="12" height="12" fill="#1C7293" opacity=".25"/><text x="146" y="236" font-size="10.5" fill="#3D5A73">담당 격자 셀</text>
+      </svg>
+      <div class="fc">한 셀 중심에 여러 모양의 앵커를 두고, 정답과 가장 잘 맞는 앵커의 오프셋을 학습</div>
+    </div>
+    <div class="col">
+      <div class="box t">
+        <h4>앵커 박스란?</h4>
+        <p>특징맵의 모든 위치에 미리 정해 둔 <strong>여러 크기·종횡비의 기준 박스</strong>입니다. 모델은 박스를 직접 그리는 대신, 앵커를 정답에 맞추려면 얼마나 옮기고 늘려야 하는지(오프셋)를 예측합니다.</p>
+        <p style="margin-top:4px">예) Faster R-CNN: 3가지 크기 × 3가지 비율(1:2, 1:1, 2:1) = <strong>위치당 9개</strong></p>
+      </div>
+      <div class="box a">
+        <h4>바운딩 박스 회귀: 무엇을 예측하는가</h4>
+        <div class="fm">tx = (x − xa) / wa&nbsp;&nbsp;&nbsp;&nbsp;ty = (y − ya) / ha<br>tw = log(w / wa)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th = log(h / ha)</div>
+        <p>(xa, ya, wa, ha)는 앵커, (x, y, w, h)는 정답 박스. 모델은 (tx, ty, tw, th)를 예측하고, 추론 시 역변환으로 최종 박스를 복원합니다. 앵커 크기로 나누고 log를 취하므로 <strong>크고 작은 객체를 같은 스케일로</strong> 안정적으로 학습합니다.</p>
+      </div>
+      <div class="box p fill">
+        <h4>앵커-프리(Anchor-free) 방식</h4>
+        <ul class="tk">
+          <li><strong>FCOS</strong>: 각 위치에서 박스 네 변까지의 거리 (l, t, r, b)를 직접 예측</li>
+          <li><strong>CenterNet</strong>: 객체 중심점을 히트맵으로 찾고 크기를 회귀</li>
+          <li>앵커 크기·비율 같은 하이퍼파라미터가 사라져 설계가 단순 (YOLOv8 이후 채택)</li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 7. IoU ═══ -->
+<section class="slide" id="d7">
+  <div class="hd"><div class="no">02 구조와 작동 원리</div><h1>IoU: 박스가 얼마나 잘 맞았는가</h1><p>학습의 정답 할당, 후처리, 평가까지 모두 IoU 하나로 판단</p></div>
+  <div class="ct"><div class="g2 h100">
+    <div class="col">
+      <div class="fig">
+        <svg viewBox="0 0 330 118" width="440" font-family="Noto Sans KR, sans-serif">
+          <rect x="20" y="14" width="80" height="62" fill="none" stroke="#1C7293" stroke-width="2"/>
+          <rect x="55" y="36" width="80" height="62" fill="none" stroke="#C9443F" stroke-width="2"/>
+          <rect x="55" y="36" width="45" height="40" fill="#B8710A" opacity=".55"/>
+          <text x="77" y="114" font-size="12" fill="#1A3A5C" text-anchor="middle" font-weight="700">교집합 (∩)</text>
+          <text x="165" y="62" font-size="22" fill="#6B8599" text-anchor="middle">÷</text>
+          <path d="M195 14 H275 V36 H310 V98 H230 V76 H195 Z" fill="#B8710A" opacity=".3"/>
+          <rect x="195" y="14" width="80" height="62" fill="none" stroke="#1C7293" stroke-width="2"/>
+          <rect x="230" y="36" width="80" height="62" fill="none" stroke="#C9443F" stroke-width="2"/>
+          <text x="252" y="114" font-size="12" fill="#1A3A5C" text-anchor="middle" font-weight="700">합집합 (∪)</text>
+        </svg>
+        <div class="fm" style="margin-top:8px">IoU = 면적(예측 ∩ 정답) / 면적(예측 ∪ 정답)</div>
+        <div class="fc">0이면 전혀 겹치지 않음, 1이면 완전히 일치</div>
+      </div>
+      <div class="fig fill">
+        <svg viewBox="0 0 330 92" width="440" font-family="Noto Sans KR, sans-serif">
+          <rect x="20" y="10" width="50" height="50" fill="none" stroke="#1C7293" stroke-width="2"/><rect x="47" y="10" width="50" height="50" fill="none" stroke="#C9443F" stroke-width="2"/>
+          <text x="58" y="82" font-size="13" fill="#C9443F" text-anchor="middle" font-weight="700">IoU ≈ 0.3</text>
+          <rect x="130" y="10" width="50" height="50" fill="none" stroke="#1C7293" stroke-width="2"/><rect x="147" y="10" width="50" height="50" fill="none" stroke="#C9443F" stroke-width="2"/>
+          <text x="163" y="82" font-size="13" fill="#B8710A" text-anchor="middle" font-weight="700">IoU ≈ 0.5</text>
+          <rect x="245" y="10" width="50" height="50" fill="none" stroke="#1C7293" stroke-width="2"/><rect x="248" y="10" width="50" height="50" fill="none" stroke="#C9443F" stroke-width="2"/>
+          <text x="271" y="82" font-size="13" fill="#1C7293" text-anchor="middle" font-weight="700">IoU ≈ 0.9</text>
+        </svg>
+        <div class="fc">조금만 어긋나도 IoU는 빠르게 떨어진다 → 0.5도 생각보다 엄격한 기준</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="kc t fill"><div class="cap"></div><div class="bd">
+        <h3>① 학습: 정답 할당(Label Assignment)</h3>
+        <p>각 앵커(또는 위치)를 정답 박스와 비교해, 무엇을 학습시킬지 정합니다.</p>
+        <div class="fm" style="font-size:12.3px">IoU ≥ 상한 → 양성(Positive): 클래스 + 박스 학습<br>IoU &lt; 하한 → 음성(Negative): "배경"으로 학습<br>그 사이 → 무시(Ignore)</div>
+        <p>예) RPN은 0.7 / 0.3, RetinaNet은 0.5 / 0.4를 기준으로 사용</p>
+      </div></div>
+      <div class="kc n"><div class="cap"></div><div class="bd">
+        <h3>② 후처리와 ③ 평가</h3>
+        <p><strong>NMS</strong>: 서로 IoU가 높은 예측 박스는 같은 객체로 보고 중복 제거</p>
+        <p><strong>평가</strong>: 정답과 IoU ≥ 임계값(보통 0.5)이고 클래스가 맞으면 정탐(TP), 아니면 오탐(FP)</p>
+      </div></div>
+      <div class="kc a"><div class="cap"></div><div class="bd">
+        <h3>IoU 계열 손실 함수</h3>
+        <p><strong>GIoU</strong>: 겹치지 않을 때도 두 박스를 가까이 끌어당기는 항 추가 · <strong>DIoU</strong>: 중심점 거리 반영 · <strong>CIoU</strong>: 종횡비까지 반영 (YOLOv4·v5 등에서 사용)</p>
+      </div></div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 8. 손실 함수 ═══ -->
+<section class="slide" id="d8">
+  <div class="hd"><div class="no">02 구조와 작동 원리</div><h1>손실 함수: 모델은 무엇을 학습하는가</h1><p>"무엇인가"를 맞히는 분류 손실 + "어디인가"를 맞히는 회귀 손실</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="def" style="display:flex;align-items:center;gap:22px">
+      <div class="fm" style="margin:0;font-size:15px;white-space:nowrap">L<sub>total</sub> = L<sub>cls</sub> + λ · L<sub>box</sub> ( + L<sub>obj</sub> )</div>
+      <p>분류 손실은 모든 샘플(양성+음성)에, 박스 손실은 <strong>양성 샘플에만</strong> 적용합니다. 배경에는 맞출 박스가 없기 때문입니다. λ는 두 손실의 균형을 맞추는 가중치입니다.</p>
+    </div>
+    <div class="g3 fill">
+      <div class="kc t"><div class="cap"></div><div class="bd">
+        <h3>분류 손실</h3><div class="sub">Classification Loss</div>
+        <div class="lb">기본: Cross-Entropy</div>
+        <p>예측한 클래스 확률과 정답의 차이를 측정</p>
+        <div class="lb">문제: 배경이 압도적으로 많음</div>
+        <p>이미지당 수만 개 후보 중 객체는 몇 개뿐. 쉬운 배경 샘플의 작은 손실이 쌓여 학습을 지배합니다.</p>
+        <div class="lb">해결: Focal Loss (RetinaNet)</div>
+        <div class="fm" style="font-size:12px">FL(pₜ) = −αₜ (1 − pₜ)^γ · log(pₜ)</div>
+        <p>이미 잘 맞히는(pₜ가 큰) 샘플의 가중치를 줄여 어려운 샘플에 집중. 보통 γ = 2, α = 0.25</p>
+      </div></div>
+      <div class="kc a"><div class="cap"></div><div class="bd">
+        <h3>박스 회귀 손실</h3><div class="sub">Localization Loss</div>
+        <div class="lb">Smooth L1 (Fast/Faster R-CNN)</div>
+        <div class="fm" style="font-size:12px">0.5·x²&nbsp;&nbsp;(|x| &lt; 1)<br>|x| − 0.5&nbsp;&nbsp;(그 외)</div>
+        <p>오프셋 (tx, ty, tw, th) 오차에 적용. 오차가 클 때 L2보다 완만해 이상치에 덜 민감합니다.</p>
+        <div class="lb">IoU 계열 (최신 모델)</div>
+        <div class="fm" style="font-size:12px">L = 1 − IoU + (페널티 항)</div>
+        <p>좌표를 따로 보지 않고 박스 전체의 겹침을 직접 최적화 → 평가 지표와 학습 목표가 일치</p>
+      </div></div>
+      <div class="kc n"><div class="cap"></div><div class="bd">
+        <h3>객체성·품질 점수</h3><div class="sub">Objectness / Quality</div>
+        <div class="lb">Objectness (YOLO 계열)</div>
+        <p>이 박스 안에 객체가 있을 확률을 BCE로 학습</p>
+        <div class="fm" style="font-size:12px">최종 점수 = objectness × 클래스 확률</div>
+        <div class="lb">Centerness (FCOS)</div>
+        <p>객체 중심에서 먼 위치의 저품질 박스 점수를 낮춤</p>
+        <div class="lb">왜 필요한가?</div>
+        <p>분류 점수만으로는 박스 위치의 정확도를 알 수 없어, NMS에서 더 정확한 박스를 남기도록 돕습니다.</p>
+      </div></div>
+    </div>
+    <div class="flow n" style="height:46px">
+      <div class="st">① 순전파: 모든 위치에서 예측</div><div class="ar">→</div>
+      <div class="st">② IoU로 정답 할당</div><div class="ar">→</div>
+      <div class="st">③ 분류 + 회귀 손실 계산</div><div class="ar">→</div>
+      <div class="st">④ 역전파로 가중치 갱신</div><div class="ar">↻</div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 9. 2-Stage ═══ -->
+<section class="slide" id="d9">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>2-Stage 탐지기: R-CNN 계열의 작동 원리</h1><p>① 객체가 있을 만한 곳을 찾고 → ② 그 영역을 정밀하게 분류·보정</p></div>
+  <div class="ct"><div class="col h100">
+    <div class="g3 fill">
+      <div class="kc g"><div class="cap"></div><div class="bd">
+        <h3>R-CNN <span class="tag">2014</span></h3>
+        <ol class="nm" style="margin-top:8px">
+          <li>Selective Search로 후보 영역 약 2,000개 생성</li>
+          <li>각 영역을 고정 크기(227×227)로 변형</li>
+          <li>영역마다 CNN을 따로 통과시켜 특징 추출</li>
+          <li>SVM으로 분류 + 박스 회귀로 위치 보정</li>
+        </ol>
+      </div><div class="ft">한계: 영역마다 CNN 반복 → 이미지당 수십 초</div></div>
+      <div class="kc t"><div class="cap"></div><div class="bd">
+        <h3>Fast R-CNN <span class="tag">2015</span></h3>
+        <ol class="nm" style="margin-top:8px">
+          <li>이미지 전체를 CNN에 <strong>한 번만</strong> 통과</li>
+          <li>후보 영역을 특징맵 위에 투영</li>
+          <li><strong>RoI Pooling</strong>으로 고정 크기(7×7) 특징 추출</li>
+          <li>분류 + 박스 회귀를 하나의 손실로 동시 학습</li>
+        </ol>
+      </div><div class="ft">개선: 특징 공유로 대폭 가속 / 병목: 후보 생성(CPU)</div></div>
+      <div class="kc n"><div class="cap"></div><div class="bd">
+        <h3>Faster R-CNN <span class="tag">2015</span></h3>
+        <ol class="nm" style="margin-top:8px">
+          <li>백본 특징맵을 모든 단계가 공유</li>
+          <li><strong>RPN</strong>: 각 위치의 앵커 9개마다 객체 여부 + 오프셋 예측</li>
+          <li>상위 후보(약 300개)만 RoI Pooling</li>
+          <li>최종 분류 + 박스 정제</li>
+        </ol>
+      </div><div class="ft">후보 생성까지 신경망으로 → end-to-end, 약 5 FPS</div></div>
+    </div>
+    <div>
+      <div style="display:flex;gap:8px;margin-bottom:5px;font-size:12.5px;font-weight:700">
+        <div style="flex:5.2;color:var(--teal)">Stage 1 — "어디에 객체가 있을까?"</div>
+        <div style="flex:4;color:var(--navy)">Stage 2 — "그것은 무엇이고, 정확히 어디인가?"</div>
+      </div>
+      <div class="flow" style="height:58px">
+        <div class="st t">입력 이미지</div><div class="ar">→</div>
+        <div class="st t">Backbone<small>+ FPN</small></div><div class="ar">→</div>
+        <div class="st t">RPN<small>objectness · 오프셋</small></div><div class="ar">→</div>
+        <div class="st t">후보 영역<small>Region Proposals</small></div><div class="ar">→</div>
+        <div class="st n">RoI Pooling<small>고정 크기 특징</small></div><div class="ar">→</div>
+        <div class="st n">분류 + 회귀<small>클래스별 박스</small></div><div class="ar">→</div>
+        <div class="st n">NMS<small>최종 결과</small></div>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 10. 1-Stage ═══ -->
+<section class="slide" id="d10">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>1-Stage 탐지기: YOLO · SSD · RetinaNet</h1><p>후보 영역 단계 없이, 한 번의 forward pass로 클래스와 박스를 동시에</p></div>
+  <div class="ct"><div class="g2 h100" style="grid-template-columns:1fr 1.05fr">
+    <div class="col">
+      <div style="display:flex;gap:14px">
+        <div class="fig" style="flex-shrink:0">
+          <svg viewBox="0 0 224 224" width="196" font-family="Noto Sans KR, sans-serif">
+            <rect width="224" height="224" fill="#E8EEF4"/>
+            <rect x="96" y="96" width="32" height="32" fill="#B8710A" opacity=".35"/>
+            <rect x="88" y="98" width="42" height="16" rx="4" fill="#8A9BAD"/><rect x="70" y="110" width="104" height="30" rx="7" fill="#8A9BAD"/><circle cx="92" cy="141" r="8" fill="#3D5A73"/><circle cx="152" cy="141" r="8" fill="#3D5A73"/>
+            <g stroke="#9FB3C4" stroke-width="1"><line x1="32" y1="0" x2="32" y2="224"/><line x1="64" y1="0" x2="64" y2="224"/><line x1="96" y1="0" x2="96" y2="224"/><line x1="128" y1="0" x2="128" y2="224"/><line x1="160" y1="0" x2="160" y2="224"/><line x1="192" y1="0" x2="192" y2="224"/><line x1="0" y1="32" x2="224" y2="32"/><line x1="0" y1="64" x2="224" y2="64"/><line x1="0" y1="96" x2="224" y2="96"/><line x1="0" y1="128" x2="224" y2="128"/><line x1="0" y1="160" x2="224" y2="160"/><line x1="0" y1="192" x2="224" y2="192"/></g>
+            <rect x="66" y="94" width="112" height="56" fill="none" stroke="#C9443F" stroke-width="2.4"/>
+            <circle cx="122" cy="122" r="4" fill="#C9443F"/>
+            <rect x="66" y="78" width="58" height="16" fill="#C9443F"/><text x="70" y="90" font-size="10.5" fill="#fff" font-weight="700">car 0.91</text>
+          </svg>
+          <div class="fc">7 × 7 격자 · 중심이 속한<br>셀(주황)이 탐지 담당</div>
+        </div>
+        <div class="box a" style="flex:1">
+          <h4>YOLO의 작동 원리</h4>
+          <ol class="nm" style="--bc:#B8710A">
+            <li>이미지를 S × S 격자로 분할</li>
+            <li>객체 <strong>중심</strong>이 들어간 셀이 그 객체를 담당</li>
+            <li>각 셀이 B개 박스 (x, y, w, h, conf) + C개 클래스 확률을 예측</li>
+            <li>신뢰도 임계값과 NMS로 최종 박스 선택</li>
+          </ol>
+        </div>
+      </div>
+      <div class="fm" style="margin:0">출력 텐서 = S × S × (B·5 + C)<br>YOLOv1: 7 × 7 × (2·5 + 20) = 7 × 7 × 30</div>
+      <div class="box n fill">
+        <h4>YOLO 계열의 발전</h4>
+        <ul class="tk">
+          <li><strong>v1</strong> (2016): 탐지를 하나의 회귀 문제로 → 실시간 탐지의 시작</li>
+          <li><strong>v2·v3</strong>: 앵커 도입, 3개 스케일에서 예측 (작은 객체 대응)</li>
+          <li><strong>v4·v5</strong>: CSP 백본, PAN, Mosaic 증강 → 속도·정확도 동시 향상</li>
+          <li><strong>v8 이후</strong>: 앵커-프리, 분리형 헤드, 다양한 크기의 모델 제공</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="box t">
+        <h4>SSD <small>Single Shot MultiBox Detector, 2016</small></h4>
+        <p>해상도가 다른 <strong>여러 특징맵 각각</strong>에서 default box(앵커)를 예측. 고해상도 맵은 작은 객체, 저해상도 맵은 큰 객체를 담당해 한 번에 다양한 크기에 대응합니다.</p>
+      </div>
+      <div class="box c">
+        <h4>RetinaNet <small>2017</small></h4>
+        <p>1-Stage가 2-Stage보다 부정확했던 핵심 원인을 <strong>전경·배경의 극심한 불균형</strong>으로 규명. <strong>Focal Loss</strong> + FPN으로 1-Stage 속도에 2-Stage 수준의 정확도를 달성했습니다.</p>
+      </div>
+      <table class="tb fill">
+        <tr><th style="width:22%"></th><th>1-Stage</th><th>2-Stage</th></tr>
+        <tr><td>처리 흐름</td><td>격자·앵커에서 바로 예측</td><td>후보 생성 → 정밀 분류</td></tr>
+        <tr><td>속도</td><td>빠름, 실시간에 적합</td><td>상대적으로 느림</td></tr>
+        <tr><td>정확도</td><td>초기엔 낮았으나 격차 축소</td><td>작은·밀집 객체에 강함</td></tr>
+        <tr><td>대표 모델</td><td>YOLO, SSD, RetinaNet</td><td>Faster R-CNN, Cascade R-CNN</td></tr>
+      </table>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 11. NMS & DETR ═══ -->
+<section class="slide" id="d11">
+  <div class="hd"><div class="no">03 대표 모델</div><h1>후처리 NMS, 그리고 NMS가 필요 없는 DETR</h1><p>중복 박스를 규칙으로 지울 것인가, 처음부터 하나만 예측하게 학습할 것인가</p></div>
+  <div class="ct"><div class="g2 h100">
+    <div class="kc n"><div class="cap"></div><div class="bd">
+      <h3>NMS (Non-Maximum Suppression)</h3><div class="sub">중복 예측 박스 제거</div>
+      <svg viewBox="0 0 320 110" width="100%" style="max-height:112px;margin:2px 0 4px" font-family="Noto Sans KR, sans-serif">
+        <rect x="4" y="4" width="130" height="92" rx="5" fill="#E8EEF4"/><ellipse cx="68" cy="56" rx="30" ry="26" fill="#8A9BAD"/>
+        <rect x="26" y="22" width="84" height="66" fill="none" stroke="#9FB3C4" stroke-width="1.6" stroke-dasharray="4 2"/>
+        <rect x="40" y="30" width="80" height="60" fill="none" stroke="#9FB3C4" stroke-width="1.6" stroke-dasharray="4 2"/>
+        <rect x="34" y="26" width="68" height="60" fill="none" stroke="#1A3A5C" stroke-width="2.2"/>
+        <text x="36" y="20" font-size="9.5" fill="#1A3A5C" font-weight="700">0.92</text><text x="92" y="100" font-size="9.5" fill="#6B8599">0.81 · 0.67</text>
+        <text x="160" y="58" font-size="20" fill="#6B8599" text-anchor="middle">→</text>
+        <rect x="186" y="4" width="130" height="92" rx="5" fill="#E8EEF4"/><ellipse cx="250" cy="56" rx="30" ry="26" fill="#8A9BAD"/>
+        <rect x="216" y="26" width="68" height="60" fill="none" stroke="#1A3A5C" stroke-width="2.2"/><text x="218" y="20" font-size="9.5" fill="#1A3A5C" font-weight="700">0.92</text>
+      </svg>
+      <div class="lb">처리 단계</div>
+      <ol class="nm" style="--bc:#1A3A5C">
+        <li>신뢰도 점수 순으로 박스 정렬</li>
+        <li>가장 높은 박스를 결과로 확정</li>
+        <li>확정 박스와 IoU ≥ 임계값(예: 0.5)인 박스 제거</li>
+        <li>남은 박스가 없을 때까지 ②~③ 반복 (클래스별)</li>
+      </ol>
+      <div class="lb">한계와 개선</div>
+      <p>실제로 겹쳐 있는 객체(군중, 주차된 차량)까지 지울 수 있음 → <strong>Soft-NMS</strong>는 제거 대신 IoU에 비례해 점수를 낮춰 밀집 객체 탐지를 개선합니다.</p>
+    </div></div>
+    <div class="kc p"><div class="cap"></div><div class="bd">
+      <h3>DETR (DEtection TRansformer, 2020)</h3><div class="sub">탐지를 "집합 예측" 문제로</div>
+      <div class="flow" style="margin:6px 0 4px">
+        <div class="st">CNN<small>백본</small></div><div class="ar">→</div>
+        <div class="st">Transformer<small>인코더</small></div><div class="ar">→</div>
+        <div class="st">디코더<small>+ Object Query N개</small></div><div class="ar">→</div>
+        <div class="st">N개 예측<small>{클래스, 박스}</small></div>
+      </div>
+      <div class="lb">헝가리안 매칭 (Hungarian Matching)</div>
+      <p>N개(예: 100개)의 예측과 정답 객체를 <strong>1:1로 최적 매칭</strong>해 손실을 계산합니다. 매칭되지 않은 예측은 "객체 없음(∅)"으로 학습되므로, 같은 객체에 여러 박스를 내면 페널티를 받습니다.</p>
+      <div class="lb">의미</div>
+      <p>중복이 학습 단계에서 억제되어 <strong>NMS와 앵커가 필요 없는</strong> 단순한 end-to-end 구조. 어텐션으로 이미지 전체 문맥을 활용합니다.</p>
+      <div class="lb">한계와 후속 모델</div>
+      <p>학습 수렴이 매우 느리고(수백 epoch) 작은 객체에 약함 → <strong>Deformable DETR</strong>(국소 어텐션), <strong>DINO</strong>(수렴 가속), <strong>RT-DETR</strong>(실시간)로 개선되었습니다.</p>
+    </div></div>
+  </div></div>
+</section>
+
+<!-- ═══ 12. 평가 지표 ═══ -->
+<section class="slide" id="d12">
+  <div class="hd"><div class="no">04 성능 평가</div><h1>탐지 성능 평가: Precision · Recall · mAP</h1><p>"얼마나 정확하게"와 "얼마나 빠짐없이"를 함께 본다</p></div>
+  <div class="ct"><div class="g2 h100">
+    <div class="col">
+      <div class="box t">
+        <h4>판정 기준 <small>IoU 임계값 + 클래스 일치</small></h4>
+        <ul class="tk">
+          <li><strong>TP</strong> (정탐): 정답과 IoU ≥ 임계값, 클래스 일치</li>
+          <li><strong>FP</strong> (오탐): 없는 객체를 찾았거나, 위치·클래스가 틀림, 중복 예측</li>
+          <li><strong>FN</strong> (미탐): 찾아내지 못한 정답 객체</li>
+        </ul>
+        <div class="fm">Precision = TP / (TP + FP)&nbsp;&nbsp;→ 예측 중 맞은 비율<br>Recall&nbsp;&nbsp;&nbsp;&nbsp;= TP / (TP + FN)&nbsp;&nbsp;→ 정답 중 찾은 비율</div>
+      </div>
+      <div class="fig fill" style="flex-direction:row;gap:14px">
+        <svg viewBox="0 0 240 160" width="250" font-family="Noto Sans KR, sans-serif">
+          <path d="M40 22 H80 V34 H112 V48 H148 V72 H180 V104 H212 V130 H40 Z" fill="#1C7293" opacity=".18"/>
+          <path d="M40 22 H80 V34 H112 V48 H148 V72 H180 V104 H212 V130" fill="none" stroke="#1C7293" stroke-width="2.4"/>
+          <line x1="40" y1="130" x2="226" y2="130" stroke="#3D5A73" stroke-width="1.3"/><line x1="40" y1="130" x2="40" y2="12" stroke="#3D5A73" stroke-width="1.3"/>
+          <text x="133" y="150" font-size="11" fill="#3D5A73" text-anchor="middle">Recall</text>
+          <text x="22" y="72" font-size="11" fill="#3D5A73" text-anchor="middle" transform="rotate(-90 22 72)">Precision</text>
+          <text x="110" y="100" font-size="13" fill="#1C7293" font-weight="700" text-anchor="middle">AP</text>
+        </svg>
+        <div class="fc" style="text-align:left;max-width:190px">신뢰도 임계값을 낮출수록 Recall은 오르고 Precision은 떨어집니다. 이 곡선 아래 면적이 <strong>AP</strong>입니다.</div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="box a">
+        <h4>AP와 mAP 계산</h4>
+        <ol class="nm" style="--bc:#B8710A">
+          <li>한 클래스의 모든 예측을 신뢰도 순으로 정렬</li>
+          <li>위에서부터 TP/FP를 판정하며 누적 Precision·Recall 계산</li>
+          <li>PR 곡선 아래 면적 = 그 클래스의 <strong>AP</strong></li>
+          <li>모든 클래스의 AP 평균 = <strong>mAP</strong></li>
+        </ol>
+      </div>
+      <div class="box n">
+        <h4>벤치마크별 기준</h4>
+        <ul class="tk">
+          <li><strong>PASCAL VOC</strong>: mAP@0.5 (IoU 0.5 한 가지 기준)</li>
+          <li><strong>MS COCO</strong>: AP@[0.5:0.95], IoU 0.5~0.95를 0.05 간격 10단계로 평균 → 위치 정확도까지 엄격히 평가</li>
+          <li>세부 지표: AP50, AP75, 크기별 AP<sub>S</sub> · AP<sub>M</sub> · AP<sub>L</sub></li>
+        </ul>
+      </div>
+      <div class="box p fill">
+        <h4>속도와 효율</h4>
+        <ul class="tk">
+          <li><strong>FPS / 지연 시간(ms)</strong>: 초당 처리 이미지 수, 1장 처리 시간</li>
+          <li><strong>파라미터 수 · FLOPs</strong>: 모델 크기와 연산량</li>
+          <li>실제 비교는 같은 하드웨어에서 <strong>정확도–속도 곡선</strong>으로</li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- ═══ 13. 정리 ═══ -->
+<section class="slide sum" id="d13">
+  <div class="sh"><h1>정리</h1><p>객체 탐지 = 무엇이 어디에 있는지를 한 번에 예측</p></div>
+  <div class="sb">
+    <div class="sc" style="--bc:#1C7293;--lc:#6EC6E6"><div class="tp"></div><div class="bd"><h4>개념</h4><ul>
+      <li>여러 객체의 클래스 + 바운딩 박스를 동시에 예측</li>
+      <li>출력: 클래스 확률 · 박스 좌표(4개 값) · 신뢰도</li>
+      <li>수작업 특징(HOG, Haar) → CNN 자동 학습으로 전환</li>
+    </ul></div></div>
+    <div class="sc" style="--bc:#B8710A;--lc:#F0C27B"><div class="tp"></div><div class="bd"><h4>작동 원리</h4><ul>
+      <li>Backbone(특징) → Neck(FPN 융합) → Head(예측)</li>
+      <li>앵커 기준 오프셋 회귀, 최근엔 앵커-프리로 단순화</li>
+      <li>IoU로 정답 할당 · 분류 손실 + 박스 손실(Focal, CIoU)</li>
+    </ul></div></div>
+    <div class="sc" style="--bc:#2E6DA4;--lc:#7BBFEF"><div class="tp"></div><div class="bd"><h4>대표 모델</h4><ul>
+      <li>2-Stage: R-CNN → Fast R-CNN → Faster R-CNN(RPN)</li>
+      <li>1-Stage: YOLO(격자), SSD(다중 스케일), RetinaNet(Focal Loss)</li>
+      <li>Transformer: DETR, 헝가리안 매칭으로 NMS 제거</li>
+    </ul></div></div>
+    <div class="sc" style="--bc:#6B5EA8;--lc:#B0A8D8"><div class="tp"></div><div class="bd"><h4>평가</h4><ul>
+      <li>IoU 임계값으로 TP / FP / FN 판정</li>
+      <li>PR 곡선 면적 = AP, 클래스 평균 = mAP</li>
+      <li>COCO AP@[0.5:0.95] + FPS로 정확도와 속도 함께 비교</li>
+    </ul></div></div>
+  </div>
+  <div class="sf">다음 발표 · Part 2. 이미지 세그멘테이션 — 박스를 넘어 픽셀 단위로</div>
+</section>
+
+</div></div>
+
+<div id="nav">
+  <button onclick="go(-1)" aria-label="이전 슬라이드">&#8592;</button>
+  <div id="dots"></div>
+  <span id="counter">1 / 1</span>
+  <button onclick="go(1)" aria-label="다음 슬라이드">&#8594;</button>
+</div>
+
+<script>
+  /* ── 미니 장면 일러스트 (분류 / 위치추정 / 탐지 / 세그멘테이션) ── */
+  function scene(mode) {
+    const g = '#8A9BAD', dk = '#3D5A73';
+    const catF = mode === 'seg' ? '#1C7293' : g, carF = mode === 'seg' ? '#C9443F' : g;
+    const wheel = mode === 'seg' ? '#C9443F' : dk;
+    let s = `<svg viewBox="0 0 200 120" width="100%" style="max-height:118px" font-family="Noto Sans KR, sans-serif">
+      <rect width="200" height="120" rx="6" fill="${mode === 'seg' ? '#F1F4F7' : '#E8EEF4'}"/>
+      <rect y="96" width="200" height="24" fill="${mode === 'seg' ? '#E6EBF0' : '#D5DFE8'}"/>
+      <path d="M44 60 L47 44 L57 55 Z" fill="${catF}"/><path d="M80 60 L77 44 L67 55 Z" fill="${catF}"/>
+      <ellipse cx="62" cy="76" rx="22" ry="20" fill="${catF}"/>
+      <rect x="124" y="54" width="38" height="16" rx="5" fill="${carF}"/><rect x="112" y="66" width="66" height="24" rx="6" fill="${carF}"/>
+      <circle cx="128" cy="91" r="6" fill="${wheel}"/><circle cx="162" cy="91" r="6" fill="${wheel}"/>`;
+    const lbl = (x, y, w, c, t) => `<rect x="${x}" y="${y}" width="${w}" height="13" fill="${c}"/><text x="${x + 3}" y="${y + 10}" font-size="9.5" fill="#fff" font-weight="700">${t}</text>`;
+    if (mode === 'cls') s += `<rect x="8" y="8" width="74" height="18" rx="9" fill="#6B8599"/><text x="45" y="21" font-size="10.5" fill="#fff" font-weight="700" text-anchor="middle">고양이 0.91</text>`;
+    if (mode === 'loc' || mode === 'det') s += `<rect x="37" y="42" width="50" height="56" fill="none" stroke="#1C7293" stroke-width="2.4"/>` + lbl(37, 29, 42, '#1C7293', 'cat .94');
+    if (mode === 'det') s += `<rect x="108" y="50" width="74" height="50" fill="none" stroke="#C9443F" stroke-width="2.4"/>` + lbl(108, 37, 44, '#C9443F', 'car .88');
+    return s + '</svg>';
+  }
+  document.querySelectorAll('[data-scene]').forEach(el => el.innerHTML = scene(el.dataset.scene));
+
+  /* ── 화면 크기에 맞춰 1280×720 덱 스케일 ── */
+  function fit() {
+    const s = Math.min((innerWidth - 32) / 1280, (innerHeight - 80) / 720);
+    const f = document.getElementById('frame');
+    f.style.width = 1280 * s + 'px'; f.style.height = 720 * s + 'px';
+    document.getElementById('deck').style.transform = `scale(${s})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  /* ── 슬라이드 이동 ── */
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  let cur = 0;
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => { const d = document.createElement('div'); d.className = 'dot'; d.onclick = () => goTo(i); dotsEl.appendChild(d); });
+
+  function goTo(n) {
+    const prev = cur;
+    cur = (n + total) % total;
+    slides.forEach(s => s.classList.remove('active', 'prev'));
+    if (prev !== cur) slides[prev].classList.add('prev');
+    slides[cur].classList.add('active');
+    document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur));
+  }
+  function go(d) { goTo(cur + d); }
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); go(1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(-1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(total - 1);
+    if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
+  });
+  let tx = null;
+  addEventListener('touchstart', e => tx = e.touches[0].clientX, { passive: true });
+  addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1); tx = null; });
+
+  goTo(0);
+</script>
+</body>
+</html>
