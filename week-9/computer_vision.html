@@ -203,7 +203,7 @@ ol.tl small{font-size:15px;color:var(--muted);line-height:1.5}
  <div class="inner">
   <div class="sec">1부 · 컴퓨터비전이란</div>
   <h2>컴퓨터비전이 푸는 주요 과제</h2>
-  <p class="lede">낮은 수준(픽셀 다듬기)에서 높은 수준(의미 이해)으로 올라간다. 항목을 누르면 해당 슬라이드로 이동한다.</p>
+  <p class="lede">낮은 수준(픽셀 다듬기)에서 높은 수준(의미 이해)으로 올라간다.</p>
   <div class="apps">
    <button data-go="전처리"><b>전처리</b><small>어둡거나 바랜 영상, 잡음 섞인 영상을 보기 좋게 복원</small></button>
    <button data-go="에지 검출과 선 검출"><b>에지·선 검출</b><small>밝기가 급변하는 경계와 직선 구조 찾기</small></button>
@@ -301,7 +301,7 @@ ol.tl small{font-size:15px;color:var(--muted);line-height:1.5}
    <div>
     <p>비스듬히 찍은 사진을 정면에서 찍은 것처럼 바꿀 수 있고, 그 반대도 가능하다. 평면 사이의 이런 변환을 <b>호모그래피</b>(3×3 행렬)라고 한다.</p>
    </div>
-   <div class="note" style="margin-top:.4em">질문: 어떤 행렬로 바꿔야 "정면"이 되는가? 이 답을 구하려면 <b>카메라가 3D 세계를 2D 영상으로 옮기는 방식</b>을 알아야 한다. 이것이 3부의 주제다.</div>
+   <div class="note" style="margin-top:.4em">질문: 어떤 행렬로 바꿔야 "정면"이 되는가? 이 답을 구하려면 <b>카메라가 3D 세계를 2D 영상으로 옮기는 방식</b>을 알아야 한다.</div>
   </div>
  </div>
 </section>
@@ -463,7 +463,7 @@ out2 = cv2.filter2D(img, -1, k)</code></pre>
    <li class="learn"><span class="yr">2012~</span><b>전부 학습</b><small>AlexNet이 ImageNet 대회에서 사람이 설계한 특징 기반 방법을 큰 차이로 이겼다. 이후 필터 학습이 표준이 되었다.</small></li>
   </ol>
   <div class="tlkey"><span class="k hand"></span>사람이 설계 <span class="k mix"></span>중간 형태 <span class="k learn"></span>데이터로 학습</div>
-  <div class="note">반전: 학습된 AlexNet의 첫 층을 열어 보면 Gabor, Sobel과 닮은 필터가 나온다. 사람이 수십 년간 설계해 온 필터를 네트워크가 스스로 다시 찾아낸 셈이다. 다음 슬라이드에서 확인해 보자.</div>
+  <div class="note">반전: 학습된 AlexNet의 첫 층을 열어 보면 Gabor, Sobel과 닮은 필터가 나온다. 사람이 수십 년간 설계해 온 필터를 네트워크가 스스로 다시 찾아낸 셈.</div>
  </div>
 </section>
 
@@ -477,7 +477,7 @@ out2 = cv2.filter2D(img, -1, k)</code></pre>
     <h3>구조: 필터는 3차원 가중치 덩어리</h3>
     <p>CNN의 필터 하나는 크기 \(k \times k \times C_{in}\)의 가중치다. 입력이 RGB면 \(C_{in}=3\)이므로 3×3×3 필터 하나는 27개 숫자다. 한 층에 필터가 \(C_{out}\)개 있으면 출력 채널(특징 맵)도 \(C_{out}\)장이 나온다.</p>
     <div class="math">\[ h_c[m,n] = \sigma\Big( b_c + \sum_{d=1}^{C_{in}} \sum_{k,l} g_{c,d}[k,l]\, f_d[m+k,n+l] \Big) \]</div>
-    <p>앞에서 본 식과 똑같다. 다른 점은 두 가지뿐이다.</p>
+    <p>앞에서 본 식과 똑같다. 다른 점은 두 가지.</p>
     <ul>
      <li>가중치 \(g\)를 사람이 정하지 않고 <b>역전파로 학습</b>한다.</li>
      <li>뒤에 비선형 함수 \(\sigma\)(ReLU 등)가 붙고, 층을 깊게 쌓는다.</li>
