@@ -4,202 +4,127 @@
   <title>Python Bootcamp Slides</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .card { transition: transform .2s ease, box-shadow .2s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .card { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); border-color: #c7d2fe; }
+    .chip { transition: background-color .15s ease, color .15s ease, border-color .15s ease; }
   </style>
 </head>
-<body class="bg-gray-50">
-  <div class="max-w-5xl mx-auto px-6 py-10">
-    <h1 class="text-3xl font-extrabold tracking-tight">코드잇 스프린트 AI Engineer Track 멘토링</h1>
-    <p class="text-gray-600 mt-2">Codeit sprint AI Engineer track Mentoring</p>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+    <header>
+      <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">코드잇 스프린트 AI Engineer Track 멘토링</h1>
+      <p class="text-gray-600 mt-2">Codeit sprint AI Engineer track Mentoring</p>
+    </header>
 
-    <!-- <div class="grid grid-cols-1 md:grid-cols-1 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="OT/page_1.html">
-        <h2 class="text-xl font-bold">OT</h2>
-        <p class="text-gray-600 mt-1">슬라이드 1~8</p>
-      </a>
-    </div> -->
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <a class="card block bg-white rounded-xl p-6 border" href="intro/intro.html">
-          <h2 class="text-xl font-bold">Mentor Introduction</h2>
+    <!-- 시작하기 -->
+    <section class="mt-10">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Getting Started</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-3">
+        <a class="card block bg-white rounded-xl p-5 border" href="intro/intro.html">
+          <h3 class="text-lg font-bold">Mentor Introduction</h3>
+          <p class="text-gray-600 mt-1 text-sm">멘토 소개</p>
         </a>
-        <a class="card block bg-white rounded-xl p-6 border" href="OT/page_1.html">
-          <h2 class="text-xl font-bold">OT</h2>
-          <p class="text-gray-600 mt-1">슬라이드 1~4</p>
+        <a class="card block bg-white rounded-xl p-5 border" href="OT/page_1.html">
+          <h3 class="text-lg font-bold">OT</h3>
+          <p class="text-gray-600 mt-1 text-sm">슬라이드 1~4</p>
         </a>
       </div>
+    </section>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-1/slides/page_1.html">
-        <h2 class="text-xl font-bold">Week 1</h2>
-        <p class="text-gray-600 mt-1">python 기초</p>
-      </a>
-      <a class="card block bg-white rounded-xl p-6 border" href="week-1/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 1 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a>
-    </div>
+    <!-- 주차별 -->
+    <section class="mt-10">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider">Weekly Sessions</h2>
+      <ul id="weeks" class="mt-3 space-y-3"></ul>
+    </section>
+  </div>
 
-    <div class="grid grid-cols-3 md:grid-cols-3 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-2/slides/page_1.html">
-        <h2 class="text-xl font-bold">Week 2</h2>
-        <p class="text-gray-600 mt-1">math, regression</p>
-      </a>
-      <a class="card block bg-white rounded-xl p-6 border" href="week-2/mission_review/page_1.html">
-        <h2 class="text-xl font-bold">Week 2 Review</h2>
-        <p class="text-gray-600 mt-1">sprint Mission feedback</p>
-      </a>
-      <a class="card block bg-white rounded-xl p-6 border" href="week-2/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 2 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a>
-    </div>
+  <script>
+    // 주차 추가는 여기에만 하면 됩니다.
+    const weeks = [
+      { week: "1",  topic: "python 기초", links: [
+        { label: "Slides", href: "week-1/slides/page_1.html" },
+        { label: "Quiz",   href: "week-1/quiz/quiz.html" },
+      ]},
+      { week: "2",  topic: "math, regression", links: [
+        { label: "Slides", href: "week-2/slides/page_1.html" },
+        { label: "Mission Review", href: "week-2/mission_review/page_1.html" },
+        { label: "Quiz",   href: "week-2/quiz/quiz.html" },
+      ]},
+      { week: "3",  topic: "tree-ensemble", links: [
+        { label: "Slides", href: "week-3/slides/page_1.html" },
+        { label: "Quiz",   href: "week-3/quiz/quiz.html" },
+      ]},
+      { week: "4",  topic: "MLP ~ CNN/RNN", links: [
+        { label: "Slides", href: "week-4/slides/page_1.html" },
+      ]},
+      { week: "5",  topic: "AE, VAE", links: [
+        { label: "Slides", href: "week-5/slides/page_1.html" },
+      ]},
+      { week: "6",  topic: "Domain Augmentation", links: [
+        { label: "Slides", href: "week-6/page_1.html" },
+        { label: "Augmentation → Domain Adaptation", href: "week-6-2/augmentation_to_domain_adaptation.html" },
+      ]},
+      { week: "7",  topic: "객체인식, 이미지 세그멘테이션", links: [
+        { label: "Slides", href: "week-7/slide.html" },
+        { label: "Object Detection", href: "week-7/01_object_detection.html" },
+        { label: "Image Segmentation", href: "week-7/02_image_segmentation.html" },
+      ]},
+      { week: "8",  topic: "MLOps", links: [
+        { label: "Slides", href: "week-8/slides.html" },
+      ]},
+      { week: "9",  topic: "Computer Vision", links: [
+        { label: "Slides", href: "week-9/computer_vision.html" },
+      ]},
+      { week: "11", topic: "Text Data & Embeddings", links: [
+        { label: "Slides", href: "week-11/slides.html" },
+      ]},
+      { week: "12", topic: "BERT/GPT", links: [
+        { label: "Slides", href: "week-12/slides.html" },
+      ]},
+      { week: "13", topic: "프롬프트, 하네스", links: [
+        { label: "Slides", href: "week-13/slides4.html" },
+      ]},
+      { week: "14", topic: "LLM 파인 튜닝", links: [
+        { label: "Slides", href: "week-14/pages.html" },
+      ]},
+      { week: "15", topic: "RAG", links: [
+        { label: "Slides", href: "week-15/slides.html" },
+      ]},
+      { week: "16", topic: "Paper Flowchart", links: [
+        { label: "Slides", href: "week-16/slides.html" },
+      ]},
+      { week: "17", topic: "Overfitting", links: [
+        { label: "Slides", href: "week-17/slides.html" },
+      ]},
+    ];
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-3/slides/page_1.html">
-        <h2 class="text-xl font-bold">Week 3</h2>
-        <p class="text-gray-600 mt-1">tree-ensemble</p>
-      </a>
-      <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 3 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a>
-    </div>
+    const list = document.getElementById("weeks");
+    for (const w of weeks) {
+      const li = document.createElement("li");
+      li.className = "card bg-white rounded-xl border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5";
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-4/slides/page_1.html">
-        <h2 class="text-xl font-bold">Week 4</h2>
-        <p class="text-gray-600 mt-1">MLP ~ CNN/RNN</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
+      const main = document.createElement("a");
+      main.href = w.links[0].href;
+      main.className = "flex items-center gap-4 flex-1 min-w-0";
+      main.innerHTML = `
+        <span class="shrink-0 w-14 h-14 rounded-lg bg-indigo-50 text-indigo-700 flex flex-col items-center justify-center leading-none">
+          <span class="text-[10px] font-semibold uppercase tracking-wider">Week</span>
+          <span class="text-xl font-extrabold mt-0.5">${w.week}</span>
+        </span>
+        <span class="text-base sm:text-lg font-bold truncate">${w.topic}</span>`;
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-5/slides/page_1.html">
-        <h2 class="text-xl font-bold">Week 5</h2>
-        <p class="text-gray-600 mt-1">AE, VAE</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
+      const chips = document.createElement("div");
+      chips.className = "flex flex-wrap gap-2 sm:justify-end";
+      for (const l of w.links) {
+        const a = document.createElement("a");
+        a.href = l.href;
+        a.textContent = l.label;
+        a.className = "chip text-sm px-3 py-1.5 rounded-full border border-gray-200 text-gray-700 hover:bg-indigo-600 hover:text-white hover:border-indigo-600";
+        chips.appendChild(a);
+      }
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-6/page_1.html">
-        <h2 class="text-xl font-bold">Week 6</h2>
-        <p class="text-gray-600 mt-1">domain augmentation</p>
-      </a>
-      <a class="card block bg-white rounded-xl p-6 border" href="week-6-2/augmentation_to_domain_adaptation.html">
-        <h2 class="text-xl font-bold">Week 6-2</h2>
-        <p class="text-gray-600 mt-1">domain augmentation-augmentation</p>
-      </a>
-    </div>
-
-    <div class="grid grid-cols-3 md:grid-cols-3 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-7/slide.html">
-        <h2 class="text-xl font-bold">Week 7</h2>
-        <p class="text-gray-600 mt-1">객체인식, 이미지 세그멘테이션</p>
-      </a>
-      <a class="card block bg-white rounded-xl p-6 border" href="week-7/01_object_detection.html">
-        <h2 class="text-xl font-bold">Week 7-2</h2>
-        <p class="text-gray-600 mt-1">Object Detection</p>
-      </a>
-      <a class="card block bg-white rounded-xl p-6 border" href="week-7/02_image_segmentation.html">
-        <h2 class="text-xl font-bold">Week 7-3</h2>
-        <p class="text-gray-600 mt-1">Image Segmentation</p>
-      </a>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-8/slides.html">
-        <h2 class="text-xl font-bold">Week 8</h2>
-        <p class="text-gray-600 mt-1">MLOps</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-9/computer_vision.html">
-        <h2 class="text-xl font-bold">Week 9</h2>
-        <p class="text-gray-600 mt-1">computer vision</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-11/slides.html">
-        <h2 class="text-xl font-bold">Week 11</h2>
-        <p class="text-gray-600 mt-1">Text Data & Embeddings</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
-  
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-12/slides.html">
-        <h2 class="text-xl font-bold">Week 12</h2>
-        <p class="text-gray-600 mt-1">BERT/GPT</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
-  
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-13/slides4.html">
-        <h2 class="text-xl font-bold">Week 13</h2>
-        <p class="text-gray-600 mt-1">프롬프트, 하네스</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
-      
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-14/pages.html">
-        <h2 class="text-xl font-bold">Week 14</h2>
-        <p class="text-gray-600 mt-1">LLM 파인 튜닝</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
-          
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-15/slides.html">
-        <h2 class="text-xl font-bold">Week 15</h2>
-        <p class="text-gray-600 mt-1">RAG</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
-          
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <a class="card block bg-white rounded-xl p-6 border" href="week-16/slides.html">
-        <h2 class="text-xl font-bold">Week 16</h2>
-        <p class="text-gray-600 mt-1">paper flowchart</p>
-      </a>
-      <!-- <a class="card block bg-white rounded-xl p-6 border" href="week-3/quiz/quiz.html">
-        <h2 class="text-xl font-bold">Week 4 Quiz</h2>
-        <p class="text-gray-600 mt-1">Quiz</p>
-      </a> -->
-    </div>
+      li.append(main, chips);
+      list.appendChild(li);
+    }
+  </script>
 </body></html>
