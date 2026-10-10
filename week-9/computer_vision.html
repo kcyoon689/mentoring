@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -144,6 +145,11 @@ ol.tl small{font-size:15px;color:var(--muted);line-height:1.5}
 @media (max-width:640px){ol.tl li{grid-template-columns:1fr}ol.tl .yr{grid-row:auto}}
 .tlkey{font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:.4em 1.2em}
 .tlkey .k{display:inline-block;width:12px;height:12px;margin-right:-.8em}
+/* epipolar */
+.epi{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:960px}
+@media (max-width:760px){.epi{grid-template-columns:1fr}}
+.epi canvas{width:100%;height:auto;border:2px solid var(--ink);display:block}
+#epiL{cursor:crosshair}
 /* nav */
 .nav{position:fixed;left:0;right:0;bottom:0;height:calc(56px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:center;gap:14px;padding-left:clamp(12px,3vw,28px);padding-right:clamp(12px,3vw,28px);background:var(--paper);border-top:1px solid var(--rule);z-index:5}
 .bar{flex:1;height:4px;background:var(--rule);position:relative}
@@ -165,7 +171,7 @@ ol.tl small{font-size:15px;color:var(--muted);line-height:1.5}
  <div class="inner title-wrap">
   <div class="title-grid" id="tgrid" aria-hidden="true"></div>
   <h1>컴퓨터비전 입문</h1>
-  <p class="sub">필터 한 장에서 시작해 카메라 캘리브레이션까지</p>
+  <p class="sub">필터 한 장에서 시작해 카메라 캘리브레이션과 에피폴라 기하까지</p>
   <p class="lede" style="margin-top:2em">키보드 ← → 또는 화면 아래 버튼으로 넘길 수 있습니다.</p>
  </div>
 </section>
@@ -191,7 +197,7 @@ ol.tl small{font-size:15px;color:var(--muted);line-height:1.5}
     <p>컴퓨터비전은 결국 <b>숫자 배열에서 의미를 끌어내는 방법</b>을 연구한다. 오늘은 그 방법의 두 축을 다룬다.</p>
     <ul>
      <li><b>영상 처리 축:</b> 필터, 에지, CNN</li>
-     <li><b>기하 축:</b> 카메라 모델, 내부·외부 파라미터, 캘리브레이션</li>
+     <li><b>기하 축:</b> 카메라 모델, 내부·외부 파라미터, 캘리브레이션, 에피폴라 기하</li>
     </ul>
    </div>
   </div>
@@ -203,7 +209,7 @@ ol.tl small{font-size:15px;color:var(--muted);line-height:1.5}
  <div class="inner">
   <div class="sec">1부 · 컴퓨터비전이란</div>
   <h2>컴퓨터비전이 푸는 주요 과제</h2>
-  <p class="lede">낮은 수준(픽셀 다듬기)에서 높은 수준(의미 이해)으로 올라간다.</p>
+  <p class="lede">낮은 수준(픽셀 다듬기)에서 높은 수준(의미 이해)으로 올라간다. 항목을 누르면 해당 슬라이드로 이동한다.</p>
   <div class="apps">
    <button data-go="전처리"><b>전처리</b><small>어둡거나 바랜 영상, 잡음 섞인 영상을 보기 좋게 복원</small></button>
    <button data-go="에지 검출과 선 검출"><b>에지·선 검출</b><small>밝기가 급변하는 경계와 직선 구조 찾기</small></button>
@@ -301,7 +307,7 @@ ol.tl small{font-size:15px;color:var(--muted);line-height:1.5}
    <div>
     <p>비스듬히 찍은 사진을 정면에서 찍은 것처럼 바꿀 수 있고, 그 반대도 가능하다. 평면 사이의 이런 변환을 <b>호모그래피</b>(3×3 행렬)라고 한다.</p>
    </div>
-   <div class="note" style="margin-top:.4em">질문: 어떤 행렬로 바꿔야 "정면"이 되는가? 이 답을 구하려면 <b>카메라가 3D 세계를 2D 영상으로 옮기는 방식</b>을 알아야 한다.</div>
+   <div class="note" style="margin-top:.4em">질문: 어떤 행렬로 바꿔야 "정면"이 되는가? 이 답을 구하려면 <b>카메라가 3D 세계를 2D 영상으로 옮기는 방식</b>을 알아야 한다. 이것이 3부의 주제다.</div>
   </div>
  </div>
 </section>
@@ -463,7 +469,7 @@ out2 = cv2.filter2D(img, -1, k)</code></pre>
    <li class="learn"><span class="yr">2012~</span><b>전부 학습</b><small>AlexNet이 ImageNet 대회에서 사람이 설계한 특징 기반 방법을 큰 차이로 이겼다. 이후 필터 학습이 표준이 되었다.</small></li>
   </ol>
   <div class="tlkey"><span class="k hand"></span>사람이 설계 <span class="k mix"></span>중간 형태 <span class="k learn"></span>데이터로 학습</div>
-  <div class="note">반전: 학습된 AlexNet의 첫 층을 열어 보면 Gabor, Sobel과 닮은 필터가 나온다. 사람이 수십 년간 설계해 온 필터를 네트워크가 스스로 다시 찾아낸 셈.</div>
+  <div class="note">반전: 학습된 AlexNet의 첫 층을 열어 보면 Gabor, Sobel과 닮은 필터가 나온다. 사람이 수십 년간 설계해 온 필터를 네트워크가 스스로 다시 찾아낸 셈이다. 다음 슬라이드에서 확인해 보자.</div>
  </div>
 </section>
 
@@ -477,7 +483,7 @@ out2 = cv2.filter2D(img, -1, k)</code></pre>
     <h3>구조: 필터는 3차원 가중치 덩어리</h3>
     <p>CNN의 필터 하나는 크기 \(k \times k \times C_{in}\)의 가중치다. 입력이 RGB면 \(C_{in}=3\)이므로 3×3×3 필터 하나는 27개 숫자다. 한 층에 필터가 \(C_{out}\)개 있으면 출력 채널(특징 맵)도 \(C_{out}\)장이 나온다.</p>
     <div class="math">\[ h_c[m,n] = \sigma\Big( b_c + \sum_{d=1}^{C_{in}} \sum_{k,l} g_{c,d}[k,l]\, f_d[m+k,n+l] \Big) \]</div>
-    <p>앞에서 본 식과 똑같다. 다른 점은 두 가지.</p>
+    <p>앞에서 본 식과 똑같다. 다른 점은 두 가지뿐이다.</p>
     <ul>
      <li>가중치 \(g\)를 사람이 정하지 않고 <b>역전파로 학습</b>한다.</li>
      <li>뒤에 비선형 함수 \(\sigma\)(ReLU 등)가 붙고, 층을 깊게 쌓는다.</li>
@@ -784,6 +790,141 @@ undist = cv2.undistort(cv2.imread("test.jpg"), K, dist)   # 왜곡 보정</code>
  </div>
 </section>
 
+<!-- E1 epipolar concept -->
+<section class="slide" data-title="에피폴라 기하">
+ <div class="inner">
+  <div class="sec">3부 · 두 대의 카메라</div>
+  <h2>에피폴라 기하 (Epipolar Geometry)</h2>
+  <p class="lede">카메라 한 대로는 깊이를 알 수 없다. 두 대로 같은 장면을 찍으면, 두 영상 사이에 어떤 기하학적 관계가 생길까?</p>
+  <div class="two">
+   <div>
+    <svg viewBox="0 0 760 360" width="100%" role="img" aria-label="에피폴라 기하: 두 카메라 중심 O, O', 3D 점 X가 만드는 에피폴라 평면, 에피폴 e와 e', 오른쪽 영상의 에피폴라 라인 l'" style="max-width:720px">
+     <polygon points="120,300 640,300 380,60" fill="var(--amber-soft)" stroke="none"/>
+     <polygon points="150,170 250,205 250,335 150,300" fill="var(--pixel-soft)" stroke="var(--pixel)" stroke-width="2" fill-opacity=".85"/>
+     <polygon points="610,170 510,205 510,335 610,300" fill="var(--pixel-soft)" stroke="var(--pixel)" stroke-width="2" fill-opacity=".85"/>
+     <line x1="120" y1="300" x2="640" y2="300" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 4"/>
+     <line x1="120" y1="300" x2="380" y2="60" stroke="var(--amber)" stroke-width="2.5"/>
+     <line x1="640" y1="300" x2="380" y2="60" stroke="var(--amber)" stroke-width="2.5"/>
+     <line x1="640" y1="300" x2="315" y2="120" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 3"/>
+     <line x1="640" y1="300" x2="263" y2="168" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 3"/>
+     <line x1="541" y1="318" x2="570" y2="195" stroke="#D93B2B" stroke-width="3"/>
+     <circle cx="380" cy="60" r="7" fill="var(--amber)"/>
+     <circle cx="315" cy="120" r="5" fill="var(--muted)"/>
+     <circle cx="263" cy="168" r="5" fill="var(--muted)"/>
+     <circle cx="198" cy="228" r="5.5" fill="var(--pixel)"/>
+     <circle cx="562" cy="228" r="5.5" fill="var(--pixel)"/>
+     <circle cx="556" cy="253.5" r="3.5" fill="var(--muted)"/>
+     <circle cx="552.3" cy="269.3" r="3.5" fill="var(--muted)"/>
+     <circle cx="215" cy="300" r="5" fill="var(--ink)"/>
+     <circle cx="545" cy="300" r="5" fill="var(--ink)"/>
+     <circle cx="120" cy="300" r="6" fill="var(--ink)"/>
+     <circle cx="640" cy="300" r="6" fill="var(--ink)"/>
+     <g font-size="16" fill="var(--ink)">
+      <text x="392" y="56">X</text>
+      <text x="268" y="116" font-size="13" fill="var(--muted)">X₂?</text>
+      <text x="216" y="162" font-size="13" fill="var(--muted)">X₃?</text>
+      <text x="176" y="222" fill="var(--pixel)">x</text>
+      <text x="570" y="234" fill="var(--pixel)">x′</text>
+      <text x="205" y="322">e</text>
+      <text x="522" y="294">e′</text>
+      <text x="96" y="328">O</text>
+      <text x="646" y="328">O′</text>
+      <text x="576" y="190" fill="#D93B2B" font-weight="600">l′</text>
+      <text x="380" y="292" text-anchor="middle" font-size="14" fill="var(--muted)">베이스라인</text>
+      <text x="380" y="205" text-anchor="middle" font-size="14" fill="#B7790A">에피폴라 평면</text>
+      <text x="200" y="356" text-anchor="middle" font-size="14" fill="var(--muted)">왼쪽 영상</text>
+      <text x="560" y="356" text-anchor="middle" font-size="14" fill="var(--muted)">오른쪽 영상</text>
+     </g>
+    </svg>
+   </div>
+   <div>
+    <p>왼쪽 영상의 점 \(x\)는 3D 공간에서 광선 \(OX\) 위 <b>어딘가</b>에 있다. 깊이를 모르니 \(X\)일 수도, \(X_2\)나 \(X_3\)일 수도 있다.</p>
+    <p>그런데 이 광선을 오른쪽 카메라에서 보면 <b>하나의 직선</b>으로 찍힌다. 그래서 \(x\)의 짝 \(x'\)은 반드시 이 직선 \(l'\) 위에 있다. 이것이 <b>에피폴라 제약</b>이다.</p>
+    <div class="def">대응점 찾기가 영상 전체(2D)를 뒤지는 문제에서 <b>한 줄(1D)만 훑는 문제</b>로 줄어든다.</div>
+   </div>
+  </div>
+  <div class="twrap"><table class="t">
+   <thead><tr><th>용어</th><th>정의</th></tr></thead>
+   <tbody>
+    <tr><td>베이스라인 (baseline)</td><td>두 카메라 중심 \(O\), \(O'\)을 잇는 선분</td></tr>
+    <tr><td>에피폴라 평면</td><td>\(O\), \(O'\), \(X\) 세 점이 만드는 평면. 점 \(X\)마다 다르지만 모두 베이스라인을 포함한다</td></tr>
+    <tr><td>에피폴 (epipole) \(e, e'\)</td><td>베이스라인이 영상 평면과 만나는 점. 상대 카메라의 중심이 찍힌 위치</td></tr>
+    <tr><td>에피폴라 라인 (epipolar line) \(l'\)</td><td>에피폴라 평면이 영상 평면과 만나는 직선. 모든 에피폴라 라인은 에피폴을 지난다</td></tr>
+   </tbody>
+  </table></div>
+ </div>
+</section>
+
+<!-- E2 epipolar demo -->
+<section class="slide" data-title="에피폴라 라인 실험실">
+ <div class="inner">
+  <div class="sec">3부 · 두 대의 카메라</div>
+  <h2>에피폴라 라인 직접 확인하기</h2>
+  <p>왼쪽 영상에서 아무 곳이나(꼭짓점 근처를 누르면 그 꼭짓점이 선택된다) 눌러 보자. 오른쪽 영상에 빨간 에피폴라 라인이 그려진다. 깊이 슬라이더를 움직이면 3D 점이 광선을 따라 움직이는데, 오른쪽에서는 <b>항상 이 선 위에서만</b> 움직인다.</p>
+  <div class="epi">
+   <div><div class="glabel">왼쪽 카메라 영상 (클릭)</div><canvas id="epiL" width="480" height="360" aria-label="왼쪽 카메라 영상"></canvas></div>
+   <div><div class="glabel">오른쪽 카메라 영상</div><canvas id="epiR" width="480" height="360" aria-label="오른쪽 카메라 영상"></canvas></div>
+  </div>
+  <div class="two even" style="margin-top:1em">
+   <div>
+    <label class="sl">깊이 Z<input type="range" id="s_ed" min="2" max="14" step="0.05" value="6"><output id="o_ed"></output></label>
+    <label class="sl">수렴 각도 (°)<input type="range" id="s_ea" min="0" max="25" step="0.5" value="20"><output id="o_ea"></output></label>
+    <label class="sl">베이스라인<input type="range" id="s_eb" min="0.4" max="4" step="0.05" value="2"><output id="o_eb"></output></label>
+    <div class="mat" id="emat" style="margin-top:.6em"></div>
+   </div>
+   <div>
+    <div class="note" style="margin-top:0">해볼 것: <b>수렴 각도를 0</b>으로 만들어 보자. 두 카메라가 나란히 같은 방향을 보면 에피폴이 무한히 멀어지고, 에피폴라 라인이 모두 <b>수평</b>이 된다. 대응점을 같은 행에서만 찾으면 되는 이 상태를 <b>스테레오 정렬(rectification)</b>이라 한다.</div>
+    <p style="font-size:15px;color:var(--muted)">검은 점 e, e′은 에피폴이다. 왼쪽의 빨간 선은 오른쪽 점에 대한 에피폴라 라인 \(l = F^\top x'\)이며, 두 선은 같은 에피폴라 평면에서 나왔다.</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- E3 fundamental matrix -->
+<section class="slide" data-title="기본 행렬과 필수 행렬">
+ <div class="inner">
+  <div class="sec">3부 · 두 대의 카메라</div>
+  <h2>에피폴라 제약을 식으로: E와 F</h2>
+  <div class="two">
+   <div>
+    <h3>필수 행렬 (Essential matrix) \(E\)</h3>
+    <p>정규 좌표 \(\hat{x} = K^{-1}x\)에서, 두 카메라의 상대 자세 \(R, t\)만으로 정해진다.</p>
+    <div class="math">\[ \hat{x}'^\top E\, \hat{x} = 0, \qquad E = [t]_\times R \]</div>
+    <p>\([t]_\times\)는 외적을 행렬로 쓴 것이다. 세 벡터 \(\hat{x}\), \(\hat{x}'\), \(t\)가 한 평면(에피폴라 평면) 위에 있다는 조건과 같다.</p>
+    <h3>기본 행렬 (Fundamental matrix) \(F\)</h3>
+    <p>내부 파라미터까지 합쳐 <b>픽셀 좌표</b>에서 바로 쓴다.</p>
+    <div class="math">\[ x'^\top F\, x = 0, \qquad F = K'^{-\top} E\, K^{-1} \]</div>
+    <ul>
+     <li>에피폴라 라인: \(l' = F x\), \(l = F^\top x'\)</li>
+     <li>에피폴: \(F e = 0\), \(F^\top e' = 0\)</li>
+     <li>3×3, rank 2, 자유도 7</li>
+    </ul>
+   </div>
+   <div>
+    <h3>앞 내용과의 연결</h3>
+    <div class="twrap"><table class="t">
+     <thead><tr><th>알고 있는 것</th><th>구할 수 있는 것</th></tr></thead>
+     <tbody>
+      <tr><td>대응점 8쌍 이상</td><td>\(F\) (8점 알고리즘 + RANSAC)</td></tr>
+      <tr><td>\(F\) + 내부 파라미터 \(K\)</td><td>\(E = K'^\top F K\)</td></tr>
+      <tr><td>\(E\)</td><td>상대 외부 파라미터 \(R, t\) (\(t\)는 크기 제외)</td></tr>
+      <tr><td>\(K, R, t\) + 대응점</td><td>삼각측량으로 3D 점 복원</td></tr>
+     </tbody>
+    </table></div>
+    <div class="note">정렬된 스테레오에서는 대응점이 같은 행에 있으므로 좌우 위치 차이(시차 \(d\))만 재면 깊이가 나온다: \(Z = \dfrac{f\,B}{d}\) (\(B\): 베이스라인)</div>
+<pre><code>import cv2, numpy as np
+# pts1, pts2: 두 영상의 대응점 (N×2, 예: SIFT 매칭)
+F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_RANSAC)
+lines2 = cv2.computeCorrespondEpilines(pts1.reshape(-1,1,2), 1, F)
+
+E, _ = cv2.findEssentialMat(pts1, pts2, K, cv2.RANSAC)
+_, R, t, _ = cv2.recoverPose(E, pts1, pts2, K)   # 상대 자세</code></pre>
+   </div>
+  </div>
+  <p style="margin-top:.6em"><b>쓰이는 곳:</b> 스테레오 깊이 추정, 3D 복원(SfM), Visual SLAM, 매칭 오류 걸러내기</p>
+ </div>
+</section>
+
 <!-- 22 summary -->
 <section class="slide" data-title="정리">
  <div class="inner">
@@ -806,10 +947,11 @@ undist = cv2.undistort(cv2.imread("test.jpg"), K, dist)   # 왜곡 보정</code>
      <li>내부 파라미터 \(K\): 초점거리, 주점, skew (+왜곡). 카메라 고유의 값</li>
      <li>외부 파라미터 \(R, t\): 6 자유도 자세. 카메라가 움직이면 바뀜</li>
      <li>캘리브레이션: 체커보드 대응점으로 둘 다 추정. 재투영 오차로 검증</li>
+     <li>에피폴라 제약 \(x'^\top F x = 0\): 대응점은 에피폴라 라인 \(l' = Fx\) 위에 있다. 탐색이 2D에서 1D로</li>
     </ul>
    </div>
   </div>
-  <div class="note" style="margin-top:1.4em">생각해 볼 질문: 스마트폰으로 줌을 바꿔 찍으면 어떤 파라미터가 바뀔까? 같은 카메라를 삼각대 위에서 돌리기만 하면?</div>
+  <div class="note" style="margin-top:1.4em">생각해 볼 질문: 스마트폰으로 줌을 바꿔 찍으면 어떤 파라미터가 바뀔까? 같은 카메라를 삼각대 위에서 돌리기만 하면? 그때 두 사진 사이에 에피폴라 기하가 성립할까? (힌트: 베이스라인)</div>
  </div>
 </section>
 
@@ -841,6 +983,7 @@ undist = cv2.undistort(cv2.imread("test.jpg"), K, dist)   # 왜곡 보정</code>
   try{history.replaceState(null,'','#'+(cur+1));}catch(e){}
   if(slides[cur].dataset.title==='파라미터 실험실') drawCam();
   if(slides[cur].dataset.title==='렌즈 왜곡') drawDist();
+  if(slides[cur].dataset.title==='에피폴라 라인 실험실') drawEpi();
  }
  document.getElementById('prev').onclick=()=>show(cur-1);
  document.getElementById('next').onclick=()=>show(cur+1);
@@ -974,10 +1117,91 @@ undist = cv2.undistort(cv2.imread("test.jpg"), K, dist)   # 왜곡 보정</code>
    line(v,i===0?css('--pixel'):css('--muted'),i===0?2:1);line(h,i===0?css('--pixel'):css('--muted'),i===0?2:1);}
  }
 
+
+ /* ---------- epipolar demo ---------- */
+ const eL=document.getElementById('epiL'),eR=document.getElementById('epiR'),gL=eL.getContext('2d'),gR=eR.getContext('2d');
+ const EW=480,EH=360,Ef=420,Ecx=240,Ecy=180;
+ const mm=(A,B)=>A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+ const mv=(A,x)=>A.map(r=>r[0]*x[0]+r[1]*x[1]+r[2]*x[2]);
+ const tr=A=>A[0].map((_,j)=>A.map(r=>r[j]));
+ const Ry=a=>{const c=Math.cos(a),s=Math.sin(a);return[[c,0,s],[0,1,0],[-s,0,c]];};
+ // scene: a small house centred at z=6
+ const HP=[];const ca=Math.cos(.55),sa=Math.sin(.55);
+ const place=(x,y,z)=>[x*ca+z*sa,y,-x*sa+z*ca+6.5];
+ for(const y of[-.7,.9])for(const[x,z]of[[-1,-.8],[1,-.8],[1,.8],[-1,.8]])HP.push(place(x,y,z));
+ HP.push(place(-1,-1.6,0),place(1,-1.6,0));
+ const HE=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7],[8,9],[0,8],[3,8],[1,9],[2,9]];
+ let eSel={u:300,v:150}, eCam;
+ function camSetup(){
+  const a=+document.getElementById('s_ea').value*Math.PI/180, b=+document.getElementById('s_eb').value;
+  const Rl=tr(Ry(a)), Rr=tr(Ry(-a)), Cl=[-b/2,0,0], Cr=[b/2,0,0];
+  const tl=mv(Rl,Cl).map(v=>-v), trr=mv(Rr,Cr).map(v=>-v);
+  const R=mm(Rr,tr(Rl)); const Rtl=mv(R,tl); const t=trr.map((v,i)=>v-Rtl[i]);
+  const tx=[[0,-t[2],t[1]],[t[2],0,-t[0]],[-t[1],t[0],0]];
+  const E=mm(tx,R); const Ki=[[1/Ef,0,-Ecx/Ef],[0,1/Ef,-Ecy/Ef],[0,0,1]];
+  const F=mm(mm(tr(Ki),E),Ki);
+  eCam={Rl,Rr,tl,tr:trr,F,t,Cl,Cr};
+ }
+ const projC=(Rc,tc,X)=>{const p=mv(Rc,X).map((v,i)=>v+tc[i]);return p[2]>.05?[Ef*p[0]/p[2]+Ecx,Ef*p[1]/p[2]+Ecy]:null;};
+ function eLine(g,l,col){ // a u + b v + c = 0
+  const[a,b,c]=l;const pts=[];
+  if(Math.abs(b)>1e-12){for(const u of[0,EW])pts.push([u,-(a*u+c)/b]);}
+  if(Math.abs(a)>1e-12){for(const v of[0,EH])pts.push([-(b*v+c)/a,v]);}
+  const inb=pts.filter(p=>p[0]>=-1&&p[0]<=EW+1&&p[1]>=-1&&p[1]<=EH+1);
+  if(inb.length<2)return;g.strokeStyle=col;g.lineWidth=2.5;g.beginPath();g.moveTo(inb[0][0],inb[0][1]);g.lineTo(inb[1][0],inb[1][1]);g.stroke();
+ }
+ function eDot(g,p,col,r){if(!p)return;g.fillStyle=col;g.beginPath();g.arc(p[0],p[1],r,0,7);g.fill();}
+ function eScene(g,Rc,tc){
+  g.fillStyle=css('--panel');g.fillRect(0,0,EW,EH);
+  g.strokeStyle=css('--ink');g.lineWidth=1.8;
+  HE.forEach(([i,j])=>{const p=projC(Rc,tc,HP[i]),q=projC(Rc,tc,HP[j]);if(p&&q){g.beginPath();g.moveTo(p[0],p[1]);g.lineTo(q[0],q[1]);g.stroke();}});
+  HP.forEach(P=>eDot(g,projC(Rc,tc,P),css('--muted'),3));
+ }
+ function drawEpi(){
+  camSetup();const d=+document.getElementById('s_ed').value;
+  document.getElementById('o_ed').textContent=d.toFixed(1);
+  document.getElementById('o_ea').textContent=document.getElementById('s_ea').value;
+  document.getElementById('o_eb').textContent=(+document.getElementById('s_eb').value).toFixed(2);
+  const{Rl,Rr,tl,tr:trr,F,Cl,Cr}=eCam;
+  eScene(gL,Rl,tl);eScene(gR,Rr,trr);
+  // 3D point on the left ray at depth d (left-camera Z)
+  const Xc=[d*(eSel.u-Ecx)/Ef,d*(eSel.v-Ecy)/Ef,d];
+  const Xw=mv(tr(Rl),Xc.map((v,i)=>v-tl[i]));
+  const xr=projC(Rr,trr,Xw);
+  const red='#D93B2B';
+  const l2=mv(F,[eSel.u,eSel.v,1]);eLine(gR,l2,red);
+  if(xr){const l1=mv(tr(F),[xr[0],xr[1],1]);eLine(gL,l1,red);}
+  // epipoles
+  const e1=projC(Rl,tl,Cr),e2=projC(Rr,trr,Cl);
+  [[gL,e1,'e'],[gR,e2,"e′"]].forEach(([g,e,n])=>{if(e&&e[0]>-5&&e[0]<EW+5&&e[1]>-5&&e[1]<EH+5){eDot(g,e,css('--ink'),5);g.fillStyle=css('--ink');g.font='15px sans-serif';g.fillText(n,e[0]+7,e[1]-7);}});
+  eDot(gL,[eSel.u,eSel.v],css('--pixel'),7);
+  eDot(gR,xr,css('--pixel'),7);
+  gL.fillStyle=css('--pixel');gL.font='600 15px sans-serif';gL.fillText('x',eSel.u+9,eSel.v-9);
+  if(xr){gR.fillStyle=css('--pixel');gR.font='600 15px sans-serif';gR.fillText("x′",xr[0]+9,xr[1]-9);}
+  const n=v=>(v>=0?' ':'')+v.toExponential(2);
+  const chk=xr?xr[0]*l2[0]+xr[1]*l2[1]+l2[2]:NaN;
+  const ep=e2?'('+e2[0].toFixed(0)+', '+e2[1].toFixed(0)+')':'무한대 (평행)';
+  document.getElementById('emat').textContent='F = '+F.map(r=>'['+r.map(n).join(' ')+' ]').join('\n    ')+
+   "\n\nl′ = F x  →  "+l2.map(v=>v.toExponential(2)).join('·u + ').replace(/·u \+ ([^·]+)$/,'·v + $1')+" = 0"+
+   "\nx′ᵀ F x = "+(isNaN(chk)?'-':chk.toExponential(1))+"  (≈ 0)\n에피폴 e′ = "+ep;
+ }
+ eL.addEventListener('click',ev=>{
+  const r=eL.getBoundingClientRect();const u=(ev.clientX-r.left)*EW/r.width,v=(ev.clientY-r.top)*EH/r.height;
+  camSetup();let best=null,bd=16;
+  HP.forEach(P=>{const p=projC(eCam.Rl,eCam.tl,P);if(p){const dd=Math.hypot(p[0]-u,p[1]-v);if(dd<bd){bd=dd;best={p,P};}}});
+  if(best){eSel={u:best.p[0],v:best.p[1]};const Z=mv(eCam.Rl,best.P)[2]+eCam.tl[2];document.getElementById('s_ed').value=Z.toFixed(2);}
+  else eSel={u,v};
+  drawEpi();
+ });
+ ['s_ed','s_ea','s_eb'].forEach(id=>document.getElementById(id).addEventListener('input',drawEpi));
+ (function(){camSetup();const P=HP[8];const p=projC(eCam.Rl,eCam.tl,P);eSel={u:p[0],v:p[1]};document.getElementById('s_ed').value=(mv(eCam.Rl,P)[2]+eCam.tl[2]).toFixed(2);})();
+
  /* start */
  const h=parseInt(location.hash.slice(1));show(isNaN(h)?0:h-1);
- matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{drawCam();drawDist();});
+ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{drawCam();drawDist();drawEpi();});
 })();
 </script>
 </body>
 </html>
+
+</body></html>
